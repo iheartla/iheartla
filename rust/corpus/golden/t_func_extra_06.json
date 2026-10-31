@@ -1,0 +1,531 @@
+{
+ "id": "t_func_extra_06",
+ "src": "S ∈ {ℤ}\n                    f(x) = x where x ∈ S\n                    a = f(2)\n                    ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "S ∈ {ℤ}\n                    f(x) = x where x ∈ S\n                    a = f(2)\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     98
+    ],
+    "vblock": [
+     {
+      "_": "ParamsBlock",
+      "@": [
+       0,
+       7
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        0,
+        7
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          0,
+          7
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "SetType",
+          "@": [
+           4,
+           7
+          ],
+          "type": [
+           "ℤ"
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            0,
+            1
+           ],
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       28,
+       48
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        28,
+        48
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         28,
+         29
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          43,
+          48
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           47,
+           48
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            47,
+            48
+           ],
+           "id": null,
+           "value": "S"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            43,
+            44
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          35,
+          36
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           35,
+           36
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            35,
+            36
+           ],
+           "id": null,
+           "value": "x"
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          30,
+          31
+         ],
+         "id": null,
+         "value": "x"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       69,
+       77
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        69,
+        77
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          69,
+          70
+         ],
+         "id": null,
+         "value": "a"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          73,
+          77
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           73,
+           77
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            73,
+            77
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              73,
+              74
+             ],
+             "id": null,
+             "value": "f"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              75,
+              76
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               75,
+               76
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                75,
+                76
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`f`",
+     "f"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "S ∈ {ℤ}\n                    f(x) = x where x ∈ S\n                    a = f(2)\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     98
+    ],
+    "vblock": [
+     {
+      "_": "ParamsBlock",
+      "@": [
+       0,
+       7
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        0,
+        7
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          0,
+          7
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "SetType",
+          "@": [
+           4,
+           7
+          ],
+          "type": [
+           "ℤ"
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            0,
+            1
+           ],
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       28,
+       48
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        28,
+        48
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         28,
+         29
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          43,
+          48
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           47,
+           48
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            47,
+            48
+           ],
+           "id": null,
+           "value": "S"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            43,
+            44
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          35,
+          36
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           35,
+           36
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            35,
+            36
+           ],
+           "id": null,
+           "value": "x"
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          30,
+          31
+         ],
+         "id": null,
+         "value": "x"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       69,
+       77
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        69,
+        77
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          69,
+          70
+         ],
+         "id": null,
+         "value": "a"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          73,
+          77
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           73,
+           77
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            73,
+            77
+           ],
+           "name": "f",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              75,
+              76
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               75,
+               76
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                75,
+                76
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nS ∈ {ℤ}\n                    f(x) = x where x ∈ S\n                    a = f(2)\n                    \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, S):\n        S = frozenset(S)\n\n        self.S = S\n        # a = f(2)\n        self.a = self.f(2)\n\n    def f(self, x):\n        assert np.ndim(x) == 0\n        assert x in self.S\n\n        return x\n\n\n\n\n\n",
+  "eigen": "/*\nS ∈ {ℤ}\n                    f(x) = x where x ∈ S\n                    a = f(2)\n                    \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT a;\n    std::vector<int > S;\n    template<typename REAL>\n    REAL f(\n        const REAL & x)\n    {\n        assert( std::binary_search(S.begin(), S.end(), x) );\n\n        return x;    \n    }\n    heartlib(const std::vector<int > & S)\n    {\n    \n        this->S = S;\n        // a = f(2)\n        a = f(2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nS & ∈ \\{\\mathbb{Z}\\} \\\\\n\\\\\nf\\left( x \\right) & = x \\text{{ where }}  x ∈ S \\\\\na & = f\\left( 2 \\right) \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nS & ∈ \\{\\mathbb{Z}\\} \\\\\n\\\\\n & f\\left( x \\right) & = x \\text{{ where }}  x ∈ S \\\\\na & = f\\left( 2 \\right) \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(S)\n% output = heartlib(S)\n%\n%    S ∈ {ℤ}\n%                        f(x) = x where x ∈ S\n%                        a = f(2)\n%                        \n    % a = f(2)\n\n    a = f(2);\n    function [ret] = f(x)\n        assert(numel(x) == 1);\n        assert( ismember(x, S) );\n\n        ret = x;\n    end\n\n    output.a = a;\n    output.f = @f;\n    output.S = S;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'S', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-S\", \"sym\":\"S\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {S} } & ∈ \\{\\mathbb{Z}\\} \\\\\n\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } ∈ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'S', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-S\", \"sym\":\"S\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {S} } \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'def', false, 'f')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"def\", \"case\":\"equation\"} }{ {a} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }\\left( 2 \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['f', 'a'], false, [], [], 'YSA9IGYoMik=');\"} }{}\n \\\\\n\\end{align*}\n"
+ }
+}

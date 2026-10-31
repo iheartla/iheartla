@@ -1,0 +1,368 @@
+{
+ "id": "t_norm_12",
+ "src": "A = ||T||_3\n                    where \n                    T: ℝ ^ 4: vector",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "A = ||T||_3\n                    where \n                    T: ℝ ^ 4: vector",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     75
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       11
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        11
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           11
+          ],
+          "op": {
+           "_": "Norm",
+           "@": [
+            4,
+            11
+           ],
+           "double": "||",
+           "power": null,
+           "single": null,
+           "sub": {
+            "_": "Integer",
+            "@": [
+             10,
+             11
+            ],
+            "value": [
+             "3"
+            ]
+           },
+           "value": {
+            "_": "Expression",
+            "@": [
+             6,
+             7
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              6,
+              7
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               6,
+               7
+              ],
+              "id": null,
+              "value": "T"
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       75
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        59,
+        75
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          59,
+          75
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "vector",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           62,
+           67
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            66,
+            67
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             66,
+             67
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              66,
+              67
+             ],
+             "value": [
+              "4"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            59,
+            60
+           ],
+           "id": null,
+           "value": "T"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "A = ||T||_3\n                    where \n                    T: ℝ ^ 4: vector",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     75
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       11
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        11
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           11
+          ],
+          "op": {
+           "_": "Norm",
+           "@": [
+            4,
+            11
+           ],
+           "double": "||",
+           "power": null,
+           "single": null,
+           "sub": {
+            "_": "Integer",
+            "@": [
+             10,
+             11
+            ],
+            "value": [
+             "3"
+            ]
+           },
+           "value": {
+            "_": "Expression",
+            "@": [
+             6,
+             7
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              6,
+              7
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               6,
+               7
+              ],
+              "id": null,
+              "value": "T"
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       75
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        59,
+        75
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          59,
+          75
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "vector",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           62,
+           67
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            66,
+            67
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             66,
+             67
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              66,
+              67
+             ],
+             "value": [
+              "4"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            59,
+            60
+           ],
+           "id": null,
+           "value": "T"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nA = ||T||_3\n                    where \n                    T: ℝ ^ 4: vector\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, T):\n        T = np.asarray(T, dtype=np.float64)\n        assert T.shape == (4,)\n        # A = ||T||_3\n        self.A = np.linalg.norm(T, 3)\n\n\n\n\n\n",
+  "eigen": "/*\nA = ||T||_3\n                    where \n                    T: ℝ ^ 4: vector\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT A;\n\n    heartlib(const Eigen::Matrix<double, 4, 1> & T)\n    {\n    \n        // A = ||T||_3\n        A = (T).template lpNorm<3>();\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nA & = \\left\\|T\\right\\|_3 \\\\\n\\intertext{where} \nT & : \\mathbb{R}^{ 4} \\text{ vector} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nA & = \\left\\|T\\right\\|_3 \\\\\nwhere \\\\\nT & : \\mathbb{R}^{ 4} \\text{ vector} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(T)\n% output = heartlib(T)\n%\n%    A = ||T||_3\n%                        where \n%                        T: ℝ ^ 4: vector\n    T = reshape(T,[],1);\n\n    assert( numel(T) == 4 );\n\n    % A = ||T||_3\n\n    A = norm(T, 3);\n    output.A = A;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = \\left\\|\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'T', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-T\", \"sym\":\"T\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {T} }\\right\\|_3\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['T', 'A'], false, [], [], 'QSA9IHx8VHx8XzM=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'T', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-T\", \"sym\":\"T\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {T} } & : \\mathbb{R}^{ 4} \\text{ vector} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

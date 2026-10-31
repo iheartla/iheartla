@@ -1,0 +1,552 @@
+{
+ "id": "t_subs_04",
+ "src": "d = a_b + a_c\n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ\n                c  ∈ ℤ index",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "d = a_b + a_c\n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ\n                c  ∈ ℤ index",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     112
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       13
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        13
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "d"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          13
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           4,
+           13
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            4,
+            7
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             4,
+             7
+            ],
+            "id0": {
+             "_": "IdentifierSubscript",
+             "@": [
+              4,
+              7
+             ],
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               4,
+               5
+              ],
+              "id": null,
+              "value": "a"
+             },
+             "right": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                6,
+                7
+               ],
+               "id": null,
+               "value": "b"
+              }
+             ]
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            10,
+            13
+           ],
+           "id0": {
+            "_": "IdentifierSubscript",
+            "@": [
+             10,
+             13
+            ],
+            "left": {
+             "_": "IdentifierAlone",
+             "@": [
+              10,
+              11
+             ],
+             "id": null,
+             "value": "a"
+            },
+            "right": [
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               12,
+               13
+              ],
+              "id": null,
+              "value": "c"
+             }
+            ]
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       30,
+       112
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        52,
+        112
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          52,
+          60
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           57,
+           60
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            59,
+            60
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             59,
+             60
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              59,
+              60
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            52,
+            53
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          77,
+          83
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           82,
+           83
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            77,
+            78
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          100,
+          112
+         ],
+         "attrib": "index",
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           105,
+           106
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            100,
+            101
+           ],
+           "id": null,
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "d = a_b + a_c\n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ\n                c  ∈ ℤ index",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     112
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       13
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        13
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "d"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          13
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           4,
+           13
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            4,
+            7
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             4,
+             7
+            ],
+            "id0": {
+             "_": "IdentifierSubscript",
+             "@": [
+              4,
+              7
+             ],
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               4,
+               5
+              ],
+              "id": null,
+              "value": "a"
+             },
+             "right": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                6,
+                7
+               ],
+               "id": null,
+               "value": "b"
+              }
+             ]
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            10,
+            13
+           ],
+           "id0": {
+            "_": "IdentifierSubscript",
+            "@": [
+             10,
+             13
+            ],
+            "left": {
+             "_": "IdentifierAlone",
+             "@": [
+              10,
+              11
+             ],
+             "id": null,
+             "value": "a"
+            },
+            "right": [
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               12,
+               13
+              ],
+              "id": null,
+              "value": "c"
+             }
+            ]
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       30,
+       112
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        52,
+        112
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          52,
+          60
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           57,
+           60
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            59,
+            60
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             59,
+             60
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              59,
+              60
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            52,
+            53
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          77,
+          83
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           82,
+           83
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            77,
+            78
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          100,
+          112
+         ],
+         "attrib": "index",
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           105,
+           106
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            100,
+            101
+           ],
+           "id": null,
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nd = a_b + a_c\n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ\n                c  ∈ ℤ index\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a, b, c):\n        a = np.asarray(a, dtype=np.float64)\n        assert a.shape == (3,)\n        assert np.ndim(b) == 0\n        assert np.ndim(c) == 0\n        # d = a_b + a_c\n        self.d = a[b-1] + a[c]\n\n\n\n\n\n",
+  "eigen": "/*\nd = a_b + a_c\n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ\n                c  ∈ ℤ index\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT d;\n\n    heartlib(\n        const Eigen::Matrix<double, 3, 1> & a,\n        const int & b,\n        const int & c)\n    {\n    \n        // d = a_b + a_c\n        d = a[b-1] + a[c];\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nd & = a_{ b } + a_{ c } \\\\\n\\intertext{where} \na & ∈ \\mathbb{R}^{ 3} \\\\\nb & ∈ \\mathbb{Z} \\\\\nc & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nd & = a_{ b } + a_{ c } \\\\\nwhere \\\\\na & ∈ \\mathbb{R}^{ 3} \\\\\nb & ∈ \\mathbb{Z} \\\\\nc & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a, b, c)\n% output = heartlib(a, b, c)\n%\n%    d = a_b + a_c\n%                    where\n%                    a  ∈ ℝ^3\n%                    b  ∈ ℤ\n%                    c  ∈ ℤ index\n    a = reshape(a,[],1);\n\n    assert( numel(a) == 3 );\n    assert(numel(b) == 1);\n    assert(numel(c) == 1);\n\n    % d = a_b + a_c\n\n    d = a(b) + a(c);\n    output.d = d;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'd', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-d\", \"sym\":\"d\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {d} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} }_{ b } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} }_{ c }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'd'], false, [], [], 'ZCA9IGFfYiArIGFfYw==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & ∈ \\mathbb{R}^{ 3} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } & ∈ \\mathbb{Z} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {c} } & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

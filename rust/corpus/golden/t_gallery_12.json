@@ -1,0 +1,882 @@
+{
+ "id": "t_gallery_12",
+ "src": "∑_i f_i²p_i - (∑_i f_i p_i)²\n        where\n        f_i: ℝ\n        p_i: ℝ  ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "∑_i f_i²p_i - (∑_i f_i p_i)²\n        where\n        f_i: ℝ\n        p_i: ℝ  ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     74
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       28
+      ],
+      "stat": {
+       "_": "Expression",
+       "@": [
+        0,
+        28
+       ],
+       "value": {
+        "_": "Subtract",
+        "@": [
+         0,
+         28
+        ],
+        "left": {
+         "_": "Expression",
+         "@": [
+          0,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           0,
+           11
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            0,
+            11
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Multiply",
+            "@": [
+             4,
+             11
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              4,
+              8
+             ],
+             "op": {
+              "_": "Power",
+              "@": [
+               4,
+               8
+              ],
+              "base": {
+               "_": "Factor",
+               "@": [
+                4,
+                7
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 4,
+                 7
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  4,
+                  5
+                 ],
+                 "id": null,
+                 "value": "f"
+                },
+                "right": [
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   6,
+                   7
+                  ],
+                  "id": null,
+                  "value": "i"
+                 }
+                ]
+               }
+              },
+              "power": {
+               "_": "SupInteger",
+               "@": [
+                7,
+                8
+               ],
+               "value": [
+                "²"
+               ]
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              8,
+              11
+             ],
+             "id0": {
+              "_": "IdentifierSubscript",
+              "@": [
+               8,
+               11
+              ],
+              "left": {
+               "_": "IdentifierAlone",
+               "@": [
+                8,
+                9
+               ],
+               "id": null,
+               "value": "p"
+              },
+              "right": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 10,
+                 11
+                ],
+                "id": null,
+                "value": "i"
+               }
+              ]
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             2,
+             3
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        },
+        "op": "-",
+        "right": {
+         "_": "Factor",
+         "@": [
+          14,
+          28
+         ],
+         "op": {
+          "_": "Power",
+          "@": [
+           14,
+           28
+          ],
+          "base": {
+           "_": "Factor",
+           "@": [
+            14,
+            27
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             14,
+             27
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              15,
+              26
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               15,
+               26
+              ],
+              "op": {
+               "_": "Summation",
+               "@": [
+                15,
+                26
+               ],
+               "cond": null,
+               "exp": {
+                "_": "Multiply",
+                "@": [
+                 19,
+                 26
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  19,
+                  22
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   19,
+                   22
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    19,
+                    20
+                   ],
+                   "id": null,
+                   "value": "f"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     21,
+                     22
+                    ],
+                    "id": null,
+                    "value": "i"
+                   }
+                  ]
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  23,
+                  26
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   23,
+                   26
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    23,
+                    24
+                   ],
+                   "id": null,
+                   "value": "p"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     25,
+                     26
+                    ],
+                    "id": null,
+                    "value": "i"
+                   }
+                  ]
+                 }
+                }
+               },
+               "id": null,
+               "lower": null,
+               "range": null,
+               "sign": null,
+               "sub": {
+                "_": "IdentifierAlone",
+                "@": [
+                 17,
+                 18
+                ],
+                "id": null,
+                "value": "i"
+               },
+               "u": null,
+               "upper": null,
+               "enum": [],
+               "extra": []
+              }
+             }
+            }
+           }
+          },
+          "power": {
+           "_": "SupInteger",
+           "@": [
+            27,
+            28
+           ],
+           "value": [
+            "²"
+           ]
+          }
+         }
+        }
+       }
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       37,
+       72
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        51,
+        72
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          51,
+          57
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            51,
+            54
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             51,
+             52
+            ],
+            "id": null,
+            "value": "f"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              53,
+              54
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          66,
+          72
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            66,
+            69
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             66,
+             67
+            ],
+            "id": null,
+            "value": "p"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              68,
+              69
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "∑_i f_i²p_i - (∑_i f_i p_i)²\n        where\n        f_i: ℝ\n        p_i: ℝ  ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     74
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       28
+      ],
+      "stat": {
+       "_": "Expression",
+       "@": [
+        0,
+        28
+       ],
+       "value": {
+        "_": "Subtract",
+        "@": [
+         0,
+         28
+        ],
+        "left": {
+         "_": "Expression",
+         "@": [
+          0,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           0,
+           11
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            0,
+            11
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Multiply",
+            "@": [
+             4,
+             11
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              4,
+              8
+             ],
+             "op": {
+              "_": "Power",
+              "@": [
+               4,
+               8
+              ],
+              "base": {
+               "_": "Factor",
+               "@": [
+                4,
+                7
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 4,
+                 7
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  4,
+                  5
+                 ],
+                 "id": null,
+                 "value": "f"
+                },
+                "right": [
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   6,
+                   7
+                  ],
+                  "id": null,
+                  "value": "i"
+                 }
+                ]
+               }
+              },
+              "power": {
+               "_": "SupInteger",
+               "@": [
+                7,
+                8
+               ],
+               "value": [
+                "²"
+               ]
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              8,
+              11
+             ],
+             "id0": {
+              "_": "IdentifierSubscript",
+              "@": [
+               8,
+               11
+              ],
+              "left": {
+               "_": "IdentifierAlone",
+               "@": [
+                8,
+                9
+               ],
+               "id": null,
+               "value": "p"
+              },
+              "right": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 10,
+                 11
+                ],
+                "id": null,
+                "value": "i"
+               }
+              ]
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             2,
+             3
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        },
+        "op": "-",
+        "right": {
+         "_": "Factor",
+         "@": [
+          14,
+          28
+         ],
+         "op": {
+          "_": "Power",
+          "@": [
+           14,
+           28
+          ],
+          "base": {
+           "_": "Factor",
+           "@": [
+            14,
+            27
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             14,
+             27
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              15,
+              26
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               15,
+               26
+              ],
+              "op": {
+               "_": "Summation",
+               "@": [
+                15,
+                26
+               ],
+               "cond": null,
+               "exp": {
+                "_": "Multiply",
+                "@": [
+                 19,
+                 26
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  19,
+                  22
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   19,
+                   22
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    19,
+                    20
+                   ],
+                   "id": null,
+                   "value": "f"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     21,
+                     22
+                    ],
+                    "id": null,
+                    "value": "i"
+                   }
+                  ]
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  23,
+                  26
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   23,
+                   26
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    23,
+                    24
+                   ],
+                   "id": null,
+                   "value": "p"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     25,
+                     26
+                    ],
+                    "id": null,
+                    "value": "i"
+                   }
+                  ]
+                 }
+                }
+               },
+               "id": null,
+               "lower": null,
+               "range": null,
+               "sign": null,
+               "sub": {
+                "_": "IdentifierAlone",
+                "@": [
+                 17,
+                 18
+                ],
+                "id": null,
+                "value": "i"
+               },
+               "u": null,
+               "upper": null,
+               "enum": [],
+               "extra": []
+              }
+             }
+            }
+           }
+          },
+          "power": {
+           "_": "SupInteger",
+           "@": [
+            27,
+            28
+           ],
+           "value": [
+            "²"
+           ]
+          }
+         }
+        }
+       }
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       37,
+       72
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        51,
+        72
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          51,
+          57
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            51,
+            54
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             51,
+             52
+            ],
+            "id": null,
+            "value": "f"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              53,
+              54
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          66,
+          72
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            66,
+            69
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             66,
+             67
+            ],
+            "id": null,
+            "value": "p"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              68,
+              69
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n∑_i f_i²p_i - (∑_i f_i p_i)²\n        where\n        f_i: ℝ\n        p_i: ℝ  \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, f, p):\n        f = np.asarray(f, dtype=np.float64)\n        p = np.asarray(p, dtype=np.float64)\n        dim_0 = f.shape[0]\n        assert f.shape == (dim_0,)\n        assert p.shape == (dim_0,)\n        sum_0 = 0\n        for i in range(1, len(p)+1):\n            sum_0 += np.power(np.asarray(f[i-1], dtype=np.float64), 2) * p[i-1]\n        sum_1 = 0\n        for i in range(1, len(p)+1):\n            sum_1 += f[i-1] * p[i-1]\n        self.ret = sum_0 - np.power(np.asarray((sum_1), dtype=np.float64), 2)\n\n\n\n\n\n",
+  "eigen": "/*\n∑_i f_i²p_i - (∑_i f_i p_i)²\n        where\n        f_i: ℝ\n        p_i: ℝ  \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT ret;\n\n    heartlib(\n        const std::vector<double> & f,\n        const std::vector<double> & p)\n    {\n        const long dim_0 = f.size();\n        assert( p.size() == dim_0 );\n        DT sum_0 = 0;\n        for(int i=1; i<=p.size(); i++){\n            sum_0 += pow(f.at(i-1), 2) * p.at(i-1);\n        }\n        DT sum_1 = 0;\n        for(int i=1; i<=p.size(); i++){\n            sum_1 += f.at(i-1) * p.at(i-1);\n        }\n        ret = sum_0 - pow((sum_1), 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\sum_{i} {f_{ i }}^{2} p_{ i } - {\\left( \\sum_{i} f_{ i } p_{ i } \\right)}^{2} \\\\\n\\intertext{where} \nf_{i} & : \\mathbb{R} \\\\\np_{i} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\sum_{i} {f_{ i }}^{2} p_{ i } - {\\left( \\sum_{i} f_{ i } p_{ i } \\right)}^{2} \\\\\nwhere \\\\\nf_{i} & : \\mathbb{R} \\\\\np_{i} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(f, p)\n% output = heartlib(f, p)\n%\n%    ∑_i f_i²p_i - (∑_i f_i p_i)²\n%            where\n%            f_i: ℝ\n%            p_i: ℝ  \n    f = reshape(f,[],1);\n    p = reshape(p,[],1);\n\n    dim_0 = size(f, 1);\n    assert( size(f,1) == dim_0 );\n    assert( size(p,1) == dim_0 );\n\n    sum_0 = 0;\n    for i = 1:size(p, 1)\n        sum_0 = sum_0 + f(i).^2 * p(i);\n    end\n    sum_1 = 0;\n    for i = 1:size(p, 1)\n        sum_1 = sum_1 + f(i) * p(i);\n    end\n    ret = sum_0 - (sum_1).^2;\n    output.ret = ret;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\sum_{i} {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }_{ i }}^{2} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} }_{ i } - {\\left( \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }_{ i } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} }_{ i } \\right)}^{2} \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f_i\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }_{i} & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p_i\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} }_{i} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

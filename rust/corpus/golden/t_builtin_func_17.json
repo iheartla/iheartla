@@ -1,0 +1,284 @@
+{
+ "id": "t_builtin_func_17",
+ "src": "b = log(a)\n        where\n        a: scalar",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "b = log(a)\n        where\n        a: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     42
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       10
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        10
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          10
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           10
+          ],
+          "op": {
+           "_": "LogFunc",
+           "@": [
+            4,
+            10
+           ],
+           "f": null,
+           "param": {
+            "_": "Expression",
+            "@": [
+             8,
+             9
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              8,
+              9
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               8,
+               9
+              ],
+              "id": null,
+              "value": "a"
+             }
+            }
+           },
+           "s": null
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       19,
+       42
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        33,
+        42
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          33,
+          42
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            33,
+            34
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "b = log(a)\n        where\n        a: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     42
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       10
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        10
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          10
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           10
+          ],
+          "op": {
+           "_": "LogFunc",
+           "@": [
+            4,
+            10
+           ],
+           "f": null,
+           "param": {
+            "_": "Expression",
+            "@": [
+             8,
+             9
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              8,
+              9
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               8,
+               9
+              ],
+              "id": null,
+              "value": "a"
+             }
+            }
+           },
+           "s": null
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       19,
+       42
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        33,
+        42
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          33,
+          42
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            33,
+            34
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nb = log(a)\n        where\n        a: scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        # b = log(a)\n        self.b = np.log(a)\n\n\n\n\n\n",
+  "eigen": "/*\nb = log(a)\n        where\n        a: scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n\n    heartlib(const double & a)\n    {\n    \n        // b = log(a)\n        b = log(a);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nb & =  \\log{ a } \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nb & =  \\log{ a } \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    b = log(a)\n%            where\n%            a: scalar\n    assert(numel(a) == 1);\n\n    % b = log(a)\n\n    b = log(a);\n    output.b = b;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } & =  \\log{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'b'], false, [], [], 'YiA9IGxvZyhhKQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

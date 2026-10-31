@@ -1,0 +1,468 @@
+{
+ "id": "t_backtick_04",
+ "src": "f = abcabbcd\n        where\n        `abc`: ℝ\n        ab: ℝ\n        bc: ℝ\n        d: ℝ ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "f = abcabbcd\n        where\n        `abc`: ℝ\n        ab: ℝ\n        bc: ℝ\n        d: ℝ ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     85
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       12
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        12
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          12
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           12
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            4,
+            12
+           ],
+           "id": null,
+           "value": "abcabbcd"
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       21,
+       84
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        35,
+        84
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          35,
+          43
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            35,
+            40
+           ],
+           "id": "abc",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          52,
+          57
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            52,
+            54
+           ],
+           "id": null,
+           "value": "ab"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          66,
+          71
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            66,
+            68
+           ],
+           "id": null,
+           "value": "bc"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          80,
+          84
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            80,
+            81
+           ],
+           "id": null,
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "abc",
+     "ab",
+     "bc"
+    ],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "f = abcabbcd\n        where\n        `abc`: ℝ\n        ab: ℝ\n        bc: ℝ\n        d: ℝ ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     85
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       12
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        12
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "const": null,
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          12
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           12
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            4,
+            11
+           ],
+           "left": {
+            "_": "Multiply",
+            "@": [
+             4,
+             9
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              4,
+              7
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               4,
+               7
+              ],
+              "const": "abc",
+              "id": null,
+              "value": null
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              7,
+              9
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               7,
+               9
+              ],
+              "const": "ab",
+              "id": null,
+              "value": null
+             }
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             9,
+             11
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              9,
+              11
+             ],
+             "const": "bc",
+             "id": null,
+             "value": null
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            11,
+            12
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             11,
+             12
+            ],
+            "const": null,
+            "id": null,
+            "value": "d"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       21,
+       84
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        35,
+        84
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          35,
+          43
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            35,
+            40
+           ],
+           "const": null,
+           "id": "abc",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          52,
+          57
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            52,
+            54
+           ],
+           "const": "ab",
+           "id": null,
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          66,
+          71
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            66,
+            68
+           ],
+           "const": "bc",
+           "id": null,
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          80,
+          84
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            80,
+            81
+           ],
+           "const": null,
+           "id": null,
+           "value": "d"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nf = abcabbcd\n        where\n        `abc`: ℝ\n        ab: ℝ\n        bc: ℝ\n        d: ℝ \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, abc, ab, bc, d):\n        assert np.ndim(abc) == 0\n        assert np.ndim(ab) == 0\n        assert np.ndim(bc) == 0\n        assert np.ndim(d) == 0\n        # f = abcabbcd\n        self.f = abc * ab * bc * d\n\n\n\n\n\n",
+  "eigen": "/*\nf = abcabbcd\n        where\n        `abc`: ℝ\n        ab: ℝ\n        bc: ℝ\n        d: ℝ \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT f;\n\n    heartlib(\n        const double & abc,\n        const double & ab,\n        const double & bc,\n        const double & d)\n    {\n    \n        // f = abcabbcd\n        f = abc * ab * bc * d;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf & = \\mathit{abc} \\mathit{ab} \\mathit{bc} d \\\\\n\\intertext{where} \n\\mathit{abc} & : \\mathbb{R} \\\\\n\\mathit{ab} & : \\mathbb{R} \\\\\n\\mathit{bc} & : \\mathbb{R} \\\\\nd & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nf & = \\mathit{abc} \\mathit{ab} \\mathit{bc} d \\\\\nwhere \\\\\n\\mathit{abc} & : \\mathbb{R} \\\\\n\\mathit{ab} & : \\mathbb{R} \\\\\n\\mathit{bc} & : \\mathbb{R} \\\\\nd & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(abc, ab, bc, d)\n% output = heartlib(abc, ab, bc, d)\n%\n%    f = abcabbcd\n%            where\n%            `abc`: ℝ\n%            ab: ℝ\n%            bc: ℝ\n%            d: ℝ \n    assert(numel(abc) == 1);\n    assert(numel(ab) == 1);\n    assert(numel(bc) == 1);\n    assert(numel(d) == 1);\n\n    % f = abcabbcd\n\n    f = abc * ab * bc * d;\n    output.f = f;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'abc', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-abc\", \"sym\":\"abc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{abc}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ab', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ab\", \"sym\":\"ab\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{ab}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bc', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bc\", \"sym\":\"bc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{bc}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'd', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-d\", \"sym\":\"d\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {d} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['ab', 'bc', 'd', 'abc', 'f'], false, [], [], 'ZiA9IGFiY2FiYmNk');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'abc', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-abc\", \"sym\":\"abc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{abc}} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ab', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ab\", \"sym\":\"ab\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{ab}} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bc', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bc\", \"sym\":\"bc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{bc}} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'd', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-d\", \"sym\":\"d\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {d} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

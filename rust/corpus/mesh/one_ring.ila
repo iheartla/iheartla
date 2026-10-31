@@ -1,0 +1,6 @@
+ElementSets from MeshConnectivity
+VertexOneRing from Neighborhoods(M)
+M ∈ FaceMesh
+x_i ∈ ℝ^3
+V, E, F = ElementSets(M)
+y_i = ∑_(j ∈ VertexOneRing(i)) x_j where i ∈ V

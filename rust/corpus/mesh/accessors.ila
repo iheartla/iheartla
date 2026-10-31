@@ -1,0 +1,6 @@
+Vertices, Faces from FundamentalMeshAccessors(M)
+ElementSets from MeshConnectivity
+M ∈ FaceMesh
+x_i ∈ ℝ^3
+V, E, F = ElementSets(M)
+A = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖

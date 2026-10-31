@@ -1,0 +1,8 @@
+A_f = 1/2 sqrt((p_f+(q_f+r_f)) (r_f-(p_f-q_f)) (r_f+(p_f-q_f)) (p_f+(q_f-r_f)))
+C_f = 1/(4 A_f) [q_f²+r_f²-p_f², r_f²+p_f²-q_f², p_f²+q_f²-r_f²]
+
+where
+
+p_i ∈ ℝ
+q_i ∈ ℝ
+r_i ∈ ℝ

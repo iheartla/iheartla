@@ -1,0 +1,482 @@
+{
+ "id": "t_localfunc_01",
+ "src": "f(x) = {x if x > 0\n                           -x otherwise where x: ℝ ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "f(x) = {x if x > 0\n                           -x otherwise where x: ℝ ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     70
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       69
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        69
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         0,
+         1
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          65,
+          69
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            65,
+            66
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "MultiCondExpr",
+         "@": [
+          7,
+          58
+         ],
+         "ifs": {
+          "_": "MultiIfs",
+          "@": [
+           8,
+           18
+          ],
+          "value": {
+           "_": "SingleIf",
+           "@": [
+            8,
+            18
+           ],
+           "cond": {
+            "_": "IfCondition",
+            "@": [
+             13,
+             18
+            ],
+            "single": {
+             "_": "AndCondition",
+             "@": [
+              13,
+              18
+             ],
+             "atom": {
+              "_": "AtomCondition",
+              "@": [
+               13,
+               18
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                13,
+                18
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 13,
+                 14
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  13,
+                  14
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   13,
+                   14
+                  ],
+                  "id": null,
+                  "value": "x"
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 17,
+                 18
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   17,
+                   18
+                  ],
+                  "value": [
+                   "0"
+                  ]
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "stat": {
+            "_": "Expression",
+            "@": [
+             8,
+             9
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              8,
+              9
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               8,
+               9
+              ],
+              "id": null,
+              "value": "x"
+             }
+            }
+           }
+          }
+         },
+         "other": {
+          "_": "Expression",
+          "@": [
+           46,
+           48
+          ],
+          "sign": "-",
+          "value": {
+           "_": "Factor",
+           "@": [
+            47,
+            48
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             47,
+             48
+            ],
+            "id": null,
+            "value": "x"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          2,
+          3
+         ],
+         "id": null,
+         "value": "x"
+        }
+       ],
+       "separators": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`f`",
+     "f"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "f(x) = {x if x > 0\n                           -x otherwise where x: ℝ ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     70
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       69
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        69
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         0,
+         1
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          65,
+          69
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            65,
+            66
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "MultiCondExpr",
+         "@": [
+          7,
+          58
+         ],
+         "ifs": {
+          "_": "MultiIfs",
+          "@": [
+           8,
+           18
+          ],
+          "value": {
+           "_": "SingleIf",
+           "@": [
+            8,
+            18
+           ],
+           "cond": {
+            "_": "IfCondition",
+            "@": [
+             13,
+             18
+            ],
+            "single": {
+             "_": "AndCondition",
+             "@": [
+              13,
+              18
+             ],
+             "atom": {
+              "_": "AtomCondition",
+              "@": [
+               13,
+               18
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                13,
+                18
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 13,
+                 14
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  13,
+                  14
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   13,
+                   14
+                  ],
+                  "id": null,
+                  "value": "x"
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 17,
+                 18
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   17,
+                   18
+                  ],
+                  "value": [
+                   "0"
+                  ]
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "stat": {
+            "_": "Expression",
+            "@": [
+             8,
+             9
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              8,
+              9
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               8,
+               9
+              ],
+              "id": null,
+              "value": "x"
+             }
+            }
+           }
+          }
+         },
+         "other": {
+          "_": "Expression",
+          "@": [
+           46,
+           48
+          ],
+          "sign": "-",
+          "value": {
+           "_": "Factor",
+           "@": [
+            47,
+            48
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             47,
+             48
+            ],
+            "id": null,
+            "value": "x"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          2,
+          3
+         ],
+         "id": null,
+         "value": "x"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nf(x) = {x if x > 0\n                           -x otherwise where x: ℝ \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, ):\n        pass\n\n    def f(self, x):\n        assert np.ndim(x) == 0\n\n        if x > 0:\n            f_ret = x\n        else:\n            f_ret = -x\n        return f_ret\n\n\n\n\n\n",
+  "eigen": "/*\nf(x) = {x if x > 0\n                           -x otherwise where x: ℝ \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n\n\n    template<typename REAL>\n    REAL f(\n        const REAL & x)\n    {\n        REAL f_ret;\n        if(x > 0){\n            f_ret = x;\n        }\n        else{\n            f_ret = -x;\n        }\n        return f_ret;    \n    }\n    heartlib()\n    {\n    \n    \n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf\\left( x \\right) & = \\begin{cases} x & \\text{if }  x > 0 \\\\ -x & \\text{otherwise} \\end{cases} \\text{{ where }}  x : \\mathbb{R} \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & f\\left( x \\right) & = \\begin{cases} x & \\text{if }  x > 0 \\\\ -x & \\text{otherwise} \\end{cases} \\text{{ where }}  x : \\mathbb{R} \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib()\n% output = heartlib()\n%\n%    f(x) = {x if x > 0\n%                               -x otherwise where x: ℝ \n    function [ret] = f(x)\n        assert(numel(x) == 1);\n\n        if x > 0\n            ret = x;\n        else\n            ret = -x;\n        end\n    end\n\n    output.f = @f;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\begin{cases} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & \\text{if }  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } > 0 \\\\ -\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & \\text{otherwise} \\end{cases} \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } : \\mathbb{R} \\\\\n\\end{align*}\n"
+ }
+}

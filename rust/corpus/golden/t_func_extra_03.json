@@ -1,0 +1,1223 @@
+{
+ "id": "t_func_extra_03",
+ "src": "aₘ(f) = f where f,m ∈ ℤ^3\n                    aₘ(f) = f where f,m ∈ ℤ^(3×1)\n                    d = a((1,2,3), (2,3,4))\n                    ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "aₘ(f) = f where f,m ∈ ℤ^3\n                    aₘ(f) = f where f,m ∈ ℤ^(3×1)\n                    d = a((1,2,3), (2,3,4))\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     140
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       25
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        25
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         0,
+         2
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           1,
+           2
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          16,
+          25
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           22,
+           25
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            24,
+            25
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             24,
+             25
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              24,
+              25
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℤ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            16,
+            17
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            18,
+            19
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          9
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           8,
+           9
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            8,
+            9
+           ],
+           "id": null,
+           "value": "f"
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          3,
+          4
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       46,
+       75
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        46,
+        75
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         46,
+         48
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          46,
+          47
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           47,
+           48
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          62,
+          75
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           68,
+           75
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            71,
+            72
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             71,
+             72
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              71,
+              72
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            73,
+            74
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             73,
+             74
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              73,
+              74
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           }
+          },
+          "type": "ℤ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            62,
+            63
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            64,
+            65
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          54,
+          55
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           54,
+           55
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            54,
+            55
+           ],
+           "id": null,
+           "value": "f"
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          49,
+          50
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       96,
+       119
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        96,
+        119
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          96,
+          97
+         ],
+         "id": null,
+         "value": "d"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          100,
+          119
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           100,
+           119
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            100,
+            119
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              100,
+              101
+             ],
+             "id": null,
+             "value": "a"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              102,
+              109
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               102,
+               109
+              ],
+              "v": {
+               "_": "Vector",
+               "@": [
+                102,
+                109
+               ],
+               "exp": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  103,
+                  104
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   103,
+                   104
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    103,
+                    104
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  105,
+                  106
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   105,
+                   106
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    105,
+                    106
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  107,
+                  108
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   107,
+                   108
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    107,
+                    108
+                   ],
+                   "value": [
+                    "3"
+                   ]
+                  }
+                 }
+                }
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              111,
+              118
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               111,
+               118
+              ],
+              "v": {
+               "_": "Vector",
+               "@": [
+                111,
+                118
+               ],
+               "exp": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  112,
+                  113
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   112,
+                   113
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    112,
+                    113
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  114,
+                  115
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   114,
+                   115
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    114,
+                    115
+                   ],
+                   "value": [
+                    "3"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  116,
+                  117
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   116,
+                   117
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    116,
+                    117
+                   ],
+                   "value": [
+                    "4"
+                   ]
+                  }
+                 }
+                }
+               ]
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`a`",
+     "a"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "aₘ(f) = f where f,m ∈ ℤ^3\n                    aₘ(f) = f where f,m ∈ ℤ^(3×1)\n                    d = a((1,2,3), (2,3,4))\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     140
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       25
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        25
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         0,
+         2
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           1,
+           2
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          16,
+          25
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           22,
+           25
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            24,
+            25
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             24,
+             25
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              24,
+              25
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℤ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            16,
+            17
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            18,
+            19
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          9
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           8,
+           9
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            8,
+            9
+           ],
+           "id": null,
+           "value": "f"
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          3,
+          4
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       46,
+       75
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        46,
+        75
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         46,
+         48
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          46,
+          47
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           47,
+           48
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          62,
+          75
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           68,
+           75
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            71,
+            72
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             71,
+             72
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              71,
+              72
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            73,
+            74
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             73,
+             74
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              73,
+              74
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           }
+          },
+          "type": "ℤ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            62,
+            63
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            64,
+            65
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          54,
+          55
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           54,
+           55
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            54,
+            55
+           ],
+           "id": null,
+           "value": "f"
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          49,
+          50
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       96,
+       119
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        96,
+        119
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          96,
+          97
+         ],
+         "id": null,
+         "value": "d"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          100,
+          119
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           100,
+           119
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            100,
+            119
+           ],
+           "name": "a",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              102,
+              109
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               102,
+               109
+              ],
+              "v": {
+               "_": "Vector",
+               "@": [
+                102,
+                109
+               ],
+               "exp": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  103,
+                  104
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   103,
+                   104
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    103,
+                    104
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  105,
+                  106
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   105,
+                   106
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    105,
+                    106
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  107,
+                  108
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   107,
+                   108
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    107,
+                    108
+                   ],
+                   "value": [
+                    "3"
+                   ]
+                  }
+                 }
+                }
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              111,
+              118
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               111,
+               118
+              ],
+              "v": {
+               "_": "Vector",
+               "@": [
+                111,
+                118
+               ],
+               "exp": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  112,
+                  113
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   112,
+                   113
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    112,
+                    113
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  114,
+                  115
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   114,
+                   115
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    114,
+                    115
+                   ],
+                   "value": [
+                    "3"
+                   ]
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  116,
+                  117
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   116,
+                   117
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    116,
+                    117
+                   ],
+                   "value": [
+                    "4"
+                   ]
+                  }
+                 }
+                }
+               ]
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\naₘ(f) = f where f,m ∈ ℤ^3\n                    aₘ(f) = f where f,m ∈ ℤ^(3×1)\n                    d = a((1,2,3), (2,3,4))\n                    \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, ):\n        # d = a((1,2,3), (2,3,4))\n        self.d = self.a(np.hstack((1, 2, 3)), np.hstack((2, 3, 4)))\n\n    def a(self, m, f):\n        m = np.asarray(m, dtype=np.int64)\n        f = np.asarray(f, dtype=np.int64)\n        assert m.shape == (3,)\n        assert f.shape == (3,)\n\n        return f\n\n    def a_0(self, m, f):\n        m = np.asarray(m, dtype=np.int64)\n        f = np.asarray(f, dtype=np.int64)\n        assert m.shape == (3, 1)\n        assert f.shape == (3, 1)\n\n        return f\n\n\n\n\n\n",
+  "eigen": "/*\naₘ(f) = f where f,m ∈ ℤ^3\n                    aₘ(f) = f where f,m ∈ ℤ^(3×1)\n                    d = a((1,2,3), (2,3,4))\n                    \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<int, 3, 1> d;\n\n    Eigen::Matrix<int, 3, 1> a(\n        const Eigen::Matrix<int, 3, 1> & m,\n        const Eigen::Matrix<int, 3, 1> & f)\n    {\n        return f;    \n    }\n    Eigen::Matrix<int, 3, 1> a_0(\n        const Eigen::Matrix<int, 3, 1> & m,\n        const Eigen::Matrix<int, 3, 1> & f)\n    {\n        return f;    \n    }\n    heartlib()\n    {\n    \n        // d = a((1,2,3), (2,3,4))\n        Eigen::Matrix<int, 3, 1> d_0;\n        d_0 << 1, 2, 3;\n        Eigen::Matrix<int, 3, 1> d_1;\n        d_1 << 2, 3, 4;\n        d = a(d_0, d_1);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\na_{m}\\left( f \\right) & = f \\text{{ where }}  f,m ∈ \\mathbb{Z}^{ 3} \\\\\na_{m}\\left( f \\right) & = f \\text{{ where }}  f,m ∈ \\mathbb{Z}^{ 3 \\times 1 } \\\\\nd & = a\\left( \\begin{pmatrix}\n1\\\\2\\\\3\\end{pmatrix},\\begin{pmatrix}\n2\\\\3\\\\4\\end{pmatrix} \\right) \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & a_{m}\\left( f \\right) & = f \\text{{ where }}  f,m ∈ \\mathbb{Z}^{ 3} \\\\\n & a_{m}\\left( f \\right) & = f \\text{{ where }}  f,m ∈ \\mathbb{Z}^{ 3 \\times 1 } \\\\\nd & = a\\left( \\begin{pmatrix}\n1\\\\2\\\\3\\end{pmatrix},\\begin{pmatrix}\n2\\\\3\\\\4\\end{pmatrix} \\right) \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib()\n% output = heartlib()\n%\n%    aₘ(f) = f where f,m ∈ ℤ^3\n%                        aₘ(f) = f where f,m ∈ ℤ^(3×1)\n%                        d = a((1,2,3), (2,3,4))\n%                        \n    % d = a((1,2,3), (2,3,4))\n\n    d = a([1; 2; 3], [2; 3; 4]);\n    function [ret] = a(m, f)\n        m = reshape(m,[],1);\n        f = reshape(f,[],1);\n        assert( numel(m) == 3 );\n        assert( numel(f) == 3 );\n\n        ret = f;\n    end\n\n    function [ret_1] = a_0(m, f)\n        assert( isequal(size(m), [3, 1]) );\n        assert( isequal(size(f), [3, 1]) );\n\n        ret_1 = f;\n    end\n\n    output.d = d;\n    output.a = @a;\n    output.a_0 = @a_0;\nend\n",
+  "macromathjax": {
+   "error": "IndexError: list index out of range",
+   "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/codegen_mathjax.py\", line 41, in visit_start\n    block_content = self.visit(vblock, **kwargs)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/ir_visitor.py\", line 117, in visit\n    return func(node, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/codegen_macromathjax.py\", line 77, in visit_local_func\n    params_str += node.separators[index] + ''\n                  ~~~~~~~~~~~~~~~^^^^^^^\nIndexError: list index out of range\n"
+  }
+ }
+}

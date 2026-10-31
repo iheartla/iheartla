@@ -1,0 +1,374 @@
+{
+ "id": "t_others_09",
+ "src": "b = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "b = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     57
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       22
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        22
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Optimize",
+         "@": [
+          4,
+          22
+         ],
+         "amax": null,
+         "amin": "argmin",
+         "cond": null,
+         "exp": {
+          "_": "Expression",
+          "@": [
+           19,
+           22
+          ],
+          "sign": null,
+          "value": {
+           "_": "Factor",
+           "@": [
+            19,
+            22
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             19,
+             22
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              19,
+              20
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               19,
+               20
+              ],
+              "id": null,
+              "value": "i"
+             }
+            },
+            "power": {
+             "_": "Factor",
+             "@": [
+              21,
+              22
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               21,
+               22
+              ],
+              "value": [
+               "2"
+              ]
+             }
+            }
+           }
+          }
+         },
+         "max": null,
+         "min": null,
+         "defs": [
+          {
+           "_": "WhereCondition",
+           "@": [
+            12,
+            17
+           ],
+           "attrib": null,
+           "subset": null,
+           "type": {
+            "_": "ScalarType"
+           },
+           "id": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              12,
+              13
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ],
+         "init": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       56
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        47,
+        56
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          47,
+          56
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            47,
+            48
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "b = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     57
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       22
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        22
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Optimize",
+         "@": [
+          4,
+          22
+         ],
+         "amax": null,
+         "amin": "argmin",
+         "cond": null,
+         "exp": {
+          "_": "Expression",
+          "@": [
+           19,
+           22
+          ],
+          "sign": null,
+          "value": {
+           "_": "Factor",
+           "@": [
+            19,
+            22
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             19,
+             22
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              19,
+              20
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               19,
+               20
+              ],
+              "id": null,
+              "value": "i"
+             }
+            },
+            "power": {
+             "_": "Factor",
+             "@": [
+              21,
+              22
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               21,
+               22
+              ],
+              "value": [
+               "2"
+              ]
+             }
+            }
+           }
+          }
+         },
+         "max": null,
+         "min": null,
+         "defs": [
+          {
+           "_": "WhereCondition",
+           "@": [
+            12,
+            17
+           ],
+           "attrib": null,
+           "subset": null,
+           "type": {
+            "_": "ScalarType"
+           },
+           "id": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              12,
+              13
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ],
+         "init": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       56
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        47,
+        56
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          47,
+          56
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            47,
+            48
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nb = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        def pack(i):\n            return np.concatenate([[i]])\n        def unpack(X):\n            return X[0:1][0]\n        def target(X):\n            i = unpack(X)\n            return np.power(np.asarray(i, dtype=np.float64), 2)\n        opt = minimize(target, np.zeros(1))\n        i = unpack(opt.x)\n        self.b = unpack(opt.x)\n        self.i = i\n\n\n\n\n\n",
+  "eigen": "/*\nb = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include <LBFGS.h>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n\n    heartlib(const double & a)\n    {\n    \n        // b = argmin_(i ∈ ℝ) i^2\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\begin{aligned} b = \\argmin_{i  \\in \\mathbb{R}} \\quad & {i}^{2} \\\\\n\\end{aligned} \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} b = \\argmin_{i  \\in \\mathbb{R}} \\quad & {i}^{2} \\\\\n\\end{aligned} \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    b = argmin_(i ∈ ℝ) i^2 \n%            where \n%            a: scalar \n    assert(numel(a) == 1);\n\n    i = optimvar('i');\n    target = @(i) i.^2;\n    [optimize, ~] = fminunc(target,0);\n    b = optimize;\n    output.b = b;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } = \\argmin_{i  \\in \\mathbb{R}} \\quad & {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }}^{2} \\\\\n\\end{aligned}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['i', 'b'], false, [], [], 'YiA9IGFyZ21pbl8oaSDiiIgg4oSdKSBpXjI=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

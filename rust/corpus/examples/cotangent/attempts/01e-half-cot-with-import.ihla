@@ -1,0 +1,8 @@
+cot, acos from trigonometry
+C_f = 1/2 [cot(acos((q_f²+r_f²-p_f²)/(2 q_f r_f))), cot(acos((r_f²+p_f²-q_f²)/(2 r_f p_f))), cot(acos((p_f²+q_f²-r_f²)/(2 p_f q_f)))]
+
+where
+
+p_i ∈ ℝ
+q_i ∈ ℝ
+r_i ∈ ℝ

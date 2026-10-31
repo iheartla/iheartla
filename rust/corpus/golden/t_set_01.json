@@ -1,0 +1,302 @@
+{
+ "id": "t_set_01",
+ "src": "a =  {1, 2, 3}",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "a =  {1, 2, 3}",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     14
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       14
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        14
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          5,
+          14
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           5,
+           14
+          ],
+          "s": {
+           "_": "Set",
+           "@": [
+            5,
+            14
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              6,
+              7
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               6,
+               7
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                6,
+                7
+               ],
+               "value": [
+                "1"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              9,
+              10
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               9,
+               10
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                9,
+                10
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              12,
+              13
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               12,
+               13
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                12,
+                13
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "a =  {1, 2, 3}",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     14
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       14
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        14
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          5,
+          14
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           5,
+           14
+          ],
+          "s": {
+           "_": "Set",
+           "@": [
+            5,
+            14
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              6,
+              7
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               6,
+               7
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                6,
+                7
+               ],
+               "value": [
+                "1"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              9,
+              10
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               9,
+               10
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                9,
+                10
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              12,
+              13
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               12,
+               13
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                12,
+                13
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\na =  {1, 2, 3}\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, ):\n        # a =  {1, 2, 3}\n        self.a = {1, 2, 3}\n\n\n\n\n\n",
+  "eigen": "/*\na =  {1, 2, 3}\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    std::vector<int > a;\n\n    heartlib()\n    {\n    \n        // a =  {1, 2, 3}\n        std::vector<int > set_0({1, 2, 3});\n        if(set_0.size() > 1){\n            sort(set_0.begin(), set_0.end());\n            set_0.erase(unique(set_0.begin(), set_0.end() ), set_0.end());\n        }\n        a = set_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\na & = \\{1, 2, 3\\} \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\na & = \\{1, 2, 3\\} \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib()\n% output = heartlib()\n%\n%    a =  {1, 2, 3}\n    % a =  {1, 2, 3}\n\n    a = [1, 2, 3];\n    output.a = a;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {a} } & = \\{1, 2, 3\\}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a'], false, [], [], 'YSA9ICB7MSwgMiwgM30=');\"} }{}\n \\\\\n\\end{align*}\n"
+ }
+}

@@ -1,0 +1,1065 @@
+{
+ "id": "t_gallery_17",
+ "src": "`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        where\n        x: ℝ^n\n        W: ℝ^(n×n)\n        v: ℝ^n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        where\n        x: ℝ^n\n        W: ℝ^(n×n)\n        v: ℝ^n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     96
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       33
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        33
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": "L(x,v)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          33
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           11,
+           33
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            11,
+            15
+           ],
+           "sign": null,
+           "value": {
+            "_": "Multiply",
+            "@": [
+             11,
+             15
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              11,
+              13
+             ],
+             "op": {
+              "_": "Power",
+              "@": [
+               11,
+               13
+              ],
+              "base": {
+               "_": "Factor",
+               "@": [
+                11,
+                12
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 11,
+                 12
+                ],
+                "id": null,
+                "value": "x"
+               }
+              },
+              "power": {
+               "_": "IdentifierAlone",
+               "@": [
+                12,
+                13
+               ],
+               "value": "ᵀ"
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              13,
+              15
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               13,
+               15
+              ],
+              "id": null,
+              "value": "Wx"
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            18,
+            33
+           ],
+           "op": {
+            "_": "Summation",
+            "@": [
+             18,
+             33
+            ],
+            "cond": null,
+            "exp": {
+             "_": "Factor",
+             "@": [
+              22,
+              33
+             ],
+             "op": {
+              "_": "Function",
+              "@": [
+               22,
+               33
+              ],
+              "name": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 22,
+                 23
+                ],
+                "id": null,
+                "value": "v"
+               },
+               [
+                [
+                 "_",
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   24,
+                   25
+                  ],
+                  "id": null,
+                  "value": "i"
+                 }
+                ]
+               ]
+              ],
+              "p": "(",
+              "params": [
+               {
+                "_": "Expression",
+                "@": [
+                 26,
+                 32
+                ],
+                "value": {
+                 "_": "Subtract",
+                 "@": [
+                  26,
+                  32
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   26,
+                   30
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    26,
+                    30
+                   ],
+                   "op": {
+                    "_": "Power",
+                    "@": [
+                     26,
+                     30
+                    ],
+                    "base": {
+                     "_": "Factor",
+                     "@": [
+                      26,
+                      29
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       26,
+                       29
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        26,
+                        27
+                       ],
+                       "id": null,
+                       "value": "x"
+                      },
+                      "right": [
+                       {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         28,
+                         29
+                        ],
+                        "id": null,
+                        "value": "i"
+                       }
+                      ]
+                     }
+                    },
+                    "power": {
+                     "_": "SupInteger",
+                     "@": [
+                      29,
+                      30
+                     ],
+                     "value": [
+                      "²"
+                     ]
+                    }
+                   }
+                  }
+                 },
+                 "op": "-",
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   31,
+                   32
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    31,
+                    32
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 }
+                }
+               }
+              ],
+              "separators": []
+             }
+            },
+            "id": null,
+            "lower": null,
+            "range": null,
+            "sign": null,
+            "sub": {
+             "_": "IdentifierAlone",
+             "@": [
+              20,
+              21
+             ],
+             "id": null,
+             "value": "i"
+            },
+            "u": null,
+            "upper": null,
+            "enum": [],
+            "extra": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       42,
+       96
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        56,
+        96
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          56,
+          62
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           59,
+           62
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            61,
+            62
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             61,
+             62
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              61,
+              62
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            56,
+            57
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          71,
+          81
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           74,
+           81
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            77,
+            78
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             77,
+             78
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              77,
+              78
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            79,
+            80
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             79,
+             80
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              79,
+              80
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            71,
+            72
+           ],
+           "id": null,
+           "value": "W"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          90,
+          96
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           93,
+           96
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            95,
+            96
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             95,
+             96
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              95,
+              96
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            90,
+            91
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        where\n        x: ℝ^n\n        W: ℝ^(n×n)\n        v: ℝ^n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     96
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       33
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        33
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": "L(x,v)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          33
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           11,
+           33
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            11,
+            15
+           ],
+           "sign": null,
+           "value": {
+            "_": "Multiply",
+            "@": [
+             11,
+             15
+            ],
+            "left": {
+             "_": "Multiply",
+             "@": [
+              11,
+              14
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               11,
+               13
+              ],
+              "op": {
+               "_": "Power",
+               "@": [
+                11,
+                13
+               ],
+               "base": {
+                "_": "Factor",
+                "@": [
+                 11,
+                 12
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  11,
+                  12
+                 ],
+                 "id": null,
+                 "value": "x"
+                }
+               },
+               "power": {
+                "_": "IdentifierAlone",
+                "@": [
+                 12,
+                 13
+                ],
+                "value": "ᵀ"
+               }
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               13,
+               14
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                13,
+                14
+               ],
+               "id": null,
+               "value": "W"
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              14,
+              15
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               14,
+               15
+              ],
+              "id": null,
+              "value": "x"
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            18,
+            33
+           ],
+           "op": {
+            "_": "Summation",
+            "@": [
+             18,
+             33
+            ],
+            "cond": null,
+            "exp": {
+             "_": "Multiply",
+             "@": [
+              22,
+              33
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               22,
+               25
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                22,
+                25
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 22,
+                 23
+                ],
+                "id": null,
+                "value": "v"
+               },
+               "right": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  24,
+                  25
+                 ],
+                 "id": null,
+                 "value": "i"
+                }
+               ]
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               25,
+               33
+              ],
+              "sub": {
+               "_": "Subexpression",
+               "@": [
+                25,
+                33
+               ],
+               "value": {
+                "_": "Expression",
+                "@": [
+                 26,
+                 32
+                ],
+                "value": {
+                 "_": "Subtract",
+                 "@": [
+                  26,
+                  32
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   26,
+                   30
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    26,
+                    30
+                   ],
+                   "op": {
+                    "_": "Power",
+                    "@": [
+                     26,
+                     30
+                    ],
+                    "base": {
+                     "_": "Factor",
+                     "@": [
+                      26,
+                      29
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       26,
+                       29
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        26,
+                        27
+                       ],
+                       "id": null,
+                       "value": "x"
+                      },
+                      "right": [
+                       {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         28,
+                         29
+                        ],
+                        "id": null,
+                        "value": "i"
+                       }
+                      ]
+                     }
+                    },
+                    "power": {
+                     "_": "SupInteger",
+                     "@": [
+                      29,
+                      30
+                     ],
+                     "value": [
+                      "²"
+                     ]
+                    }
+                   }
+                  }
+                 },
+                 "op": "-",
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   31,
+                   32
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    31,
+                    32
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 }
+                }
+               }
+              }
+             }
+            },
+            "id": null,
+            "lower": null,
+            "range": null,
+            "sign": null,
+            "sub": {
+             "_": "IdentifierAlone",
+             "@": [
+              20,
+              21
+             ],
+             "id": null,
+             "value": "i"
+            },
+            "u": null,
+            "upper": null,
+            "enum": [],
+            "extra": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       42,
+       96
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        56,
+        96
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          56,
+          62
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           59,
+           62
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            61,
+            62
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             61,
+             62
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              61,
+              62
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            56,
+            57
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          71,
+          81
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           74,
+           81
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            77,
+            78
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             77,
+             78
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              77,
+              78
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            79,
+            80
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             79,
+             80
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              79,
+              80
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            71,
+            72
+           ],
+           "id": null,
+           "value": "W"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          90,
+          96
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           93,
+           96
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            95,
+            96
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             95,
+             96
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              95,
+              96
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            90,
+            91
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        where\n        x: ℝ^n\n        W: ℝ^(n×n)\n        v: ℝ^n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, x, W, v):\n        x = np.asarray(x, dtype=np.float64)\n        W = np.asarray(W, dtype=np.float64)\n        v = np.asarray(v, dtype=np.float64)\n        n = x.shape[0]\n        assert x.shape == (n,)\n        assert W.shape == (n, n)\n        assert v.shape == (n,)\n        # `L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        sum_0 = 0\n        for i in range(1, len(x)+1):\n            sum_0 += v[i-1] * (np.power(np.asarray(x[i-1], dtype=np.float64), 2) - 1)\n        self.Lx_comma_v = (x.T.reshape(1, n) @ W @ x).item() + sum_0\n\n\n\n\n\n",
+  "eigen": "/*\n`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        where\n        x: ℝ^n\n        W: ℝ^(n×n)\n        v: ℝ^n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT Lx_comma_v;\n\n    heartlib(\n        const Eigen::VectorXd & x,\n        const Eigen::MatrixXd & W,\n        const Eigen::VectorXd & v)\n    {\n        const long n = x.size();\n        assert( W.rows() == n );\n        assert( W.cols() == n );\n        assert( v.size() == n );\n        // `L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        DT sum_0 = 0;\n        for(int i=1; i<=v.size(); i++){\n            sum_0 += v[i-1] * (pow(x[i-1], 2) - 1);\n        }\n        Lx_comma_v = (DT)(x.transpose() * W * x) + sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nL(x,v) & = {x}^T W x + \\sum_{i} v_{ i } \\left( {x_{ i }}^{2} - 1 \\right) \\\\\n\\intertext{where} \nx & : \\mathbb{R}^{ n} \\\\\nW & : \\mathbb{R}^{ n \\times n } \\\\\nv & : \\mathbb{R}^{ n} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nL(x,v) & = {x}^T W x + \\sum_{i} v_{ i } \\left( {x_{ i }}^{2} - 1 \\right) \\\\\nwhere \\\\\nx & : \\mathbb{R}^{ n} \\\\\nW & : \\mathbb{R}^{ n \\times n } \\\\\nv & : \\mathbb{R}^{ n} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(x, W, v)\n% output = heartlib(x, W, v)\n%\n%    `L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n%            where\n%            x: ℝ^n\n%            W: ℝ^(n×n)\n%            v: ℝ^n\n    x = reshape(x,[],1);\n    v = reshape(v,[],1);\n\n    n = size(x, 1);\n    assert( numel(x) == n );\n    assert( isequal(size(W), [n, n]) );\n    assert( numel(v) == n );\n\n    % `L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n\n    sum_0 = 0;\n    for i = 1:size(v,1)\n        sum_0 = sum_0 + v(i) * (x(i).^2 - 1);\n    end\n    Lx_v = x' * W * x + sum_0;\n    output.Lx_v = Lx_v;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'L(x,v)', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-L(x,v)\", \"sym\":\"L(x,v)\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {L(x,v)} } & = {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }}^T \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'W', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-W\", \"sym\":\"W\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {W} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } + \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'v', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-v\", \"sym\":\"v\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {v} }_{ i } \\left( {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }_{ i }}^{2} - 1 \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['x', 'W', 'v', 'L(x,v)'], false, [], [], 'YEwoeCx2KWAgPSB44bWAV3ggKyDiiJFfaSB2X2koeF9pwrItMSk=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'W', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-W\", \"sym\":\"W\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {W} } & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} } \\times \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} } } \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'v', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-v\", \"sym\":\"v\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {v} } & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

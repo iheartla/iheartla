@@ -1,0 +1,20 @@
+[package]
+name = "iheartla"
+version = "0.1.0"
+edition = "2021"
+description = "I❤️LA compiler (Rust port of the Python compiler)"
+license = "MIT"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "iheartla"
+path = "src/main.rs"
+
+[dependencies]
+regex = "1"
+serde_json = { version = "1", features = ["preserve_order"] }
+
+[profile.release]
+debug = 1

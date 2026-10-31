@@ -1,0 +1,779 @@
+{
+ "id": "t_backtick_01",
+ "src": "`Output` = `Parameters` `Minimize`(`Parameters`)\n                    where\n                    `Parameters`: ℝ ^ (2 × 2): a matrix\n                    `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`Output` = `Parameters` `Minimize`(`Parameters`)\n                    where\n                    `Parameters`: ℝ ^ (2 × 2): a matrix\n                    `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     198
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       48
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        48
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": "Output",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          48
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           11,
+           48
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            11,
+            23
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             11,
+             23
+            ],
+            "id": "Parameters",
+            "value": null
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            24,
+            48
+           ],
+           "op": {
+            "_": "Function",
+            "@": [
+             24,
+             48
+            ],
+            "name": [
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               24,
+               34
+              ],
+              "id": "Minimize",
+              "value": null
+             },
+             []
+            ],
+            "p": "(",
+            "params": [
+             {
+              "_": "Expression",
+              "@": [
+               35,
+               47
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                35,
+                47
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 35,
+                 47
+                ],
+                "id": "Parameters",
+                "value": null
+               }
+              }
+             }
+            ],
+            "separators": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       69,
+       198
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        95,
+        198
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          95,
+          130
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           109,
+           120
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            114,
+            115
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             114,
+             115
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              114,
+              115
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            118,
+            119
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             118,
+             119
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              118,
+              119
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            95,
+            107
+           ],
+           "id": "Parameters",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          151,
+          198
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a function ",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           163,
+           185
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "MatrixType",
+            "@": [
+             163,
+             172
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              166,
+              167
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               166,
+               167
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                166,
+                167
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "id2": {
+             "_": "ArithExpression",
+             "@": [
+              170,
+              171
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               170,
+               171
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                170,
+                171
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "MatrixType",
+            "@": [
+             176,
+             185
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              179,
+              180
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               179,
+               180
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                179,
+                180
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "id2": {
+             "_": "ArithExpression",
+             "@": [
+              183,
+              184
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               183,
+               184
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                183,
+                184
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            151,
+            161
+           ],
+           "id": "Minimize",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "Parameters",
+     "Minimize",
+     "Output"
+    ],
+    "funcs": [
+     "`Minimize`",
+     "Minimize"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`Output` = `Parameters` `Minimize`(`Parameters`)\n                    where\n                    `Parameters`: ℝ ^ (2 × 2): a matrix\n                    `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     198
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       48
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        48
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "const": null,
+         "id": "Output",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          48
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           11,
+           48
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            11,
+            23
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             11,
+             23
+            ],
+            "const": null,
+            "id": "Parameters",
+            "value": null
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            24,
+            48
+           ],
+           "op": {
+            "_": "Function",
+            "@": [
+             24,
+             48
+            ],
+            "name": "`Minimize`",
+            "p": "(",
+            "params": [
+             {
+              "_": "Expression",
+              "@": [
+               35,
+               47
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                35,
+                47
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 35,
+                 47
+                ],
+                "const": null,
+                "id": "Parameters",
+                "value": null
+               }
+              }
+             }
+            ],
+            "separators": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       69,
+       198
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        95,
+        198
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          95,
+          130
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           109,
+           120
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            114,
+            115
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             114,
+             115
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              114,
+              115
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            118,
+            119
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             118,
+             119
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              118,
+              119
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            95,
+            107
+           ],
+           "const": null,
+           "id": "Parameters",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          151,
+          198
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a function ",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           163,
+           185
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "MatrixType",
+            "@": [
+             163,
+             172
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              166,
+              167
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               166,
+               167
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                166,
+                167
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "id2": {
+             "_": "ArithExpression",
+             "@": [
+              170,
+              171
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               170,
+               171
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                170,
+                171
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "MatrixType",
+            "@": [
+             176,
+             185
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              179,
+              180
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               179,
+               180
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                179,
+                180
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "id2": {
+             "_": "ArithExpression",
+             "@": [
+              183,
+              184
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               183,
+               184
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                183,
+                184
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            151,
+            161
+           ],
+           "const": null,
+           "id": "Minimize",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`Output` = `Parameters` `Minimize`(`Parameters`)\n                    where\n                    `Parameters`: ℝ ^ (2 × 2): a matrix\n                    `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, Parameters, Minimize):\n        Parameters = np.asarray(Parameters, dtype=np.float64)\n        assert Parameters.shape == (2, 2)\n        # `Output` = `Parameters` `Minimize`(`Parameters`)\n        self.Output = Parameters @ Minimize(Parameters)\n\n\n\n\n\n",
+  "eigen": "/*\n`Output` = `Parameters` `Minimize`(`Parameters`)\n                    where\n                    `Parameters`: ℝ ^ (2 × 2): a matrix\n                    `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> Output;\n\n    heartlib(\n        const Eigen::Matrix<double, 2, 2> & Parameters,\n        const std::function<Eigen::Matrix<double, 2, 2>(Eigen::Matrix<double, 2, 2>)> & Minimize)\n    {\n    \n        // `Output` = `Parameters` `Minimize`(`Parameters`)\n        Output = Parameters * Minimize(Parameters);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\mathit{Output} & = \\mathit{Parameters} Minimize\\left( \\mathit{Parameters} \\right) \\\\\n\\intertext{where} \n\\mathit{Parameters} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\mathit{Minimize} & : \\mathbb{R}^{ 2 \\times 2 }\\rightarrow \\mathbb{R}^{ 2 \\times 2 } \\text{ a function } \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\mathit{Output} & = \\mathit{Parameters} Minimize\\left( \\mathit{Parameters} \\right) \\\\\nwhere \\\\\n\\mathit{Parameters} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\mathit{Minimize} & : \\mathbb{R}^{ 2 \\times 2 }\\rightarrow \\mathbb{R}^{ 2 \\times 2 } \\text{ a function } \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(Parameters, Minimize)\n% output = heartlib(Parameters, Minimize)\n%\n%    `Output` = `Parameters` `Minimize`(`Parameters`)\n%                        where\n%                        `Parameters`: ℝ ^ (2 × 2): a matrix\n%                        `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function \n    assert( isequal(size(Parameters), [2, 2]) );\n\n    % `Output` = `Parameters` `Minimize`(`Parameters`)\n\n    Output = Parameters * Minimize(Parameters);\n    output.Output = Output;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Output', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-Output\", \"sym\":\"Output\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {\\mathit{Output}} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Parameters', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Parameters\", \"sym\":\"Parameters\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{Parameters}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Minimize', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Minimize\", \"sym\":\"Minimize\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {Minimize} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Parameters', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Parameters\", \"sym\":\"Parameters\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{Parameters}} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['Minimize', 'Parameters', 'Output'], false, [], [], 'YE91dHB1dGAgPSBgUGFyYW1ldGVyc2AgYE1pbmltaXplYChgUGFyYW1ldGVyc2Ap');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Parameters', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Parameters\", \"sym\":\"Parameters\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{Parameters}} } & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Minimize', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Minimize\", \"sym\":\"Minimize\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{Minimize}} } & : \\mathbb{R}^{ 2 \\times 2 }\\rightarrow \\mathbb{R}^{ 2 \\times 2 } \\text{ a function } \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

@@ -1,0 +1,514 @@
+{
+ "id": "t_matrix_11",
+ "src": "I = A\n        B = I + A\n        where\n        A: ℝ ^ (2 × 2): a matrix",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "I = A\n        B = I + A\n        where\n        A: ℝ ^ (2 × 2): a matrix",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     70
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       5
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        5
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "I"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          5
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           5
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            4,
+            5
+           ],
+           "id": null,
+           "value": "A"
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       14,
+       23
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        14,
+        23
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          14,
+          15
+         ],
+         "id": null,
+         "value": "B"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          18,
+          23
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           18,
+           23
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            18,
+            19
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             18,
+             19
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              18,
+              19
+             ],
+             "id": null,
+             "value": "I"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            22,
+            23
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             22,
+             23
+            ],
+            "id": null,
+            "value": "A"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       70
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        46,
+        70
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          46,
+          70
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           49,
+           60
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            54,
+            55
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             54,
+             55
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              54,
+              55
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            58,
+            59
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             58,
+             59
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              58,
+              59
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            46,
+            47
+           ],
+           "id": null,
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "I = A\n        B = I + A\n        where\n        A: ℝ ^ (2 × 2): a matrix",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     70
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       5
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        5
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "I"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          5
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           5
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            4,
+            5
+           ],
+           "id": null,
+           "value": "A"
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       14,
+       23
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        14,
+        23
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          14,
+          15
+         ],
+         "id": null,
+         "value": "B"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          18,
+          23
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           18,
+           23
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            18,
+            19
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             18,
+             19
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              18,
+              19
+             ],
+             "id": null,
+             "value": "I"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            22,
+            23
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             22,
+             23
+            ],
+            "id": null,
+            "value": "A"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       70
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        46,
+        70
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          46,
+          70
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           49,
+           60
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            54,
+            55
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             54,
+             55
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              54,
+              55
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            58,
+            59
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             58,
+             59
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              58,
+              59
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            46,
+            47
+           ],
+           "id": null,
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nI = A\n        B = I + A\n        where\n        A: ℝ ^ (2 × 2): a matrix\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (2, 2)\n        # I = A\n        self.I = A\n        # B = I + A\n        self.B = self.I + A\n\n\n\n\n\n",
+  "eigen": "/*\nI = A\n        B = I + A\n        where\n        A: ℝ ^ (2 × 2): a matrix\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> I;\n    Eigen::Matrix<DT, 2, 2> B;\n\n    heartlib(const Eigen::Matrix<double, 2, 2> & A)\n    {\n    \n        // I = A\n        I = A;\n        // B = I + A\n        B = I + A;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nI & = A \\\\\nB & = I + A \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nI & = A \\\\\nB & = I + A \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    I = A\n%            B = I + A\n%            where\n%            A: ℝ ^ (2 × 2): a matrix\n    assert( isequal(size(A), [2, 2]) );\n\n    % I = A\n\n    I = A;\n    % B = I + A\n\n    B = I + A;\n    output.I = I;\n    output.B = B;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {I} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'I'], false, [], [], 'SSA9IEE=');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['I', 'A', 'B'], false, [], [], 'QiA9IEkgKyBB');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

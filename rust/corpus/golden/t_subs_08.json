@@ -1,0 +1,716 @@
+{
+ "id": "t_subs_08",
+ "src": "C = sum_i A_i sum_j w_j\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "C = sum_i A_i sum_j w_j\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     102
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       23
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        23
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "C"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          23
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           23
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            23
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Multiply",
+            "@": [
+             10,
+             23
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              10,
+              13
+             ],
+             "id0": {
+              "_": "IdentifierSubscript",
+              "@": [
+               10,
+               13
+              ],
+              "left": {
+               "_": "IdentifierAlone",
+               "@": [
+                10,
+                11
+               ],
+               "id": null,
+               "value": "A"
+              },
+              "right": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 12,
+                 13
+                ],
+                "id": null,
+                "value": "i"
+               }
+              ]
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              14,
+              23
+             ],
+             "op": {
+              "_": "Summation",
+              "@": [
+               14,
+               23
+              ],
+              "cond": null,
+              "exp": {
+               "_": "Factor",
+               "@": [
+                20,
+                23
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 20,
+                 23
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  20,
+                  21
+                 ],
+                 "id": null,
+                 "value": "w"
+                },
+                "right": [
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   22,
+                   23
+                  ],
+                  "id": null,
+                  "value": "j"
+                 }
+                ]
+               }
+              },
+              "id": null,
+              "lower": null,
+              "range": null,
+              "sign": null,
+              "sub": {
+               "_": "IdentifierAlone",
+               "@": [
+                18,
+                19
+               ],
+               "id": null,
+               "value": "j"
+              },
+              "u": null,
+              "upper": null,
+              "enum": [],
+              "extra": []
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       102
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        46,
+        102
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          46,
+          67
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a scalar",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            46,
+            49
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             46,
+             47
+            ],
+            "id": null,
+            "value": "w"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              48,
+              49
+             ],
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          76,
+          102
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           81,
+           92
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            86,
+            87
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             86,
+             87
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              86,
+              87
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            90,
+            91
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             90,
+             91
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              90,
+              91
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            76,
+            79
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             76,
+             77
+            ],
+            "id": null,
+            "value": "A"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              78,
+              79
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "C = sum_i A_i sum_j w_j\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     102
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       23
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        23
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "C"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          23
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           23
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            23
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Multiply",
+            "@": [
+             10,
+             23
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              10,
+              13
+             ],
+             "id0": {
+              "_": "IdentifierSubscript",
+              "@": [
+               10,
+               13
+              ],
+              "left": {
+               "_": "IdentifierAlone",
+               "@": [
+                10,
+                11
+               ],
+               "id": null,
+               "value": "A"
+              },
+              "right": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 12,
+                 13
+                ],
+                "id": null,
+                "value": "i"
+               }
+              ]
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              14,
+              23
+             ],
+             "op": {
+              "_": "Summation",
+              "@": [
+               14,
+               23
+              ],
+              "cond": null,
+              "exp": {
+               "_": "Factor",
+               "@": [
+                20,
+                23
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 20,
+                 23
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  20,
+                  21
+                 ],
+                 "id": null,
+                 "value": "w"
+                },
+                "right": [
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   22,
+                   23
+                  ],
+                  "id": null,
+                  "value": "j"
+                 }
+                ]
+               }
+              },
+              "id": null,
+              "lower": null,
+              "range": null,
+              "sign": null,
+              "sub": {
+               "_": "IdentifierAlone",
+               "@": [
+                18,
+                19
+               ],
+               "id": null,
+               "value": "j"
+              },
+              "u": null,
+              "upper": null,
+              "enum": [],
+              "extra": []
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       32,
+       102
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        46,
+        102
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          46,
+          67
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a scalar",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            46,
+            49
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             46,
+             47
+            ],
+            "id": null,
+            "value": "w"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              48,
+              49
+             ],
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          76,
+          102
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           81,
+           92
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            86,
+            87
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             86,
+             87
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              86,
+              87
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            90,
+            91
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             90,
+             91
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              90,
+              91
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            76,
+            79
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             76,
+             77
+            ],
+            "id": null,
+            "value": "A"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              78,
+              79
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nC = sum_i A_i sum_j w_j\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, w, A):\n        w = np.asarray(w, dtype=np.float64)\n        A = np.asarray(A, dtype=np.float64)\n        dim_0 = w.shape[0]\n        dim_1 = A.shape[0]\n        assert w.shape == (dim_0,)\n        assert A.shape == (dim_1, 2, 2)\n        # C = sum_i A_i sum_j w_j\n        sum_0 = np.zeros((2, 2))\n        for i in range(1, len(A)+1):\n            sum_1 = 0\n            for j in range(1, len(w)+1):\n                sum_1 += w[j-1]\n            sum_0 += A[i-1] * sum_1\n        self.C = sum_0\n\n\n\n\n\n",
+  "eigen": "/*\nC = sum_i A_i sum_j w_j\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> C;\n\n    heartlib(\n        const std::vector<double> & w,\n        const std::vector<Eigen::Matrix<double, 2, 2>> & A)\n    {\n        const long dim_0 = w.size();\n        const long dim_1 = A.size();\n        // C = sum_i A_i sum_j w_j\n        MatrixD sum_0 = MatrixD::Zero(2, 2);\n        for(int i=1; i<=A.size(); i++){\n            DT sum_1 = 0;\n            for(int j=1; j<=w.size(); j++){\n                sum_1 += w.at(j-1);\n            }\n            sum_0 += A.at(i-1) * sum_1;\n        }\n        C = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nC & = \\sum_{i} A_{ i } \\sum_{j} w_{ j } \\\\\n\\intertext{where} \nw_{j} & : \\mathbb{R} \\text{ a scalar} \\\\\nA_{i} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nC & = \\sum_{i} A_{ i } \\sum_{j} w_{ j } \\\\\nwhere \\\\\nw_{j} & : \\mathbb{R} \\text{ a scalar} \\\\\nA_{i} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(w, A)\n% output = heartlib(w, A)\n%\n%    C = sum_i A_i sum_j w_j\n%            where\n%            w_j: scalar: a scalar\n%            A_i: ℝ ^ (2 × 2): a matrix\n    w = reshape(w,[],1);\n\n    dim_0 = size(w, 1);\n    dim_1 = size(A, 1);\n    assert( size(w,1) == dim_0 );\n    assert( isequal(size(A), [dim_1, 2, 2]) );\n\n    % C = sum_i A_i sum_j w_j\n\n    sum_0 = zeros(2, 2);\n    for i = 1:size(A, 1)\n        sum_1 = 0;\n        for j = 1:size(w, 1)\n            sum_1 = sum_1 + w(j);\n        end\n        sum_0 = sum_0 + squeeze(A(i,:,:)) * sum_1;\n    end\n    C = sum_0;\n    output.C = C;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'C', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-C\", \"sym\":\"C\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {C} } & = \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{ i } \\sum_{j} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }_{ j }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['w', 'A', 'C'], false, [], [], 'QyA9IHN1bV9pIEFfaSBzdW1faiB3X2o=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w_j\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }_{j} & : \\mathbb{R} \\text{ a scalar} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A_i\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

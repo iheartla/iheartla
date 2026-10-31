@@ -1,0 +1,1675 @@
+{
+ "id": "t_gallery_08",
+ "src": "`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        where\n        l_j: ℝ : the length of bj\n        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n        σ: ℝ\n        `bᵢ`: ℝ^n\n        b_j: ℝ^n\n        s_j: ℝ : unit direction vector of bi\n        k: ℝ : iteration number",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        where\n        l_j: ℝ : the length of bj\n        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n        σ: ℝ\n        `bᵢ`: ℝ^n\n        b_j: ℝ^n\n        s_j: ℝ : unit direction vector of bi\n        k: ℝ : iteration number",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     343
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       57
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        57
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          12
+         ],
+         "id": "G_σ(s_i^k)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          15,
+          57
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           15,
+           57
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            15,
+            57
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Multiply",
+            "@": [
+             19,
+             57
+            ],
+            "left": {
+             "_": "Multiply",
+             "@": [
+              19,
+              50
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               19,
+               22
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                19,
+                22
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 19,
+                 20
+                ],
+                "id": null,
+                "value": "l"
+               },
+               "right": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  21,
+                  22
+                 ],
+                 "id": null,
+                 "value": "j"
+                }
+               ]
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               23,
+               50
+              ],
+              "op": {
+               "_": "ExpFunc",
+               "@": [
+                23,
+                50
+               ],
+               "param": {
+                "_": "Expression",
+                "@": [
+                 27,
+                 49
+                ],
+                "sign": "-",
+                "value": {
+                 "_": "Divide",
+                 "@": [
+                  28,
+                  49
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   28,
+                   43
+                  ],
+                  "op": {
+                   "_": "Function",
+                   "@": [
+                    28,
+                    43
+                   ],
+                   "name": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      28,
+                      32
+                     ],
+                     "id": null,
+                     "value": "dist"
+                    },
+                    []
+                   ],
+                   "p": "(",
+                   "params": [
+                    {
+                     "_": "Expression",
+                     "@": [
+                      33,
+                      37
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       33,
+                       37
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        33,
+                        37
+                       ],
+                       "id": "bᵢ",
+                       "value": null
+                      }
+                     }
+                    },
+                    {
+                     "_": "Expression",
+                     "@": [
+                      39,
+                      42
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       39,
+                       42
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        39,
+                        42
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         39,
+                         40
+                        ],
+                        "id": null,
+                        "value": "b"
+                       },
+                       "right": [
+                        {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          41,
+                          42
+                         ],
+                         "id": null,
+                         "value": "j"
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   ],
+                   "separators": [
+                    ","
+                   ]
+                  }
+                 },
+                 "op": "/",
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   44,
+                   49
+                  ],
+                  "sub": {
+                   "_": "Subexpression",
+                   "@": [
+                    44,
+                    49
+                   ],
+                   "value": {
+                    "_": "Expression",
+                    "@": [
+                     45,
+                     48
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Multiply",
+                     "@": [
+                      45,
+                      48
+                     ],
+                     "left": {
+                      "_": "Factor",
+                      "@": [
+                       45,
+                       46
+                      ],
+                      "num": {
+                       "_": "Integer",
+                       "@": [
+                        45,
+                        46
+                       ],
+                       "value": [
+                        "2"
+                       ]
+                      }
+                     },
+                     "right": {
+                      "_": "Factor",
+                      "@": [
+                       46,
+                       48
+                      ],
+                      "op": {
+                       "_": "Power",
+                       "@": [
+                        46,
+                        48
+                       ],
+                       "base": {
+                        "_": "Factor",
+                        "@": [
+                         46,
+                         47
+                        ],
+                        "id0": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          46,
+                          47
+                         ],
+                         "id": null,
+                         "value": "σ"
+                        }
+                       },
+                       "power": {
+                        "_": "SupInteger",
+                        "@": [
+                         47,
+                         48
+                        ],
+                        "value": [
+                         "²"
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              50,
+              57
+             ],
+             "op": {
+              "_": "Power",
+              "@": [
+               50,
+               57
+              ],
+              "base": {
+               "_": "Factor",
+               "@": [
+                50,
+                55
+               ],
+               "sub": {
+                "_": "Subexpression",
+                "@": [
+                 50,
+                 55
+                ],
+                "value": {
+                 "_": "Expression",
+                 "@": [
+                  51,
+                  54
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   51,
+                   54
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    51,
+                    54
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     51,
+                     52
+                    ],
+                    "id": null,
+                    "value": "s"
+                   },
+                   "right": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      53,
+                      54
+                     ],
+                     "id": null,
+                     "value": "j"
+                    }
+                   ]
+                  }
+                 }
+                }
+               }
+              },
+              "power": {
+               "_": "Factor",
+               "@": [
+                56,
+                57
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 56,
+                 57
+                ],
+                "id": null,
+                "value": "k"
+               }
+              }
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             17,
+             18
+            ],
+            "id": null,
+            "value": "j"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       66,
+       343
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        80,
+        343
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          80,
+          105
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the length of bj",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            80,
+            83
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             80,
+             81
+            ],
+            "id": null,
+            "value": "l"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              82,
+              83
+             ],
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          114,
+          218
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "measures the geodesic distance between the centers of bi and bj along the boundary",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           120,
+           133
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "VectorType",
+            "@": [
+             120,
+             123
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              122,
+              123
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               122,
+               123
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                122,
+                123
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           },
+           {
+            "_": "VectorType",
+            "@": [
+             125,
+             128
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              127,
+              128
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               127,
+               128
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                127,
+                128
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": [
+           ","
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            114,
+            118
+           ],
+           "id": null,
+           "value": "dist"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          227,
+          231
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            227,
+            228
+           ],
+           "id": null,
+           "value": "σ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          240,
+          249
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           246,
+           249
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            248,
+            249
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             248,
+             249
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              248,
+              249
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            240,
+            244
+           ],
+           "id": "bᵢ",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          258,
+          266
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           263,
+           266
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            265,
+            266
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             265,
+             266
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              265,
+              266
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            258,
+            261
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             258,
+             259
+            ],
+            "id": null,
+            "value": "b"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              260,
+              261
+             ],
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          275,
+          311
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "unit direction vector of bi",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            275,
+            278
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             275,
+             276
+            ],
+            "id": null,
+            "value": "s"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              277,
+              278
+             ],
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          320,
+          343
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "iteration number",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            320,
+            321
+           ],
+           "id": null,
+           "value": "k"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "dist"
+    ],
+    "funcs": [
+     "`dist`",
+     "dist"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        where\n        l_j: ℝ : the length of bj\n        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n        σ: ℝ\n        `bᵢ`: ℝ^n\n        b_j: ℝ^n\n        s_j: ℝ : unit direction vector of bi\n        k: ℝ : iteration number",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     343
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       57
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        57
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          12
+         ],
+         "const": null,
+         "id": "G_σ(s_i^k)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          15,
+          57
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           15,
+           57
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            15,
+            57
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Multiply",
+            "@": [
+             19,
+             57
+            ],
+            "left": {
+             "_": "Multiply",
+             "@": [
+              19,
+              50
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               19,
+               22
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                19,
+                22
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 19,
+                 20
+                ],
+                "const": null,
+                "id": null,
+                "value": "l"
+               },
+               "right": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  21,
+                  22
+                 ],
+                 "const": null,
+                 "id": null,
+                 "value": "j"
+                }
+               ]
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               23,
+               50
+              ],
+              "op": {
+               "_": "ExpFunc",
+               "@": [
+                23,
+                50
+               ],
+               "param": {
+                "_": "Expression",
+                "@": [
+                 27,
+                 49
+                ],
+                "sign": "-",
+                "value": {
+                 "_": "Divide",
+                 "@": [
+                  28,
+                  49
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   28,
+                   43
+                  ],
+                  "op": {
+                   "_": "Function",
+                   "@": [
+                    28,
+                    43
+                   ],
+                   "name": "dist",
+                   "p": "(",
+                   "params": [
+                    {
+                     "_": "Expression",
+                     "@": [
+                      33,
+                      37
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       33,
+                       37
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        33,
+                        37
+                       ],
+                       "const": null,
+                       "id": "bᵢ",
+                       "value": null
+                      }
+                     }
+                    },
+                    {
+                     "_": "Expression",
+                     "@": [
+                      39,
+                      42
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       39,
+                       42
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        39,
+                        42
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         39,
+                         40
+                        ],
+                        "const": null,
+                        "id": null,
+                        "value": "b"
+                       },
+                       "right": [
+                        {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          41,
+                          42
+                         ],
+                         "const": null,
+                         "id": null,
+                         "value": "j"
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   ],
+                   "separators": [
+                    ","
+                   ]
+                  }
+                 },
+                 "op": "/",
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   44,
+                   49
+                  ],
+                  "sub": {
+                   "_": "Subexpression",
+                   "@": [
+                    44,
+                    49
+                   ],
+                   "value": {
+                    "_": "Expression",
+                    "@": [
+                     45,
+                     48
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Multiply",
+                     "@": [
+                      45,
+                      48
+                     ],
+                     "left": {
+                      "_": "Factor",
+                      "@": [
+                       45,
+                       46
+                      ],
+                      "num": {
+                       "_": "Integer",
+                       "@": [
+                        45,
+                        46
+                       ],
+                       "value": [
+                        "2"
+                       ]
+                      }
+                     },
+                     "right": {
+                      "_": "Factor",
+                      "@": [
+                       46,
+                       48
+                      ],
+                      "op": {
+                       "_": "Power",
+                       "@": [
+                        46,
+                        48
+                       ],
+                       "base": {
+                        "_": "Factor",
+                        "@": [
+                         46,
+                         47
+                        ],
+                        "id0": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          46,
+                          47
+                         ],
+                         "const": null,
+                         "id": null,
+                         "value": "σ"
+                        }
+                       },
+                       "power": {
+                        "_": "SupInteger",
+                        "@": [
+                         47,
+                         48
+                        ],
+                        "value": [
+                         "²"
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              50,
+              57
+             ],
+             "op": {
+              "_": "Power",
+              "@": [
+               50,
+               57
+              ],
+              "base": {
+               "_": "Factor",
+               "@": [
+                50,
+                55
+               ],
+               "sub": {
+                "_": "Subexpression",
+                "@": [
+                 50,
+                 55
+                ],
+                "value": {
+                 "_": "Expression",
+                 "@": [
+                  51,
+                  54
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   51,
+                   54
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    51,
+                    54
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     51,
+                     52
+                    ],
+                    "const": null,
+                    "id": null,
+                    "value": "s"
+                   },
+                   "right": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      53,
+                      54
+                     ],
+                     "const": null,
+                     "id": null,
+                     "value": "j"
+                    }
+                   ]
+                  }
+                 }
+                }
+               }
+              },
+              "power": {
+               "_": "Factor",
+               "@": [
+                56,
+                57
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 56,
+                 57
+                ],
+                "const": null,
+                "id": null,
+                "value": "k"
+               }
+              }
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             17,
+             18
+            ],
+            "const": null,
+            "id": null,
+            "value": "j"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       66,
+       343
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        80,
+        343
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          80,
+          105
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the length of bj",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            80,
+            83
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             80,
+             81
+            ],
+            "const": null,
+            "id": null,
+            "value": "l"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              82,
+              83
+             ],
+             "const": null,
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          114,
+          218
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "measures the geodesic distance between the centers of bi and bj along the boundary",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           120,
+           133
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "VectorType",
+            "@": [
+             120,
+             123
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              122,
+              123
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               122,
+               123
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                122,
+                123
+               ],
+               "const": null,
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           },
+           {
+            "_": "VectorType",
+            "@": [
+             125,
+             128
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              127,
+              128
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               127,
+               128
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                127,
+                128
+               ],
+               "const": null,
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": [
+           ","
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            114,
+            118
+           ],
+           "const": "dist",
+           "id": null,
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          227,
+          231
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            227,
+            228
+           ],
+           "const": null,
+           "id": null,
+           "value": "σ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          240,
+          249
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           246,
+           249
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            248,
+            249
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             248,
+             249
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              248,
+              249
+             ],
+             "const": null,
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            240,
+            244
+           ],
+           "const": null,
+           "id": "bᵢ",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          258,
+          266
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           263,
+           266
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            265,
+            266
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             265,
+             266
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              265,
+              266
+             ],
+             "const": null,
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            258,
+            261
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             258,
+             259
+            ],
+            "const": null,
+            "id": null,
+            "value": "b"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              260,
+              261
+             ],
+             "const": null,
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          275,
+          311
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "unit direction vector of bi",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            275,
+            278
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             275,
+             276
+            ],
+            "const": null,
+            "id": null,
+            "value": "s"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              277,
+              278
+             ],
+             "const": null,
+             "id": null,
+             "value": "j"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          320,
+          343
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "iteration number",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            320,
+            321
+           ],
+           "const": null,
+           "id": null,
+           "value": "k"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        where\n        l_j: ℝ : the length of bj\n        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n        σ: ℝ\n        `bᵢ`: ℝ^n\n        b_j: ℝ^n\n        s_j: ℝ : unit direction vector of bi\n        k: ℝ : iteration number\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, l, dist, σ, bᵢ, b, s, k):\n        l = np.asarray(l, dtype=np.float64)\n        bᵢ = np.asarray(bᵢ, dtype=np.float64)\n        b = np.asarray(b, dtype=np.float64)\n        s = np.asarray(s, dtype=np.float64)\n        dim_0 = l.shape[0]\n        n = bᵢ.shape[0]\n        assert l.shape == (dim_0,)\n        assert np.ndim(σ) == 0\n        assert bᵢ.shape == (n,)\n        assert b.shape == (dim_0, n, )\n        assert s.shape == (dim_0,)\n        assert np.ndim(k) == 0\n        # `G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        sum_0 = 0\n        for j in range(1, len(b)+1):\n            sum_0 += l[j-1] * np.exp(-(dist(bᵢ, b[j-1])) / ((2 * np.power(np.asarray(σ, dtype=np.float64), 2)))) * np.power(np.asarray((s[j-1]), dtype=np.float64), k)\n        self.G_σs_i_circumflex_accent_k = sum_0\n\n\n\n\n\n",
+  "eigen": "/*\n`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        where\n        l_j: ℝ : the length of bj\n        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n        σ: ℝ\n        `bᵢ`: ℝ^n\n        b_j: ℝ^n\n        s_j: ℝ : unit direction vector of bi\n        k: ℝ : iteration number\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT G_σs_i_circumflex_accent_k;\n\n    heartlib(\n        const std::vector<double> & l,\n        const std::function<double(Eigen::VectorXd, Eigen::VectorXd)> & dist,\n        const double & σ,\n        const Eigen::VectorXd & bᵢ,\n        const std::vector<Eigen::VectorXd> & b,\n        const std::vector<double> & s,\n        const double & k)\n    {\n        const long dim_0 = l.size();\n        const long n = bᵢ.size();\n        assert( b.size() == dim_0 );\n        for( const auto& el : b ) {\n            assert( el.size() == n );\n        }\n        assert( s.size() == dim_0 );\n        // `G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        DT sum_0 = 0;\n        for(int j=1; j<=l.size(); j++){\n            sum_0 += l.at(j-1) * exp(-dist(bᵢ, b.at(j-1)) / DT((2 * pow(σ, 2)))) * pow((s.at(j-1)), k);\n        }\n        G_σs_i_circumflex_accent_k = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nG_σ(s_i^k) & = \\sum_{j} l_{ j } e^{-\\frac{\\mathit{dist}\\left( b\\textsubscript{i},b_{ j } \\right)}{2 {σ}^{2}}} {\\left( s_{ j } \\right)}^{k} \\\\\n\\intertext{where} \nl_{j} & : \\mathbb{R} \\text{ the length of bj} \\\\\n\\mathit{dist} & : \\mathbb{R}^{ n},\\mathbb{R}^{ n}\\rightarrow \\mathbb{R} \\text{ measures the geodesic distance between the centers of bi and bj along the boundary} \\\\\nσ & : \\mathbb{R} \\\\\nb\\textsubscript{i} & : \\mathbb{R}^{ n} \\\\\nb_{j} & : \\mathbb{R}^{ n} \\\\\ns_{j} & : \\mathbb{R} \\text{ unit direction vector of bi} \\\\\nk & : \\mathbb{R} \\text{ iteration number} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nG_σ(s_i^k) & = \\sum_{j} l_{ j } e^{-\\frac{\\mathit{dist}\\left( bᵢ,b_{ j } \\right)}{2 {σ}^{2}}} {\\left( s_{ j } \\right)}^{k} \\\\\nwhere \\\\\nl_{j} & : \\mathbb{R} \\text{ the length of bj} \\\\\n\\mathit{dist} & : \\mathbb{R}^{ n},\\mathbb{R}^{ n}\\rightarrow \\mathbb{R} \\text{ measures the geodesic distance between the centers of bi and bj along the boundary} \\\\\nσ & : \\mathbb{R} \\\\\nbᵢ & : \\mathbb{R}^{ n} \\\\\nb_{j} & : \\mathbb{R}^{ n} \\\\\ns_{j} & : \\mathbb{R} \\text{ unit direction vector of bi} \\\\\nk & : \\mathbb{R} \\text{ iteration number} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(l, dist, sigma, b_i, b, s, k)\n% output = heartlib(l, dist, σ, `bᵢ`, b, s, k)\n%\n%    `G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n%            where\n%            l_j: ℝ : the length of bj\n%            dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n%            σ: ℝ\n%            `bᵢ`: ℝ^n\n%            b_j: ℝ^n\n%            s_j: ℝ : unit direction vector of bi\n%            k: ℝ : iteration number\n    l = reshape(l,[],1);\n    b_i = reshape(b_i,[],1);\n    s = reshape(s,[],1);\n\n    dim_0 = size(l, 1);\n    n = size(b_i, 1);\n    assert( size(l,1) == dim_0 );\n    assert(numel(sigma) == 1);\n    assert( numel(b_i) == n );\n    assert( isequal(size(b), [dim_0, n]) );\n    assert( size(s,1) == dim_0 );\n    assert(numel(k) == 1);\n\n    % `G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n\n    sum_0 = 0;\n    for j = 1:size(l, 1)\n        sum_0 = sum_0 + l(j) * exp(-dist(b_i, b(j,:)') / (2 * sigma.^2)) * (s(j)).^k;\n    end\n    G_sigma_s_i_k = sum_0;\n    output.G_sigma_s_i_k = G_sigma_s_i_k;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'G_σ(s_i^k)', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-G_σ(s_i^k)\", \"sym\":\"G_σ(s_i^k)\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {G_σ(s_i^k)} } & = \\sum_{j} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'l', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-l\", \"sym\":\"l\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {l} }_{ j } e^{-\\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'dist', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-dist\", \"sym\":\"dist\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{dist}} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bᵢ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bᵢ\", \"sym\":\"bᵢ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {bᵢ} },\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} }_{ j } \\right)}{2 {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'σ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-σ\", \"sym\":\"σ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {σ} }}^{2}}} {\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} }_{ j } \\right)}^{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'k', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-k\", \"sym\":\"k\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {k} }}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['b', 'σ', 's', 'l', 'bᵢ', 'dist', 'k', 'G_σ(s_i^k)'], false, [], [], 'YEdfz4Moc19pXmspYCA9IOKIkV9qIGxfaiBleHAoLWRpc3QoYGLhtaJgLCBiX2opLygyz4PCsikpKHNfaileaw==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'l', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-l_j\", \"sym\":\"l\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {l} }_{j} & : \\mathbb{R} \\text{ the length of bj} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'dist', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-dist\", \"sym\":\"dist\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{dist}} } & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }},\\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }}\\rightarrow \\mathbb{R} \\text{ measures the geodesic distance between the centers of bi and bj along the boundary} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'σ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-σ\", \"sym\":\"σ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {σ} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bᵢ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bᵢ\", \"sym\":\"bᵢ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {bᵢ} } & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b_j\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} }_{j} & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-s_j\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} }_{j} & : \\mathbb{R} \\text{ unit direction vector of bi} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'k', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-k\", \"sym\":\"k\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {k} } & : \\mathbb{R} \\text{ iteration number} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

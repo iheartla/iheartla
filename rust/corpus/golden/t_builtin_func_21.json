@@ -1,0 +1,280 @@
+{
+ "id": "t_builtin_func_21",
+ "src": "b = sqrt(a)\n        where\n        a: scalar",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "b = sqrt(a)\n        where\n        a: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     43
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       11
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        11
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           11
+          ],
+          "op": {
+           "_": "SqrtFunc",
+           "@": [
+            4,
+            11
+           ],
+           "param": {
+            "_": "Expression",
+            "@": [
+             9,
+             10
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              9,
+              10
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               9,
+               10
+              ],
+              "id": null,
+              "value": "a"
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       20,
+       43
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        34,
+        43
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          34,
+          43
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            34,
+            35
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "b = sqrt(a)\n        where\n        a: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     43
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       11
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        11
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           11
+          ],
+          "op": {
+           "_": "SqrtFunc",
+           "@": [
+            4,
+            11
+           ],
+           "param": {
+            "_": "Expression",
+            "@": [
+             9,
+             10
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              9,
+              10
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               9,
+               10
+              ],
+              "id": null,
+              "value": "a"
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       20,
+       43
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        34,
+        43
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          34,
+          43
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            34,
+            35
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nb = sqrt(a)\n        where\n        a: scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        # b = sqrt(a)\n        self.b = np.sqrt(a)\n\n\n\n\n\n",
+  "eigen": "/*\nb = sqrt(a)\n        where\n        a: scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n\n    heartlib(const double & a)\n    {\n    \n        // b = sqrt(a)\n        b = sqrt(a);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nb & =  \\sqrt{ a } \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nb & =  \\sqrt{ a } \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    b = sqrt(a)\n%            where\n%            a: scalar\n    assert(numel(a) == 1);\n\n    % b = sqrt(a)\n\n    b = sqrt(a);\n    output.b = b;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } & =  \\sqrt{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'b'], false, [], [], 'YiA9IHNxcnQoYSk=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

@@ -1,0 +1,620 @@
+{
+ "id": "t_subs_06",
+ "src": " d = b - c\n                e = a_d \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index\n                c  ∈ ℤ index",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": " d = b - c\n                e = a_d \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index\n                c  ∈ ℤ index",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     140
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       1,
+       10
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        1,
+        10
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          1,
+          2
+         ],
+         "id": null,
+         "value": "d"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          5,
+          10
+         ],
+         "value": {
+          "_": "Subtract",
+          "@": [
+           5,
+           10
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            5,
+            6
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             5,
+             6
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              5,
+              6
+             ],
+             "id": null,
+             "value": "b"
+            }
+           }
+          },
+          "op": "-",
+          "right": {
+           "_": "Factor",
+           "@": [
+            9,
+            10
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             9,
+             10
+            ],
+            "id": null,
+            "value": "c"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       27,
+       34
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        27,
+        34
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          27,
+          28
+         ],
+         "id": null,
+         "value": "e"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          31,
+          34
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           31,
+           34
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            31,
+            34
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             31,
+             32
+            ],
+            "id": null,
+            "value": "a"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              33,
+              34
+             ],
+             "id": null,
+             "value": "d"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       52,
+       140
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        74,
+        140
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          74,
+          82
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           79,
+           82
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            81,
+            82
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             81,
+             82
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              81,
+              82
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            74,
+            75
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          99,
+          111
+         ],
+         "attrib": "index",
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           104,
+           105
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            99,
+            100
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          128,
+          140
+         ],
+         "attrib": "index",
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           133,
+           134
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            128,
+            129
+           ],
+           "id": null,
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": " d = b - c\n                e = a_d \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index\n                c  ∈ ℤ index",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     140
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       1,
+       10
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        1,
+        10
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          1,
+          2
+         ],
+         "id": null,
+         "value": "d"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          5,
+          10
+         ],
+         "value": {
+          "_": "Subtract",
+          "@": [
+           5,
+           10
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            5,
+            6
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             5,
+             6
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              5,
+              6
+             ],
+             "id": null,
+             "value": "b"
+            }
+           }
+          },
+          "op": "-",
+          "right": {
+           "_": "Factor",
+           "@": [
+            9,
+            10
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             9,
+             10
+            ],
+            "id": null,
+            "value": "c"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       27,
+       34
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        27,
+        34
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          27,
+          28
+         ],
+         "id": null,
+         "value": "e"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          31,
+          34
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           31,
+           34
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            31,
+            34
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             31,
+             32
+            ],
+            "id": null,
+            "value": "a"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              33,
+              34
+             ],
+             "id": null,
+             "value": "d"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       52,
+       140
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        74,
+        140
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          74,
+          82
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           79,
+           82
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            81,
+            82
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             81,
+             82
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              81,
+              82
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            74,
+            75
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          99,
+          111
+         ],
+         "attrib": "index",
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           104,
+           105
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            99,
+            100
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          128,
+          140
+         ],
+         "attrib": "index",
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           133,
+           134
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            128,
+            129
+           ],
+           "id": null,
+           "value": "c"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n d = b - c\n                e = a_d \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index\n                c  ∈ ℤ index\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a, b, c):\n        a = np.asarray(a, dtype=np.float64)\n        assert a.shape == (3,)\n        assert np.ndim(b) == 0\n        assert np.ndim(c) == 0\n        # d = b - c\n        self.d = b - c\n        # e = a_d\n        self.e = a[self.d-1]\n\n\n\n\n\n",
+  "eigen": "/*\n d = b - c\n                e = a_d \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index\n                c  ∈ ℤ index\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    int d;\n    DT e;\n\n    heartlib(\n        const Eigen::Matrix<double, 3, 1> & a,\n        const int & b,\n        const int & c)\n    {\n    \n        // d = b - c\n        d = b - c;\n        // e = a_d\n        e = a[d-1];\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nd & = b - c \\\\\ne & = a_{ d } \\\\\n\\intertext{where} \na & ∈ \\mathbb{R}^{ 3} \\\\\nb & ∈ \\mathbb{Z} ,\\text{ index} \\\\\nc & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nd & = b - c \\\\\ne & = a_{ d } \\\\\nwhere \\\\\na & ∈ \\mathbb{R}^{ 3} \\\\\nb & ∈ \\mathbb{Z} ,\\text{ index} \\\\\nc & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a, b, c)\n% output = heartlib(a, b, c)\n%\n%     d = b - c\n%                    e = a_d \n%                    where\n%                    a  ∈ ℝ^3\n%                    b  ∈ ℤ index\n%                    c  ∈ ℤ index\n    a = reshape(a,[],1);\n\n    assert( numel(a) == 3 );\n    assert(numel(b) == 1);\n    assert(numel(c) == 1);\n\n    % d = b - c\n\n    d = b - c;\n    % e = a_d\n\n    e = a(d);\n    output.d = d;\n    output.e = e;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'd', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-d\", \"sym\":\"d\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {d} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {c} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['b', 'c', 'd'], false, [], [], 'ZCA9IGIgLSBj');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'e', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-e\", \"sym\":\"e\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {e} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} }_{ d }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'e'], false, [], [], 'ZSA9IGFfZA==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & ∈ \\mathbb{R}^{ 3} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {c} } & ∈ \\mathbb{Z} ,\\text{ index} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

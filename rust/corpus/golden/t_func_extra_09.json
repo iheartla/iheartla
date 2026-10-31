@@ -1,0 +1,588 @@
+{
+ "id": "t_func_extra_09",
+ "src": "aₘ(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "aₘ(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     79
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       25
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        25
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         0,
+         2
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           1,
+           2
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          18,
+          25
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           24,
+           25
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            18,
+            19
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            20,
+            21
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          11
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           11
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            9
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             9
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              8,
+              9
+             ],
+             "id": null,
+             "value": "m"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            10,
+            11
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             10,
+             11
+            ],
+            "id": null,
+            "value": "f"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          3,
+          4
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       47,
+       58
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        47,
+        58
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          47,
+          48
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          51,
+          58
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           51,
+           58
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            51,
+            58
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              51,
+              52
+             ],
+             "id": null,
+             "value": "a"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              53,
+              54
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               53,
+               54
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                53,
+                54
+               ],
+               "value": [
+                "1"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              56,
+              57
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               56,
+               57
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                56,
+                57
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`a`",
+     "a"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "aₘ(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     79
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       25
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        25
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         0,
+         2
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           1,
+           2
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          18,
+          25
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           24,
+           25
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            18,
+            19
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            20,
+            21
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          11
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           11
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            9
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             9
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              8,
+              9
+             ],
+             "id": null,
+             "value": "m"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            10,
+            11
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             10,
+             11
+            ],
+            "id": null,
+            "value": "f"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          3,
+          4
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       47,
+       58
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        47,
+        58
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          47,
+          48
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          51,
+          58
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           51,
+           58
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            51,
+            58
+           ],
+           "name": "a",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              53,
+              54
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               53,
+               54
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                53,
+                54
+               ],
+               "value": [
+                "1"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              56,
+              57
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               56,
+               57
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                56,
+                57
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\naₘ(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, ):\n        # c = a(1, 2)\n        self.c = self.a(1, 2)\n\n    def a(self, m, f):\n        assert np.ndim(m) == 0\n        assert np.ndim(f) == 0\n\n        return m + f\n\n\n\n\n\n",
+  "eigen": "/*\naₘ(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    int c;\n\n    int a(\n        const int & m,\n        const int & f)\n    {\n        return m + f;    \n    }\n    heartlib()\n    {\n    \n        // c = a(1, 2)\n        c = a(1, 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\na_{m}\\left( f \\right) & = m + f \\text{{ where }}  f,m ∈ \\mathbb{Z} \\\\\nc & = a\\left( 1,2 \\right) \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & a_{m}\\left( f \\right) & = m + f \\text{{ where }}  f,m ∈ \\mathbb{Z} \\\\\nc & = a\\left( 1,2 \\right) \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib()\n% output = heartlib()\n%\n%    aₘ(f) = m+f where f,m ∈ ℤ \n%                        c = a(1, 2)\n%                        \n    % c = a(1, 2)\n\n    c = a(1, 2);\n    function [ret] = a(m, f)\n        assert(numel(m) == 1);\n        assert(numel(f) == 1);\n\n        ret = m + f;\n    end\n\n    output.c = c;\n    output.a = @a;\nend\n",
+  "macromathjax": {
+   "error": "IndexError: list index out of range",
+   "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/codegen_mathjax.py\", line 41, in visit_start\n    block_content = self.visit(vblock, **kwargs)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/ir_visitor.py\", line 117, in visit\n    return func(node, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/codegen_macromathjax.py\", line 77, in visit_local_func\n    params_str += node.separators[index] + ''\n                  ~~~~~~~~~~~~~~~^^^^^^^\nIndexError: list index out of range\n"
+  }
+ }
+}

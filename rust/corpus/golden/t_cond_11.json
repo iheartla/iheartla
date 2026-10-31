@@ -1,0 +1,708 @@
+{
+ "id": "t_cond_11",
+ "src": "A = sum_(j for j < 2 or j > 3 ) Q_j\n                where\n                Q: ℝ ^ 5",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "A = sum_(j for j < 2 or j > 3 ) Q_j\n                where\n                Q: ℝ ^ 5",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     82
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       35
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        35
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          35
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           35
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            35
+           ],
+           "cond": {
+            "_": "IfCondition",
+            "@": [
+             15,
+             29
+            ],
+            "other": {
+             "_": "AndCondition",
+             "@": [
+              24,
+              29
+             ],
+             "atom": {
+              "_": "AtomCondition",
+              "@": [
+               24,
+               29
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                24,
+                29
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 24,
+                 25
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  24,
+                  25
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   24,
+                   25
+                  ],
+                  "id": null,
+                  "value": "j"
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 28,
+                 29
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  28,
+                  29
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   28,
+                   29
+                  ],
+                  "value": [
+                   "3"
+                  ]
+                 }
+                }
+               }
+              }
+             }
+            },
+            "se": {
+             "_": "IfCondition",
+             "@": [
+              15,
+              20
+             ],
+             "single": {
+              "_": "AndCondition",
+              "@": [
+               15,
+               20
+              ],
+              "atom": {
+               "_": "AtomCondition",
+               "@": [
+                15,
+                20
+               ],
+               "cond": {
+                "_": "LessCondition",
+                "@": [
+                 15,
+                 20
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  15,
+                  16
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   15,
+                   16
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    15,
+                    16
+                   ],
+                   "id": null,
+                   "value": "j"
+                  }
+                 }
+                },
+                "op": "<",
+                "right": {
+                 "_": "Expression",
+                 "@": [
+                  19,
+                  20
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   19,
+                   20
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    19,
+                    20
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "exp": {
+            "_": "Factor",
+            "@": [
+             32,
+             35
+            ],
+            "id0": {
+             "_": "IdentifierSubscript",
+             "@": [
+              32,
+              35
+             ],
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               32,
+               33
+              ],
+              "id": null,
+              "value": "Q"
+             },
+             "right": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                34,
+                35
+               ],
+               "id": null,
+               "value": "j"
+              }
+             ]
+            }
+           },
+           "id": {
+            "_": "IdentifierAlone",
+            "@": [
+             9,
+             10
+            ],
+            "id": null,
+            "value": "j"
+           },
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": null,
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       52,
+       82
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        74,
+        82
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          74,
+          82
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           77,
+           82
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            81,
+            82
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             81,
+             82
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              81,
+              82
+             ],
+             "value": [
+              "5"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            74,
+            75
+           ],
+           "id": null,
+           "value": "Q"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "A = sum_(j for j < 2 or j > 3 ) Q_j\n                where\n                Q: ℝ ^ 5",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     82
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       35
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        35
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          35
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           35
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            35
+           ],
+           "cond": {
+            "_": "IfCondition",
+            "@": [
+             15,
+             29
+            ],
+            "other": {
+             "_": "AndCondition",
+             "@": [
+              24,
+              29
+             ],
+             "atom": {
+              "_": "AtomCondition",
+              "@": [
+               24,
+               29
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                24,
+                29
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 24,
+                 25
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  24,
+                  25
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   24,
+                   25
+                  ],
+                  "id": null,
+                  "value": "j"
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 28,
+                 29
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  28,
+                  29
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   28,
+                   29
+                  ],
+                  "value": [
+                   "3"
+                  ]
+                 }
+                }
+               }
+              }
+             }
+            },
+            "se": {
+             "_": "IfCondition",
+             "@": [
+              15,
+              20
+             ],
+             "single": {
+              "_": "AndCondition",
+              "@": [
+               15,
+               20
+              ],
+              "atom": {
+               "_": "AtomCondition",
+               "@": [
+                15,
+                20
+               ],
+               "cond": {
+                "_": "LessCondition",
+                "@": [
+                 15,
+                 20
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  15,
+                  16
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   15,
+                   16
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    15,
+                    16
+                   ],
+                   "id": null,
+                   "value": "j"
+                  }
+                 }
+                },
+                "op": "<",
+                "right": {
+                 "_": "Expression",
+                 "@": [
+                  19,
+                  20
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   19,
+                   20
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    19,
+                    20
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "exp": {
+            "_": "Factor",
+            "@": [
+             32,
+             35
+            ],
+            "id0": {
+             "_": "IdentifierSubscript",
+             "@": [
+              32,
+              35
+             ],
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               32,
+               33
+              ],
+              "id": null,
+              "value": "Q"
+             },
+             "right": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                34,
+                35
+               ],
+               "id": null,
+               "value": "j"
+              }
+             ]
+            }
+           },
+           "id": {
+            "_": "IdentifierAlone",
+            "@": [
+             9,
+             10
+            ],
+            "id": null,
+            "value": "j"
+           },
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": null,
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       52,
+       82
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        74,
+        82
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          74,
+          82
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           77,
+           82
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            81,
+            82
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             81,
+             82
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              81,
+              82
+             ],
+             "value": [
+              "5"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            74,
+            75
+           ],
+           "id": null,
+           "value": "Q"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nA = sum_(j for j < 2 or j > 3 ) Q_j\n                where\n                Q: ℝ ^ 5\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, Q):\n        Q = np.asarray(Q, dtype=np.float64)\n        assert Q.shape == (5,)\n        # A = sum_(j for j < 2 or j > 3 ) Q_j\n        sum_0 = 0\n        for j in range(1, len(Q)+1):\n            if((j < 2) or (j > 3)):\n                sum_0 += Q[j-1]\n        self.A = sum_0\n\n\n\n\n\n",
+  "eigen": "/*\nA = sum_(j for j < 2 or j > 3 ) Q_j\n                where\n                Q: ℝ ^ 5\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT A;\n\n    heartlib(const Eigen::Matrix<double, 5, 1> & Q)\n    {\n    \n        // A = sum_(j for j < 2 or j > 3 ) Q_j\n        DT sum_0 = 0;\n        for(int j=1; j<=Q.size(); j++){\n            if((j < 2) || (j > 3)){\n                sum_0 += Q[j-1];\n            }\n        }\n        A = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nA & = \\sum_{j < 2 \\text{{ or }}j > 3}Q_{ j } \\\\\n\\intertext{where} \nQ & : \\mathbb{R}^{ 5} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nA & = \\sum_{j < 2 \\text{{ or }}j > 3}Q_{ j } \\\\\nwhere \\\\\nQ & : \\mathbb{R}^{ 5} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(Q)\n% output = heartlib(Q)\n%\n%    A = sum_(j for j < 2 or j > 3 ) Q_j\n%                    where\n%                    Q: ℝ ^ 5\n    Q = reshape(Q,[],1);\n\n    assert( numel(Q) == 5 );\n\n    % A = sum_(j for j < 2 or j > 3 ) Q_j\n\n    sum_0 = 0;\n    for j = 1:size(Q,1)\n        if (j < 2) || (j > 3)\n          sum_0 = sum_0 + Q(j);\n        end\n    end\n    A = sum_0;\n    output.A = A;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = \\sum_{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'j', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-j\", \"sym\":\"j\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {j} } < 2 \\text{{ or }}\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'j', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-j\", \"sym\":\"j\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {j} } > 3}\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Q', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Q\", \"sym\":\"Q\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {Q} }_{ j }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['Q', 'A'], false, [], [], 'QSA9IHN1bV8oaiBmb3IgaiA8IDIgb3IgaiA-IDMgKSBRX2o=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Q', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Q\", \"sym\":\"Q\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {Q} } & : \\mathbb{R}^{ 5} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

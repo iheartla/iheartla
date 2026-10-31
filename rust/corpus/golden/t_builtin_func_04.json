@@ -1,0 +1,1684 @@
+{
+ "id": "t_builtin_func_04",
+ "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nc = atan2(a, b)\n        where\n        a: scalar\n        b: scalar",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nc = atan2(a, b)\n        where\n        a: scalar\n        b: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     272
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       137
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        125,
+        137
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         4,
+         8
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          4,
+          8
+         ],
+         "value": [
+          "as",
+          "in"
+         ]
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         9,
+         15
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          9,
+          15
+         ],
+         "id": null,
+         "value": "arcsin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         16,
+         19
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          16,
+          19
+         ],
+         "id": null,
+         "value": "cos"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         20,
+         24
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          20,
+          24
+         ],
+         "id": null,
+         "value": "acos"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         25,
+         31
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          25,
+          31
+         ],
+         "id": null,
+         "value": "arccos"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         32,
+         35
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          32,
+          35
+         ],
+         "id": null,
+         "value": "tan"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         36,
+         40
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          36,
+          40
+         ],
+         "id": null,
+         "value": "atan"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         41,
+         47
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          41,
+          47
+         ],
+         "id": null,
+         "value": "arctan"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         48,
+         53
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          48,
+          53
+         ],
+         "id": null,
+         "value": "atan2"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         54,
+         58
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          54,
+          58
+         ],
+         "id": null,
+         "value": "sinh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         59,
+         64
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          59,
+          64
+         ],
+         "value": [
+          "as",
+          "inh"
+         ]
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         65,
+         71
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          65,
+          71
+         ],
+         "id": null,
+         "value": "arsinh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         72,
+         76
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          72,
+          76
+         ],
+         "id": null,
+         "value": "cosh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         77,
+         82
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          77,
+          82
+         ],
+         "id": null,
+         "value": "acosh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         83,
+         89
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          83,
+          89
+         ],
+         "id": null,
+         "value": "arcosh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         90,
+         94
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          90,
+          94
+         ],
+         "id": null,
+         "value": "tanh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         95,
+         100
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          95,
+          100
+         ],
+         "id": null,
+         "value": "atanh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         101,
+         107
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          101,
+          107
+         ],
+         "id": null,
+         "value": "artanh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         108,
+         111
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          108,
+          111
+         ],
+         "id": null,
+         "value": "cot"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         112,
+         115
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          112,
+          115
+         ],
+         "id": null,
+         "value": "sec"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         116,
+         119
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          116,
+          119
+         ],
+         "id": null,
+         "value": "csc"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Import",
+      "@": [
+       138,
+       206
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        193,
+        206
+       ],
+       "id": null,
+       "value": "linearalgebra"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         138,
+         143
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          138,
+          143
+         ],
+         "id": null,
+         "value": "trace"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         144,
+         146
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          144,
+          146
+         ],
+         "id": null,
+         "value": "tr"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         147,
+         152
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          147,
+          152
+         ],
+         "id": null,
+         "value": "trace"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         153,
+         155
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          153,
+          155
+         ],
+         "id": null,
+         "value": "tr"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         156,
+         160
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          156,
+          160
+         ],
+         "id": null,
+         "value": "diag"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         161,
+         164
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          161,
+          164
+         ],
+         "id": null,
+         "value": "vec"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         165,
+         168
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          165,
+          168
+         ],
+         "id": null,
+         "value": "det"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         169,
+         173
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          169,
+          173
+         ],
+         "id": null,
+         "value": "rank"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         174,
+         178
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          174,
+          178
+         ],
+         "id": null,
+         "value": "null"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         179,
+         183
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          179,
+          183
+         ],
+         "value": [
+          "or",
+          "th"
+         ]
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         184,
+         187
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          184,
+          187
+         ],
+         "id": null,
+         "value": "inv"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       207,
+       222
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        207,
+        222
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          207,
+          208
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          211,
+          222
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           211,
+           222
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            211,
+            222
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              211,
+              216
+             ],
+             "id": null,
+             "value": "atan2"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              217,
+              218
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               217,
+               218
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                217,
+                218
+               ],
+               "id": null,
+               "value": "a"
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              220,
+              221
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               220,
+               221
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                220,
+                221
+               ],
+               "id": null,
+               "value": "b"
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       231,
+       272
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        245,
+        272
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          245,
+          254
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            245,
+            246
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          263,
+          272
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            263,
+            264
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "arsinh",
+     "arctan",
+     "arcsin",
+     "arccos",
+     "arcosh",
+     "artanh",
+     "atanh",
+     "atan2",
+     "asinh",
+     "trace",
+     "acosh",
+     "sinh",
+     "atan",
+     "cosh",
+     "asin",
+     "rank",
+     "diag",
+     "tanh",
+     "null",
+     "acos",
+     "orth",
+     "cot",
+     "tan",
+     "inv",
+     "sin",
+     "sec",
+     "det",
+     "cos",
+     "vec",
+     "csc",
+     "tr"
+    ],
+    "funcs": [],
+    "builtins": [
+     "acos_func",
+     "acosh_func",
+     "arccos_func",
+     "arcosh_func",
+     "arcsin_func",
+     "arctan_func",
+     "arsinh_func",
+     "artanh_func",
+     "asin_func",
+     "asinh_func",
+     "atan_func",
+     "atan2_func",
+     "atanh_func",
+     "cos_func",
+     "cosh_func",
+     "cot_func",
+     "csc_func",
+     "sec_func",
+     "sin_func",
+     "sinh_func",
+     "tan_func",
+     "tanh_func",
+     "det_func",
+     "diag_func",
+     "inv_func",
+     "null_func",
+     "orth_func",
+     "rank_func",
+     "tr_func",
+     "trace_func",
+     "vec_func"
+    ],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nc = atan2(a, b)\n        where\n        a: scalar\n        b: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     272
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       137
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        125,
+        137
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         4,
+         8
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          4,
+          8
+         ],
+         "value": [
+          "as",
+          "in"
+         ]
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         9,
+         15
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          9,
+          15
+         ],
+         "id": null,
+         "value": "arcsin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         16,
+         19
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          16,
+          19
+         ],
+         "id": null,
+         "value": "cos"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         20,
+         24
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          20,
+          24
+         ],
+         "id": null,
+         "value": "acos"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         25,
+         31
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          25,
+          31
+         ],
+         "id": null,
+         "value": "arccos"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         32,
+         35
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          32,
+          35
+         ],
+         "id": null,
+         "value": "tan"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         36,
+         40
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          36,
+          40
+         ],
+         "id": null,
+         "value": "atan"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         41,
+         47
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          41,
+          47
+         ],
+         "id": null,
+         "value": "arctan"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         48,
+         53
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          48,
+          53
+         ],
+         "id": null,
+         "value": "atan2"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         54,
+         58
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          54,
+          58
+         ],
+         "id": null,
+         "value": "sinh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         59,
+         64
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          59,
+          64
+         ],
+         "value": [
+          "as",
+          "inh"
+         ]
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         65,
+         71
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          65,
+          71
+         ],
+         "id": null,
+         "value": "arsinh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         72,
+         76
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          72,
+          76
+         ],
+         "id": null,
+         "value": "cosh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         77,
+         82
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          77,
+          82
+         ],
+         "id": null,
+         "value": "acosh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         83,
+         89
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          83,
+          89
+         ],
+         "id": null,
+         "value": "arcosh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         90,
+         94
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          90,
+          94
+         ],
+         "id": null,
+         "value": "tanh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         95,
+         100
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          95,
+          100
+         ],
+         "id": null,
+         "value": "atanh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         101,
+         107
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          101,
+          107
+         ],
+         "id": null,
+         "value": "artanh"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         108,
+         111
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          108,
+          111
+         ],
+         "id": null,
+         "value": "cot"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         112,
+         115
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          112,
+          115
+         ],
+         "id": null,
+         "value": "sec"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         116,
+         119
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          116,
+          119
+         ],
+         "id": null,
+         "value": "csc"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Import",
+      "@": [
+       138,
+       206
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        193,
+        206
+       ],
+       "id": null,
+       "value": "linearalgebra"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         138,
+         143
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          138,
+          143
+         ],
+         "id": null,
+         "value": "trace"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         144,
+         146
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          144,
+          146
+         ],
+         "id": null,
+         "value": "tr"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         147,
+         152
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          147,
+          152
+         ],
+         "id": null,
+         "value": "trace"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         153,
+         155
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          153,
+          155
+         ],
+         "id": null,
+         "value": "tr"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         156,
+         160
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          156,
+          160
+         ],
+         "id": null,
+         "value": "diag"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         161,
+         164
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          161,
+          164
+         ],
+         "id": null,
+         "value": "vec"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         165,
+         168
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          165,
+          168
+         ],
+         "id": null,
+         "value": "det"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         169,
+         173
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          169,
+          173
+         ],
+         "id": null,
+         "value": "rank"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         174,
+         178
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          174,
+          178
+         ],
+         "id": null,
+         "value": "null"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         179,
+         183
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          179,
+          183
+         ],
+         "value": [
+          "or",
+          "th"
+         ]
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         184,
+         187
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          184,
+          187
+         ],
+         "id": null,
+         "value": "inv"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       207,
+       222
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        207,
+        222
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          207,
+          208
+         ],
+         "const": null,
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          211,
+          222
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           211,
+           222
+          ],
+          "op": {
+           "_": "Atan2Func",
+           "@": [
+            211,
+            222
+           ],
+           "param": {
+            "_": "Expression",
+            "@": [
+             217,
+             218
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              217,
+              218
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               217,
+               218
+              ],
+              "const": null,
+              "id": null,
+              "value": "a"
+             }
+            }
+           },
+           "second": {
+            "_": "Expression",
+            "@": [
+             220,
+             221
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              220,
+              221
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               220,
+               221
+              ],
+              "const": null,
+              "id": null,
+              "value": "b"
+             }
+            }
+           },
+           "separator": ","
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       231,
+       272
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        245,
+        272
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          245,
+          254
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            245,
+            246
+           ],
+           "const": null,
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          263,
+          272
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            263,
+            264
+           ],
+           "const": null,
+           "id": null,
+           "value": "b"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nsin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nc = atan2(a, b)\n        where\n        a: scalar\n        b: scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a, b):\n        assert np.ndim(a) == 0\n        assert np.ndim(b) == 0\n        # c = atan2(a, b)\n        self.c = np.arctan2(a, b)\n\n\n\n\n\n",
+  "eigen": "/*\nsin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nc = atan2(a, b)\n        where\n        a: scalar\n        b: scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT c;\n\n    heartlib(\n        const double & a,\n        const double & b)\n    {\n    \n        // c = atan2(a, b)\n        c = atan2(a, b);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ sin, asin, arcsin, cos, acos, arccos, tan, atan, arctan, atan2, sinh, asinh, arsinh, cosh, acosh, arcosh, tanh, atanh, artanh, cot, sec, csc from trigonometry }\\\\\n \\\\\n \\omit \\span \\text{ trace, tr, trace, tr, diag, vec, det, rank, null, orth, inv from linearalgebra }\\\\\n \\\\\nc & = atan2\\left( a, b \\right) \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\nb & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin, asin, arcsin, cos, acos, arccos, tan, atan, arctan, atan2, sinh, asinh, arsinh, cosh, acosh, arcosh, tanh, atanh, artanh, cot, sec, csc from trigonometry }\\\\\n \\\\\n & \\text{ trace, tr, trace, tr, diag, vec, det, rank, null, orth, inv from linearalgebra }\\\\\n \\\\\nc & = atan2\\left( a, b \\right) \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\nb & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a, b)\n% output = heartlib(a, b)\n%\n%    sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\n%    trace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\n%    c = atan2(a, b)\n%            where\n%            a: scalar\n%            b: scalar\n    assert(numel(a) == 1);\n    assert(numel(b) == 1);\n\n    % c = atan2(a, b)\n\n    c = atan2(a, b);\n    output.c = c;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin, asin, arcsin, cos, acos, arccos, tan, atan, arctan, atan2, sinh, asinh, arsinh, cosh, acosh, arcosh, tanh, atanh, artanh, cot, sec, csc from trigonometry }\\\\\n \\\\\n & \\text{ trace, tr, trace, tr, diag, vec, det, rank, null, orth, inv from linearalgebra }\\\\\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {c} } & = atan2\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} }, \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'b', 'c'], false, [], [], 'YyA9IGF0YW4yKGEsIGIp');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

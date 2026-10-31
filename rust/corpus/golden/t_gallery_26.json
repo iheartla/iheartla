@@ -1,0 +1,963 @@
+{
+ "id": "t_gallery_26",
+ "src": "`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        where \n        p: ℝ^3 : point on the surface\n        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n        ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        where \n        p: ℝ^3 : point on the surface\n        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n        ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     144
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       40
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        40
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          6
+         ],
+         "id": "H(p)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          9,
+          40
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           9,
+           40
+          ],
+          "left": {
+           "_": "Divide",
+           "@": [
+            9,
+            15
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             9,
+             10
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              9,
+              10
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           },
+           "op": "/",
+           "right": {
+            "_": "Factor",
+            "@": [
+             11,
+             15
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              11,
+              15
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               12,
+               14
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                12,
+                14
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 12,
+                 13
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  12,
+                  13
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 13,
+                 14
+                ],
+                "c": {
+                 "_": "Pi"
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            15,
+            40
+           ],
+           "op": {
+            "_": "Integral",
+            "@": [
+             15,
+             40
+            ],
+            "d": {
+             "_": "Domain",
+             "@": [
+              19,
+              26
+             ],
+             "lower": {
+              "_": "Expression",
+              "@": [
+               20,
+               21
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                20,
+                21
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 20,
+                 21
+                ],
+                "value": [
+                 "0"
+                ]
+               }
+              }
+             },
+             "upper": {
+              "_": "Expression",
+              "@": [
+               23,
+               25
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                23,
+                25
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 23,
+                 24
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  23,
+                  24
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 24,
+                 25
+                ],
+                "c": {
+                 "_": "Pi"
+                }
+               }
+              }
+             }
+            },
+            "exp": {
+             "_": "Expression",
+             "@": [
+              27,
+              37
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               27,
+               37
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                27,
+                37
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  27,
+                  31
+                 ],
+                 "id": "kₙ",
+                 "value": null
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  32,
+                  33
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   32,
+                   33
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    32,
+                    33
+                   ],
+                   "id": null,
+                   "value": "φ"
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  35,
+                  36
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   35,
+                   36
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    35,
+                    36
+                   ],
+                   "id": null,
+                   "value": "p"
+                  }
+                 }
+                }
+               ],
+               "separators": [
+                ","
+               ]
+              }
+             }
+            },
+            "id": {
+             "_": "IdentifierAlone",
+             "@": [
+              39,
+              40
+             ],
+             "id": null,
+             "value": "φ"
+            },
+            "lower": null,
+            "upper": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       49,
+       135
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        64,
+        135
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          64,
+          93
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "point on the surface",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           67,
+           70
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            69,
+            70
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             69,
+             70
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              69,
+              70
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            64,
+            65
+           ],
+           "id": null,
+           "value": "p"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          102,
+          135
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "normal curvature",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           108,
+           116
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           },
+           {
+            "_": "VectorType",
+            "@": [
+             110,
+             113
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              112,
+              113
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               112,
+               113
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                112,
+                113
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": [
+           ","
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            102,
+            106
+           ],
+           "id": "kₙ",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`kₙ`"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        where \n        p: ℝ^3 : point on the surface\n        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n        ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     144
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       40
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        40
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          6
+         ],
+         "id": "H(p)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          9,
+          40
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           9,
+           40
+          ],
+          "left": {
+           "_": "Divide",
+           "@": [
+            9,
+            15
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             9,
+             10
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              9,
+              10
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           },
+           "op": "/",
+           "right": {
+            "_": "Factor",
+            "@": [
+             11,
+             15
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              11,
+              15
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               12,
+               14
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                12,
+                14
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 12,
+                 13
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  12,
+                  13
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 13,
+                 14
+                ],
+                "c": {
+                 "_": "Pi"
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            15,
+            40
+           ],
+           "op": {
+            "_": "Integral",
+            "@": [
+             15,
+             40
+            ],
+            "d": {
+             "_": "Domain",
+             "@": [
+              19,
+              26
+             ],
+             "lower": {
+              "_": "Expression",
+              "@": [
+               20,
+               21
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                20,
+                21
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 20,
+                 21
+                ],
+                "value": [
+                 "0"
+                ]
+               }
+              }
+             },
+             "upper": {
+              "_": "Expression",
+              "@": [
+               23,
+               25
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                23,
+                25
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 23,
+                 24
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  23,
+                  24
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 24,
+                 25
+                ],
+                "c": {
+                 "_": "Pi"
+                }
+               }
+              }
+             }
+            },
+            "exp": {
+             "_": "Expression",
+             "@": [
+              27,
+              37
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               27,
+               37
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                27,
+                37
+               ],
+               "name": "`kₙ`",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  32,
+                  33
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   32,
+                   33
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    32,
+                    33
+                   ],
+                   "id": null,
+                   "value": "φ"
+                  }
+                 }
+                },
+                {
+                 "_": "Expression",
+                 "@": [
+                  35,
+                  36
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   35,
+                   36
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    35,
+                    36
+                   ],
+                   "id": null,
+                   "value": "p"
+                  }
+                 }
+                }
+               ],
+               "separators": [
+                ","
+               ]
+              }
+             }
+            },
+            "id": {
+             "_": "IdentifierAlone",
+             "@": [
+              39,
+              40
+             ],
+             "id": null,
+             "value": "φ"
+            },
+            "lower": null,
+            "upper": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       49,
+       135
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        64,
+        135
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          64,
+          93
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "point on the surface",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           67,
+           70
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            69,
+            70
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             69,
+             70
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              69,
+              70
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            64,
+            65
+           ],
+           "id": null,
+           "value": "p"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          102,
+          135
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "normal curvature",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           108,
+           116
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           },
+           {
+            "_": "VectorType",
+            "@": [
+             110,
+             113
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              112,
+              113
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               112,
+               113
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                112,
+                113
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": [
+           ","
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            102,
+            106
+           ],
+           "id": "kₙ",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        where \n        p: ℝ^3 : point on the surface\n        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n        \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, p, kₙ):\n        p = np.asarray(p, dtype=np.float64)\n        assert p.shape == (3,)\n        # `H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        self.Hp = (1) / ((2 * np.pi)) * quad(lambda φ: kₙ(φ, p), 0, 2 * np.pi)[0]\n\n\n\n\n\n",
+  "eigen": "/*\n`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        where \n        p: ℝ^3 : point on the surface\n        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n        \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT Hp;\n\n    heartlib(\n        const Eigen::Matrix<double, 3, 1> & p,\n        const std::function<double(double, Eigen::Matrix<double, 3, 1>)> & kₙ)\n    {\n    \n        // `H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        Hp = 1 / DT((2 * M_PI)) * ;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nH(p) & = \\frac{1}{2 \\pi} \\int_{0}^{2 \\pi} kₙ\\left( φ,p \\right) dφ \\\\\n\\intertext{where} \np & : \\mathbb{R}^{ 3} \\text{ point on the surface} \\\\\nkₙ & : \\mathbb{R},\\mathbb{R}^{ 3}\\rightarrow \\mathbb{R} \\text{ normal curvature} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nH(p) & = \\frac{1}{2 \\pi} \\int_{0}^{2 \\pi} kₙ\\left( φ,p \\right) dφ \\\\\nwhere \\\\\np & : \\mathbb{R}^{ 3} \\text{ point on the surface} \\\\\nkₙ & : \\mathbb{R},\\mathbb{R}^{ 3}\\rightarrow \\mathbb{R} \\text{ normal curvature} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(p, k_n)\n% output = heartlib(p, `kₙ`)\n%\n%    `H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n%            where \n%            p: ℝ^3 : point on the surface\n%            `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n%            \n    p = reshape(p,[],1);\n\n    assert( numel(p) == 3 );\n\n    % `H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n\n    Hp = 1 / (2 * pi) * integral(@(phi) k_n(phi, p), 0, 2 * pi,'ArrayValued',true);\n    output.Hp = Hp;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'H(p)', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-H(p)\", \"sym\":\"H(p)\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {H(p)} } & = \\frac{1}{2 \\pi} \\int_{0}^{2 \\pi} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'kₙ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-kₙ\", \"sym\":\"kₙ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {kₙ} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'φ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-φ\", \"sym\":\"φ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {φ} },\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} } \\right) d\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'φ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-φ\", \"sym\":\"φ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {φ} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['H(p)'], false, [], [], 'YEgocClgID0gMS8oMs-AKWludF9bMCwgMs-AXSBga-KCmWAoz4YsIHApIPCdlZXPhg==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} } & : \\mathbb{R}^{ 3} \\text{ point on the surface} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'kₙ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-kₙ\", \"sym\":\"kₙ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {kₙ} } & : \\mathbb{R},\\mathbb{R}^{ 3}\\rightarrow \\mathbb{R} \\text{ normal curvature} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

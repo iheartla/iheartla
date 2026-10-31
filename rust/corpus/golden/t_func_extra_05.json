@@ -1,0 +1,1097 @@
+{
+ "id": "t_func_extra_05",
+ "src": "aₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    a ∈  ℤ -> ℤ\n                    ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "aₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    a ∈  ℤ -> ℤ\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     193
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       27
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        27
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         0,
+         2
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           1,
+           2
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          20,
+          27
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           26,
+           27
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            20,
+            21
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            22,
+            23
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          13
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           13
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            9
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             9
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              8,
+              9
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            12,
+            13
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             12,
+             13
+            ],
+            "id": null,
+            "value": "m"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          3,
+          4
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       49,
+       75
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        49,
+        75
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         49,
+         50
+        ],
+        "id": null,
+        "value": "a"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          68,
+          75
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            68,
+            69
+           ],
+           "id": null,
+           "value": "g"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            70,
+            71
+           ],
+           "id": null,
+           "value": "h"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          58,
+          61
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           58,
+           61
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            58,
+            59
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             58,
+             59
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              58,
+              59
+             ],
+             "id": null,
+             "value": "g"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            60,
+            61
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             60,
+             61
+            ],
+            "id": null,
+            "value": "h"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          51,
+          52
+         ],
+         "id": null,
+         "value": "g"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          53,
+          54
+         ],
+         "id": null,
+         "value": "h"
+        }
+       ],
+       "separators": [
+        ","
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       97,
+       108
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        97,
+        108
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          97,
+          98
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          101,
+          108
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           101,
+           108
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            101,
+            108
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              101,
+              102
+             ],
+             "id": null,
+             "value": "a"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              103,
+              104
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               103,
+               104
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                103,
+                104
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              106,
+              107
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               106,
+               107
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                106,
+                107
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       129,
+       172
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        129,
+        172
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          129,
+          140
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           134,
+           140
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            129,
+            130
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          161,
+          172
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           166,
+           172
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType",
+            "@": [
+             166,
+             167
+            ],
+            "z": "ℤ"
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType",
+            "@": [
+             171,
+             172
+            ],
+            "z": "ℤ"
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            161,
+            162
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`a`",
+     "a"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "aₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    a ∈  ℤ -> ℤ\n                    ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     193
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       27
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        27
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierSubscript",
+        "@": [
+         0,
+         2
+        ],
+        "left": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "a"
+        },
+        "right": [
+         {
+          "_": "IdentifierAlone",
+          "@": [
+           1,
+           2
+          ],
+          "value": "ₘ"
+         }
+        ]
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          20,
+          27
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType",
+          "@": [
+           26,
+           27
+          ],
+          "z": "ℤ"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            20,
+            21
+           ],
+           "id": null,
+           "value": "f"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            22,
+            23
+           ],
+           "id": null,
+           "value": "m"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          13
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           13
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            9
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             9
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              8,
+              9
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            12,
+            13
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             12,
+             13
+            ],
+            "id": null,
+            "value": "m"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          3,
+          4
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       49,
+       75
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        49,
+        75
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         49,
+         50
+        ],
+        "id": null,
+        "value": "a"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          68,
+          75
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            68,
+            69
+           ],
+           "id": null,
+           "value": "g"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            70,
+            71
+           ],
+           "id": null,
+           "value": "h"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          58,
+          61
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           58,
+           61
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            58,
+            59
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             58,
+             59
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              58,
+              59
+             ],
+             "id": null,
+             "value": "g"
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            60,
+            61
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             60,
+             61
+            ],
+            "id": null,
+            "value": "h"
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          51,
+          52
+         ],
+         "id": null,
+         "value": "g"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          53,
+          54
+         ],
+         "id": null,
+         "value": "h"
+        }
+       ],
+       "separators": [
+        ","
+       ],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       97,
+       108
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        97,
+        108
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          97,
+          98
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          101,
+          108
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           101,
+           108
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            101,
+            108
+           ],
+           "name": "a",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              103,
+              104
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               103,
+               104
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                103,
+                104
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              106,
+              107
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               106,
+               107
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                106,
+                107
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           ],
+           "separators": [
+            ","
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       129,
+       172
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        129,
+        172
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          129,
+          140
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           134,
+           140
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            129,
+            130
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          161,
+          172
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           166,
+           172
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType",
+            "@": [
+             166,
+             167
+            ],
+            "z": "ℤ"
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType",
+            "@": [
+             171,
+             172
+            ],
+            "z": "ℤ"
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            161,
+            162
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\naₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    a ∈  ℤ -> ℤ\n                    \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a_0, a_1):\n        # b = a(2, 3)\n        self.b = self.a(2, 3)\n\n    def a(self, m, f):\n        assert np.ndim(m) == 0\n        assert np.ndim(f) == 0\n\n        return f + m\n\n    def a_2(self, g, h):\n        assert np.ndim(g) == 0\n        assert np.ndim(h) == 0\n\n        return g + h\n\n\n\n\n\n",
+  "eigen": "/*\naₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    a ∈  ℤ -> ℤ\n                    \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    int b;\n\n    int a(\n        const int & m,\n        const int & f)\n    {\n        return f + m;    \n    }\n    template<typename REAL>\n    REAL a(\n        const REAL & g,\n        const REAL & h)\n    {\n        return g + h;    \n    }\n    heartlib(\n        const std::function<double(double)> & a_0,\n        const std::function<int(int)> & a_1)\n    {\n    \n        // b = a(2, 3)\n        b = a(2, 3);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\na_{m}\\left( f \\right) & = f + m \\text{{ where }}  f,m ∈ \\mathbb{Z} \\\\\na\\left( g,h \\right) & = g + h \\text{{ where }}  g,h ∈ \\mathbb{R} \\\\\nb & = a\\left( 2,3 \\right) \\\\\n\\\\\na & ∈ \\mathbb{R}\\rightarrow \\mathbb{R} \\\\\na & ∈ \\mathbb{Z}\\rightarrow \\mathbb{Z} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & a_{m}\\left( f \\right) & = f + m \\text{{ where }}  f,m ∈ \\mathbb{Z} \\\\\n & a\\left( g,h \\right) & = g + h \\text{{ where }}  g,h ∈ \\mathbb{R} \\\\\nb & = a\\left( 2,3 \\right) \\\\\n\\\\\na & ∈ \\mathbb{R}\\rightarrow \\mathbb{R} \\\\\na & ∈ \\mathbb{Z}\\rightarrow \\mathbb{Z} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a_0, a_1)\n% output = heartlib(a_0, a_1)\n%\n%    aₘ(f) = f + m where f,m ∈ ℤ \n%                        a(g,h) = g+h where g,h ∈ ℝ \n%                        b = a(2, 3)\n%                        a ∈  ℝ -> ℝ\n%                        a ∈  ℤ -> ℤ\n%                        \n    % b = a(2, 3)\n\n    b = a(2, 3);\n    function [ret_2] = a(m, f)\n        assert(numel(m) == 1);\n        assert(numel(f) == 1);\n\n        ret_2 = f + m;\n    end\n\n    function [ret_3] = a_2(g, h)\n        assert(numel(g) == 1);\n        assert(numel(h) == 1);\n\n        ret_3 = g + h;\n    end\n\n    output.b = b;\n    output.a = @a;\n    output.a_2 = @a_2;\nend\n",
+  "macromathjax": {
+   "error": "IndexError: list index out of range",
+   "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/codegen_mathjax.py\", line 41, in visit_start\n    block_content = self.visit(vblock, **kwargs)\n                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/ir_visitor.py\", line 117, in visit\n    return func(node, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/codegen_macromathjax.py\", line 77, in visit_local_func\n    params_str += node.separators[index] + ''\n                  ~~~~~~~~~~~~~~~^^^^^^^\nIndexError: list index out of range\n"
+  }
+ }
+}

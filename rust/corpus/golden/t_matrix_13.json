@@ -1,0 +1,364 @@
+{
+ "id": "t_matrix_13",
+ "src": "given\n        I ∈ ℝ²\n        I_1+I_2",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "given\n        I ∈ ℝ²\n        I_1+I_2",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     36
+    ],
+    "vblock": [
+     {
+      "_": "ParamsBlock",
+      "@": [
+       0,
+       20
+      ],
+      "annotation": "given",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        14,
+        20
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          14,
+          20
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           18,
+           20
+          ],
+          "id1": {
+           "_": "SupInteger",
+           "@": [
+            19,
+            20
+           ],
+           "value": [
+            "²"
+           ]
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            14,
+            15
+           ],
+           "id": null,
+           "value": "I"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       29,
+       36
+      ],
+      "stat": {
+       "_": "Expression",
+       "@": [
+        29,
+        36
+       ],
+       "value": {
+        "_": "Add",
+        "@": [
+         29,
+         36
+        ],
+        "left": {
+         "_": "Expression",
+         "@": [
+          29,
+          32
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           29,
+           32
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            29,
+            32
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             29,
+             30
+            ],
+            "id": null,
+            "value": "I"
+           },
+           "right": [
+            {
+             "_": "Integer",
+             "@": [
+              31,
+              32
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           ]
+          }
+         }
+        },
+        "op": "+",
+        "right": {
+         "_": "Factor",
+         "@": [
+          33,
+          36
+         ],
+         "id0": {
+          "_": "IdentifierSubscript",
+          "@": [
+           33,
+           36
+          ],
+          "left": {
+           "_": "IdentifierAlone",
+           "@": [
+            33,
+            34
+           ],
+           "id": null,
+           "value": "I"
+          },
+          "right": [
+           {
+            "_": "Integer",
+            "@": [
+             35,
+             36
+            ],
+            "value": [
+             "2"
+            ]
+           }
+          ]
+         }
+        }
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "given\n        I ∈ ℝ²\n        I_1+I_2",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     36
+    ],
+    "vblock": [
+     {
+      "_": "ParamsBlock",
+      "@": [
+       0,
+       20
+      ],
+      "annotation": "given",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        14,
+        20
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          14,
+          20
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           18,
+           20
+          ],
+          "id1": {
+           "_": "SupInteger",
+           "@": [
+            19,
+            20
+           ],
+           "value": [
+            "²"
+           ]
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            14,
+            15
+           ],
+           "id": null,
+           "value": "I"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       29,
+       36
+      ],
+      "stat": {
+       "_": "Expression",
+       "@": [
+        29,
+        36
+       ],
+       "value": {
+        "_": "Add",
+        "@": [
+         29,
+         36
+        ],
+        "left": {
+         "_": "Expression",
+         "@": [
+          29,
+          32
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           29,
+           32
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            29,
+            32
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             29,
+             30
+            ],
+            "id": null,
+            "value": "I"
+           },
+           "right": [
+            {
+             "_": "Integer",
+             "@": [
+              31,
+              32
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           ]
+          }
+         }
+        },
+        "op": "+",
+        "right": {
+         "_": "Factor",
+         "@": [
+          33,
+          36
+         ],
+         "id0": {
+          "_": "IdentifierSubscript",
+          "@": [
+           33,
+           36
+          ],
+          "left": {
+           "_": "IdentifierAlone",
+           "@": [
+            33,
+            34
+           ],
+           "id": null,
+           "value": "I"
+          },
+          "right": [
+           {
+            "_": "Integer",
+            "@": [
+             35,
+             36
+            ],
+            "value": [
+             "2"
+            ]
+           }
+          ]
+         }
+        }
+       }
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\ngiven\n        I ∈ ℝ²\n        I_1+I_2\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, I):\n        I = np.asarray(I, dtype=np.float64)\n        assert I.shape == (2,)\n        self.ret = I[1-1] + I[2-1]\n\n\n\n\n\n",
+  "eigen": "/*\ngiven\n        I ∈ ℝ²\n        I_1+I_2\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT ret;\n\n    heartlib(const Eigen::Matrix<double, 2, 1> & I)\n    {\n    \n        ret = I[1-1] + I[2-1];\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\intertext{given} \nI & ∈ \\mathbb{R}^{ 2} \\\\\n\\\\\n \\omit \\span I_{ 1 } + I_{ 2 } \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\ngiven \\\\\nI & ∈ \\mathbb{R}^{ 2} \\\\\n\\\\\n & I_{ 1 } + I_{ 2 } \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(I)\n% output = heartlib(I)\n%\n%    given\n%            I ∈ ℝ²\n%            I_1+I_2\n    I = reshape(I,[],1);\n\n    assert( numel(I) == 2 );\n\n    ret = I(1) + I(2);\n    output.ret = ret;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\ngiven \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I} } & ∈ \\mathbb{R}^{ 2} \\\\\n\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I} }_{ 1 } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I} }_{ 2 } \\\\\n\\end{align*}\n"
+ }
+}

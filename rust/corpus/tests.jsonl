@@ -1,0 +1,207 @@
+{"module": "test.test_python_backtick", "src": "`Output` = `Parameters` `Minimize`(`Parameters`)\n                    where\n                    `Parameters`: ℝ ^ (2 × 2): a matrix\n                    `Minimize`: ℝ^(2 × 2) -> ℝ^(2 × 2): a function "}
+{"module": "test.test_python_backtick", "src": "A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n                    where \n                    `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n                    `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n                    `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar"}
+{"module": "test.test_python_backtick", "src": "A = `if` `return` `while`\n                    where\n                    `if`:scalar\n                    `return`:scalar\n                    `while`:scalar"}
+{"module": "test.test_python_backtick", "src": "f = abcabbcd\n        where\n        `abc`: ℝ\n        ab: ℝ\n        bc: ℝ\n        d: ℝ "}
+{"module": "test.test_python_backtick", "src": "cc = 2\n        `dd` = 3\n        ee = aa bb cc dd\n        ff = `aa` `bb` `cc` `dd`\n        where\n        `aa`: ℝ\n        bb: ℝ "}
+{"module": "test.test_python_backtick", "src": "A = sum_`j_i` `Energy`_`j_i`\n                    where\n                    `Energy`_`index`: ℝ ^ (2 × 2): a sequence"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = acos(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = arccos(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = acosh(a) + arcosh(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nc = atan2(a, b)\n        where\n        a: scalar\n        b: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = atan(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = arctan(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = asin(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = arcsin(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = asinh(a) + arsinh(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = atanh(a) + artanh(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = cos(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = cosh(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = cot(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = csc(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = exp(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "b = ln(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "b = log(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = sec(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = sin(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = sinh(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "b = sqrt(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = tan(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = tanh(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nA = cot(T)\n        where\n        T: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nA = sin(T)\n        where\n        T: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_builtin_func", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nb = asin^2(a)\n        where\n        a: scalar"}
+{"module": "test.test_python_cond", "src": "A = sum_(j for j > 2 and j < 5 ) Q_j\n                where\n                Q: ℝ ^ 5"}
+{"module": "test.test_python_cond", "src": "A = sum_(j for j > 2 and j < 4 or j > 4 ) Q_j\n                where\n                Q: ℝ ^ 5"}
+{"module": "test.test_python_cond", "src": "A = sum_(j for j > 2 or j < 4 and j > 4 ) Q_j\n                where\n                Q: ℝ ^ 5"}
+{"module": "test.test_python_cond", "src": "A = sum_(j for (j > 2 or j > 3) and j > 4 ) Q_j\n                where\n                Q: ℝ ^ 5"}
+{"module": "test.test_python_cond", "src": "Q = A\n                Q_ii = sum_(j for j = 2 ) Q_ij\n                where\n                A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_cond", "src": "Q = A\n                Q_ii = sum_(j for j >= 2 ) Q_ij\n                where\n                A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_cond", "src": "Q = A\n                Q_ii = sum_(j for j >2 ) Q_ij\n                where\n                A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_cond", "src": "Q = A\n                Q_ii = sum_(j for j != 2 ) Q_ij\n                where\n                A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_cond", "src": "Q = A\n                Q_ii = sum_(j for j <= 3 ) Q_ij\n                where\n                A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_cond", "src": "Q = A\n                Q_ii = sum_(j for j < 3 ) Q_ij\n                where\n                A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_cond", "src": "A = sum_(j for j < 2 or j > 3 ) Q_j\n                where\n                Q: ℝ ^ 5"}
+{"module": "test.test_python_constant", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nA = sin(π/a)\n        where\n        a: scalar"}
+{"module": "test.test_python_defuse", "src": "a = b\n                    b = 1"}
+{"module": "test.test_python_defuse", "src": "D = B + f(A) \n        B = A+C \n        f(x) = x  where x ∈ ℝ \n        where \n        A ∈ ℝ\n        C ∈ ℝ"}
+{"module": "test.test_python_dims", "src": "M+N\n                    where\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m ) "}
+{"module": "test.test_python_dims", "src": "M+N\n                    where\n                    m: ℤ\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m ) \n                    "}
+{"module": "test.test_python_dims", "src": "f( M ) \n                    where \n                    M: ℝ^( m×m )\n                    f: ℝ^( k×k ) -> ℝ "}
+{"module": "test.test_python_dims", "src": "f( M )\n                    where\n                    M: ℝ^( k×k )\n                    f: ℝ^( k×k ) -> ℝ "}
+{"module": "test.test_python_dims", "src": "f( M ) + f(N)\n                    where\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m )\n                    f: ℝ^( k×k ) -> ℝ^( k×k )  "}
+{"module": "test.test_python_expr", "src": "C = A^2\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_expr", "src": "c = a b\n        where\n        a: scalar\n        b: scalar"}
+{"module": "test.test_python_expr", "src": "c = a ⋅ b\n        where\n        a: scalar\n        b: scalar"}
+{"module": "test.test_python_expr", "src": "c = a ⋅ A\n                where\n                a: scalar\n                A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_expr", "src": "C = A^2\n        where\n        A: ℝ: a scalar"}
+{"module": "test.test_python_expr", "src": "y = A \\ C\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        C: ℝ ^ (2 × 2): a matrix "}
+{"module": "test.test_python_expr", "src": "B = -2A\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_expr", "src": "B = -A2\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_expr", "src": "B = -[2 2; 2 2]-A\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_expr", "src": "b = -2a\n        where\n        a: scalar"}
+{"module": "test.test_python_expr", "src": "b = -a2\n        where\n        a: scalar"}
+{"module": "test.test_python_expr", "src": "b = -2-a\n        where\n        a: scalar"}
+{"module": "test.test_python_expr", "src": "b = -a -2\n        where\n        a: scalar"}
+{"module": "test.test_python_func_extra", "src": "aₘ(f) = f + m  where f,m ∈ ℤ \n                    aₘ(f) = f + m  where f,m ∈ ℝ \n                    c = a(2, 3)\n                    "}
+{"module": "test.test_python_func_extra", "src": "a  ∈  ℝ ->  ℝ\n                    a  ∈  ℤ -> ℤ \n                    b = a(2)\n                    "}
+{"module": "test.test_python_func_extra", "src": "aₘ(f) = f where f,m ∈ ℤ^3\n                    aₘ(f) = f where f,m ∈ ℤ^(3×1)\n                    d = a((1,2,3), (2,3,4))\n                    "}
+{"module": "test.test_python_func_extra", "src": "aₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    "}
+{"module": "test.test_python_func_extra", "src": "aₘ(f) = f + m where f,m ∈ ℤ \n                    a(g,h) = g+h where g,h ∈ ℝ \n                    b = a(2, 3)\n                    a ∈  ℝ -> ℝ\n                    a ∈  ℤ -> ℤ\n                    "}
+{"module": "test.test_python_func_extra", "src": "S ∈ {ℤ}\n                    f(x) = x where x ∈ S\n                    a = f(2)\n                    "}
+{"module": "test.test_python_func_extra", "src": "a_m(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    "}
+{"module": "test.test_python_func_extra", "src": "a_m(f) = m+f where f,m ∈ ℤ \n                    c = a_1(2)\n                    "}
+{"module": "test.test_python_func_extra", "src": "aₘ(f) = m+f where f,m ∈ ℤ \n                    c = a(1, 2)\n                    "}
+{"module": "test.test_python_func_extra", "src": "aₘ(f) = m+f where f,m ∈ ℤ \n                    c = a_1,2\n                    "}
+{"module": "test.test_python_func", "src": "a = p\n                    c = a(t)p(2t)\n                    where \n                    p ∈ ℝ -> ℝ\n                    t ∈ ℝ "}
+{"module": "test.test_python_func", "src": "A = P f(2, 3)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar, scalar -> ℝ^(2 × 2): a function"}
+{"module": "test.test_python_func", "src": "A = Pf()P(P)\n                    where\n                    P: ℝ ^ (2 × 2): a matrix\n                    f: {} -> ℝ^(2 × 2): a function"}
+{"module": "test.test_python_func", "src": "A = Pf(P)\n                    where\n                    P: ℝ ^ (2 × 2): a matrix\n                    f: ℝ^(2 × 2) -> ℝ^(2 × 2): a function "}
+{"module": "test.test_python_func", "src": "A = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 × 2): a function"}
+{"module": "test.test_python_func", "src": "A = Q f(P)\n                    where\n                    P: ℝ ^ 2: a matrix\n                    Q: ℝ ^(2×2): a matrix\n                    f: ℝ^(2) -> ℝ^(2 × 2): a function"}
+{"module": "test.test_python_func", "src": "A = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℤ: a function"}
+{"module": "test.test_python_func", "src": "A = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 ): a function"}
+{"module": "test.test_python_func", "src": "A = Pf(g()P)P\n                    where\n                    P: ℝ ^ (2 × 2): a matrix\n                    f: ℝ^(2 × 2) -> ℝ^(2 × 2): a function\n                    g: {} -> ℝ^(2 × 2): a function "}
+{"module": "test.test_python_func", "src": "A = Pf(P+f(f(P⋅P))P)\n                    where\n                    P: ℝ ^ (2 × 2): a matrix\n                    f: ℝ^(2 × 2) -> ℝ^(2 × 2): a function"}
+{"module": "test.test_python_gallery", "src": "sin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere"}
+{"module": "test.test_python_gallery", "src": "min_(x ∈ ℝ^n) ∑_i ||A_i x + b_i ||_2 +(1/2)||x-`x₀`||^2_2\n        where\n        A_i: ℝ^(m × n)\n        `x₀`: ℝ^n\n        b_i: ℝ^m  "}
+{"module": "test.test_python_gallery", "src": "`T₁` = 1/sqrt(2)U[0 0 0\n                  0 0 -1\n                  0 1 0]Vᵀ\n        where\n        U: ℝ^(3×3)\n        V: ℝ^(3×3)"}
+{"module": "test.test_python_gallery", "src": "r̄ = v̄×ō\n        s̄ = ō×ū\n        n̄ = ū×v̄\n        `kᵣ` = r̄⋅(`C̄ₐ`-V̄)\n        `kₛ` = s̄⋅(`C̄ₐ`-V̄)\n        `kₙ` = n̄⋅(`C̄ₐ`-V̄)\n        `x(θ,v)` =  (r̄⋅`D_A`(θ, v)+`kᵣ`delta(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`delta(θ, v))\n        `y(θ,v)` =  (s̄⋅`D_A`(θ, v)+`kₛ`delta(θ, v))/(n̄⋅`D_A`(θ, v)+`kₙ`delta(θ, v))\n        where\n        v̄: ℝ^3\n        ō: ℝ^3\n        ū: ℝ^3\n        V̄: ℝ^3\n        `C̄ₐ`: ℝ^3\n        θ: ℝ\n        v: ℝ\n        `D_A`: ℝ,ℝ->ℝ^3\n        `delta`: ℝ,ℝ->ℝ "}
+{"module": "test.test_python_gallery", "src": "E = 1/`σ_N`²`E_I` + ∑_(j for j>1) α_j²/`σ_S`_j² + ∑_(j for j>1) β_j²/`σ_T`_j²  + ∑_j (ρ_j-ρ̄_j)²/`σ_ρ`_j²\n        where\n        `σ_N`: ℝ\n        `E_I`: ℝ\n        α_i : ℝ\n        β_i : ℝ\n        `σ_S`_i: ℝ\n        `σ_T`_i: ℝ\n        ρ_i: ℝ\n        ρ̄_i: ℝ\n        `σ_ρ`_i: ℝ\n        ā_i: ℝ "}
+{"module": "test.test_python_gallery", "src": "`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        where\n        c ∈ ℝ^(f×s): the value of the Bayer pixel\n        w ∈ ℝ^(f×s): the local sample weight\n        R̂ ∈ ℝ^f: the local robustness"}
+{"module": "test.test_python_gallery", "src": "Ω = [`e₁` `e₂`][`k₁`   0\n                 0    `k₂`] [`e₁`ᵀ\n\t\t\t                 `e₂`ᵀ]\n        where\n        `k₁`: ℝ  : control the desired kernel variance in either edge or orthogonal direction\n        `k₂`: ℝ  : control the desired kernel variance in either edge or orthogonal direction\n        `e₁`: ℝ ^ 3: orthogonal direction vectors\n        `e₂`: ℝ ^ 3: orthogonal direction vectors"}
+{"module": "test.test_python_gallery", "src": "`G_σ(s_i^k)` = ∑_j l_j exp(-dist(`bᵢ`, b_j)/(2σ²))(s_j)^k\n        where\n        l_j: ℝ : the length of bj\n        dist: ℝ^n, ℝ^n -> ℝ : measures the geodesic distance between the centers of bi and bj along the boundary\n        σ: ℝ\n        `bᵢ`: ℝ^n\n        b_j: ℝ^n\n        s_j: ℝ : unit direction vector of bi\n        k: ℝ : iteration number"}
+{"module": "test.test_python_gallery", "src": "∑_i α_i + 1/M ∑_i ∑_j (f(X_i,j)/`p_c`(X_i,j) - (∑_k α_k p_k X_i,j)/`p_c`(X_i,j))\n        where\n        α: ℝ^m\n        p: ℝ^m\n        X: ℝ^(m×n)\n        M: ℝ\n        f: ℝ -> ℝ\n        `p_c`: ℝ -> ℝ "}
+{"module": "test.test_python_gallery", "src": "v_i = ∑_j w_i,j M_j u_i\n        where\n        w: ℝ^(4×4)\n        M_j: ℝ^(4×4)\n        u_i: ℝ^4"}
+{"module": "test.test_python_gallery", "src": "n = ∑_T A_T||M_T v_T - [0 -1\n                        1  0] M_T u_T||²\n        where\n        v_i: ℝ^3\n        u_i: ℝ^3\n        M_i: ℝ^(2×3)\n        A_i: ℝ"}
+{"module": "test.test_python_gallery", "src": "∑_i f_i²p_i - (∑_i f_i p_i)²\n        where\n        f_i: ℝ\n        p_i: ℝ  "}
+{"module": "test.test_python_gallery", "src": "min_(u ∈ ℝ^6) uᵀ(∑_i [x_i×n̂_i; n̂_i][(x_i×n̂_i)ᵀ n̂_iᵀ])u - 2uᵀ(∑_i [x_i×n̂_i; n̂_i]n̂_iᵀ(p_i-x_i)) + ∑_i(p_i-x_i)ᵀn̂_i n̂_iᵀ(p_i-x_i)\n        where\n        x_i: ℝ^3\n        n̂_i: ℝ^3\n        p_i: ℝ^3  "}
+{"module": "test.test_python_gallery", "src": "min_(C ∈ ℝ^3) ∑_i ||x_i + (R_i - I_3)C ||²\n        where\n        x_i: ℝ^3\n        R_i: ℝ^(3×3)"}
+{"module": "test.test_python_gallery", "src": "y_i = (a_i)ᵀ x + w_i\n        x̂ = (∑_i a_i(a_i)ᵀ)⁻¹ ∑_i y_i a_i\n        where\n        a_i: ℝ^n: the measurement vectors\n        w_i: ℝ: measurement noise\n        x: ℝ^n: measurement noise "}
+{"module": "test.test_python_gallery", "src": "`I(X;Y)` = ∑_i ∑_j x_j p_i,j log_2(p_i,j/∑_k x_k p_i,k)\n        where\n        x: ℝ^n\n        p: ℝ^(m×n)"}
+{"module": "test.test_python_gallery", "src": "`L(x,v)` = xᵀWx + ∑_i v_i(x_i²-1)\n        where\n        x: ℝ^n\n        W: ℝ^(n×n)\n        v: ℝ^n"}
+{"module": "test.test_python_gallery", "src": "given\n        p_i: ℝ^3: points on lines\n        d_i: ℝ^3: unit directions along lines\n        P_i = ( I_3 - d_i d_iᵀ )\n        q = ( ∑_i P_iᵀP_i )⁻¹ ( ∑_i P_iᵀP_i p_i )"}
+{"module": "test.test_python_gallery", "src": "[A⁻¹+A⁻¹BS⁻¹BᵀA⁻¹   -A⁻¹BS⁻¹\n        -S⁻¹BᵀA⁻¹           S⁻¹]\n        where\n        A: ℝ^(2×2)\n        B: ℝ^(2×2)\n        S: ℝ^(2×2)"}
+{"module": "test.test_python_gallery", "src": "[P₁  0\n         0   P₃][    L        0\n                 P₃ᵀCP₂ᵀU⁻¹  -L̃][U  L⁻¹P₁ᵀB\n                                 0     Ũ   ][P₂   0\n                                             0   I_2]\n        where\n        P_i: ℝ^(2×2)\n        B: ℝ^(2×2)\n        C: ℝ^(2×2)\n        L: ℝ^(2×2)\n        L̃: ℝ^(2×2)\n        U: ℝ^(2×2)\n        Ũ: ℝ^(2×2)"}
+{"module": "test.test_python_gallery", "src": "`∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n               (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n               (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        where\n        A: ℝ^(3×3) "}
+{"module": "test.test_python_gallery", "src": "tr from linearalgebra\n        `J₃` = [1_3,3]\n        `k_angle(Dₘ)` = 3(sqrt(2)v)^(2/3)(7/4||`Dₘ`||_F^2-1/4tr(`J₃``Dₘ`ᵀ`Dₘ`))⁻¹\n        where\n        `Dₘ`: ℝ^(3×3)\n        v: ℝ"}
+{"module": "test.test_python_gallery", "src": "`xᵢ` = T_*,1\n        `xⱼ` = T_*,2\n        `xₖ` = T_*,3\n        `n(T)` = (`xⱼ`-`xᵢ`)×(`xₖ`-`xᵢ`)/||(`xⱼ`-`xᵢ`)×(`xₖ`-`xᵢ`)||\n        where\n        T: ℝ^(3×3)"}
+{"module": "test.test_python_gallery", "src": "`n(v)` = (∑_(i for i ∈ `N₁(v)`) α_i n(T_i))/||∑_(i for i ∈ `N₁(v)`) α_i n(T_i)||\n        where\n        T_i: ℝ^(3×3)\n        α_i: ℝ\n        `N₁(v)`: {ℤ}\n        n: ℝ^(3×3) -> ℝ^3"}
+{"module": "test.test_python_gallery", "src": "cos from trigonometry\n        b = ∑_i cos(θ)²((p_i - q_i)⋅n_i +((p_i+q_i)×n_i)⋅ã+n_i⋅t̃)²\n        where\n        θ: ℝ: angle of rotation\n        p_i: ℝ^3\n        q_i: ℝ^3\n        n_i: ℝ^3\n        ã: ℝ^3\n        t̃: ℝ^3"}
+{"module": "test.test_python_gallery", "src": "`H(p)` = 1/(2π)int_[0, 2π] `kₙ`(φ, p) 𝕕φ\n        where \n        p: ℝ^3 : point on the surface\n        `kₙ`: ℝ,ℝ^3->ℝ : normal curvature\n        "}
+{"module": "test.test_python_gallery", "src": "cot from trigonometry\n        L_i,j = { cot(α_ij) + cot(β_ij) if j ∈ N(i)\n        L_i,i = -sum_(k for k != i) L_i,k\n        where\n        L: ℝ^(n×n)\n        α: ℝ^(n×n)\n        β: ℝ^(n×n)\n        N: ℤ -> {ℤ}\n        "}
+{"module": "test.test_python_gallery", "src": "L_i,j = { w_i,j if (i,j) ∈ E\n        L_i,i = -sum_(l for l != i) L_i,l\n        where\n        L: ℝ^(n×n)\n        w: ℝ^(n×n): edge weight matrix\n        E: {ℤ²} index: edges\n        "}
+{"module": "test.test_python_localfunc", "src": "f(x) = {x if x > 0\n                           -x otherwise where x: ℝ "}
+{"module": "test.test_python_localfunc", "src": "f(x) = x where x: ℝ ^ (2 × 2)"}
+{"module": "test.test_python_localfunc", "src": "f(x) = x where x: ℝ ^ (2 × 2)\n                    where\n                    x: ℝ : a scalar"}
+{"module": "test.test_python_localfunc", "src": "f(x) = x_1 where x_i: ℝ"}
+{"module": "test.test_python_localfunc", "src": "z = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar"}
+{"module": "test.test_python_localfunc", "src": "f(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar"}
+{"module": "test.test_python_localfunc", "src": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar"}
+{"module": "test.test_python_localfunc", "src": "f(x) = x \n                    where x: ℝ ^ (2 × 2)"}
+{"module": "test.test_python_matrix", "src": "C = [A ; B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "C = [A B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "C = [A+B A-B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "C = [A 1_2,2; 0 0_2,2]\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "C = [A 1; 0 I_2]\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "B = [ A C I ]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        C: ℝ ^ (2 × 2): a matrix "}
+{"module": "test.test_python_matrix", "src": "B = [ A 1 ]\n        where\n        A: ℝ ^ 2: a matrix"}
+{"module": "test.test_python_matrix", "src": "B = [ A ; 1 ]\n        where\n        A: ℝ ^ 2: a matrix"}
+{"module": "test.test_python_matrix", "src": "B_i,j = A_j,i\n        where\n        A: ℝ^(2 × 3) "}
+{"module": "test.test_python_matrix", "src": "C = I_2 + A\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "I = A\n        B = I + A\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "B = A^(-1)\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "given\n        I ∈ ℝ²\n        I_1+I_2"}
+{"module": "test.test_python_matrix", "src": "[ A   0₂,₂\n        0_2,2   I]\n        where\n        A: ℝ ^ (2 × 2) sparse "}
+{"module": "test.test_python_matrix", "src": "C = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2) sparse\n        B: ℝ ^ (1 × 2) sparse  "}
+{"module": "test.test_python_matrix", "src": "C = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2)\n        B: ℝ ^ (1 × 2) sparse  "}
+{"module": "test.test_python_matrix", "src": "D_ii = sum_j A_ij\n        where\n        A: ℝ^(n × n)\n        "}
+{"module": "test.test_python_matrix", "src": "G_ij = { P_ij + J_ij  if  ( i , j ) ∈ E\n        0 otherwise\n\n        where\n        P: ℝ ^ (4 × 4): a matrix\n        J: ℝ ^ (4 × 4): a matrix\n        G: ℝ ^ (10 × 10): a matrix\n        E: { ℤ × ℤ } index\n        "}
+{"module": "test.test_python_matrix", "src": "G_ij = { P_ij + J_ij  if  ( i , j ) ∈ E\n        0 otherwise\n\n        G_jk += { ( j , k ) ∈ F : P_jk + J_jk\n        0 otherwise\n\n        where\n        P: ℝ ^ (4 × 4): a matrix\n        J: ℝ ^ (4 × 4): a matrix\n        G: ℝ ^ (10 × 10): a matrix\n        E: { ℤ × ℤ } index\n        F: { ℤ × ℤ } index"}
+{"module": "test.test_python_matrix", "src": "A = [a 2; b 3]\n        where\n        a: scalar\n        b: scalar"}
+{"module": "test.test_python_matrix", "src": "B = A^T\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "B = Aᵀ\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_matrix", "src": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = ||T||_F\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = ||T||_F²\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = ||T||_F^2\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = ||T||^2_F\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = ||T||²_F\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = ||T||_*\n                    where \n                    T: ℝ ^ (2×2): matrix"}
+{"module": "test.test_python_norm", "src": "A = |a|\n                    where \n                    a: scalar"}
+{"module": "test.test_python_norm", "src": "A = ||T||_0\n                    where \n                    T: ℝ ^ 2: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_1\n                    where \n                    T: ℝ ^ 2: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_2\n                    where \n                    T: ℝ ^ 3: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_3\n                    where \n                    T: ℝ ^ 4: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||\n                    where \n                    T: ℝ ^ 3: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_a\n                    where \n                    a: scalar\n                    T: ℝ ^ 4: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_P\n                    where \n                    T: ℝ ^ 2: a sequence\n                    P: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_norm", "src": "A = ||T||_∞\n                    where \n                    T: ℝ ^ 4: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||^2\n                    where \n                    T: ℝ ^ 3: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||^2_2\n                    where \n                    T: ℝ ^ 3: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_2^2\n                    where \n                    T: ℝ ^ 3: vector"}
+{"module": "test.test_python_norm", "src": "A = ||T||_P^2\n                    where \n                    T: ℝ ^ 2: a sequence\n                    P: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_norm", "src": "A = ||T||^2_P\n                    where \n                    T: ℝ ^ 2: a sequence\n                    P: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_others", "src": "c = int_[1, 2] ia 𝕕i\n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "c = int_1^2 ia 𝕕i\n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "c = int_0^3  int_[1, 2] ia 𝕕i 𝕕j\n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "b = argmax_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "b = argmax_(i ∈ ℝ^(2×2)) ||i||\n        s.t.\n        i_1,1 > 2\n        i_1,1 < 3\n        i_1,2 > 2\n        i_1,2 < 3\n        i_2,1 > 2\n        i_2,1 < 3\n        i_2,2 > 2\n        i_2,2 < 3\n        where \n        a: ℝ^3\n        "}
+{"module": "test.test_python_others", "src": "b = argmax_(i ∈ ℝ^3) i⋅a\n        s.t.\n        i_1 > 4\n        i_1 < 9\n        i_2 > 4\n        i_2 < 9\n        i_3 > 4\n        i_3 < 9\n        where \n        a: ℝ^3 "}
+{"module": "test.test_python_others", "src": "b = argmin_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "b = argmin_(i ∈ ℝ) i^2 \n        s.t.\n        i ∈ s\n        where \n        s: {ℝ} "}
+{"module": "test.test_python_others", "src": "b = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "b = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
+{"module": "test.test_python_others", "src": "b = min_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
+{"module": "test.test_python_product", "src": "A = T × P\n                    where \n                    T: ℝ ^ 3: a sequence\n                    P: ℝ ^ 3: a sequence "}
+{"module": "test.test_python_product", "src": "A = T ⋅ P\n                    where \n                    T: ℝ ^ 3: a sequence\n                    P: ℝ ^ 3: a sequence "}
+{"module": "test.test_python_product", "src": "A = T : P\n                    where \n                    T: ℝ ^ (2×2): a sequence\n                    P: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_product", "src": "A = T ∘ P\n                    where \n                    T: ℝ ^ (2×2): a sequence\n                    P: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_product", "src": "A = <T , P>\n                    where \n                    T: ℝ ^ 3: a sequence\n                    P: ℝ ^ 3: a sequence "}
+{"module": "test.test_python_product", "src": "A = <T , P>_M\n                    where \n                    T: ℝ ^ 2: a sequence\n                    P: ℝ ^ 2: a sequence \n                    M: ℝ ^ (2×2): a sequence"}
+{"module": "test.test_python_product", "src": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3): a sequence\n                    P: ℝ ^ (2×3): a sequence"}
+{"module": "test.test_python_product", "src": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (a×b): a sequence\n                    P: ℝ ^ (c×d): a sequence"}
+{"module": "test.test_python_product", "src": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3) sparse\n                    P: ℝ ^ (2×3): a sequence"}
+{"module": "test.test_python_set", "src": "a =  {1, 2, 3}"}
+{"module": "test.test_python_stat", "src": "A: ℝ^(n×n)\n        a = A_1,1\n        n: ℤ"}
+{"module": "test.test_python_stat", "src": "A = 2 + 3"}
+{"module": "test.test_python_stat", "src": "a b\n        where\n        a: scalar\n        b: scalar"}
+{"module": "test.test_python_subs", "src": "w ∈ ℝ^(p×k)\n        x = [ w\n              0_1,k ]\n        a = x + y\n        where\n        y ∈ ℝ^((p+1)×k)"}
+{"module": "test.test_python_subs", "src": "w ∈ ℝ^(p×k) \n        y ∈ ℝ^(p(2k-k)/k×k)\n        a = w + y"}
+{"module": "test.test_python_subs", "src": "Q = A\n        Q_ii = sum_(j for j ≠ i ) Q_ij\n        where\n        A: ℝ ^ (3 × 3): a matrix"}
+{"module": "test.test_python_subs", "src": "d = a_b + a_c\n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ\n                c  ∈ ℤ index"}
+{"module": "test.test_python_subs", "src": " c = b + 1\n                d = a_c \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index"}
+{"module": "test.test_python_subs", "src": " d = b - c\n                e = a_d \n                where\n                a  ∈ ℝ^3\n                b  ∈ ℤ index\n                c  ∈ ℤ index"}
+{"module": "test.test_python_subs", "src": "v_ij = sum_k u_k w_i,j\n        where\n        w ∈ ℝ^(2×2)\n        u ∈ ℝ^2"}
+{"module": "test.test_python_subs", "src": "C = sum_i A_i sum_j w_j\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "C = sum_i A_i sum_j w_j A_i\n        where\n        w_j: scalar: a scalar\n        A_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "a = ∑_i ∑_j A_i,j  \n        where\n        A_i ∈ ℝ^(n_i)"}
+{"module": "test.test_python_subs", "src": "a = ∑_i ∑_j (A_i,j,* B_i)\n        where\n        A_i ∈ ℝ^(n_i×m_i)\n        B_i ∈ ℝ^m_i"}
+{"module": "test.test_python_subs", "src": "B_i = A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "B_ij = A_ij A_ij\n        where\n        A: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "B_i = I_i\n        where\n        I_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "B = sum_i A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "B = sum_j A_j\n        where\n        A_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "C = sum_i (A_i + B_i)\n        where\n        A_i: ℝ ^ (2 × 2): a matrix\n        B_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "C = sum_i A_i B_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix\n        B_i: ℝ ^ (2 × 2): a matrix"}
+{"module": "test.test_python_subs", "src": "q_i = p_i\n        where\n        p ∈ ℝ^3"}

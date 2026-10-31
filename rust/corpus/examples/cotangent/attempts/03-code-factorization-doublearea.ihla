@@ -1,0 +1,8 @@
+A_f = 1/2 sqrt((a_f+(b_f+c_f)) (c_f-(a_f-b_f)) (c_f+(a_f-b_f)) (a_f+(b_f-c_f)))
+C_f = 1/(4 A_f) [b_f²+c_f²-a_f², c_f²+a_f²-b_f², a_f²+b_f²-c_f²]
+
+where
+
+a_i ∈ ℝ
+b_i ∈ ℝ
+c_i ∈ ℝ

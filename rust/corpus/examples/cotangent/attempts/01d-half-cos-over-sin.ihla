@@ -1,0 +1,10 @@
+x_f = acos((q_f²+r_f²-p_f²)/(2 q_f r_f))
+y_f = acos((r_f²+p_f²-q_f²)/(2 r_f p_f))
+z_f = acos((p_f²+q_f²-r_f²)/(2 p_f q_f))
+C_f = 1/2 [cos(x_f)/sin(x_f), cos(y_f)/sin(y_f), cos(z_f)/sin(z_f)]
+
+where
+
+p_i ∈ ℝ
+q_i ∈ ℝ
+r_i ∈ ℝ

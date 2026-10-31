@@ -1,0 +1,437 @@
+{
+ "id": "t_backtick_02",
+ "src": "A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n                    where \n                    `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n                    `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n                    `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n                    where \n                    `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n                    `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n                    `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     270
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       83
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        83
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          83
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           83
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            4,
+            68
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             4,
+             30
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              4,
+              30
+             ],
+             "id": "!@#$%^&*()_+-=<>?,./;':\"",
+             "value": null
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             31,
+             68
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              31,
+              68
+             ],
+             "id": "बलवान किया उपलब्ध संस्थान केन्द्रित",
+             "value": null
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            70,
+            83
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             70,
+             83
+            ],
+            "id": "ΦΧΨΩΥΣΠΞΘΔΓ",
+            "value": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       104,
+       270
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        131,
+        270
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          131,
+          164
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            131,
+            157
+           ],
+           "id": "!@#$%^&*()_+-=<>?,./;':\"",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          185,
+          229
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            185,
+            222
+           ],
+           "id": "बलवान किया उपलब्ध संस्थान केन्द्रित",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          250,
+          270
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            250,
+            263
+           ],
+           "id": "ΦΧΨΩΥΣΠΞΘΔΓ",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "ΦΧΨΩΥΣΠΞΘΔΓ"
+    ],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n                    where \n                    `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n                    `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n                    `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     270
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       83
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        83
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "const": null,
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          83
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           83
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            4,
+            68
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             4,
+             30
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              4,
+              30
+             ],
+             "const": null,
+             "id": "!@#$%^&*()_+-=<>?,./;':\"",
+             "value": null
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             31,
+             68
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              31,
+              68
+             ],
+             "const": null,
+             "id": "बलवान किया उपलब्ध संस्थान केन्द्रित",
+             "value": null
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            70,
+            83
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             70,
+             83
+            ],
+            "const": null,
+            "id": "ΦΧΨΩΥΣΠΞΘΔΓ",
+            "value": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       104,
+       270
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        131,
+        270
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          131,
+          164
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            131,
+            157
+           ],
+           "const": null,
+           "id": "!@#$%^&*()_+-=<>?,./;':\"",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          185,
+          229
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            185,
+            222
+           ],
+           "const": null,
+           "id": "बलवान किया उपलब्ध संस्थान केन्द्रित",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          250,
+          270
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            250,
+            263
+           ],
+           "const": null,
+           "id": "ΦΧΨΩΥΣΠΞΘΔΓ",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nA = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n                    where \n                    `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n                    `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n                    `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_circumflex_accent_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_comma_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark, बलव_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_i_य_devanagari_vowel_sign_aa_उपलब_devanagari_sign_virama_धस_devanagari_sign_anusvara_स_devanagari_sign_virama_थ_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_e_न_devanagari_sign_virama_द_devanagari_sign_virama_र_devanagari_vowel_sign_i_त, ΦΧΨΩΥΣΠΞΘΔΓ):\n        assert np.ndim(exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_circumflex_accent_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_comma_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark) == 0\n        assert np.ndim(बलव_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_i_य_devanagari_vowel_sign_aa_उपलब_devanagari_sign_virama_धस_devanagari_sign_anusvara_स_devanagari_sign_virama_थ_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_e_न_devanagari_sign_virama_द_devanagari_sign_virama_र_devanagari_vowel_sign_i_त) == 0\n        assert np.ndim(ΦΧΨΩΥΣΠΞΘΔΓ) == 0\n        # A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n        self.A = exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_circumflex_accent_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_comma_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark * बलव_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_i_य_devanagari_vowel_sign_aa_उपलब_devanagari_sign_virama_धस_devanagari_sign_anusvara_स_devanagari_sign_virama_थ_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_e_न_devanagari_sign_virama_द_devanagari_sign_virama_र_devanagari_vowel_sign_i_त * ΦΧΨΩΥΣΠΞΘΔΓ\n\n\n\n\n\n",
+  "eigen": "/*\nA = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n                    where \n                    `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n                    `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n                    `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT A;\n\n    heartlib(\n        const double & exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_circumflex_accent_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_comma_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark,\n        const double & बलव_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_i_य_devanagari_vowel_sign_aa_उपलब_devanagari_sign_virama_धस_devanagari_sign_anusvara_स_devanagari_sign_virama_थ_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_e_न_devanagari_sign_virama_द_devanagari_sign_virama_र_devanagari_vowel_sign_i_त,\n        const double & ΦΧΨΩΥΣΠΞΘΔΓ)\n    {\n    \n        // A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n        A = exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_circumflex_accent_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_comma_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark * बलव_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_i_य_devanagari_vowel_sign_aa_उपलब_devanagari_sign_virama_धस_devanagari_sign_anusvara_स_devanagari_sign_virama_थ_devanagari_vowel_sign_aa_नक_devanagari_vowel_sign_e_न_devanagari_sign_virama_द_devanagari_sign_virama_र_devanagari_vowel_sign_i_त * ΦΧΨΩΥΣΠΞΘΔΓ;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nA & = !@#$%^&*()_+-=<>?,./;':\" बलवान किया उपलब्ध संस्थान केन्द्रित \\mathit{ΦΧΨΩΥΣΠΞΘΔΓ} \\\\\n\\intertext{where} \n!@#$%^&*()_+-=<>?,./;':\" & : \\mathbb{R} \\\\\nबलवान किया उपलब्ध संस्थान केन्द्रित & : \\mathbb{R} \\\\\n\\mathit{ΦΧΨΩΥΣΠΞΘΔΓ} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nA & = !@#$%^&*()_+-=<>?,./;':\" बलवान किया उपलब्ध संस्थान केन्द्रित \\mathit{ΦΧΨΩΥΣΠΞΘΔΓ} \\\\\nwhere \\\\\n!@#$%^&*()_+-=<>?,./;':\" & : \\mathbb{R} \\\\\nबलवान किया उपलब्ध संस्थान केन्द्रित & : \\mathbb{R} \\\\\n\\mathit{ΦΧΨΩΥΣΠΞΘΔΓ} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark, devanagari_letter_ba_devanagari_letter_la_devanagari_letter_va_devanagari_vowel_sign_aa_devanagari_letter_na_devanagari_letter_ka_devanagari_vowel_sign_i_devanagari_letter_ya_devanagari_vowel_sign_aa_devanagari_letter_u_devanagari_letter_pa_devanagari_letter_la_devanagari_letter_ba_devanagari_sign_virama_devanagari_letter_dha_devanagari_letter_sa_devanagari_sign_anusvara_devanagari_letter_sa_devanagari_sign_virama_devanagari_letter_tha_devanagari_vowel_sign_aa_devanagari_letter_na_devanagari_letter_ka_devanagari_vowel_sign_e_devanagari_letter_na_devanagari_sign_virama_devanagari_letter_da_devanagari_sign_virama_devanagari_letter_ra_devanagari_vowel_sign_i_devanagari_letter_ta, Phi_Chi_Psi_Omega_Upsilon_Sigma_Pi_Xi_Theta_Delta_Gamma)\n% output = heartlib(`!@#$%^&*()_+-=<>?,./;':\"`, `बलवान किया उपलब्ध संस्थान केन्द्रित`, ΦΧΨΩΥΣΠΞΘΔΓ)\n%\n%    A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n%                        where \n%                        `!@#$%^&*()_+-=<>?,./;':\"`:scalar\n%                        `बलवान किया उपलब्ध संस्थान केन्द्रित`:scalar\n%                        `ΦΧΨΩΥΣΠΞΘΔΓ`:scalar\n    assert(numel(exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark) == 1);\n    assert(numel(devanagari_letter_ba_devanagari_letter_la_devanagari_letter_va_devanagari_vowel_sign_aa_devanagari_letter_na_devanagari_letter_ka_devanagari_vowel_sign_i_devanagari_letter_ya_devanagari_vowel_sign_aa_devanagari_letter_u_devanagari_letter_pa_devanagari_letter_la_devanagari_letter_ba_devanagari_sign_virama_devanagari_letter_dha_devanagari_letter_sa_devanagari_sign_anusvara_devanagari_letter_sa_devanagari_sign_virama_devanagari_letter_tha_devanagari_vowel_sign_aa_devanagari_letter_na_devanagari_letter_ka_devanagari_vowel_sign_e_devanagari_letter_na_devanagari_sign_virama_devanagari_letter_da_devanagari_sign_virama_devanagari_letter_ra_devanagari_vowel_sign_i_devanagari_letter_ta) == 1);\n    assert(numel(Phi_Chi_Psi_Omega_Upsilon_Sigma_Pi_Xi_Theta_Delta_Gamma) == 1);\n\n    % A = `!@#$%^&*()_+-=<>?,./;':\"` `बलवान किया उपलब्ध संस्थान केन्द्रित`  `ΦΧΨΩΥΣΠΞΘΔΓ`\n\n    A = exclamation_mark_commercial_at_number_sign_dollar_sign_percent_sign_ampersand_asterisk_plus_sign_equals_sign_less_than_sign_greater_than_sign_question_mark_full_stop_solidus_semicolon_apostrophe_colon_quotation_mark * devanagari_letter_ba_devanagari_letter_la_devanagari_letter_va_devanagari_vowel_sign_aa_devanagari_letter_na_devanagari_letter_ka_devanagari_vowel_sign_i_devanagari_letter_ya_devanagari_vowel_sign_aa_devanagari_letter_u_devanagari_letter_pa_devanagari_letter_la_devanagari_letter_ba_devanagari_sign_virama_devanagari_letter_dha_devanagari_letter_sa_devanagari_sign_anusvara_devanagari_letter_sa_devanagari_sign_virama_devanagari_letter_tha_devanagari_vowel_sign_aa_devanagari_letter_na_devanagari_letter_ka_devanagari_vowel_sign_e_devanagari_letter_na_devanagari_sign_virama_devanagari_letter_da_devanagari_sign_virama_devanagari_letter_ra_devanagari_vowel_sign_i_devanagari_letter_ta * Phi_Chi_Psi_Omega_Upsilon_Sigma_Pi_Xi_Theta_Delta_Gamma;\n    output.A = A;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"\", \"sym\":\"!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {!@#$%^&*()_+-=<>?,./;':\"} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'बलवान किया उपलब्ध संस्थान केन्द्रित', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-बलवान किया उपलब्ध संस्थान केन्द्रित\", \"sym\":\"बलवान किया उपलब्ध संस्थान केन्द्रित\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {बलवान किया उपलब्ध संस्थान केन्द्रित} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ΦΧΨΩΥΣΠΞΘΔΓ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ΦΧΨΩΥΣΠΞΘΔΓ\", \"sym\":\"ΦΧΨΩΥΣΠΞΘΔΓ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{ΦΧΨΩΥΣΠΞΘΔΓ}} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['बलवान किया उपलब्ध संस्थान केन्द्रित', '!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"', 'ΦΧΨΩΥΣΠΞΘΔΓ', 'A'], false, [], [], 'QSA9IGAhQCMkJV4mKigpXystPTw-PywuLzsnOiJgIGDgpKzgpLLgpLXgpL7gpKgg4KSV4KS_4KSv4KS-IOCkieCkquCksuCkrOCljeCkpyDgpLjgpILgpLjgpY3gpKXgpL7gpKgg4KSV4KWH4KSo4KWN4KSm4KWN4KSw4KS_4KSkYCAgYM6mzqfOqM6pzqXOo86gzp7OmM6UzpNg');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"\", \"sym\":\"!@#$%^&*()_+-=<>?,./;\\\\':\\\\\"\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {!@#$%^&*()_+-=<>?,./;':\"} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'बलवान किया उपलब्ध संस्थान केन्द्रित', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-बलवान किया उपलब्ध संस्थान केन्द्रित\", \"sym\":\"बलवान किया उपलब्ध संस्थान केन्द्रित\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {बलवान किया उपलब्ध संस्थान केन्द्रित} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ΦΧΨΩΥΣΠΞΘΔΓ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ΦΧΨΩΥΣΠΞΘΔΓ\", \"sym\":\"ΦΧΨΩΥΣΠΞΘΔΓ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{ΦΧΨΩΥΣΠΞΘΔΓ}} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

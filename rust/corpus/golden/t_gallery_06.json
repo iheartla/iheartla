@@ -1,0 +1,1376 @@
+{
+ "id": "t_gallery_06",
+ "src": "`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        where\n        c ∈ ℝ^(f×s): the value of the Bayer pixel\n        w ∈ ℝ^(f×s): the local sample weight\n        R̂ ∈ ℝ^f: the local robustness",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        where\n        c ∈ ℝ^(f×s): the value of the Bayer pixel\n        w ∈ ℝ^(f×s): the local sample weight\n        R̂ ∈ ℝ^f: the local robustness",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     208
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       60
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        60
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": "C(x,y)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          60
+         ],
+         "sign": null,
+         "value": {
+          "_": "Divide",
+          "@": [
+           11,
+           60
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            11,
+            37
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             11,
+             37
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              12,
+              36
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               12,
+               36
+              ],
+              "op": {
+               "_": "Summation",
+               "@": [
+                12,
+                36
+               ],
+               "cond": null,
+               "exp": {
+                "_": "Factor",
+                "@": [
+                 16,
+                 36
+                ],
+                "op": {
+                 "_": "Summation",
+                 "@": [
+                  16,
+                  36
+                 ],
+                 "cond": null,
+                 "exp": {
+                  "_": "Multiply",
+                  "@": [
+                   20,
+                   36
+                  ],
+                  "left": {
+                   "_": "Multiply",
+                   "@": [
+                    20,
+                    31
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     20,
+                     25
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      20,
+                      25
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       20,
+                       21
+                      ],
+                      "id": null,
+                      "value": "c"
+                     },
+                     "right": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        22,
+                        23
+                       ],
+                       "id": null,
+                       "value": "n"
+                      },
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        24,
+                        25
+                       ],
+                       "id": null,
+                       "value": "i"
+                      }
+                     ]
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     26,
+                     31
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      26,
+                      31
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       26,
+                       27
+                      ],
+                      "id": null,
+                      "value": "w"
+                     },
+                     "right": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        28,
+                        29
+                       ],
+                       "id": null,
+                       "value": "n"
+                      },
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        30,
+                        31
+                       ],
+                       "id": null,
+                       "value": "i"
+                      }
+                     ]
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    32,
+                    36
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     32,
+                     36
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      32,
+                      34
+                     ],
+                     "id": null,
+                     "value": "R̂"
+                    },
+                    "right": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       35,
+                       36
+                      ],
+                      "id": null,
+                      "value": "n"
+                     }
+                    ]
+                   }
+                  }
+                 },
+                 "id": null,
+                 "lower": null,
+                 "range": null,
+                 "sign": null,
+                 "sub": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   18,
+                   19
+                  ],
+                  "id": null,
+                  "value": "i"
+                 },
+                 "u": null,
+                 "upper": null,
+                 "enum": [],
+                 "extra": []
+                }
+               },
+               "id": null,
+               "lower": null,
+               "range": null,
+               "sign": null,
+               "sub": {
+                "_": "IdentifierAlone",
+                "@": [
+                 14,
+                 15
+                ],
+                "id": null,
+                "value": "n"
+               },
+               "u": null,
+               "upper": null,
+               "enum": [],
+               "extra": []
+              }
+             }
+            }
+           }
+          },
+          "op": "/",
+          "right": {
+           "_": "Factor",
+           "@": [
+            40,
+            60
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             40,
+             60
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              41,
+              59
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               41,
+               59
+              ],
+              "op": {
+               "_": "Summation",
+               "@": [
+                41,
+                59
+               ],
+               "cond": null,
+               "exp": {
+                "_": "Factor",
+                "@": [
+                 45,
+                 59
+                ],
+                "op": {
+                 "_": "Summation",
+                 "@": [
+                  45,
+                  59
+                 ],
+                 "cond": null,
+                 "exp": {
+                  "_": "Multiply",
+                  "@": [
+                   49,
+                   59
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    49,
+                    54
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     49,
+                     54
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      49,
+                      50
+                     ],
+                     "id": null,
+                     "value": "w"
+                    },
+                    "right": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       51,
+                       52
+                      ],
+                      "id": null,
+                      "value": "n"
+                     },
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       53,
+                       54
+                      ],
+                      "id": null,
+                      "value": "i"
+                     }
+                    ]
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    55,
+                    59
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     55,
+                     59
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      55,
+                      57
+                     ],
+                     "id": null,
+                     "value": "R̂"
+                    },
+                    "right": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       58,
+                       59
+                      ],
+                      "id": null,
+                      "value": "n"
+                     }
+                    ]
+                   }
+                  }
+                 },
+                 "id": null,
+                 "lower": null,
+                 "range": null,
+                 "sign": null,
+                 "sub": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   47,
+                   48
+                  ],
+                  "id": null,
+                  "value": "i"
+                 },
+                 "u": null,
+                 "upper": null,
+                 "enum": [],
+                 "extra": []
+                }
+               },
+               "id": null,
+               "lower": null,
+               "range": null,
+               "sign": null,
+               "sub": {
+                "_": "IdentifierAlone",
+                "@": [
+                 43,
+                 44
+                ],
+                "id": null,
+                "value": "n"
+               },
+               "u": null,
+               "upper": null,
+               "enum": [],
+               "extra": []
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       69,
+       208
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        83,
+        208
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          83,
+          124
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the value of the Bayer pixel",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           87,
+           94
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            90,
+            91
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             90,
+             91
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              90,
+              91
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            92,
+            93
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             92,
+             93
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              92,
+              93
+             ],
+             "id": null,
+             "value": "s"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            83,
+            84
+           ],
+           "id": null,
+           "value": "c"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          133,
+          169
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the local sample weight",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           137,
+           144
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            140,
+            141
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             140,
+             141
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              140,
+              141
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            142,
+            143
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             142,
+             143
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              142,
+              143
+             ],
+             "id": null,
+             "value": "s"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            133,
+            134
+           ],
+           "id": null,
+           "value": "w"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          178,
+          208
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the local robustness",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           183,
+           186
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            185,
+            186
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             185,
+             186
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              185,
+              186
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            178,
+            180
+           ],
+           "id": null,
+           "value": "R̂"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        where\n        c ∈ ℝ^(f×s): the value of the Bayer pixel\n        w ∈ ℝ^(f×s): the local sample weight\n        R̂ ∈ ℝ^f: the local robustness",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     208
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       60
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        60
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": "C(x,y)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          60
+         ],
+         "sign": null,
+         "value": {
+          "_": "Divide",
+          "@": [
+           11,
+           60
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            11,
+            37
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             11,
+             37
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              12,
+              36
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               12,
+               36
+              ],
+              "op": {
+               "_": "Summation",
+               "@": [
+                12,
+                36
+               ],
+               "cond": null,
+               "exp": {
+                "_": "Factor",
+                "@": [
+                 16,
+                 36
+                ],
+                "op": {
+                 "_": "Summation",
+                 "@": [
+                  16,
+                  36
+                 ],
+                 "cond": null,
+                 "exp": {
+                  "_": "Multiply",
+                  "@": [
+                   20,
+                   36
+                  ],
+                  "left": {
+                   "_": "Multiply",
+                   "@": [
+                    20,
+                    31
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     20,
+                     25
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      20,
+                      25
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       20,
+                       21
+                      ],
+                      "id": null,
+                      "value": "c"
+                     },
+                     "right": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        22,
+                        23
+                       ],
+                       "id": null,
+                       "value": "n"
+                      },
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        24,
+                        25
+                       ],
+                       "id": null,
+                       "value": "i"
+                      }
+                     ]
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     26,
+                     31
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      26,
+                      31
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       26,
+                       27
+                      ],
+                      "id": null,
+                      "value": "w"
+                     },
+                     "right": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        28,
+                        29
+                       ],
+                       "id": null,
+                       "value": "n"
+                      },
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        30,
+                        31
+                       ],
+                       "id": null,
+                       "value": "i"
+                      }
+                     ]
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    32,
+                    36
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     32,
+                     36
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      32,
+                      34
+                     ],
+                     "id": null,
+                     "value": "R̂"
+                    },
+                    "right": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       35,
+                       36
+                      ],
+                      "id": null,
+                      "value": "n"
+                     }
+                    ]
+                   }
+                  }
+                 },
+                 "id": null,
+                 "lower": null,
+                 "range": null,
+                 "sign": null,
+                 "sub": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   18,
+                   19
+                  ],
+                  "id": null,
+                  "value": "i"
+                 },
+                 "u": null,
+                 "upper": null,
+                 "enum": [],
+                 "extra": []
+                }
+               },
+               "id": null,
+               "lower": null,
+               "range": null,
+               "sign": null,
+               "sub": {
+                "_": "IdentifierAlone",
+                "@": [
+                 14,
+                 15
+                ],
+                "id": null,
+                "value": "n"
+               },
+               "u": null,
+               "upper": null,
+               "enum": [],
+               "extra": []
+              }
+             }
+            }
+           }
+          },
+          "op": "/",
+          "right": {
+           "_": "Factor",
+           "@": [
+            40,
+            60
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             40,
+             60
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              41,
+              59
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               41,
+               59
+              ],
+              "op": {
+               "_": "Summation",
+               "@": [
+                41,
+                59
+               ],
+               "cond": null,
+               "exp": {
+                "_": "Factor",
+                "@": [
+                 45,
+                 59
+                ],
+                "op": {
+                 "_": "Summation",
+                 "@": [
+                  45,
+                  59
+                 ],
+                 "cond": null,
+                 "exp": {
+                  "_": "Multiply",
+                  "@": [
+                   49,
+                   59
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    49,
+                    54
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     49,
+                     54
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      49,
+                      50
+                     ],
+                     "id": null,
+                     "value": "w"
+                    },
+                    "right": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       51,
+                       52
+                      ],
+                      "id": null,
+                      "value": "n"
+                     },
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       53,
+                       54
+                      ],
+                      "id": null,
+                      "value": "i"
+                     }
+                    ]
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    55,
+                    59
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     55,
+                     59
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      55,
+                      57
+                     ],
+                     "id": null,
+                     "value": "R̂"
+                    },
+                    "right": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       58,
+                       59
+                      ],
+                      "id": null,
+                      "value": "n"
+                     }
+                    ]
+                   }
+                  }
+                 },
+                 "id": null,
+                 "lower": null,
+                 "range": null,
+                 "sign": null,
+                 "sub": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   47,
+                   48
+                  ],
+                  "id": null,
+                  "value": "i"
+                 },
+                 "u": null,
+                 "upper": null,
+                 "enum": [],
+                 "extra": []
+                }
+               },
+               "id": null,
+               "lower": null,
+               "range": null,
+               "sign": null,
+               "sub": {
+                "_": "IdentifierAlone",
+                "@": [
+                 43,
+                 44
+                ],
+                "id": null,
+                "value": "n"
+               },
+               "u": null,
+               "upper": null,
+               "enum": [],
+               "extra": []
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       69,
+       208
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        83,
+        208
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          83,
+          124
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the value of the Bayer pixel",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           87,
+           94
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            90,
+            91
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             90,
+             91
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              90,
+              91
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            92,
+            93
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             92,
+             93
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              92,
+              93
+             ],
+             "id": null,
+             "value": "s"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            83,
+            84
+           ],
+           "id": null,
+           "value": "c"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          133,
+          169
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the local sample weight",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           137,
+           144
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            140,
+            141
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             140,
+             141
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              140,
+              141
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            142,
+            143
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             142,
+             143
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              142,
+              143
+             ],
+             "id": null,
+             "value": "s"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            133,
+            134
+           ],
+           "id": null,
+           "value": "w"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          178,
+          208
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the local robustness",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           183,
+           186
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            185,
+            186
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             185,
+             186
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              185,
+              186
+             ],
+             "id": null,
+             "value": "f"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            178,
+            180
+           ],
+           "id": null,
+           "value": "R̂"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        where\n        c ∈ ℝ^(f×s): the value of the Bayer pixel\n        w ∈ ℝ^(f×s): the local sample weight\n        R̂ ∈ ℝ^f: the local robustness\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, c, w, R̂):\n        c = np.asarray(c, dtype=np.float64)\n        w = np.asarray(w, dtype=np.float64)\n        R̂ = np.asarray(R̂, dtype=np.float64)\n        f = c.shape[0]\n        s = c.shape[1]\n        assert c.shape == (f, s)\n        assert w.shape == (f, s)\n        assert R̂.shape == (f,)\n        # `C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        sum_0 = 0\n        for n in range(1, w.shape[0]+1):\n            sum_1 = 0\n            for i in range(1, w.shape[1]+1):\n                sum_1 += c[n-1, i-1] * w[n-1, i-1] * R̂[n-1]\n            sum_0 += sum_1\n        sum_2 = 0\n        for n in range(1, w.shape[0]+1):\n            sum_3 = 0\n            for i in range(1, w.shape[1]+1):\n                sum_3 += w[n-1, i-1] * R̂[n-1]\n            sum_2 += sum_3\n        self.Cx_comma_y = ((sum_0)) / ((sum_2))\n\n\n\n\n\n",
+  "eigen": "/*\n`C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        where\n        c ∈ ℝ^(f×s): the value of the Bayer pixel\n        w ∈ ℝ^(f×s): the local sample weight\n        R̂ ∈ ℝ^f: the local robustness\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT Cx_comma_y;\n\n    heartlib(\n        const Eigen::MatrixXd & c,\n        const Eigen::MatrixXd & w,\n        const Eigen::VectorXd & R̂)\n    {\n        const long f = c.rows();\n        const long s = c.cols();\n        assert( c.rows() == f );\n        assert( w.rows() == f );\n        assert( w.cols() == s );\n        assert( R̂.size() == f );\n        // `C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n        DT sum_0 = 0;\n        for(int n=1; n<=c.rows(); n++){\n            DT sum_1 = 0;\n            for(int i=1; i<=c.cols(); i++){\n                sum_1 += c(n-1, i-1) * w(n-1, i-1) * R̂[n-1];\n            }\n            sum_0 += sum_1;\n        }\n        DT sum_2 = 0;\n        for(int n=1; n<=w.rows(); n++){\n            DT sum_3 = 0;\n            for(int i=1; i<=w.cols(); i++){\n                sum_3 += w(n-1, i-1) * R̂[n-1];\n            }\n            sum_2 += sum_3;\n        }\n        Cx_comma_y = (sum_0) / DT((sum_2));\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nC(x,y) & = \\frac{\\sum_{n} \\sum_{i} c_{n, i} w_{n, i} \\textit{R̂}_{ n }}{\\sum_{n} \\sum_{i} w_{n, i} \\textit{R̂}_{ n }} \\\\\n\\intertext{where} \nc & ∈ \\mathbb{R}^{ f \\times s } \\text{ the value of the Bayer pixel} \\\\\nw & ∈ \\mathbb{R}^{ f \\times s } \\text{ the local sample weight} \\\\\n\\textit{R̂} & ∈ \\mathbb{R}^{ f} \\text{ the local robustness} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nC(x,y) & = \\frac{\\sum_{n} \\sum_{i} c_{n, i} w_{n, i} \\textit{R̂}_{ n }}{\\sum_{n} \\sum_{i} w_{n, i} \\textit{R̂}_{ n }} \\\\\nwhere \\\\\nc & ∈ \\mathbb{R}^{ f \\times s } \\text{ the value of the Bayer pixel} \\\\\nw & ∈ \\mathbb{R}^{ f \\times s } \\text{ the local sample weight} \\\\\n\\textit{R̂} & ∈ \\mathbb{R}^{ f} \\text{ the local robustness} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(c, w, R_hat)\n% output = heartlib(c, w, R̂)\n%\n%    `C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n%            where\n%            c ∈ ℝ^(f×s): the value of the Bayer pixel\n%            w ∈ ℝ^(f×s): the local sample weight\n%            R̂ ∈ ℝ^f: the local robustness\n    R_hat = reshape(R_hat,[],1);\n\n    f = size(c, 1);\n    s = size(c, 2);\n    assert( isequal(size(c), [f, s]) );\n    assert( isequal(size(w), [f, s]) );\n    assert( numel(R_hat) == f );\n\n    % `C(x,y)` = (∑_n ∑_i c_n,i w_n,i R̂_n) / (∑_n ∑_i w_n,i R̂_n)\n\n    sum_0 = 0;\n    for n = 1:size(c,1)\n        sum_1 = 0;\n        for i = 1:size(c,2)\n            sum_1 = sum_1 + c(n, i) * w(n, i) * R_hat(n);\n        end\n        sum_0 = sum_0 + sum_1;\n    end\n    sum_2 = 0;\n    for n = 1:size(w,1)\n        sum_3 = 0;\n        for i = 1:size(w,2)\n            sum_3 = sum_3 + w(n, i) * R_hat(n);\n        end\n        sum_2 = sum_2 + sum_3;\n    end\n    Cx_y = (sum_0) / (sum_2);\n    output.Cx_y = Cx_y;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'C(x,y)', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-C(x,y)\", \"sym\":\"C(x,y)\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {C(x,y)} } & = \\frac{\\sum_{n} \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {c} }_{n, i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }_{n, i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R̂', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R̂\", \"sym\":\"R̂\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\textit{R̂}} }_{ n }}{\\sum_{n} \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }_{n, i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R̂', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R̂\", \"sym\":\"R̂\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\textit{R̂}} }_{ n }}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['c', 'R̂', 'w', 'C(x,y)'], false, [], [], 'YEMoeCx5KWAgPSAo4oiRX24g4oiRX2kgY19uLGkgd19uLGkgUsyCX24pIC8gKOKIkV9uIOKIkV9pIHdfbixpIFLMgl9uKQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {c} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} } \\times \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} } } \\text{ the value of the Bayer pixel} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} } \\times \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} } } \\text{ the local sample weight} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R̂', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R̂\", \"sym\":\"R̂\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\textit{R̂}} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }} \\text{ the local robustness} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

@@ -1,0 +1,2666 @@
+{
+ "id": "t_gallery_21",
+ "src": "`∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n               (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n               (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        where\n        A: ℝ^(3×3) ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n               (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n               (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        where\n        A: ℝ^(3×3) ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     184
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       150
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        150
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          10
+         ],
+         "id": "∂²I₅/∂f²",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          13,
+          150
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           13,
+           150
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            13,
+            14
+           ],
+           "num": {
+            "_": "Integer",
+            "@": [
+             13,
+             14
+            ],
+            "value": [
+             "2"
+            ]
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            14,
+            150
+           ],
+           "m": {
+            "_": "Matrix",
+            "@": [
+             14,
+             150
+            ],
+            "value": {
+             "_": "MatrixRows",
+             "@": [
+              15,
+              149
+             ],
+             "r": {
+              "_": "MatrixRow",
+              "@": [
+               115,
+               149
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                139,
+                149
+               ],
+               "sign": null,
+               "value": {
+                "_": "Multiply",
+                "@": [
+                 139,
+                 149
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  139,
+                  146
+                 ],
+                 "sub": {
+                  "_": "Subexpression",
+                  "@": [
+                   139,
+                   146
+                  ],
+                  "value": {
+                   "_": "Expression",
+                   "@": [
+                    140,
+                    145
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     140,
+                     145
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      140,
+                      145
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       140,
+                       141
+                      ],
+                      "id": null,
+                      "value": "A"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        142,
+                        143
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      },
+                      {
+                       "_": "Integer",
+                       "@": [
+                        144,
+                        145
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  146,
+                  149
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   146,
+                   149
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    146,
+                    147
+                   ],
+                   "id": null,
+                   "value": "I"
+                  },
+                  "right": [
+                   {
+                    "_": "Integer",
+                    "@": [
+                     148,
+                     149
+                    ],
+                    "value": [
+                     "3"
+                    ]
+                   }
+                  ]
+                 }
+                }
+               }
+              },
+              "rc": {
+               "_": "MatrixRowCommas",
+               "@": [
+                115,
+                139
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 127,
+                 137
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  127,
+                  137
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   127,
+                   134
+                  ],
+                  "sub": {
+                   "_": "Subexpression",
+                   "@": [
+                    127,
+                    134
+                   ],
+                   "value": {
+                    "_": "Expression",
+                    "@": [
+                     128,
+                     133
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      128,
+                      133
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       128,
+                       133
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        128,
+                        129
+                       ],
+                       "id": null,
+                       "value": "A"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         130,
+                         131
+                        ],
+                        "value": [
+                         "3"
+                        ]
+                       },
+                       {
+                        "_": "Integer",
+                        "@": [
+                         132,
+                         133
+                        ],
+                        "value": [
+                         "2"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   134,
+                   137
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    134,
+                    137
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     134,
+                     135
+                    ],
+                    "id": null,
+                    "value": "I"
+                   },
+                   "right": [
+                    {
+                     "_": "Integer",
+                     "@": [
+                      136,
+                      137
+                     ],
+                     "value": [
+                      "3"
+                     ]
+                    }
+                   ]
+                  }
+                 }
+                }
+               },
+               "value": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 115,
+                 127
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  115,
+                  125
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   115,
+                   125
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    115,
+                    122
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     115,
+                     122
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      116,
+                      121
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       116,
+                       121
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        116,
+                        121
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         116,
+                         117
+                        ],
+                        "id": null,
+                        "value": "A"
+                       },
+                       "right": [
+                        {
+                         "_": "Integer",
+                         "@": [
+                          118,
+                          119
+                         ],
+                         "value": [
+                          "3"
+                         ]
+                        },
+                        {
+                         "_": "Integer",
+                         "@": [
+                          120,
+                          121
+                         ],
+                         "value": [
+                          "1"
+                         ]
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    122,
+                    125
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     122,
+                     125
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      122,
+                      123
+                     ],
+                     "id": null,
+                     "value": "I"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       124,
+                       125
+                      ],
+                      "value": [
+                       "3"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "rs": {
+              "_": "MatrixRows",
+              "@": [
+               15,
+               99
+              ],
+              "r": {
+               "_": "MatrixRow",
+               "@": [
+                65,
+                99
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 89,
+                 99
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  89,
+                  99
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   89,
+                   96
+                  ],
+                  "sub": {
+                   "_": "Subexpression",
+                   "@": [
+                    89,
+                    96
+                   ],
+                   "value": {
+                    "_": "Expression",
+                    "@": [
+                     90,
+                     95
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      90,
+                      95
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       90,
+                       95
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        90,
+                        91
+                       ],
+                       "id": null,
+                       "value": "A"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         92,
+                         93
+                        ],
+                        "value": [
+                         "2"
+                        ]
+                       },
+                       {
+                        "_": "Integer",
+                        "@": [
+                         94,
+                         95
+                        ],
+                        "value": [
+                         "3"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   96,
+                   99
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    96,
+                    99
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     96,
+                     97
+                    ],
+                    "id": null,
+                    "value": "I"
+                   },
+                   "right": [
+                    {
+                     "_": "Integer",
+                     "@": [
+                      98,
+                      99
+                     ],
+                     "value": [
+                      "3"
+                     ]
+                    }
+                   ]
+                  }
+                 }
+                }
+               },
+               "rc": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 65,
+                 89
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  77,
+                  87
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   77,
+                   87
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    77,
+                    84
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     77,
+                     84
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      78,
+                      83
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       78,
+                       83
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        78,
+                        83
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         78,
+                         79
+                        ],
+                        "id": null,
+                        "value": "A"
+                       },
+                       "right": [
+                        {
+                         "_": "Integer",
+                         "@": [
+                          80,
+                          81
+                         ],
+                         "value": [
+                          "2"
+                         ]
+                        },
+                        {
+                         "_": "Integer",
+                         "@": [
+                          82,
+                          83
+                         ],
+                         "value": [
+                          "2"
+                         ]
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    84,
+                    87
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     84,
+                     87
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      84,
+                      85
+                     ],
+                     "id": null,
+                     "value": "I"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       86,
+                       87
+                      ],
+                      "value": [
+                       "3"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 }
+                },
+                "value": {
+                 "_": "MatrixRowCommas",
+                 "@": [
+                  65,
+                  77
+                 ],
+                 "exp": {
+                  "_": "ExpInMatrix",
+                  "@": [
+                   65,
+                   75
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Multiply",
+                   "@": [
+                    65,
+                    75
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     65,
+                     72
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      65,
+                      72
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       66,
+                       71
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        66,
+                        71
+                       ],
+                       "id0": {
+                        "_": "IdentifierSubscript",
+                        "@": [
+                         66,
+                         71
+                        ],
+                        "left": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          66,
+                          67
+                         ],
+                         "id": null,
+                         "value": "A"
+                        },
+                        "right": [
+                         {
+                          "_": "Integer",
+                          "@": [
+                           68,
+                           69
+                          ],
+                          "value": [
+                           "2"
+                          ]
+                         },
+                         {
+                          "_": "Integer",
+                          "@": [
+                           70,
+                           71
+                          ],
+                          "value": [
+                           "1"
+                          ]
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     72,
+                     75
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      72,
+                      75
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       72,
+                       73
+                      ],
+                      "id": null,
+                      "value": "I"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        74,
+                        75
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "rs": {
+               "_": "MatrixRows",
+               "@": [
+                15,
+                49
+               ],
+               "r": {
+                "_": "MatrixRow",
+                "@": [
+                 15,
+                 49
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  39,
+                  49
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   39,
+                   49
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    39,
+                    46
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     39,
+                     46
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      40,
+                      45
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       40,
+                       45
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        40,
+                        45
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         40,
+                         41
+                        ],
+                        "id": null,
+                        "value": "A"
+                       },
+                       "right": [
+                        {
+                         "_": "Integer",
+                         "@": [
+                          42,
+                          43
+                         ],
+                         "value": [
+                          "1"
+                         ]
+                        },
+                        {
+                         "_": "Integer",
+                         "@": [
+                          44,
+                          45
+                         ],
+                         "value": [
+                          "3"
+                         ]
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    46,
+                    49
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     46,
+                     49
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      46,
+                      47
+                     ],
+                     "id": null,
+                     "value": "I"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       48,
+                       49
+                      ],
+                      "value": [
+                       "3"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 }
+                },
+                "rc": {
+                 "_": "MatrixRowCommas",
+                 "@": [
+                  15,
+                  39
+                 ],
+                 "exp": {
+                  "_": "ExpInMatrix",
+                  "@": [
+                   27,
+                   37
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Multiply",
+                   "@": [
+                    27,
+                    37
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     27,
+                     34
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      27,
+                      34
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       28,
+                       33
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        28,
+                        33
+                       ],
+                       "id0": {
+                        "_": "IdentifierSubscript",
+                        "@": [
+                         28,
+                         33
+                        ],
+                        "left": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          28,
+                          29
+                         ],
+                         "id": null,
+                         "value": "A"
+                        },
+                        "right": [
+                         {
+                          "_": "Integer",
+                          "@": [
+                           30,
+                           31
+                          ],
+                          "value": [
+                           "1"
+                          ]
+                         },
+                         {
+                          "_": "Integer",
+                          "@": [
+                           32,
+                           33
+                          ],
+                          "value": [
+                           "2"
+                          ]
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     34,
+                     37
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      34,
+                      37
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       34,
+                       35
+                      ],
+                      "id": null,
+                      "value": "I"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        36,
+                        37
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 },
+                 "value": {
+                  "_": "MatrixRowCommas",
+                  "@": [
+                   15,
+                   27
+                  ],
+                  "exp": {
+                   "_": "ExpInMatrix",
+                   "@": [
+                    15,
+                    25
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Multiply",
+                    "@": [
+                     15,
+                     25
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      15,
+                      22
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       15,
+                       22
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        16,
+                        21
+                       ],
+                       "sign": null,
+                       "value": {
+                        "_": "Factor",
+                        "@": [
+                         16,
+                         21
+                        ],
+                        "id0": {
+                         "_": "IdentifierSubscript",
+                         "@": [
+                          16,
+                          21
+                         ],
+                         "left": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           16,
+                           17
+                          ],
+                          "id": null,
+                          "value": "A"
+                         },
+                         "right": [
+                          {
+                           "_": "Integer",
+                           "@": [
+                            18,
+                            19
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          },
+                          {
+                           "_": "Integer",
+                           "@": [
+                            20,
+                            21
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          }
+                         ]
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      22,
+                      25
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       22,
+                       25
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        22,
+                        23
+                       ],
+                       "id": null,
+                       "value": "I"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         24,
+                         25
+                        ],
+                        "value": [
+                         "3"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       159,
+       183
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        173,
+        183
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          173,
+          183
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           176,
+           183
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            179,
+            180
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             179,
+             180
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              179,
+              180
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            181,
+            182
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             181,
+             182
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              181,
+              182
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            173,
+            174
+           ],
+           "id": null,
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n               (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n               (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        where\n        A: ℝ^(3×3) ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     184
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       150
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        150
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          10
+         ],
+         "id": "∂²I₅/∂f²",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          13,
+          150
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           13,
+           150
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            13,
+            14
+           ],
+           "num": {
+            "_": "Integer",
+            "@": [
+             13,
+             14
+            ],
+            "value": [
+             "2"
+            ]
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            14,
+            150
+           ],
+           "m": {
+            "_": "Matrix",
+            "@": [
+             14,
+             150
+            ],
+            "value": {
+             "_": "MatrixRows",
+             "@": [
+              15,
+              149
+             ],
+             "r": {
+              "_": "MatrixRow",
+              "@": [
+               115,
+               149
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                139,
+                149
+               ],
+               "sign": null,
+               "value": {
+                "_": "Multiply",
+                "@": [
+                 139,
+                 149
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  139,
+                  146
+                 ],
+                 "sub": {
+                  "_": "Subexpression",
+                  "@": [
+                   139,
+                   146
+                  ],
+                  "value": {
+                   "_": "Expression",
+                   "@": [
+                    140,
+                    145
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     140,
+                     145
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      140,
+                      145
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       140,
+                       141
+                      ],
+                      "id": null,
+                      "value": "A"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        142,
+                        143
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      },
+                      {
+                       "_": "Integer",
+                       "@": [
+                        144,
+                        145
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  146,
+                  149
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   146,
+                   149
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    146,
+                    147
+                   ],
+                   "id": null,
+                   "value": "I"
+                  },
+                  "right": [
+                   {
+                    "_": "Integer",
+                    "@": [
+                     148,
+                     149
+                    ],
+                    "value": [
+                     "3"
+                    ]
+                   }
+                  ]
+                 }
+                }
+               }
+              },
+              "rc": {
+               "_": "MatrixRowCommas",
+               "@": [
+                115,
+                139
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 127,
+                 137
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  127,
+                  137
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   127,
+                   134
+                  ],
+                  "sub": {
+                   "_": "Subexpression",
+                   "@": [
+                    127,
+                    134
+                   ],
+                   "value": {
+                    "_": "Expression",
+                    "@": [
+                     128,
+                     133
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      128,
+                      133
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       128,
+                       133
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        128,
+                        129
+                       ],
+                       "id": null,
+                       "value": "A"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         130,
+                         131
+                        ],
+                        "value": [
+                         "3"
+                        ]
+                       },
+                       {
+                        "_": "Integer",
+                        "@": [
+                         132,
+                         133
+                        ],
+                        "value": [
+                         "2"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   134,
+                   137
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    134,
+                    137
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     134,
+                     135
+                    ],
+                    "id": null,
+                    "value": "I"
+                   },
+                   "right": [
+                    {
+                     "_": "Integer",
+                     "@": [
+                      136,
+                      137
+                     ],
+                     "value": [
+                      "3"
+                     ]
+                    }
+                   ]
+                  }
+                 }
+                }
+               },
+               "value": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 115,
+                 127
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  115,
+                  125
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   115,
+                   125
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    115,
+                    122
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     115,
+                     122
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      116,
+                      121
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       116,
+                       121
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        116,
+                        121
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         116,
+                         117
+                        ],
+                        "id": null,
+                        "value": "A"
+                       },
+                       "right": [
+                        {
+                         "_": "Integer",
+                         "@": [
+                          118,
+                          119
+                         ],
+                         "value": [
+                          "3"
+                         ]
+                        },
+                        {
+                         "_": "Integer",
+                         "@": [
+                          120,
+                          121
+                         ],
+                         "value": [
+                          "1"
+                         ]
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    122,
+                    125
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     122,
+                     125
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      122,
+                      123
+                     ],
+                     "id": null,
+                     "value": "I"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       124,
+                       125
+                      ],
+                      "value": [
+                       "3"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "rs": {
+              "_": "MatrixRows",
+              "@": [
+               15,
+               99
+              ],
+              "r": {
+               "_": "MatrixRow",
+               "@": [
+                65,
+                99
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 89,
+                 99
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  89,
+                  99
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   89,
+                   96
+                  ],
+                  "sub": {
+                   "_": "Subexpression",
+                   "@": [
+                    89,
+                    96
+                   ],
+                   "value": {
+                    "_": "Expression",
+                    "@": [
+                     90,
+                     95
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      90,
+                      95
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       90,
+                       95
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        90,
+                        91
+                       ],
+                       "id": null,
+                       "value": "A"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         92,
+                         93
+                        ],
+                        "value": [
+                         "2"
+                        ]
+                       },
+                       {
+                        "_": "Integer",
+                        "@": [
+                         94,
+                         95
+                        ],
+                        "value": [
+                         "3"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   96,
+                   99
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    96,
+                    99
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     96,
+                     97
+                    ],
+                    "id": null,
+                    "value": "I"
+                   },
+                   "right": [
+                    {
+                     "_": "Integer",
+                     "@": [
+                      98,
+                      99
+                     ],
+                     "value": [
+                      "3"
+                     ]
+                    }
+                   ]
+                  }
+                 }
+                }
+               },
+               "rc": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 65,
+                 89
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  77,
+                  87
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   77,
+                   87
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    77,
+                    84
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     77,
+                     84
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      78,
+                      83
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       78,
+                       83
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        78,
+                        83
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         78,
+                         79
+                        ],
+                        "id": null,
+                        "value": "A"
+                       },
+                       "right": [
+                        {
+                         "_": "Integer",
+                         "@": [
+                          80,
+                          81
+                         ],
+                         "value": [
+                          "2"
+                         ]
+                        },
+                        {
+                         "_": "Integer",
+                         "@": [
+                          82,
+                          83
+                         ],
+                         "value": [
+                          "2"
+                         ]
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    84,
+                    87
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     84,
+                     87
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      84,
+                      85
+                     ],
+                     "id": null,
+                     "value": "I"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       86,
+                       87
+                      ],
+                      "value": [
+                       "3"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 }
+                },
+                "value": {
+                 "_": "MatrixRowCommas",
+                 "@": [
+                  65,
+                  77
+                 ],
+                 "exp": {
+                  "_": "ExpInMatrix",
+                  "@": [
+                   65,
+                   75
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Multiply",
+                   "@": [
+                    65,
+                    75
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     65,
+                     72
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      65,
+                      72
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       66,
+                       71
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        66,
+                        71
+                       ],
+                       "id0": {
+                        "_": "IdentifierSubscript",
+                        "@": [
+                         66,
+                         71
+                        ],
+                        "left": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          66,
+                          67
+                         ],
+                         "id": null,
+                         "value": "A"
+                        },
+                        "right": [
+                         {
+                          "_": "Integer",
+                          "@": [
+                           68,
+                           69
+                          ],
+                          "value": [
+                           "2"
+                          ]
+                         },
+                         {
+                          "_": "Integer",
+                          "@": [
+                           70,
+                           71
+                          ],
+                          "value": [
+                           "1"
+                          ]
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     72,
+                     75
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      72,
+                      75
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       72,
+                       73
+                      ],
+                      "id": null,
+                      "value": "I"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        74,
+                        75
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "rs": {
+               "_": "MatrixRows",
+               "@": [
+                15,
+                49
+               ],
+               "r": {
+                "_": "MatrixRow",
+                "@": [
+                 15,
+                 49
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  39,
+                  49
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   39,
+                   49
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    39,
+                    46
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     39,
+                     46
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      40,
+                      45
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       40,
+                       45
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        40,
+                        45
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         40,
+                         41
+                        ],
+                        "id": null,
+                        "value": "A"
+                       },
+                       "right": [
+                        {
+                         "_": "Integer",
+                         "@": [
+                          42,
+                          43
+                         ],
+                         "value": [
+                          "1"
+                         ]
+                        },
+                        {
+                         "_": "Integer",
+                         "@": [
+                          44,
+                          45
+                         ],
+                         "value": [
+                          "3"
+                         ]
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    46,
+                    49
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     46,
+                     49
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      46,
+                      47
+                     ],
+                     "id": null,
+                     "value": "I"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       48,
+                       49
+                      ],
+                      "value": [
+                       "3"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 }
+                },
+                "rc": {
+                 "_": "MatrixRowCommas",
+                 "@": [
+                  15,
+                  39
+                 ],
+                 "exp": {
+                  "_": "ExpInMatrix",
+                  "@": [
+                   27,
+                   37
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Multiply",
+                   "@": [
+                    27,
+                    37
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     27,
+                     34
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      27,
+                      34
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       28,
+                       33
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        28,
+                        33
+                       ],
+                       "id0": {
+                        "_": "IdentifierSubscript",
+                        "@": [
+                         28,
+                         33
+                        ],
+                        "left": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          28,
+                          29
+                         ],
+                         "id": null,
+                         "value": "A"
+                        },
+                        "right": [
+                         {
+                          "_": "Integer",
+                          "@": [
+                           30,
+                           31
+                          ],
+                          "value": [
+                           "1"
+                          ]
+                         },
+                         {
+                          "_": "Integer",
+                          "@": [
+                           32,
+                           33
+                          ],
+                          "value": [
+                           "2"
+                          ]
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     34,
+                     37
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      34,
+                      37
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       34,
+                       35
+                      ],
+                      "id": null,
+                      "value": "I"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        36,
+                        37
+                       ],
+                       "value": [
+                        "3"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  }
+                 },
+                 "value": {
+                  "_": "MatrixRowCommas",
+                  "@": [
+                   15,
+                   27
+                  ],
+                  "exp": {
+                   "_": "ExpInMatrix",
+                   "@": [
+                    15,
+                    25
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Multiply",
+                    "@": [
+                     15,
+                     25
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      15,
+                      22
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       15,
+                       22
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        16,
+                        21
+                       ],
+                       "sign": null,
+                       "value": {
+                        "_": "Factor",
+                        "@": [
+                         16,
+                         21
+                        ],
+                        "id0": {
+                         "_": "IdentifierSubscript",
+                         "@": [
+                          16,
+                          21
+                         ],
+                         "left": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           16,
+                           17
+                          ],
+                          "id": null,
+                          "value": "A"
+                         },
+                         "right": [
+                          {
+                           "_": "Integer",
+                           "@": [
+                            18,
+                            19
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          },
+                          {
+                           "_": "Integer",
+                           "@": [
+                            20,
+                            21
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          }
+                         ]
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      22,
+                      25
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       22,
+                       25
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        22,
+                        23
+                       ],
+                       "id": null,
+                       "value": "I"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         24,
+                         25
+                        ],
+                        "value": [
+                         "3"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       159,
+       183
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        173,
+        183
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          173,
+          183
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           176,
+           183
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            179,
+            180
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             179,
+             180
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              179,
+              180
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            181,
+            182
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             181,
+             182
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              181,
+              182
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            173,
+            174
+           ],
+           "id": null,
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n               (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n               (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        where\n        A: ℝ^(3×3) \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (3, 3)\n        # `∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n        #                (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n        #                (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        dee2I5_solidus_dee_f2_0 = np.block([[(A[1-1, 1-1]) * np.identity(3), (A[1-1, 2-1]) * np.identity(3), (A[1-1, 3-1]) * np.identity(3)], [(A[2-1, 1-1]) * np.identity(3), (A[2-1, 2-1]) * np.identity(3), (A[2-1, 3-1]) * np.identity(3)], [(A[3-1, 1-1]) * np.identity(3), (A[3-1, 2-1]) * np.identity(3), (A[3-1, 3-1]) * np.identity(3)]])\n        self.dee2I5_solidus_dee_f2 = 2 * dee2I5_solidus_dee_f2_0\n\n\n\n\n\n",
+  "eigen": "/*\n`∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n               (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n               (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        where\n        A: ℝ^(3×3) \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 9, 9> dee2I5_solidus_dee_f2;\n\n    heartlib(const Eigen::Matrix<double, 3, 3> & A)\n    {\n    \n        // `∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n        //                (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n        //                (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n        Eigen::Matrix<DT, 9, 9> dee2I5_solidus_dee_f2_0;\n        dee2I5_solidus_dee_f2_0 << (A(1-1, 1-1)) * MatrixD::Identity(3, 3), (A(1-1, 2-1)) * MatrixD::Identity(3, 3), (A(1-1, 3-1)) * MatrixD::Identity(3, 3),\n        (A(2-1, 1-1)) * MatrixD::Identity(3, 3), (A(2-1, 2-1)) * MatrixD::Identity(3, 3), (A(2-1, 3-1)) * MatrixD::Identity(3, 3),\n        (A(3-1, 1-1)) * MatrixD::Identity(3, 3), (A(3-1, 2-1)) * MatrixD::Identity(3, 3), (A(3-1, 3-1)) * MatrixD::Identity(3, 3);\n        dee2I5_solidus_dee_f2 = DT(2) * dee2I5_solidus_dee_f2_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n∂²I₅/∂f² & = 2 \\begin{bmatrix}\n\\left( A_{1, 1} \\right) I_{ 3 } & \\left( A_{1, 2} \\right) I_{ 3 } & \\left( A_{1, 3} \\right) I_{ 3 }\\\\\n\\left( A_{2, 1} \\right) I_{ 3 } & \\left( A_{2, 2} \\right) I_{ 3 } & \\left( A_{2, 3} \\right) I_{ 3 }\\\\\n\\left( A_{3, 1} \\right) I_{ 3 } & \\left( A_{3, 2} \\right) I_{ 3 } & \\left( A_{3, 3} \\right) I_{ 3 }\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 3 \\times 3 } \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n∂²I₅/∂f² & = 2 \\begin{bmatrix}\n\\left( A_{1, 1} \\right) I_{ 3 } & \\left( A_{1, 2} \\right) I_{ 3 } & \\left( A_{1, 3} \\right) I_{ 3 }\\\\\n\\left( A_{2, 1} \\right) I_{ 3 } & \\left( A_{2, 2} \\right) I_{ 3 } & \\left( A_{2, 3} \\right) I_{ 3 }\\\\\n\\left( A_{3, 1} \\right) I_{ 3 } & \\left( A_{3, 2} \\right) I_{ 3 } & \\left( A_{3, 3} \\right) I_{ 3 }\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 3 \\times 3 } \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    `∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n%                   (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n%                   (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n%            where\n%            A: ℝ^(3×3) \n    assert( isequal(size(A), [3, 3]) );\n\n    % `∂²I₅/∂f²` = 2[(A_1,1)I_3  (A_1,2)I_3  (A_1,3)I_3\n    %                (A_2,1)I_3  (A_2,2)I_3  (A_2,3)I_3\n    %                (A_3,1)I_3  (A_3,2)I_3  (A_3,3)I_3]\n\n    dee2I5_solidus_dee_f2_0 = [[(A(1, 1)) * speye(3), (A(1, 2)) * speye(3), (A(1, 3)) * speye(3)]; [(A(2, 1)) * speye(3), (A(2, 2)) * speye(3), (A(2, 3)) * speye(3)]; [(A(3, 1)) * speye(3), (A(3, 2)) * speye(3), (A(3, 3)) * speye(3)]];\n    dee2I5_solidus_dee_f2 = 2 * dee2I5_solidus_dee_f2_0;\n    output.dee2I5_solidus_dee_f2 = dee2I5_solidus_dee_f2;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '∂²I₅/∂f²', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-∂²I₅/∂f²\", \"sym\":\"∂²I₅/∂f²\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {∂²I₅/∂f²} } & = 2 \\begin{bmatrix}\n\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{1, 1} \\right) I_{ 3 } & \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{1, 2} \\right) I_{ 3 } & \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{1, 3} \\right) I_{ 3 }\\\\\n\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{2, 1} \\right) I_{ 3 } & \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{2, 2} \\right) I_{ 3 } & \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{2, 3} \\right) I_{ 3 }\\\\\n\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{3, 1} \\right) I_{ 3 } & \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{3, 2} \\right) I_{ 3 } & \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{3, 3} \\right) I_{ 3 }\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', '∂²I₅/∂f²'], false, [], [], 'YOKIgsKySeKChS_iiIJmwrJgID0gMlsoQV8xLDEpSV8zICAoQV8xLDIpSV8zICAoQV8xLDMpSV8zCiAgICAgICAgICAgICAgIChBXzIsMSlJXzMgIChBXzIsMilJXzMgIChBXzIsMylJXzMKICAgICAgICAgICAgICAgKEFfMywxKUlfMyAgKEFfMywyKUlfMyAgKEFfMywzKUlfM10=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 3 \\times 3 } \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

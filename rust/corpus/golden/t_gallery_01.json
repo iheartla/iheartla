@@ -1,0 +1,1154 @@
+{
+ "id": "t_gallery_01",
+ "src": "sin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "sin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     260
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       26
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        14,
+        26
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         5,
+         8
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          5,
+          8
+         ],
+         "id": null,
+         "value": "cos"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       35,
+       126
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        35,
+        126
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          35,
+          44
+         ],
+         "id": "x(θ, ϕ)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          47,
+          126
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           47,
+           126
+          ],
+          "m": {
+           "_": "Matrix",
+           "@": [
+            47,
+            126
+           ],
+           "value": {
+            "_": "MatrixRows",
+            "@": [
+             48,
+             125
+            ],
+            "r": {
+             "_": "MatrixRow",
+             "@": [
+              118,
+              125
+             ],
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               118,
+               125
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                118,
+                125
+               ],
+               "op": {
+                "_": "Function",
+                "@": [
+                 118,
+                 125
+                ],
+                "name": [
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   118,
+                   122
+                  ],
+                  "id": null,
+                  "value": "Rsin"
+                 },
+                 []
+                ],
+                "p": "(",
+                "params": [
+                 {
+                  "_": "Expression",
+                  "@": [
+                   123,
+                   124
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    123,
+                    124
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     123,
+                     124
+                    ],
+                    "id": null,
+                    "value": "ϕ"
+                   }
+                  }
+                 }
+                ],
+                "separators": []
+               }
+              }
+             }
+            },
+            "rs": {
+             "_": "MatrixRows",
+             "@": [
+              48,
+              96
+             ],
+             "r": {
+              "_": "MatrixRow",
+              "@": [
+               83,
+               96
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                83,
+                96
+               ],
+               "sign": null,
+               "value": {
+                "_": "Multiply",
+                "@": [
+                 83,
+                 96
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  83,
+                  90
+                 ],
+                 "op": {
+                  "_": "Function",
+                  "@": [
+                   83,
+                   90
+                  ],
+                  "name": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     83,
+                     87
+                    ],
+                    "id": null,
+                    "value": "Rsin"
+                   },
+                   []
+                  ],
+                  "p": "(",
+                  "params": [
+                   {
+                    "_": "Expression",
+                    "@": [
+                     88,
+                     89
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      88,
+                      89
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       88,
+                       89
+                      ],
+                      "id": null,
+                      "value": "θ"
+                     }
+                    }
+                   }
+                  ],
+                  "separators": []
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  90,
+                  96
+                 ],
+                 "op": {
+                  "_": "Function",
+                  "@": [
+                   90,
+                   96
+                  ],
+                  "name": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     90,
+                     93
+                    ],
+                    "id": null,
+                    "value": "cos"
+                   },
+                   []
+                  ],
+                  "p": "(",
+                  "params": [
+                   {
+                    "_": "Expression",
+                    "@": [
+                     94,
+                     95
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      94,
+                      95
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       94,
+                       95
+                      ],
+                      "id": null,
+                      "value": "ϕ"
+                     }
+                    }
+                   }
+                  ],
+                  "separators": []
+                 }
+                }
+               }
+              }
+             },
+             "rs": {
+              "_": "MatrixRows",
+              "@": [
+               48,
+               61
+              ],
+              "r": {
+               "_": "MatrixRow",
+               "@": [
+                48,
+                61
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 48,
+                 61
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  48,
+                  61
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   48,
+                   55
+                  ],
+                  "op": {
+                   "_": "Function",
+                   "@": [
+                    48,
+                    55
+                   ],
+                   "name": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      48,
+                      52
+                     ],
+                     "id": null,
+                     "value": "Rcos"
+                    },
+                    []
+                   ],
+                   "p": "(",
+                   "params": [
+                    {
+                     "_": "Expression",
+                     "@": [
+                      53,
+                      54
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       53,
+                       54
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        53,
+                        54
+                       ],
+                       "id": null,
+                       "value": "θ"
+                      }
+                     }
+                    }
+                   ],
+                   "separators": []
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   55,
+                   61
+                  ],
+                  "op": {
+                   "_": "Function",
+                   "@": [
+                    55,
+                    61
+                   ],
+                   "name": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      55,
+                      58
+                     ],
+                     "id": null,
+                     "value": "cos"
+                    },
+                    []
+                   ],
+                   "p": "(",
+                   "params": [
+                    {
+                     "_": "Expression",
+                     "@": [
+                      59,
+                      60
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       59,
+                       60
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        59,
+                        60
+                       ],
+                       "id": null,
+                       "value": "ϕ"
+                      }
+                     }
+                    }
+                   ],
+                   "separators": []
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       135,
+       260
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        149,
+        260
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          149,
+          178
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "angle between 0 and 2π",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            149,
+            150
+           ],
+           "id": null,
+           "value": "ϕ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          187,
+          220
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "angle between -π/2 and π/2",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            187,
+            188
+           ],
+           "id": null,
+           "value": "θ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          229,
+          260
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the radius of the sphere",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            229,
+            230
+           ],
+           "id": null,
+           "value": "R"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "sin",
+     "cos"
+    ],
+    "funcs": [],
+    "builtins": [
+     "cos_func",
+     "sin_func"
+    ],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "sin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     260
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       26
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        14,
+        26
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         5,
+         8
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          5,
+          8
+         ],
+         "id": null,
+         "value": "cos"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       35,
+       126
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        35,
+        126
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          35,
+          44
+         ],
+         "const": null,
+         "id": "x(θ, ϕ)",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          47,
+          126
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           47,
+           126
+          ],
+          "m": {
+           "_": "Matrix",
+           "@": [
+            47,
+            126
+           ],
+           "value": {
+            "_": "MatrixRows",
+            "@": [
+             48,
+             125
+            ],
+            "r": {
+             "_": "MatrixRow",
+             "@": [
+              118,
+              125
+             ],
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               118,
+               125
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                118,
+                125
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 118,
+                 119
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  118,
+                  119
+                 ],
+                 "const": null,
+                 "id": null,
+                 "value": "R"
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 119,
+                 125
+                ],
+                "op": {
+                 "_": "SinFunc",
+                 "@": [
+                  119,
+                  125
+                 ],
+                 "param": {
+                  "_": "Expression",
+                  "@": [
+                   123,
+                   124
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    123,
+                    124
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     123,
+                     124
+                    ],
+                    "const": null,
+                    "id": null,
+                    "value": "ϕ"
+                   }
+                  }
+                 },
+                 "power": null
+                }
+               }
+              }
+             }
+            },
+            "rs": {
+             "_": "MatrixRows",
+             "@": [
+              48,
+              96
+             ],
+             "r": {
+              "_": "MatrixRow",
+              "@": [
+               83,
+               96
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                83,
+                96
+               ],
+               "sign": null,
+               "value": {
+                "_": "Multiply",
+                "@": [
+                 83,
+                 96
+                ],
+                "left": {
+                 "_": "Multiply",
+                 "@": [
+                  83,
+                  90
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   83,
+                   84
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    83,
+                    84
+                   ],
+                   "const": null,
+                   "id": null,
+                   "value": "R"
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   84,
+                   90
+                  ],
+                  "op": {
+                   "_": "SinFunc",
+                   "@": [
+                    84,
+                    90
+                   ],
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     88,
+                     89
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      88,
+                      89
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       88,
+                       89
+                      ],
+                      "const": null,
+                      "id": null,
+                      "value": "θ"
+                     }
+                    }
+                   },
+                   "power": null
+                  }
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  90,
+                  96
+                 ],
+                 "op": {
+                  "_": "CosFunc",
+                  "@": [
+                   90,
+                   96
+                  ],
+                  "param": {
+                   "_": "Expression",
+                   "@": [
+                    94,
+                    95
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     94,
+                     95
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      94,
+                      95
+                     ],
+                     "const": null,
+                     "id": null,
+                     "value": "ϕ"
+                    }
+                   }
+                  },
+                  "power": null
+                 }
+                }
+               }
+              }
+             },
+             "rs": {
+              "_": "MatrixRows",
+              "@": [
+               48,
+               61
+              ],
+              "r": {
+               "_": "MatrixRow",
+               "@": [
+                48,
+                61
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 48,
+                 61
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  48,
+                  61
+                 ],
+                 "left": {
+                  "_": "Multiply",
+                  "@": [
+                   48,
+                   55
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    48,
+                    49
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     48,
+                     49
+                    ],
+                    "const": null,
+                    "id": null,
+                    "value": "R"
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    49,
+                    55
+                   ],
+                   "op": {
+                    "_": "CosFunc",
+                    "@": [
+                     49,
+                     55
+                    ],
+                    "param": {
+                     "_": "Expression",
+                     "@": [
+                      53,
+                      54
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       53,
+                       54
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        53,
+                        54
+                       ],
+                       "const": null,
+                       "id": null,
+                       "value": "θ"
+                      }
+                     }
+                    },
+                    "power": null
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   55,
+                   61
+                  ],
+                  "op": {
+                   "_": "CosFunc",
+                   "@": [
+                    55,
+                    61
+                   ],
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     59,
+                     60
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      59,
+                      60
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       59,
+                       60
+                      ],
+                      "const": null,
+                      "id": null,
+                      "value": "ϕ"
+                     }
+                    }
+                   },
+                   "power": null
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       135,
+       260
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        149,
+        260
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          149,
+          178
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "angle between 0 and 2π",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            149,
+            150
+           ],
+           "const": null,
+           "id": null,
+           "value": "ϕ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          187,
+          220
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "angle between -π/2 and π/2",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            187,
+            188
+           ],
+           "const": null,
+           "id": null,
+           "value": "θ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          229,
+          260
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the radius of the sphere",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            229,
+            230
+           ],
+           "const": null,
+           "id": null,
+           "value": "R"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nsin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, ϕ, θ, R):\n        assert np.ndim(ϕ) == 0\n        assert np.ndim(θ) == 0\n        assert np.ndim(R) == 0\n        # `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n        #                      Rsin(θ)cos(ϕ)\n        #                      Rsin(ϕ)]\n        xθ_comma_ϕ_0 = np.zeros((3, 1))\n        xθ_comma_ϕ_0[0] = [R * np.cos(θ) * np.cos(ϕ)]\n        xθ_comma_ϕ_0[1] = [R * np.sin(θ) * np.cos(ϕ)]\n        xθ_comma_ϕ_0[2] = [R * np.sin(ϕ)]\n        self.xθ_comma_ϕ = xθ_comma_ϕ_0\n\n\n\n\n\n",
+  "eigen": "/*\nsin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 3, 1> xθ_comma_ϕ;\n\n    heartlib(\n        const double & ϕ,\n        const double & θ,\n        const double & R)\n    {\n    \n        // `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n        //                      Rsin(θ)cos(ϕ)\n        //                      Rsin(ϕ)]\n        Eigen::Matrix<DT, 3, 1> xθ_comma_ϕ_0;\n        xθ_comma_ϕ_0 << R * cos(θ) * cos(ϕ),\n        R * sin(θ) * cos(ϕ),\n        R * sin(ϕ);\n        xθ_comma_ϕ = xθ_comma_ϕ_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ sin, cos from trigonometry }\\\\\n \\\\\nx(θ, ϕ) & = \\begin{bmatrix}\nR cos\\left( θ \\right) cos\\left( ϕ \\right)\\\\\nR sin\\left( θ \\right) cos\\left( ϕ \\right)\\\\\nR sin\\left( ϕ \\right)\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nϕ & : \\mathbb{R} \\text{ angle between 0 and 2π} \\\\\nθ & : \\mathbb{R} \\text{ angle between -π/2 and π/2} \\\\\nR & : \\mathbb{R} \\text{ the radius of the sphere} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin, cos from trigonometry }\\\\\n \\\\\nx(θ, ϕ) & = \\begin{bmatrix}\nR cos\\left( θ \\right) cos\\left( ϕ \\right)\\\\\nR sin\\left( θ \\right) cos\\left( ϕ \\right)\\\\\nR sin\\left( ϕ \\right)\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nϕ & : \\mathbb{R} \\text{ angle between 0 and 2π} \\\\\nθ & : \\mathbb{R} \\text{ angle between -π/2 and π/2} \\\\\nR & : \\mathbb{R} \\text{ the radius of the sphere} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(phi, theta, R)\n% output = heartlib(ϕ, θ, R)\n%\n%    sin, cos from trigonometry\n%            `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n%                         Rsin(θ)cos(ϕ)\n%                         Rsin(ϕ)]\n%            where\n%            ϕ: ℝ : angle between 0 and 2π\n%            θ: ℝ : angle between -π/2 and π/2\n%            R: ℝ : the radius of the sphere\n    assert(numel(phi) == 1);\n    assert(numel(theta) == 1);\n    assert(numel(R) == 1);\n\n    % `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n    %                      Rsin(θ)cos(ϕ)\n    %                      Rsin(ϕ)]\n\n    xtheta_phi_0 = zeros(3, 1);\n    xtheta_phi_0(1,:) = [R * cos(theta) * cos(phi)];\n    xtheta_phi_0(2,:) = [R * sin(theta) * cos(phi)];\n    xtheta_phi_0(3,:) = [R * sin(phi)];\n    xtheta_phi = xtheta_phi_0;\n    output.xtheta_phi = xtheta_phi;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin, cos from trigonometry }\\\\\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x(θ, ϕ)', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-x(θ, ϕ)\", \"sym\":\"x(θ, ϕ)\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {x(θ, ϕ)} } & = \\begin{bmatrix}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R\", \"sym\":\"R\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {R} } cos\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'θ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-θ\", \"sym\":\"θ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {θ} } \\right) cos\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ϕ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ϕ\", \"sym\":\"ϕ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ϕ} } \\right)\\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R\", \"sym\":\"R\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {R} } sin\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'θ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-θ\", \"sym\":\"θ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {θ} } \\right) cos\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ϕ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ϕ\", \"sym\":\"ϕ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ϕ} } \\right)\\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R\", \"sym\":\"R\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {R} } sin\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ϕ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ϕ\", \"sym\":\"ϕ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ϕ} } \\right)\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['R', 'θ', 'ϕ', 'x(θ, ϕ)'], false, [], [], 'YHgozrgsIM-VKWAgPSBbUmNvcyjOuCljb3Moz5UpCiAgICAgICAgICAgICAgICAgICAgIFJzaW4ozrgpY29zKM-VKQogICAgICAgICAgICAgICAgICAgICBSc2luKM-VKV0=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ϕ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ϕ\", \"sym\":\"ϕ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ϕ} } & : \\mathbb{R} \\text{ angle between 0 and 2π} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'θ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-θ\", \"sym\":\"θ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {θ} } & : \\mathbb{R} \\text{ angle between -π/2 and π/2} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'R', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-R\", \"sym\":\"R\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {R} } & : \\mathbb{R} \\text{ the radius of the sphere} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

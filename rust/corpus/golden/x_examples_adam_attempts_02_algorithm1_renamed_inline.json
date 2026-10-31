@@ -1,0 +1,2254 @@
+{
+ "id": "x_examples_adam_attempts_02_algorithm1_renamed_inline",
+ "src": "s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n\nwhere\n\na_i ∈ ℝ\nb_i ∈ ℝ\ng_i ∈ ℝ\nα ∈ ℝ\nβ ∈ ℝ\nγ ∈ ℝ\nε ∈ ℝ\nt ∈ ℝ\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n\nwhere\n\na_i ∈ ℝ\nb_i ∈ ℝ\ng_i ∈ ℝ\nα ∈ ℝ\nβ ∈ ℝ\nγ ∈ ℝ\nε ∈ ℝ\nt ∈ ℝ\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     144
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       81
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        81
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierSubscript",
+         "@": [
+          0,
+          3
+         ],
+         "left": {
+          "_": "IdentifierAlone",
+          "@": [
+           0,
+           1
+          ],
+          "id": null,
+          "value": "s"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            2,
+            3
+           ],
+           "id": null,
+           "value": "i"
+          }
+         ]
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          6,
+          81
+         ],
+         "sign": "-",
+         "value": {
+          "_": "Divide",
+          "@": [
+           7,
+           81
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            7,
+            38
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             7,
+             8
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              7,
+              8
+             ],
+             "id": null,
+             "value": "α"
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             9,
+             38
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              9,
+              38
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               10,
+               37
+              ],
+              "sign": null,
+              "value": {
+               "_": "Divide",
+               "@": [
+                10,
+                37
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 10,
+                 29
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  10,
+                  29
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   11,
+                   28
+                  ],
+                  "value": {
+                   "_": "Add",
+                   "@": [
+                    11,
+                    28
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     11,
+                     16
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Multiply",
+                     "@": [
+                      11,
+                      16
+                     ],
+                     "left": {
+                      "_": "Factor",
+                      "@": [
+                       11,
+                       12
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        11,
+                        12
+                       ],
+                       "id": null,
+                       "value": "β"
+                      }
+                     },
+                     "right": {
+                      "_": "Factor",
+                      "@": [
+                       13,
+                       16
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        13,
+                        16
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         13,
+                         14
+                        ],
+                        "id": null,
+                        "value": "a"
+                       },
+                       "right": [
+                        {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          15,
+                          16
+                         ],
+                         "id": null,
+                         "value": "i"
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   },
+                   "op": "+",
+                   "right": {
+                    "_": "Multiply",
+                    "@": [
+                     19,
+                     28
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      19,
+                      24
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       19,
+                       24
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        20,
+                        23
+                       ],
+                       "value": {
+                        "_": "Subtract",
+                        "@": [
+                         20,
+                         23
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          20,
+                          21
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           20,
+                           21
+                          ],
+                          "num": {
+                           "_": "Integer",
+                           "@": [
+                            20,
+                            21
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          }
+                         }
+                        },
+                        "op": "-",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          22,
+                          23
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           22,
+                           23
+                          ],
+                          "id": null,
+                          "value": "β"
+                         }
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      25,
+                      28
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       25,
+                       28
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        25,
+                        26
+                       ],
+                       "id": null,
+                       "value": "g"
+                      },
+                      "right": [
+                       {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         27,
+                         28
+                        ],
+                        "id": null,
+                        "value": "i"
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "op": "/",
+               "right": {
+                "_": "Factor",
+                "@": [
+                 30,
+                 37
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  30,
+                  37
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   31,
+                   36
+                  ],
+                  "value": {
+                   "_": "Subtract",
+                   "@": [
+                    31,
+                    36
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     31,
+                     32
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      31,
+                      32
+                     ],
+                     "num": {
+                      "_": "Integer",
+                      "@": [
+                       31,
+                       32
+                      ],
+                      "value": [
+                       "1"
+                      ]
+                     }
+                    }
+                   },
+                   "op": "-",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     33,
+                     36
+                    ],
+                    "op": {
+                     "_": "Power",
+                     "@": [
+                      33,
+                      36
+                     ],
+                     "base": {
+                      "_": "Factor",
+                      "@": [
+                       33,
+                       34
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        33,
+                        34
+                       ],
+                       "id": null,
+                       "value": "β"
+                      }
+                     },
+                     "power": {
+                      "_": "Factor",
+                      "@": [
+                       35,
+                       36
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        35,
+                        36
+                       ],
+                       "id": null,
+                       "value": "t"
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "op": "/",
+          "right": {
+           "_": "Factor",
+           "@": [
+            41,
+            81
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             41,
+             81
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              42,
+              80
+             ],
+             "value": {
+              "_": "Add",
+              "@": [
+               42,
+               80
+              ],
+              "left": {
+               "_": "Expression",
+               "@": [
+                42,
+                76
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 42,
+                 76
+                ],
+                "op": {
+                 "_": "SqrtFunc",
+                 "@": [
+                  42,
+                  76
+                 ],
+                 "param": {
+                  "_": "Expression",
+                  "@": [
+                   47,
+                   75
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Divide",
+                   "@": [
+                    47,
+                    75
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     47,
+                     67
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      47,
+                      67
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       48,
+                       66
+                      ],
+                      "value": {
+                       "_": "Add",
+                       "@": [
+                        48,
+                        66
+                       ],
+                       "left": {
+                        "_": "Expression",
+                        "@": [
+                         48,
+                         53
+                        ],
+                        "sign": null,
+                        "value": {
+                         "_": "Multiply",
+                         "@": [
+                          48,
+                          53
+                         ],
+                         "left": {
+                          "_": "Factor",
+                          "@": [
+                           48,
+                           49
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            48,
+                            49
+                           ],
+                           "id": null,
+                           "value": "γ"
+                          }
+                         },
+                         "right": {
+                          "_": "Factor",
+                          "@": [
+                           50,
+                           53
+                          ],
+                          "id0": {
+                           "_": "IdentifierSubscript",
+                           "@": [
+                            50,
+                            53
+                           ],
+                           "left": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             50,
+                             51
+                            ],
+                            "id": null,
+                            "value": "b"
+                           },
+                           "right": [
+                            {
+                             "_": "IdentifierAlone",
+                             "@": [
+                              52,
+                              53
+                             ],
+                             "id": null,
+                             "value": "i"
+                            }
+                           ]
+                          }
+                         }
+                        }
+                       },
+                       "op": "+",
+                       "right": {
+                        "_": "Multiply",
+                        "@": [
+                         56,
+                         66
+                        ],
+                        "left": {
+                         "_": "Factor",
+                         "@": [
+                          56,
+                          61
+                         ],
+                         "sub": {
+                          "_": "Subexpression",
+                          "@": [
+                           56,
+                           61
+                          ],
+                          "value": {
+                           "_": "Expression",
+                           "@": [
+                            57,
+                            60
+                           ],
+                           "value": {
+                            "_": "Subtract",
+                            "@": [
+                             57,
+                             60
+                            ],
+                            "left": {
+                             "_": "Expression",
+                             "@": [
+                              57,
+                              58
+                             ],
+                             "sign": null,
+                             "value": {
+                              "_": "Factor",
+                              "@": [
+                               57,
+                               58
+                              ],
+                              "num": {
+                               "_": "Integer",
+                               "@": [
+                                57,
+                                58
+                               ],
+                               "value": [
+                                "1"
+                               ]
+                              }
+                             }
+                            },
+                            "op": "-",
+                            "right": {
+                             "_": "Factor",
+                             "@": [
+                              59,
+                              60
+                             ],
+                             "id0": {
+                              "_": "IdentifierAlone",
+                              "@": [
+                               59,
+                               60
+                              ],
+                              "id": null,
+                              "value": "γ"
+                             }
+                            }
+                           }
+                          }
+                         }
+                        },
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          62,
+                          66
+                         ],
+                         "op": {
+                          "_": "Power",
+                          "@": [
+                           62,
+                           66
+                          ],
+                          "base": {
+                           "_": "Factor",
+                           "@": [
+                            62,
+                            65
+                           ],
+                           "id0": {
+                            "_": "IdentifierSubscript",
+                            "@": [
+                             62,
+                             65
+                            ],
+                            "left": {
+                             "_": "IdentifierAlone",
+                             "@": [
+                              62,
+                              63
+                             ],
+                             "id": null,
+                             "value": "g"
+                            },
+                            "right": [
+                             {
+                              "_": "IdentifierAlone",
+                              "@": [
+                               64,
+                               65
+                              ],
+                              "id": null,
+                              "value": "i"
+                             }
+                            ]
+                           }
+                          },
+                          "power": {
+                           "_": "SupInteger",
+                           "@": [
+                            65,
+                            66
+                           ],
+                           "value": [
+                            "²"
+                           ]
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "op": "/",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     68,
+                     75
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      68,
+                      75
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       69,
+                       74
+                      ],
+                      "value": {
+                       "_": "Subtract",
+                       "@": [
+                        69,
+                        74
+                       ],
+                       "left": {
+                        "_": "Expression",
+                        "@": [
+                         69,
+                         70
+                        ],
+                        "sign": null,
+                        "value": {
+                         "_": "Factor",
+                         "@": [
+                          69,
+                          70
+                         ],
+                         "num": {
+                          "_": "Integer",
+                          "@": [
+                           69,
+                           70
+                          ],
+                          "value": [
+                           "1"
+                          ]
+                         }
+                        }
+                       },
+                       "op": "-",
+                       "right": {
+                        "_": "Factor",
+                        "@": [
+                         71,
+                         74
+                        ],
+                        "op": {
+                         "_": "Power",
+                         "@": [
+                          71,
+                          74
+                         ],
+                         "base": {
+                          "_": "Factor",
+                          "@": [
+                           71,
+                           72
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            71,
+                            72
+                           ],
+                           "id": null,
+                           "value": "γ"
+                          }
+                         },
+                         "power": {
+                          "_": "Factor",
+                          "@": [
+                           73,
+                           74
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            73,
+                            74
+                           ],
+                           "id": null,
+                           "value": "t"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "op": "+",
+              "right": {
+               "_": "Factor",
+               "@": [
+                79,
+                80
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 79,
+                 80
+                ],
+                "id": null,
+                "value": "ε"
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       83,
+       143
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        90,
+        143
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          90,
+          97
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            90,
+            93
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             90,
+             91
+            ],
+            "id": null,
+            "value": "a"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              92,
+              93
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          98,
+          105
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            98,
+            101
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             98,
+             99
+            ],
+            "id": null,
+            "value": "b"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              100,
+              101
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          106,
+          113
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            106,
+            109
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             106,
+             107
+            ],
+            "id": null,
+            "value": "g"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              108,
+              109
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          114,
+          119
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            114,
+            115
+           ],
+           "id": null,
+           "value": "α"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          120,
+          125
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            120,
+            121
+           ],
+           "id": null,
+           "value": "β"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          126,
+          131
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            126,
+            127
+           ],
+           "id": null,
+           "value": "γ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          132,
+          137
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            132,
+            133
+           ],
+           "id": null,
+           "value": "ε"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          138,
+          143
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            138,
+            139
+           ],
+           "id": null,
+           "value": "t"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n\nwhere\n\na_i ∈ ℝ\nb_i ∈ ℝ\ng_i ∈ ℝ\nα ∈ ℝ\nβ ∈ ℝ\nγ ∈ ℝ\nε ∈ ℝ\nt ∈ ℝ\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     144
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       81
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        81
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierSubscript",
+         "@": [
+          0,
+          3
+         ],
+         "left": {
+          "_": "IdentifierAlone",
+          "@": [
+           0,
+           1
+          ],
+          "id": null,
+          "value": "s"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            2,
+            3
+           ],
+           "id": null,
+           "value": "i"
+          }
+         ]
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          6,
+          81
+         ],
+         "sign": "-",
+         "value": {
+          "_": "Divide",
+          "@": [
+           7,
+           81
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            7,
+            38
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             7,
+             8
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              7,
+              8
+             ],
+             "id": null,
+             "value": "α"
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             9,
+             38
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              9,
+              38
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               10,
+               37
+              ],
+              "sign": null,
+              "value": {
+               "_": "Divide",
+               "@": [
+                10,
+                37
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 10,
+                 29
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  10,
+                  29
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   11,
+                   28
+                  ],
+                  "value": {
+                   "_": "Add",
+                   "@": [
+                    11,
+                    28
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     11,
+                     16
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Multiply",
+                     "@": [
+                      11,
+                      16
+                     ],
+                     "left": {
+                      "_": "Factor",
+                      "@": [
+                       11,
+                       12
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        11,
+                        12
+                       ],
+                       "id": null,
+                       "value": "β"
+                      }
+                     },
+                     "right": {
+                      "_": "Factor",
+                      "@": [
+                       13,
+                       16
+                      ],
+                      "id0": {
+                       "_": "IdentifierSubscript",
+                       "@": [
+                        13,
+                        16
+                       ],
+                       "left": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         13,
+                         14
+                        ],
+                        "id": null,
+                        "value": "a"
+                       },
+                       "right": [
+                        {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          15,
+                          16
+                         ],
+                         "id": null,
+                         "value": "i"
+                        }
+                       ]
+                      }
+                     }
+                    }
+                   },
+                   "op": "+",
+                   "right": {
+                    "_": "Multiply",
+                    "@": [
+                     19,
+                     28
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      19,
+                      24
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       19,
+                       24
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        20,
+                        23
+                       ],
+                       "value": {
+                        "_": "Subtract",
+                        "@": [
+                         20,
+                         23
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          20,
+                          21
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           20,
+                           21
+                          ],
+                          "num": {
+                           "_": "Integer",
+                           "@": [
+                            20,
+                            21
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          }
+                         }
+                        },
+                        "op": "-",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          22,
+                          23
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           22,
+                           23
+                          ],
+                          "id": null,
+                          "value": "β"
+                         }
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      25,
+                      28
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       25,
+                       28
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        25,
+                        26
+                       ],
+                       "id": null,
+                       "value": "g"
+                      },
+                      "right": [
+                       {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         27,
+                         28
+                        ],
+                        "id": null,
+                        "value": "i"
+                       }
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "op": "/",
+               "right": {
+                "_": "Factor",
+                "@": [
+                 30,
+                 37
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  30,
+                  37
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   31,
+                   36
+                  ],
+                  "value": {
+                   "_": "Subtract",
+                   "@": [
+                    31,
+                    36
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     31,
+                     32
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      31,
+                      32
+                     ],
+                     "num": {
+                      "_": "Integer",
+                      "@": [
+                       31,
+                       32
+                      ],
+                      "value": [
+                       "1"
+                      ]
+                     }
+                    }
+                   },
+                   "op": "-",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     33,
+                     36
+                    ],
+                    "op": {
+                     "_": "Power",
+                     "@": [
+                      33,
+                      36
+                     ],
+                     "base": {
+                      "_": "Factor",
+                      "@": [
+                       33,
+                       34
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        33,
+                        34
+                       ],
+                       "id": null,
+                       "value": "β"
+                      }
+                     },
+                     "power": {
+                      "_": "Factor",
+                      "@": [
+                       35,
+                       36
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        35,
+                        36
+                       ],
+                       "id": null,
+                       "value": "t"
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "op": "/",
+          "right": {
+           "_": "Factor",
+           "@": [
+            41,
+            81
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             41,
+             81
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              42,
+              80
+             ],
+             "value": {
+              "_": "Add",
+              "@": [
+               42,
+               80
+              ],
+              "left": {
+               "_": "Expression",
+               "@": [
+                42,
+                76
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 42,
+                 76
+                ],
+                "op": {
+                 "_": "SqrtFunc",
+                 "@": [
+                  42,
+                  76
+                 ],
+                 "param": {
+                  "_": "Expression",
+                  "@": [
+                   47,
+                   75
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Divide",
+                   "@": [
+                    47,
+                    75
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     47,
+                     67
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      47,
+                      67
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       48,
+                       66
+                      ],
+                      "value": {
+                       "_": "Add",
+                       "@": [
+                        48,
+                        66
+                       ],
+                       "left": {
+                        "_": "Expression",
+                        "@": [
+                         48,
+                         53
+                        ],
+                        "sign": null,
+                        "value": {
+                         "_": "Multiply",
+                         "@": [
+                          48,
+                          53
+                         ],
+                         "left": {
+                          "_": "Factor",
+                          "@": [
+                           48,
+                           49
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            48,
+                            49
+                           ],
+                           "id": null,
+                           "value": "γ"
+                          }
+                         },
+                         "right": {
+                          "_": "Factor",
+                          "@": [
+                           50,
+                           53
+                          ],
+                          "id0": {
+                           "_": "IdentifierSubscript",
+                           "@": [
+                            50,
+                            53
+                           ],
+                           "left": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             50,
+                             51
+                            ],
+                            "id": null,
+                            "value": "b"
+                           },
+                           "right": [
+                            {
+                             "_": "IdentifierAlone",
+                             "@": [
+                              52,
+                              53
+                             ],
+                             "id": null,
+                             "value": "i"
+                            }
+                           ]
+                          }
+                         }
+                        }
+                       },
+                       "op": "+",
+                       "right": {
+                        "_": "Multiply",
+                        "@": [
+                         56,
+                         66
+                        ],
+                        "left": {
+                         "_": "Factor",
+                         "@": [
+                          56,
+                          61
+                         ],
+                         "sub": {
+                          "_": "Subexpression",
+                          "@": [
+                           56,
+                           61
+                          ],
+                          "value": {
+                           "_": "Expression",
+                           "@": [
+                            57,
+                            60
+                           ],
+                           "value": {
+                            "_": "Subtract",
+                            "@": [
+                             57,
+                             60
+                            ],
+                            "left": {
+                             "_": "Expression",
+                             "@": [
+                              57,
+                              58
+                             ],
+                             "sign": null,
+                             "value": {
+                              "_": "Factor",
+                              "@": [
+                               57,
+                               58
+                              ],
+                              "num": {
+                               "_": "Integer",
+                               "@": [
+                                57,
+                                58
+                               ],
+                               "value": [
+                                "1"
+                               ]
+                              }
+                             }
+                            },
+                            "op": "-",
+                            "right": {
+                             "_": "Factor",
+                             "@": [
+                              59,
+                              60
+                             ],
+                             "id0": {
+                              "_": "IdentifierAlone",
+                              "@": [
+                               59,
+                               60
+                              ],
+                              "id": null,
+                              "value": "γ"
+                             }
+                            }
+                           }
+                          }
+                         }
+                        },
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          62,
+                          66
+                         ],
+                         "op": {
+                          "_": "Power",
+                          "@": [
+                           62,
+                           66
+                          ],
+                          "base": {
+                           "_": "Factor",
+                           "@": [
+                            62,
+                            65
+                           ],
+                           "id0": {
+                            "_": "IdentifierSubscript",
+                            "@": [
+                             62,
+                             65
+                            ],
+                            "left": {
+                             "_": "IdentifierAlone",
+                             "@": [
+                              62,
+                              63
+                             ],
+                             "id": null,
+                             "value": "g"
+                            },
+                            "right": [
+                             {
+                              "_": "IdentifierAlone",
+                              "@": [
+                               64,
+                               65
+                              ],
+                              "id": null,
+                              "value": "i"
+                             }
+                            ]
+                           }
+                          },
+                          "power": {
+                           "_": "SupInteger",
+                           "@": [
+                            65,
+                            66
+                           ],
+                           "value": [
+                            "²"
+                           ]
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "op": "/",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     68,
+                     75
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      68,
+                      75
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       69,
+                       74
+                      ],
+                      "value": {
+                       "_": "Subtract",
+                       "@": [
+                        69,
+                        74
+                       ],
+                       "left": {
+                        "_": "Expression",
+                        "@": [
+                         69,
+                         70
+                        ],
+                        "sign": null,
+                        "value": {
+                         "_": "Factor",
+                         "@": [
+                          69,
+                          70
+                         ],
+                         "num": {
+                          "_": "Integer",
+                          "@": [
+                           69,
+                           70
+                          ],
+                          "value": [
+                           "1"
+                          ]
+                         }
+                        }
+                       },
+                       "op": "-",
+                       "right": {
+                        "_": "Factor",
+                        "@": [
+                         71,
+                         74
+                        ],
+                        "op": {
+                         "_": "Power",
+                         "@": [
+                          71,
+                          74
+                         ],
+                         "base": {
+                          "_": "Factor",
+                          "@": [
+                           71,
+                           72
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            71,
+                            72
+                           ],
+                           "id": null,
+                           "value": "γ"
+                          }
+                         },
+                         "power": {
+                          "_": "Factor",
+                          "@": [
+                           73,
+                           74
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            73,
+                            74
+                           ],
+                           "id": null,
+                           "value": "t"
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "op": "+",
+              "right": {
+               "_": "Factor",
+               "@": [
+                79,
+                80
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 79,
+                 80
+                ],
+                "id": null,
+                "value": "ε"
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       83,
+       143
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        90,
+        143
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          90,
+          97
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            90,
+            93
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             90,
+             91
+            ],
+            "id": null,
+            "value": "a"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              92,
+              93
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          98,
+          105
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            98,
+            101
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             98,
+             99
+            ],
+            "id": null,
+            "value": "b"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              100,
+              101
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          106,
+          113
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            106,
+            109
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             106,
+             107
+            ],
+            "id": null,
+            "value": "g"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              108,
+              109
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          114,
+          119
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            114,
+            115
+           ],
+           "id": null,
+           "value": "α"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          120,
+          125
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            120,
+            121
+           ],
+           "id": null,
+           "value": "β"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          126,
+          131
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            126,
+            127
+           ],
+           "id": null,
+           "value": "γ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          132,
+          137
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            132,
+            133
+           ],
+           "id": null,
+           "value": "ε"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          138,
+          143
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            138,
+            139
+           ],
+           "id": null,
+           "value": "t"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\ns_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n\nwhere\n\na_i ∈ ℝ\nb_i ∈ ℝ\ng_i ∈ ℝ\nα ∈ ℝ\nβ ∈ ℝ\nγ ∈ ℝ\nε ∈ ℝ\nt ∈ ℝ\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a, b, g, α, β, γ, ε, t):\n        a = np.asarray(a, dtype=np.float64)\n        b = np.asarray(b, dtype=np.float64)\n        g = np.asarray(g, dtype=np.float64)\n        dim_0 = a.shape[0]\n        assert a.shape == (dim_0,)\n        assert b.shape == (dim_0,)\n        assert g.shape == (dim_0,)\n        assert np.ndim(α) == 0\n        assert np.ndim(β) == 0\n        assert np.ndim(γ) == 0\n        assert np.ndim(ε) == 0\n        assert np.ndim(t) == 0\n        # s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n        self.s = np.zeros(dim_0)\n        for i in range(1, dim_0+1):\n            self.s[i-1] = -(α * (((β * a[i-1] + (1 - β) * g[i-1])) / ((1 - np.power(np.asarray(β, dtype=np.float64), t))))) / ((np.sqrt(((γ * b[i-1] + (1 - γ) * np.power(np.asarray(g[i-1], dtype=np.float64), 2))) / ((1 - np.power(np.asarray(γ, dtype=np.float64), t)))) + ε))\n\n\n\n\n\n",
+  "eigen": "/*\ns_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n\nwhere\n\na_i ∈ ℝ\nb_i ∈ ℝ\ng_i ∈ ℝ\nα ∈ ℝ\nβ ∈ ℝ\nγ ∈ ℝ\nε ∈ ℝ\nt ∈ ℝ\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    VectorD s;\n\n    heartlib(\n        const std::vector<double> & a,\n        const std::vector<double> & b,\n        const std::vector<double> & g,\n        const double & α,\n        const double & β,\n        const double & γ,\n        const double & ε,\n        const double & t)\n    {\n        const long dim_0 = a.size();\n        assert( b.size() == dim_0 );\n        assert( g.size() == dim_0 );\n        // s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n        s.resize(dim_0);\n        for( int i=1; i<=dim_0; i++){\n            s[i-1] = -α * ((β * a.at(i-1) + (1 - β) * g.at(i-1)) / DT((1 - pow(β, t)))) / DT((sqrt((γ * b.at(i-1) + (1 - γ) * pow(g.at(i-1), 2)) / DT((1 - pow(γ, t)))) + ε));\n        }\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\ns_{ i } & = -\\frac{α \\left( \\frac{β a_{ i } + \\left( 1 - β \\right) g_{ i }}{1 - {β}^{t}} \\right)}{ \\sqrt{ \\frac{γ b_{ i } + \\left( 1 - γ \\right) {g_{ i }}^{2}}{1 - {γ}^{t}} } + ε} \\\\\n\\intertext{where} \na_{i} & ∈ \\mathbb{R} \\\\\nb_{i} & ∈ \\mathbb{R} \\\\\ng_{i} & ∈ \\mathbb{R} \\\\\nα & ∈ \\mathbb{R} \\\\\nβ & ∈ \\mathbb{R} \\\\\nγ & ∈ \\mathbb{R} \\\\\nε & ∈ \\mathbb{R} \\\\\nt & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\ns_{ i } & = -\\frac{α \\left( \\frac{β a_{ i } + \\left( 1 - β \\right) g_{ i }}{1 - {β}^{t}} \\right)}{ \\sqrt{ \\frac{γ b_{ i } + \\left( 1 - γ \\right) {g_{ i }}^{2}}{1 - {γ}^{t}} } + ε} \\\\\nwhere \\\\\na_{i} & ∈ \\mathbb{R} \\\\\nb_{i} & ∈ \\mathbb{R} \\\\\ng_{i} & ∈ \\mathbb{R} \\\\\nα & ∈ \\mathbb{R} \\\\\nβ & ∈ \\mathbb{R} \\\\\nγ & ∈ \\mathbb{R} \\\\\nε & ∈ \\mathbb{R} \\\\\nt & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a, b, g, alpha, beta, gamma, epsilon, t)\n% output = heartlib(a, b, g, α, β, γ, ε, t)\n%\n%    s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n%    \n%    where\n%    \n%    a_i ∈ ℝ\n%    b_i ∈ ℝ\n%    g_i ∈ ℝ\n%    α ∈ ℝ\n%    β ∈ ℝ\n%    γ ∈ ℝ\n%    ε ∈ ℝ\n%    t ∈ ℝ\n%    \n    a = reshape(a,[],1);\n    b = reshape(b,[],1);\n    g = reshape(g,[],1);\n\n    dim_0 = size(a, 1);\n    assert( size(a,1) == dim_0 );\n    assert( size(b,1) == dim_0 );\n    assert( size(g,1) == dim_0 );\n    assert(numel(alpha) == 1);\n    assert(numel(beta) == 1);\n    assert(numel(gamma) == 1);\n    assert(numel(epsilon) == 1);\n    assert(numel(t) == 1);\n\n    % s_i = -α ((β a_i + (1-β) g_i)/(1-β^t)) / (sqrt((γ b_i + (1-γ) g_i²)/(1-γ^t)) + ε)\n\n    s = zeros(dim_0,1);\n    for i = 1:dim_0\n        s(i) = -alpha * ((beta * a(i) + (1 - beta) * g(i)) / (1 - beta.^t)) / (sqrt((gamma * b(i) + (1 - gamma) * g(i).^2) / (1 - gamma.^t)) + epsilon);\n    end\n    output.s = s;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {s} }_{ i } & = -\\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'α', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-α\", \"sym\":\"α\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {α} } \\left( \\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'β', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-β\", \"sym\":\"β\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} }_{ i } + \\left( 1 - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'β', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-β\", \"sym\":\"β\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β} } \\right) \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'g', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-g\", \"sym\":\"g\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {g} }_{ i }}{1 - {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'β', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-β\", \"sym\":\"β\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β} }}^{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} }}} \\right)}{ \\sqrt{ \\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'γ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-γ\", \"sym\":\"γ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {γ} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} }_{ i } + \\left( 1 - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'γ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-γ\", \"sym\":\"γ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {γ} } \\right) {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'g', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-g\", \"sym\":\"g\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {g} }_{ i }}^{2}}{1 - {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'γ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-γ\", \"sym\":\"γ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {γ} }}^{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} }}} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ε', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ε\", \"sym\":\"ε\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ε} }}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['t', 'β', 'γ', 'b', 'α', 'a', 'g', 'ε', 's'], false, [], [], 'c19pID0gLc6xICgozrIgYV9pICsgKDEtzrIpIGdfaSkvKDEtzrJedCkpIC8gKHNxcnQoKM6zIGJfaSArICgxLc6zKSBnX2nCsikvKDEtzrNedCkpICsgzrUp');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a_i\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} }_{i} & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b_i\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} }_{i} & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'g', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-g_i\", \"sym\":\"g\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {g} }_{i} & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'α', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-α\", \"sym\":\"α\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {α} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'β', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-β\", \"sym\":\"β\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'γ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-γ\", \"sym\":\"γ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {γ} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ε', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ε\", \"sym\":\"ε\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ε} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

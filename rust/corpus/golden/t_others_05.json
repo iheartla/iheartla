@@ -1,0 +1,2139 @@
+{
+ "id": "t_others_05",
+ "src": "b = argmax_(i ∈ ℝ^(2×2)) ||i||\n        s.t.\n        i_1,1 > 2\n        i_1,1 < 3\n        i_1,2 > 2\n        i_1,2 < 3\n        i_2,1 > 2\n        i_2,1 < 3\n        i_2,2 > 2\n        i_2,2 < 3\n        where \n        a: ℝ^3\n        ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "b = argmax_(i ∈ ℝ^(2×2)) ||i||\n        s.t.\n        i_1,1 > 2\n        i_1,1 < 3\n        i_1,2 > 2\n        i_1,2 < 3\n        i_2,1 > 2\n        i_2,1 < 3\n        i_2,2 > 2\n        i_2,2 < 3\n        where \n        a: ℝ^3\n        ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     226
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       187
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        187
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Optimize",
+         "@": [
+          4,
+          187
+         ],
+         "amax": "argmax",
+         "amin": null,
+         "cond": {
+          "_": "MultiCond",
+          "@": [
+           52,
+           187
+          ],
+          "cond": {
+           "_": "AtomCondition",
+           "@": [
+            178,
+            187
+           ],
+           "cond": {
+            "_": "LessCondition",
+            "@": [
+             178,
+             187
+            ],
+            "left": {
+             "_": "Expression",
+             "@": [
+              178,
+              183
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               178,
+               183
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                178,
+                183
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 178,
+                 179
+                ],
+                "id": null,
+                "value": "i"
+               },
+               "right": [
+                {
+                 "_": "Integer",
+                 "@": [
+                  180,
+                  181
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                },
+                {
+                 "_": "Integer",
+                 "@": [
+                  182,
+                  183
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               ]
+              }
+             }
+            },
+            "op": "<",
+            "right": {
+             "_": "Expression",
+             "@": [
+              186,
+              187
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               186,
+               187
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                186,
+                187
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "m_cond": {
+           "_": "MultiCond",
+           "@": [
+            52,
+            169
+           ],
+           "cond": {
+            "_": "AtomCondition",
+            "@": [
+             160,
+             169
+            ],
+            "cond": {
+             "_": "GreaterCondition",
+             "@": [
+              160,
+              169
+             ],
+             "left": {
+              "_": "Expression",
+              "@": [
+               160,
+               165
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                160,
+                165
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 160,
+                 165
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  160,
+                  161
+                 ],
+                 "id": null,
+                 "value": "i"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   162,
+                   163
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 },
+                 {
+                  "_": "Integer",
+                  "@": [
+                   164,
+                   165
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             "op": ">",
+             "right": {
+              "_": "Expression",
+              "@": [
+               168,
+               169
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                168,
+                169
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 168,
+                 169
+                ],
+                "value": [
+                 "2"
+                ]
+               }
+              }
+             }
+            }
+           },
+           "m_cond": {
+            "_": "MultiCond",
+            "@": [
+             52,
+             151
+            ],
+            "cond": {
+             "_": "AtomCondition",
+             "@": [
+              142,
+              151
+             ],
+             "cond": {
+              "_": "LessCondition",
+              "@": [
+               142,
+               151
+              ],
+              "left": {
+               "_": "Expression",
+               "@": [
+                142,
+                147
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 142,
+                 147
+                ],
+                "id0": {
+                 "_": "IdentifierSubscript",
+                 "@": [
+                  142,
+                  147
+                 ],
+                 "left": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   142,
+                   143
+                  ],
+                  "id": null,
+                  "value": "i"
+                 },
+                 "right": [
+                  {
+                   "_": "Integer",
+                   "@": [
+                    144,
+                    145
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  },
+                  {
+                   "_": "Integer",
+                   "@": [
+                    146,
+                    147
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 ]
+                }
+               }
+              },
+              "op": "<",
+              "right": {
+               "_": "Expression",
+               "@": [
+                150,
+                151
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 150,
+                 151
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  150,
+                  151
+                 ],
+                 "value": [
+                  "3"
+                 ]
+                }
+               }
+              }
+             }
+            },
+            "m_cond": {
+             "_": "MultiCond",
+             "@": [
+              52,
+              133
+             ],
+             "cond": {
+              "_": "AtomCondition",
+              "@": [
+               124,
+               133
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                124,
+                133
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 124,
+                 129
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  124,
+                  129
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   124,
+                   129
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    124,
+                    125
+                   ],
+                   "id": null,
+                   "value": "i"
+                  },
+                  "right": [
+                   {
+                    "_": "Integer",
+                    "@": [
+                     126,
+                     127
+                    ],
+                    "value": [
+                     "2"
+                    ]
+                   },
+                   {
+                    "_": "Integer",
+                    "@": [
+                     128,
+                     129
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  ]
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 132,
+                 133
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  132,
+                  133
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   132,
+                   133
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                }
+               }
+              }
+             },
+             "m_cond": {
+              "_": "MultiCond",
+              "@": [
+               52,
+               115
+              ],
+              "cond": {
+               "_": "AtomCondition",
+               "@": [
+                106,
+                115
+               ],
+               "cond": {
+                "_": "LessCondition",
+                "@": [
+                 106,
+                 115
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  106,
+                  111
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   106,
+                   111
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    106,
+                    111
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     106,
+                     107
+                    ],
+                    "id": null,
+                    "value": "i"
+                   },
+                   "right": [
+                    {
+                     "_": "Integer",
+                     "@": [
+                      108,
+                      109
+                     ],
+                     "value": [
+                      "1"
+                     ]
+                    },
+                    {
+                     "_": "Integer",
+                     "@": [
+                      110,
+                      111
+                     ],
+                     "value": [
+                      "2"
+                     ]
+                    }
+                   ]
+                  }
+                 }
+                },
+                "op": "<",
+                "right": {
+                 "_": "Expression",
+                 "@": [
+                  114,
+                  115
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   114,
+                   115
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    114,
+                    115
+                   ],
+                   "value": [
+                    "3"
+                   ]
+                  }
+                 }
+                }
+               }
+              },
+              "m_cond": {
+               "_": "MultiCond",
+               "@": [
+                52,
+                97
+               ],
+               "cond": {
+                "_": "AtomCondition",
+                "@": [
+                 88,
+                 97
+                ],
+                "cond": {
+                 "_": "GreaterCondition",
+                 "@": [
+                  88,
+                  97
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   88,
+                   93
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    88,
+                    93
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     88,
+                     93
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      88,
+                      89
+                     ],
+                     "id": null,
+                     "value": "i"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       90,
+                       91
+                      ],
+                      "value": [
+                       "1"
+                      ]
+                     },
+                     {
+                      "_": "Integer",
+                      "@": [
+                       92,
+                       93
+                      ],
+                      "value": [
+                       "2"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 },
+                 "op": ">",
+                 "right": {
+                  "_": "Expression",
+                  "@": [
+                   96,
+                   97
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    96,
+                    97
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     96,
+                     97
+                    ],
+                    "value": [
+                     "2"
+                    ]
+                   }
+                  }
+                 }
+                }
+               },
+               "m_cond": {
+                "_": "MultiCond",
+                "@": [
+                 52,
+                 79
+                ],
+                "cond": {
+                 "_": "AtomCondition",
+                 "@": [
+                  70,
+                  79
+                 ],
+                 "cond": {
+                  "_": "LessCondition",
+                  "@": [
+                   70,
+                   79
+                  ],
+                  "left": {
+                   "_": "Expression",
+                   "@": [
+                    70,
+                    75
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     70,
+                     75
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      70,
+                      75
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       70,
+                       71
+                      ],
+                      "id": null,
+                      "value": "i"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        72,
+                        73
+                       ],
+                       "value": [
+                        "1"
+                       ]
+                      },
+                      {
+                       "_": "Integer",
+                       "@": [
+                        74,
+                        75
+                       ],
+                       "value": [
+                        "1"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  },
+                  "op": "<",
+                  "right": {
+                   "_": "Expression",
+                   "@": [
+                    78,
+                    79
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     78,
+                     79
+                    ],
+                    "num": {
+                     "_": "Integer",
+                     "@": [
+                      78,
+                      79
+                     ],
+                     "value": [
+                      "3"
+                     ]
+                    }
+                   }
+                  }
+                 }
+                },
+                "m_cond": {
+                 "_": "MultiCond",
+                 "@": [
+                  52,
+                  61
+                 ],
+                 "cond": {
+                  "_": "AtomCondition",
+                  "@": [
+                   52,
+                   61
+                  ],
+                  "cond": {
+                   "_": "GreaterCondition",
+                   "@": [
+                    52,
+                    61
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     52,
+                     57
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      52,
+                      57
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       52,
+                       57
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        52,
+                        53
+                       ],
+                       "id": null,
+                       "value": "i"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         54,
+                         55
+                        ],
+                        "value": [
+                         "1"
+                        ]
+                       },
+                       {
+                        "_": "Integer",
+                        "@": [
+                         56,
+                         57
+                        ],
+                        "value": [
+                         "1"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   },
+                   "op": ">",
+                   "right": {
+                    "_": "Expression",
+                    "@": [
+                     60,
+                     61
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      60,
+                      61
+                     ],
+                     "num": {
+                      "_": "Integer",
+                      "@": [
+                       60,
+                       61
+                      ],
+                      "value": [
+                       "2"
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         "exp": {
+          "_": "Expression",
+          "@": [
+           25,
+           30
+          ],
+          "sign": null,
+          "value": {
+           "_": "Factor",
+           "@": [
+            25,
+            30
+           ],
+           "op": {
+            "_": "Norm",
+            "@": [
+             25,
+             30
+            ],
+            "double": "||",
+            "power": null,
+            "single": null,
+            "sub": null,
+            "value": {
+             "_": "Expression",
+             "@": [
+              27,
+              28
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               27,
+               28
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                27,
+                28
+               ],
+               "id": null,
+               "value": "i"
+              }
+             }
+            }
+           }
+          }
+         },
+         "max": null,
+         "min": null,
+         "defs": [
+          {
+           "_": "WhereCondition",
+           "@": [
+            12,
+            23
+           ],
+           "attrib": null,
+           "subset": null,
+           "type": {
+            "_": "MatrixType",
+            "@": [
+             16,
+             23
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              19,
+              20
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               19,
+               20
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                19,
+                20
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "id2": {
+             "_": "ArithExpression",
+             "@": [
+              21,
+              22
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               21,
+               22
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                21,
+                22
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           },
+           "id": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              12,
+              13
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ],
+         "init": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       196,
+       217
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        211,
+        217
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          211,
+          217
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           214,
+           217
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            216,
+            217
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             216,
+             217
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              216,
+              217
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            211,
+            212
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "b = argmax_(i ∈ ℝ^(2×2)) ||i||\n        s.t.\n        i_1,1 > 2\n        i_1,1 < 3\n        i_1,2 > 2\n        i_1,2 < 3\n        i_2,1 > 2\n        i_2,1 < 3\n        i_2,2 > 2\n        i_2,2 < 3\n        where \n        a: ℝ^3\n        ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     226
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       187
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        187
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Optimize",
+         "@": [
+          4,
+          187
+         ],
+         "amax": "argmax",
+         "amin": null,
+         "cond": {
+          "_": "MultiCond",
+          "@": [
+           52,
+           187
+          ],
+          "cond": {
+           "_": "AtomCondition",
+           "@": [
+            178,
+            187
+           ],
+           "cond": {
+            "_": "LessCondition",
+            "@": [
+             178,
+             187
+            ],
+            "left": {
+             "_": "Expression",
+             "@": [
+              178,
+              183
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               178,
+               183
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                178,
+                183
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 178,
+                 179
+                ],
+                "id": null,
+                "value": "i"
+               },
+               "right": [
+                {
+                 "_": "Integer",
+                 "@": [
+                  180,
+                  181
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                },
+                {
+                 "_": "Integer",
+                 "@": [
+                  182,
+                  183
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               ]
+              }
+             }
+            },
+            "op": "<",
+            "right": {
+             "_": "Expression",
+             "@": [
+              186,
+              187
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               186,
+               187
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                186,
+                187
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "m_cond": {
+           "_": "MultiCond",
+           "@": [
+            52,
+            169
+           ],
+           "cond": {
+            "_": "AtomCondition",
+            "@": [
+             160,
+             169
+            ],
+            "cond": {
+             "_": "GreaterCondition",
+             "@": [
+              160,
+              169
+             ],
+             "left": {
+              "_": "Expression",
+              "@": [
+               160,
+               165
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                160,
+                165
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 160,
+                 165
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  160,
+                  161
+                 ],
+                 "id": null,
+                 "value": "i"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   162,
+                   163
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 },
+                 {
+                  "_": "Integer",
+                  "@": [
+                   164,
+                   165
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             "op": ">",
+             "right": {
+              "_": "Expression",
+              "@": [
+               168,
+               169
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                168,
+                169
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 168,
+                 169
+                ],
+                "value": [
+                 "2"
+                ]
+               }
+              }
+             }
+            }
+           },
+           "m_cond": {
+            "_": "MultiCond",
+            "@": [
+             52,
+             151
+            ],
+            "cond": {
+             "_": "AtomCondition",
+             "@": [
+              142,
+              151
+             ],
+             "cond": {
+              "_": "LessCondition",
+              "@": [
+               142,
+               151
+              ],
+              "left": {
+               "_": "Expression",
+               "@": [
+                142,
+                147
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 142,
+                 147
+                ],
+                "id0": {
+                 "_": "IdentifierSubscript",
+                 "@": [
+                  142,
+                  147
+                 ],
+                 "left": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   142,
+                   143
+                  ],
+                  "id": null,
+                  "value": "i"
+                 },
+                 "right": [
+                  {
+                   "_": "Integer",
+                   "@": [
+                    144,
+                    145
+                   ],
+                   "value": [
+                    "2"
+                   ]
+                  },
+                  {
+                   "_": "Integer",
+                   "@": [
+                    146,
+                    147
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 ]
+                }
+               }
+              },
+              "op": "<",
+              "right": {
+               "_": "Expression",
+               "@": [
+                150,
+                151
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 150,
+                 151
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  150,
+                  151
+                 ],
+                 "value": [
+                  "3"
+                 ]
+                }
+               }
+              }
+             }
+            },
+            "m_cond": {
+             "_": "MultiCond",
+             "@": [
+              52,
+              133
+             ],
+             "cond": {
+              "_": "AtomCondition",
+              "@": [
+               124,
+               133
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                124,
+                133
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 124,
+                 129
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  124,
+                  129
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   124,
+                   129
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    124,
+                    125
+                   ],
+                   "id": null,
+                   "value": "i"
+                  },
+                  "right": [
+                   {
+                    "_": "Integer",
+                    "@": [
+                     126,
+                     127
+                    ],
+                    "value": [
+                     "2"
+                    ]
+                   },
+                   {
+                    "_": "Integer",
+                    "@": [
+                     128,
+                     129
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  ]
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 132,
+                 133
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  132,
+                  133
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   132,
+                   133
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                }
+               }
+              }
+             },
+             "m_cond": {
+              "_": "MultiCond",
+              "@": [
+               52,
+               115
+              ],
+              "cond": {
+               "_": "AtomCondition",
+               "@": [
+                106,
+                115
+               ],
+               "cond": {
+                "_": "LessCondition",
+                "@": [
+                 106,
+                 115
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  106,
+                  111
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   106,
+                   111
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    106,
+                    111
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     106,
+                     107
+                    ],
+                    "id": null,
+                    "value": "i"
+                   },
+                   "right": [
+                    {
+                     "_": "Integer",
+                     "@": [
+                      108,
+                      109
+                     ],
+                     "value": [
+                      "1"
+                     ]
+                    },
+                    {
+                     "_": "Integer",
+                     "@": [
+                      110,
+                      111
+                     ],
+                     "value": [
+                      "2"
+                     ]
+                    }
+                   ]
+                  }
+                 }
+                },
+                "op": "<",
+                "right": {
+                 "_": "Expression",
+                 "@": [
+                  114,
+                  115
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   114,
+                   115
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    114,
+                    115
+                   ],
+                   "value": [
+                    "3"
+                   ]
+                  }
+                 }
+                }
+               }
+              },
+              "m_cond": {
+               "_": "MultiCond",
+               "@": [
+                52,
+                97
+               ],
+               "cond": {
+                "_": "AtomCondition",
+                "@": [
+                 88,
+                 97
+                ],
+                "cond": {
+                 "_": "GreaterCondition",
+                 "@": [
+                  88,
+                  97
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   88,
+                   93
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    88,
+                    93
+                   ],
+                   "id0": {
+                    "_": "IdentifierSubscript",
+                    "@": [
+                     88,
+                     93
+                    ],
+                    "left": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      88,
+                      89
+                     ],
+                     "id": null,
+                     "value": "i"
+                    },
+                    "right": [
+                     {
+                      "_": "Integer",
+                      "@": [
+                       90,
+                       91
+                      ],
+                      "value": [
+                       "1"
+                      ]
+                     },
+                     {
+                      "_": "Integer",
+                      "@": [
+                       92,
+                       93
+                      ],
+                      "value": [
+                       "2"
+                      ]
+                     }
+                    ]
+                   }
+                  }
+                 },
+                 "op": ">",
+                 "right": {
+                  "_": "Expression",
+                  "@": [
+                   96,
+                   97
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    96,
+                    97
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     96,
+                     97
+                    ],
+                    "value": [
+                     "2"
+                    ]
+                   }
+                  }
+                 }
+                }
+               },
+               "m_cond": {
+                "_": "MultiCond",
+                "@": [
+                 52,
+                 79
+                ],
+                "cond": {
+                 "_": "AtomCondition",
+                 "@": [
+                  70,
+                  79
+                 ],
+                 "cond": {
+                  "_": "LessCondition",
+                  "@": [
+                   70,
+                   79
+                  ],
+                  "left": {
+                   "_": "Expression",
+                   "@": [
+                    70,
+                    75
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     70,
+                     75
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      70,
+                      75
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       70,
+                       71
+                      ],
+                      "id": null,
+                      "value": "i"
+                     },
+                     "right": [
+                      {
+                       "_": "Integer",
+                       "@": [
+                        72,
+                        73
+                       ],
+                       "value": [
+                        "1"
+                       ]
+                      },
+                      {
+                       "_": "Integer",
+                       "@": [
+                        74,
+                        75
+                       ],
+                       "value": [
+                        "1"
+                       ]
+                      }
+                     ]
+                    }
+                   }
+                  },
+                  "op": "<",
+                  "right": {
+                   "_": "Expression",
+                   "@": [
+                    78,
+                    79
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     78,
+                     79
+                    ],
+                    "num": {
+                     "_": "Integer",
+                     "@": [
+                      78,
+                      79
+                     ],
+                     "value": [
+                      "3"
+                     ]
+                    }
+                   }
+                  }
+                 }
+                },
+                "m_cond": {
+                 "_": "MultiCond",
+                 "@": [
+                  52,
+                  61
+                 ],
+                 "cond": {
+                  "_": "AtomCondition",
+                  "@": [
+                   52,
+                   61
+                  ],
+                  "cond": {
+                   "_": "GreaterCondition",
+                   "@": [
+                    52,
+                    61
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     52,
+                     57
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      52,
+                      57
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       52,
+                       57
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        52,
+                        53
+                       ],
+                       "id": null,
+                       "value": "i"
+                      },
+                      "right": [
+                       {
+                        "_": "Integer",
+                        "@": [
+                         54,
+                         55
+                        ],
+                        "value": [
+                         "1"
+                        ]
+                       },
+                       {
+                        "_": "Integer",
+                        "@": [
+                         56,
+                         57
+                        ],
+                        "value": [
+                         "1"
+                        ]
+                       }
+                      ]
+                     }
+                    }
+                   },
+                   "op": ">",
+                   "right": {
+                    "_": "Expression",
+                    "@": [
+                     60,
+                     61
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      60,
+                      61
+                     ],
+                     "num": {
+                      "_": "Integer",
+                      "@": [
+                       60,
+                       61
+                      ],
+                      "value": [
+                       "2"
+                      ]
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         },
+         "exp": {
+          "_": "Expression",
+          "@": [
+           25,
+           30
+          ],
+          "sign": null,
+          "value": {
+           "_": "Factor",
+           "@": [
+            25,
+            30
+           ],
+           "op": {
+            "_": "Norm",
+            "@": [
+             25,
+             30
+            ],
+            "double": "||",
+            "power": null,
+            "single": null,
+            "sub": null,
+            "value": {
+             "_": "Expression",
+             "@": [
+              27,
+              28
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               27,
+               28
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                27,
+                28
+               ],
+               "id": null,
+               "value": "i"
+              }
+             }
+            }
+           }
+          }
+         },
+         "max": null,
+         "min": null,
+         "defs": [
+          {
+           "_": "WhereCondition",
+           "@": [
+            12,
+            23
+           ],
+           "attrib": null,
+           "subset": null,
+           "type": {
+            "_": "MatrixType",
+            "@": [
+             16,
+             23
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              19,
+              20
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               19,
+               20
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                19,
+                20
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "id2": {
+             "_": "ArithExpression",
+             "@": [
+              21,
+              22
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               21,
+               22
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                21,
+                22
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           },
+           "id": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              12,
+              13
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ],
+         "init": []
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       196,
+       217
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        211,
+        217
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          211,
+          217
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           214,
+           217
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            216,
+            217
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             216,
+             217
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              216,
+              217
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            211,
+            212
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nb = argmax_(i ∈ ℝ^(2×2)) ||i||\n        s.t.\n        i_1,1 > 2\n        i_1,1 < 3\n        i_1,2 > 2\n        i_1,2 < 3\n        i_2,1 > 2\n        i_2,1 < 3\n        i_2,2 > 2\n        i_2,2 < 3\n        where \n        a: ℝ^3\n        \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        a = np.asarray(a, dtype=np.float64)\n        assert a.shape == (3,)\n        def pack(i):\n            return np.concatenate([np.reshape(i, -1)])\n        def unpack(X):\n            return X[0:4].reshape(2, 2)\n        def cons(X):\n            i = unpack(X)\n            return i[1-1, 1-1] - 2\n        def cons_1(X):\n            i = unpack(X)\n            return 3 - i[1-1, 1-1]\n        def cons_2(X):\n            i = unpack(X)\n            return i[1-1, 2-1] - 2\n        def cons_3(X):\n            i = unpack(X)\n            return 3 - i[1-1, 2-1]\n        def cons_4(X):\n            i = unpack(X)\n            return i[2-1, 1-1] - 2\n        def cons_5(X):\n            i = unpack(X)\n            return 3 - i[2-1, 1-1]\n        def cons_6(X):\n            i = unpack(X)\n            return i[2-1, 2-1] - 2\n        def cons_7(X):\n            i = unpack(X)\n            return 3 - i[2-1, 2-1]\n        cons_8 = ({'type': 'ineq', 'fun': cons}, {'type': 'ineq', 'fun': cons_1}, {'type': 'ineq', 'fun': cons_2}, {'type': 'ineq', 'fun': cons_3}, {'type': 'ineq', 'fun': cons_4}, {'type': 'ineq', 'fun': cons_5}, {'type': 'ineq', 'fun': cons_6}, {'type': 'ineq', 'fun': cons_7})\n        def target(X):\n            i = unpack(X)\n            return -(np.linalg.norm(i, 'fro'))\n        opt = minimize(target, np.zeros(4), constraints=cons_8)\n        i = unpack(opt.x)\n        self.b = unpack(opt.x)\n        self.i = i\n\n\n\n\n\n",
+  "eigen": "/*\nb = argmax_(i ∈ ℝ^(2×2)) ||i||\n        s.t.\n        i_1,1 > 2\n        i_1,1 < 3\n        i_1,2 > 2\n        i_1,2 < 3\n        i_2,1 > 2\n        i_2,1 < 3\n        i_2,2 > 2\n        i_2,2 < 3\n        where \n        a: ℝ^3\n        \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include <LBFGS.h>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> b;\n\n    heartlib(const Eigen::Matrix<double, 3, 1> & a)\n    {\n    \n        // b = argmax_(i ∈ ℝ^(2×2)) ||i||\n        //         s.t.\n        //         i_1,1 > 2\n        //         i_1,1 < 3\n        //         i_1,2 > 2\n        //         i_1,2 < 3\n        //         i_2,1 > 2\n        //         i_2,1 < 3\n        //         i_2,2 > 2\n        //         i_2,2 < 3\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\begin{aligned} b = \\argmax_{i  \\in \\mathbb{R}^{ 2 \\times 2 }} \\quad & \\left\\|i\\right\\| \\\\\n\\textrm{s.t.} \\quad &i_{1, 1} > 2\\\\\n & i_{1, 1} < 3\\\\\n & i_{1, 2} > 2\\\\\n & i_{1, 2} < 3\\\\\n & i_{2, 1} > 2\\\\\n & i_{2, 1} < 3\\\\\n & i_{2, 2} > 2\\\\\n & i_{2, 2} < 3\n\\end{aligned} \\\\\n\\intertext{where} \na & : \\mathbb{R}^{ 3} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} b = \\argmax_{i  \\in \\mathbb{R}^{ 2 \\times 2 }} \\quad & \\left\\|i\\right\\| \\\\\n\\textrm{s.t.} \\quad &i_{1, 1} > 2\\\\\n & i_{1, 1} < 3\\\\\n & i_{1, 2} > 2\\\\\n & i_{1, 2} < 3\\\\\n & i_{2, 1} > 2\\\\\n & i_{2, 1} < 3\\\\\n & i_{2, 2} > 2\\\\\n & i_{2, 2} < 3\n\\end{aligned} \\\\\nwhere \\\\\na & : \\mathbb{R}^{ 3} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": {
+   "error": "AttributeError: 'LaVarType' object has no attribute 'sparse'",
+   "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/ir_visitor.py\", line 262, in visit_factor\n    return self.visit(node.id, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/ir_visitor.py\", line 117, in visit\n    return func(node, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/codegen_matlab.py\", line 1454, in visit_matrix_index\n    if self.get_sym_type(main_info.content).sparse:\n       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAttributeError: 'LaVarType' object has no attribute 'sparse'\n"
+  },
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } = \\argmax_{i  \\in \\mathbb{R}^{ 2 \\times 2 }} \\quad & \\left\\|\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }\\right\\| \\\\\n\\textrm{s.t.} \\quad &\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{1, 1} > 2\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{1, 1} < 3\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{1, 2} > 2\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{1, 2} < 3\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{2, 1} > 2\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{2, 1} < 3\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{2, 2} > 2\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }_{2, 2} < 3\n\\end{aligned}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['i', 'b'], false, [], [], 'YiA9IGFyZ21heF8oaSDiiIgg4oSdXigyw5cyKSkgfHxpfHwKICAgICAgICBzLnQuCiAgICAgICAgaV8xLDEgPiAyCiAgICAgICAgaV8xLDEgPCAzCiAgICAgICAgaV8xLDIgPiAyCiAgICAgICAgaV8xLDIgPCAzCiAgICAgICAgaV8yLDEgPiAyCiAgICAgICAgaV8yLDEgPCAzCiAgICAgICAgaV8yLDIgPiAyCiAgICAgICAgaV8yLDIgPCAz');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R}^{ 3} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

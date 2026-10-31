@@ -1,0 +1,7434 @@
+{
+ "id": "x_mesh_accessors",
+ "src": "Vertices, Faces from FundamentalMeshAccessors(M)\nElementSets from MeshConnectivity\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\nA = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "Vertices, Faces from FundamentalMeshAccessors(M)\nElementSets from MeshConnectivity\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\nA = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     171
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       48
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        21,
+        45
+       ],
+       "id": null,
+       "value": "FundamentalMeshAccessors"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         8
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": null,
+         "value": "Vertices"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         10,
+         15
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          10,
+          15
+         ],
+         "id": null,
+         "value": "Faces"
+        },
+        "r": null
+       }
+      ],
+      "params": [
+       {
+        "_": "IdentifierAlone",
+        "@": [
+         46,
+         47
+        ],
+        "id": null,
+        "value": "M"
+       }
+      ],
+      "separators": []
+     },
+     {
+      "_": "Import",
+      "@": [
+       49,
+       82
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        66,
+        82
+       ],
+       "id": null,
+       "value": "MeshConnectivity"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         49,
+         60
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          49,
+          60
+         ],
+         "id": null,
+         "value": "ElementSets"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       83,
+       105
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        83,
+        105
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          83,
+          95
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           87,
+           95
+          ],
+          "m": {
+           "{}": {
+            "f": "FaceMesh"
+           }
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            83,
+            84
+           ],
+           "id": null,
+           "value": "M"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          96,
+          105
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           102,
+           105
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            104,
+            105
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             104,
+             105
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              104,
+              105
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            96,
+            99
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             96,
+             97
+            ],
+            "id": null,
+            "value": "x"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              98,
+              99
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       106,
+       130
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        106,
+        130
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          106,
+          107
+         ],
+         "id": null,
+         "value": "V"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          109,
+          110
+         ],
+         "id": null,
+         "value": "E"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          112,
+          113
+         ],
+         "id": null,
+         "value": "F"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          116,
+          130
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           116,
+           130
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            116,
+            130
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              116,
+              127
+             ],
+             "id": null,
+             "value": "ElementSets"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              128,
+              129
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               128,
+               129
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                128,
+                129
+               ],
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       131,
+       170
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        131,
+        170
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          131,
+          132
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          135,
+          170
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           135,
+           170
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            135,
+            170
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Factor",
+            "@": [
+             145,
+             170
+            ],
+            "op": {
+             "_": "Summation",
+             "@": [
+              145,
+              170
+             ],
+             "cond": null,
+             "exp": {
+              "_": "Factor",
+              "@": [
+               165,
+               170
+              ],
+              "op": {
+               "_": "Norm",
+               "@": [
+                165,
+                170
+               ],
+               "double": "‖",
+               "power": null,
+               "single": null,
+               "sub": null,
+               "value": {
+                "_": "Expression",
+                "@": [
+                 166,
+                 169
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  166,
+                  169
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   166,
+                   169
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    166,
+                    167
+                   ],
+                   "id": null,
+                   "value": "x"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     168,
+                     169
+                    ],
+                    "id": null,
+                    "value": "v"
+                   }
+                  ]
+                 }
+                }
+               }
+              }
+             },
+             "id": null,
+             "lower": null,
+             "range": {
+              "_": "Function",
+              "@": [
+               152,
+               163
+              ],
+              "name": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 152,
+                 160
+                ],
+                "id": null,
+                "value": "Vertices"
+               },
+               []
+              ],
+              "p": "(",
+              "params": [
+               {
+                "_": "Expression",
+                "@": [
+                 161,
+                 162
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  161,
+                  162
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   161,
+                   162
+                  ],
+                  "id": null,
+                  "value": "f"
+                 }
+                }
+               }
+              ],
+              "separators": []
+             },
+             "sign": null,
+             "sub": null,
+             "u": null,
+             "upper": null,
+             "enum": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                148,
+                149
+               ],
+               "id": null,
+               "value": "v"
+              }
+             ],
+             "extra": []
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": {
+            "_": "IdentifierAlone",
+            "@": [
+             142,
+             143
+            ],
+            "id": null,
+            "value": "F"
+           },
+           "sign": null,
+           "sub": null,
+           "u": null,
+           "upper": null,
+           "enum": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              138,
+              139
+             ],
+             "id": null,
+             "value": "f"
+            }
+           ],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "init",
+   "config": null,
+   "text": "ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity\n\nM : FaceMesh \n\nV, E, F = ElementSets( M )\n`∂⁰`, `∂¹` = BoundaryMatrices(M) \n`B⁰`, `B¹` = UnsignedBoundaryMatrices(M)\n`B⁰ᵀ` = `B⁰`ᵀ\n`B¹ᵀ` = `B¹`ᵀ\n\nVertices(S) = S₁ where S: CellularSet\nEdges(S)    = S₂ where S: CellularSet \nFaces(S)    = S₃ where S: CellularSet\n \nVertices(f) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector({f})))) where f ∈ F\nVertices(G) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector(G)))) where G ⊂ F\nVertices(e) = vertexset(NonZeros(`B⁰` IndicatorVector({e}))) where e ∈ E\nVertices(H) = vertexset(NonZeros(`B⁰` IndicatorVector(H))) where H ⊂ E\n \nEdges(v) = edgeset(NonZeros(`B⁰ᵀ` IndicatorVector({v}))) where v ∈ V\nEdges(f) = faceset(NonZeros(`B¹` IndicatorVector({f}))) where f ∈ F\n\nFaces(v) = faceset(NonZeros(`B¹ᵀ` (`B⁰ᵀ` IndicatorVector({v})))) where v ∈ V\nFaces(e) = faceset(NonZeros(`B¹ᵀ` IndicatorVector({e}))) where e ∈ E",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     957
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       105
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        89,
+        105
+       ],
+       "id": null,
+       "value": "MeshConnectivity"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         11
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          11
+         ],
+         "id": null,
+         "value": "ElementSets"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         13,
+         29
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          13,
+          29
+         ],
+         "id": null,
+         "value": "BoundaryMatrices"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         31,
+         55
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          31,
+          55
+         ],
+         "id": null,
+         "value": "UnsignedBoundaryMatrices"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         57,
+         65
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          57,
+          65
+         ],
+         "id": null,
+         "value": "NonZeros"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         67,
+         82
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          67,
+          82
+         ],
+         "id": null,
+         "value": "IndicatorVector"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       107,
+       119
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        107,
+        119
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          107,
+          119
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           111,
+           119
+          ],
+          "m": {
+           "{}": {
+            "f": "FaceMesh"
+           }
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            107,
+            108
+           ],
+           "id": null,
+           "value": "M"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       122,
+       148
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        122,
+        148
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          122,
+          123
+         ],
+         "id": null,
+         "value": "V"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          125,
+          126
+         ],
+         "id": null,
+         "value": "E"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          128,
+          129
+         ],
+         "id": null,
+         "value": "F"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          132,
+          148
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           132,
+           148
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            132,
+            148
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              132,
+              143
+             ],
+             "id": null,
+             "value": "ElementSets"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              145,
+              146
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               145,
+               146
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                145,
+                146
+               ],
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       149,
+       181
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        149,
+        181
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          149,
+          153
+         ],
+         "id": "∂⁰",
+         "value": null
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          155,
+          159
+         ],
+         "id": "∂¹",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          162,
+          181
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           162,
+           181
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            162,
+            181
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              162,
+              178
+             ],
+             "id": null,
+             "value": "BoundaryMatrices"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              179,
+              180
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               179,
+               180
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                179,
+                180
+               ],
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       183,
+       223
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        183,
+        223
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          183,
+          187
+         ],
+         "id": "B⁰",
+         "value": null
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          189,
+          193
+         ],
+         "id": "B¹",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          196,
+          223
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           196,
+           223
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            196,
+            223
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              196,
+              220
+             ],
+             "id": null,
+             "value": "UnsignedBoundaryMatrices"
+            },
+            []
+           ],
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              221,
+              222
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               221,
+               222
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                221,
+                222
+               ],
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       224,
+       237
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        224,
+        237
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          224,
+          229
+         ],
+         "id": "B⁰ᵀ",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          232,
+          237
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           232,
+           237
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            232,
+            237
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             232,
+             236
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              232,
+              236
+             ],
+             "id": "B⁰",
+             "value": null
+            }
+           },
+           "power": {
+            "_": "IdentifierAlone",
+            "@": [
+             236,
+             237
+            ],
+            "value": "ᵀ"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       238,
+       251
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        238,
+        251
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          238,
+          243
+         ],
+         "id": "B¹ᵀ",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          246,
+          251
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           246,
+           251
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            246,
+            251
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             246,
+             250
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              246,
+              250
+             ],
+             "id": "B¹",
+             "value": null
+            }
+           },
+           "power": {
+            "_": "IdentifierAlone",
+            "@": [
+             250,
+             251
+            ],
+            "value": "ᵀ"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       253,
+       290
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        253,
+        290
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         253,
+         261
+        ],
+        "id": null,
+        "value": "Vertices"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          276,
+          290
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           279,
+           290
+          ],
+          "s": "CellularSet"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            276,
+            277
+           ],
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          267,
+          269
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           267,
+           269
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            267,
+            269
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              267,
+              268
+             ],
+             "id": null,
+             "value": "S"
+            },
+            []
+           ],
+           "p": null,
+           "params": [],
+           "separators": [],
+           "subs": [
+            {
+             "_": "SubInteger",
+             "@": [
+              268,
+              269
+             ],
+             "value": [
+              "₁"
+             ]
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          262,
+          263
+         ],
+         "id": null,
+         "value": "S"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       291,
+       328
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        291,
+        328
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         291,
+         296
+        ],
+        "id": null,
+        "value": "Edges"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          314,
+          328
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           317,
+           328
+          ],
+          "s": "CellularSet"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            314,
+            315
+           ],
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          305,
+          307
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           305,
+           307
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            305,
+            307
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              305,
+              306
+             ],
+             "id": null,
+             "value": "S"
+            },
+            []
+           ],
+           "p": null,
+           "params": [],
+           "separators": [],
+           "subs": [
+            {
+             "_": "SubInteger",
+             "@": [
+              306,
+              307
+             ],
+             "value": [
+              "₂"
+             ]
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          297,
+          298
+         ],
+         "id": null,
+         "value": "S"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       330,
+       367
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        330,
+        367
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         330,
+         335
+        ],
+        "id": null,
+        "value": "Faces"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          353,
+          367
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           356,
+           367
+          ],
+          "s": "CellularSet"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            353,
+            354
+           ],
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          344,
+          346
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           344,
+           346
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            344,
+            346
+           ],
+           "name": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              344,
+              345
+             ],
+             "id": null,
+             "value": "S"
+            },
+            []
+           ],
+           "p": null,
+           "params": [],
+           "separators": [],
+           "subs": [
+            {
+             "_": "SubInteger",
+             "@": [
+              345,
+              346
+             ],
+             "value": [
+              "₃"
+             ]
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          336,
+          337
+         ],
+         "id": null,
+         "value": "S"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       370,
+       449
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        370,
+        449
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         370,
+         378
+        ],
+        "id": null,
+        "value": "Vertices"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          444,
+          449
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           448,
+           449
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            448,
+            449
+           ],
+           "id": null,
+           "value": "F"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            444,
+            445
+           ],
+           "id": null,
+           "value": "f"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          384,
+          437
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           384,
+           437
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            384,
+            437
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              394,
+              436
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               394,
+               436
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                394,
+                436
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  394,
+                  402
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  403,
+                  435
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   403,
+                   435
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    403,
+                    407
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     403,
+                     407
+                    ],
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    408,
+                    435
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     408,
+                     435
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      409,
+                      434
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Multiply",
+                      "@": [
+                       409,
+                       434
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        409,
+                        413
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         409,
+                         413
+                        ],
+                        "id": "B¹",
+                        "value": null
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        414,
+                        434
+                       ],
+                       "op": {
+                        "_": "Function",
+                        "@": [
+                         414,
+                         434
+                        ],
+                        "name": [
+                         {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           414,
+                           429
+                          ],
+                          "id": null,
+                          "value": "IndicatorVector"
+                         },
+                         []
+                        ],
+                        "p": "(",
+                        "params": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           430,
+                           433
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            430,
+                            433
+                           ],
+                           "s": {
+                            "_": "Set",
+                            "@": [
+                             430,
+                             433
+                            ],
+                            "exp": [
+                             {
+                              "_": "Expression",
+                              "@": [
+                               431,
+                               432
+                              ],
+                              "sign": null,
+                              "value": {
+                               "_": "Factor",
+                               "@": [
+                                431,
+                                432
+                               ],
+                               "id0": {
+                                "_": "IdentifierAlone",
+                                "@": [
+                                 431,
+                                 432
+                                ],
+                                "id": null,
+                                "value": "f"
+                               }
+                              }
+                             }
+                            ]
+                           }
+                          }
+                         }
+                        ],
+                        "separators": []
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          379,
+          380
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       450,
+       527
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        450,
+        527
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         450,
+         458
+        ],
+        "id": null,
+        "value": "Vertices"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          522,
+          527
+         ],
+         "attrib": null,
+         "belong": null,
+         "desc": null,
+         "subset": "⊂",
+         "type": {
+          "_": "MappingType",
+          "@": [
+           526,
+           527
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            526,
+            527
+           ],
+           "id": null,
+           "value": "F"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            522,
+            523
+           ],
+           "id": null,
+           "value": "G"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          464,
+          515
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           464,
+           515
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            464,
+            515
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              474,
+              514
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               474,
+               514
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                474,
+                514
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  474,
+                  482
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  483,
+                  513
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   483,
+                   513
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    483,
+                    487
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     483,
+                     487
+                    ],
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    488,
+                    513
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     488,
+                     513
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      489,
+                      512
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Multiply",
+                      "@": [
+                       489,
+                       512
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        489,
+                        493
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         489,
+                         493
+                        ],
+                        "id": "B¹",
+                        "value": null
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        494,
+                        512
+                       ],
+                       "op": {
+                        "_": "Function",
+                        "@": [
+                         494,
+                         512
+                        ],
+                        "name": [
+                         {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           494,
+                           509
+                          ],
+                          "id": null,
+                          "value": "IndicatorVector"
+                         },
+                         []
+                        ],
+                        "p": "(",
+                        "params": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           510,
+                           511
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            510,
+                            511
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             510,
+                             511
+                            ],
+                            "id": null,
+                            "value": "G"
+                           }
+                          }
+                         }
+                        ],
+                        "separators": []
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          459,
+          460
+         ],
+         "id": null,
+         "value": "G"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       528,
+       600
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        528,
+        600
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         528,
+         536
+        ],
+        "id": null,
+        "value": "Vertices"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          595,
+          600
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           599,
+           600
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            599,
+            600
+           ],
+           "id": null,
+           "value": "E"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            595,
+            596
+           ],
+           "id": null,
+           "value": "e"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          542,
+          588
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           542,
+           588
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            542,
+            588
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              552,
+              587
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               552,
+               587
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                552,
+                587
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  552,
+                  560
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  561,
+                  586
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   561,
+                   586
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    561,
+                    565
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     561,
+                     565
+                    ],
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    566,
+                    586
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     566,
+                     586
+                    ],
+                    "name": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       566,
+                       581
+                      ],
+                      "id": null,
+                      "value": "IndicatorVector"
+                     },
+                     []
+                    ],
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       582,
+                       585
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        582,
+                        585
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         582,
+                         585
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           583,
+                           584
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            583,
+                            584
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             583,
+                             584
+                            ],
+                            "id": null,
+                            "value": "e"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          537,
+          538
+         ],
+         "id": null,
+         "value": "e"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       601,
+       671
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        601,
+        671
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         601,
+         609
+        ],
+        "id": null,
+        "value": "Vertices"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          666,
+          671
+         ],
+         "attrib": null,
+         "belong": null,
+         "desc": null,
+         "subset": "⊂",
+         "type": {
+          "_": "MappingType",
+          "@": [
+           670,
+           671
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            670,
+            671
+           ],
+           "id": null,
+           "value": "E"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            666,
+            667
+           ],
+           "id": null,
+           "value": "H"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          615,
+          659
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           615,
+           659
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            615,
+            659
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              625,
+              658
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               625,
+               658
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                625,
+                658
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  625,
+                  633
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  634,
+                  657
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   634,
+                   657
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    634,
+                    638
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     634,
+                     638
+                    ],
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    639,
+                    657
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     639,
+                     657
+                    ],
+                    "name": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       639,
+                       654
+                      ],
+                      "id": null,
+                      "value": "IndicatorVector"
+                     },
+                     []
+                    ],
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       655,
+                       656
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        655,
+                        656
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         655,
+                         656
+                        ],
+                        "id": null,
+                        "value": "H"
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          610,
+          611
+         ],
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       674,
+       742
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        674,
+        742
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         674,
+         679
+        ],
+        "id": null,
+        "value": "Edges"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          737,
+          742
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           741,
+           742
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            741,
+            742
+           ],
+           "id": null,
+           "value": "V"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            737,
+            738
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          685,
+          730
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           685,
+           730
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            685,
+            730
+           ],
+           "e": null,
+           "es": "edgeset",
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              693,
+              729
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               693,
+               729
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                693,
+                729
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  693,
+                  701
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  702,
+                  728
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   702,
+                   728
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    702,
+                    707
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     702,
+                     707
+                    ],
+                    "id": "B⁰ᵀ",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    708,
+                    728
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     708,
+                     728
+                    ],
+                    "name": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       708,
+                       723
+                      ],
+                      "id": null,
+                      "value": "IndicatorVector"
+                     },
+                     []
+                    ],
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       724,
+                       727
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        724,
+                        727
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         724,
+                         727
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           725,
+                           726
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            725,
+                            726
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             725,
+                             726
+                            ],
+                            "id": null,
+                            "value": "v"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          680,
+          681
+         ],
+         "id": null,
+         "value": "v"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       743,
+       810
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        743,
+        810
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         743,
+         748
+        ],
+        "id": null,
+        "value": "Edges"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          805,
+          810
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           809,
+           810
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            809,
+            810
+           ],
+           "id": null,
+           "value": "F"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            805,
+            806
+           ],
+           "id": null,
+           "value": "f"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          754,
+          798
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           754,
+           798
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            754,
+            798
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": "faceset",
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              762,
+              797
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               762,
+               797
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                762,
+                797
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  762,
+                  770
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  771,
+                  796
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   771,
+                   796
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    771,
+                    775
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     771,
+                     775
+                    ],
+                    "id": "B¹",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    776,
+                    796
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     776,
+                     796
+                    ],
+                    "name": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       776,
+                       791
+                      ],
+                      "id": null,
+                      "value": "IndicatorVector"
+                     },
+                     []
+                    ],
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       792,
+                       795
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        792,
+                        795
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         792,
+                         795
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           793,
+                           794
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            793,
+                            794
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             793,
+                             794
+                            ],
+                            "id": null,
+                            "value": "f"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          749,
+          750
+         ],
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       812,
+       888
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        812,
+        888
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         812,
+         817
+        ],
+        "id": null,
+        "value": "Faces"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          883,
+          888
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           887,
+           888
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            887,
+            888
+           ],
+           "id": null,
+           "value": "V"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            883,
+            884
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          823,
+          876
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           823,
+           876
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            823,
+            876
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": "faceset",
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              831,
+              875
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               831,
+               875
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                831,
+                875
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  831,
+                  839
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  840,
+                  874
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   840,
+                   874
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    840,
+                    845
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     840,
+                     845
+                    ],
+                    "id": "B¹ᵀ",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    846,
+                    874
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     846,
+                     874
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      847,
+                      873
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Multiply",
+                      "@": [
+                       847,
+                       873
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        847,
+                        852
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         847,
+                         852
+                        ],
+                        "id": "B⁰ᵀ",
+                        "value": null
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        853,
+                        873
+                       ],
+                       "op": {
+                        "_": "Function",
+                        "@": [
+                         853,
+                         873
+                        ],
+                        "name": [
+                         {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           853,
+                           868
+                          ],
+                          "id": null,
+                          "value": "IndicatorVector"
+                         },
+                         []
+                        ],
+                        "p": "(",
+                        "params": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           869,
+                           872
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            869,
+                            872
+                           ],
+                           "s": {
+                            "_": "Set",
+                            "@": [
+                             869,
+                             872
+                            ],
+                            "exp": [
+                             {
+                              "_": "Expression",
+                              "@": [
+                               870,
+                               871
+                              ],
+                              "sign": null,
+                              "value": {
+                               "_": "Factor",
+                               "@": [
+                                870,
+                                871
+                               ],
+                               "id0": {
+                                "_": "IdentifierAlone",
+                                "@": [
+                                 870,
+                                 871
+                                ],
+                                "id": null,
+                                "value": "v"
+                               }
+                              }
+                             }
+                            ]
+                           }
+                          }
+                         }
+                        ],
+                        "separators": []
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          818,
+          819
+         ],
+         "id": null,
+         "value": "v"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       889,
+       957
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        889,
+        957
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         889,
+         894
+        ],
+        "id": null,
+        "value": "Faces"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          952,
+          957
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           956,
+           957
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            956,
+            957
+           ],
+           "id": null,
+           "value": "E"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            952,
+            953
+           ],
+           "id": null,
+           "value": "e"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          900,
+          945
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           900,
+           945
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            900,
+            945
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": "faceset",
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              908,
+              944
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               908,
+               944
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                908,
+                944
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  908,
+                  916
+                 ],
+                 "id": null,
+                 "value": "NonZeros"
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  917,
+                  943
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   917,
+                   943
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    917,
+                    922
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     917,
+                     922
+                    ],
+                    "id": "B¹ᵀ",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    923,
+                    943
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     923,
+                     943
+                    ],
+                    "name": [
+                     {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       923,
+                       938
+                      ],
+                      "id": null,
+                      "value": "IndicatorVector"
+                     },
+                     []
+                    ],
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       939,
+                       942
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        939,
+                        942
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         939,
+                         942
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           940,
+                           941
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            940,
+                            941
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             940,
+                             941
+                            ],
+                            "id": null,
+                            "value": "e"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          895,
+          896
+         ],
+         "id": null,
+         "value": "e"
+        }
+       ],
+       "separators": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "UnsignedBoundaryMatrices",
+     "BoundaryMatrices",
+     "IndicatorVector",
+     "ElementSets",
+     "NonZeros",
+     "Vertices",
+     "Faces",
+     "Edges"
+    ],
+    "funcs": [
+     "`UnsignedBoundaryMatrices`",
+     "UnsignedBoundaryMatrices",
+     "`BoundaryMatrices`",
+     "`IndicatorVector`",
+     "BoundaryMatrices",
+     "IndicatorVector",
+     "`ElementSets`",
+     "ElementSets",
+     "`NonZeros`",
+     "`Vertices`",
+     "NonZeros",
+     "Vertices",
+     "`Edges`",
+     "`Faces`",
+     "Edges",
+     "Faces"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity\n\nM : FaceMesh \n\nV, E, F = ElementSets( M )\n`∂⁰`, `∂¹` = BoundaryMatrices(M) \n`B⁰`, `B¹` = UnsignedBoundaryMatrices(M)\n`B⁰ᵀ` = `B⁰`ᵀ\n`B¹ᵀ` = `B¹`ᵀ\n\nVertices(S) = S₁ where S: CellularSet\nEdges(S)    = S₂ where S: CellularSet \nFaces(S)    = S₃ where S: CellularSet\n \nVertices(f) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector({f})))) where f ∈ F\nVertices(G) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector(G)))) where G ⊂ F\nVertices(e) = vertexset(NonZeros(`B⁰` IndicatorVector({e}))) where e ∈ E\nVertices(H) = vertexset(NonZeros(`B⁰` IndicatorVector(H))) where H ⊂ E\n \nEdges(v) = edgeset(NonZeros(`B⁰ᵀ` IndicatorVector({v}))) where v ∈ V\nEdges(f) = faceset(NonZeros(`B¹` IndicatorVector({f}))) where f ∈ F\n\nFaces(v) = faceset(NonZeros(`B¹ᵀ` (`B⁰ᵀ` IndicatorVector({v})))) where v ∈ V\nFaces(e) = faceset(NonZeros(`B¹ᵀ` IndicatorVector({e}))) where e ∈ E",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     957
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       105
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        89,
+        105
+       ],
+       "id": null,
+       "value": "MeshConnectivity"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         11
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          11
+         ],
+         "id": null,
+         "value": "ElementSets"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         13,
+         29
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          13,
+          29
+         ],
+         "id": null,
+         "value": "BoundaryMatrices"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         31,
+         55
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          31,
+          55
+         ],
+         "id": null,
+         "value": "UnsignedBoundaryMatrices"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         57,
+         65
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          57,
+          65
+         ],
+         "id": null,
+         "value": "NonZeros"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         67,
+         82
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          67,
+          82
+         ],
+         "id": null,
+         "value": "IndicatorVector"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       107,
+       119
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        107,
+        119
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          107,
+          119
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           111,
+           119
+          ],
+          "m": {
+           "{}": {
+            "f": "FaceMesh"
+           }
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            107,
+            108
+           ],
+           "const": null,
+           "id": null,
+           "value": "M"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       122,
+       148
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        122,
+        148
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          122,
+          123
+         ],
+         "const": null,
+         "id": null,
+         "value": "V"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          125,
+          126
+         ],
+         "const": null,
+         "id": null,
+         "value": "E"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          128,
+          129
+         ],
+         "const": null,
+         "id": null,
+         "value": "F"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          132,
+          148
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           132,
+           148
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            132,
+            148
+           ],
+           "name": "ElementSets",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              145,
+              146
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               145,
+               146
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                145,
+                146
+               ],
+               "const": null,
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       149,
+       181
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        149,
+        181
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          149,
+          153
+         ],
+         "const": null,
+         "id": "∂⁰",
+         "value": null
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          155,
+          159
+         ],
+         "const": null,
+         "id": "∂¹",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          162,
+          181
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           162,
+           181
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            162,
+            181
+           ],
+           "name": "BoundaryMatrices",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              179,
+              180
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               179,
+               180
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                179,
+                180
+               ],
+               "const": null,
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       183,
+       223
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        183,
+        223
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          183,
+          187
+         ],
+         "const": null,
+         "id": "B⁰",
+         "value": null
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          189,
+          193
+         ],
+         "const": null,
+         "id": "B¹",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          196,
+          223
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           196,
+           223
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            196,
+            223
+           ],
+           "name": "UnsignedBoundaryMatrices",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              221,
+              222
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               221,
+               222
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                221,
+                222
+               ],
+               "const": null,
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       224,
+       237
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        224,
+        237
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          224,
+          229
+         ],
+         "const": null,
+         "id": "B⁰ᵀ",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          232,
+          237
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           232,
+           237
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            232,
+            237
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             232,
+             236
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              232,
+              236
+             ],
+             "const": null,
+             "id": "B⁰",
+             "value": null
+            }
+           },
+           "power": {
+            "_": "IdentifierAlone",
+            "@": [
+             236,
+             237
+            ],
+            "value": "ᵀ"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       238,
+       251
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        238,
+        251
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          238,
+          243
+         ],
+         "const": null,
+         "id": "B¹ᵀ",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          246,
+          251
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           246,
+           251
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            246,
+            251
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             246,
+             250
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              246,
+              250
+             ],
+             "const": null,
+             "id": "B¹",
+             "value": null
+            }
+           },
+           "power": {
+            "_": "IdentifierAlone",
+            "@": [
+             250,
+             251
+            ],
+            "value": "ᵀ"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       253,
+       290
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        253,
+        290
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         253,
+         261
+        ],
+        "const": "Vertices",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          276,
+          290
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           279,
+           290
+          ],
+          "s": "CellularSet"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            276,
+            277
+           ],
+           "const": null,
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          267,
+          269
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           267,
+           269
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            267,
+            269
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             267,
+             268
+            ],
+            "const": null,
+            "id": null,
+            "value": "S"
+           },
+           "right": [
+            {
+             "_": "SubInteger",
+             "@": [
+              268,
+              269
+             ],
+             "value": [
+              "₁"
+             ]
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          262,
+          263
+         ],
+         "const": null,
+         "id": null,
+         "value": "S"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       291,
+       328
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        291,
+        328
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         291,
+         296
+        ],
+        "const": "Edges",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          314,
+          328
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           317,
+           328
+          ],
+          "s": "CellularSet"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            314,
+            315
+           ],
+           "const": null,
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          305,
+          307
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           305,
+           307
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            305,
+            307
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             305,
+             306
+            ],
+            "const": null,
+            "id": null,
+            "value": "S"
+           },
+           "right": [
+            {
+             "_": "SubInteger",
+             "@": [
+              306,
+              307
+             ],
+             "value": [
+              "₂"
+             ]
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          297,
+          298
+         ],
+         "const": null,
+         "id": null,
+         "value": "S"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       330,
+       367
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        330,
+        367
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         330,
+         335
+        ],
+        "const": "Faces",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          353,
+          367
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           356,
+           367
+          ],
+          "s": "CellularSet"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            353,
+            354
+           ],
+           "const": null,
+           "id": null,
+           "value": "S"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          344,
+          346
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           344,
+           346
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            344,
+            346
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             344,
+             345
+            ],
+            "const": null,
+            "id": null,
+            "value": "S"
+           },
+           "right": [
+            {
+             "_": "SubInteger",
+             "@": [
+              345,
+              346
+             ],
+             "value": [
+              "₃"
+             ]
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          336,
+          337
+         ],
+         "const": null,
+         "id": null,
+         "value": "S"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       370,
+       449
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        370,
+        449
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         370,
+         378
+        ],
+        "const": "Vertices",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          444,
+          449
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           448,
+           449
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            448,
+            449
+           ],
+           "const": null,
+           "id": null,
+           "value": "F"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            444,
+            445
+           ],
+           "const": null,
+           "id": null,
+           "value": "f"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          384,
+          437
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           384,
+           437
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            384,
+            437
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              394,
+              436
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               394,
+               436
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                394,
+                436
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  403,
+                  435
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   403,
+                   435
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    403,
+                    407
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     403,
+                     407
+                    ],
+                    "const": null,
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    408,
+                    435
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     408,
+                     435
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      409,
+                      434
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Multiply",
+                      "@": [
+                       409,
+                       434
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        409,
+                        413
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         409,
+                         413
+                        ],
+                        "const": null,
+                        "id": "B¹",
+                        "value": null
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        414,
+                        434
+                       ],
+                       "op": {
+                        "_": "Function",
+                        "@": [
+                         414,
+                         434
+                        ],
+                        "name": "IndicatorVector",
+                        "p": "(",
+                        "params": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           430,
+                           433
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            430,
+                            433
+                           ],
+                           "s": {
+                            "_": "Set",
+                            "@": [
+                             430,
+                             433
+                            ],
+                            "exp": [
+                             {
+                              "_": "Expression",
+                              "@": [
+                               431,
+                               432
+                              ],
+                              "sign": null,
+                              "value": {
+                               "_": "Factor",
+                               "@": [
+                                431,
+                                432
+                               ],
+                               "id0": {
+                                "_": "IdentifierAlone",
+                                "@": [
+                                 431,
+                                 432
+                                ],
+                                "const": null,
+                                "id": null,
+                                "value": "f"
+                               }
+                              }
+                             }
+                            ]
+                           }
+                          }
+                         }
+                        ],
+                        "separators": []
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          379,
+          380
+         ],
+         "const": null,
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       450,
+       527
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        450,
+        527
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         450,
+         458
+        ],
+        "const": "Vertices",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          522,
+          527
+         ],
+         "attrib": null,
+         "belong": null,
+         "desc": null,
+         "subset": "⊂",
+         "type": {
+          "_": "MappingType",
+          "@": [
+           526,
+           527
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            526,
+            527
+           ],
+           "const": null,
+           "id": null,
+           "value": "F"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            522,
+            523
+           ],
+           "const": null,
+           "id": null,
+           "value": "G"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          464,
+          515
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           464,
+           515
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            464,
+            515
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              474,
+              514
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               474,
+               514
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                474,
+                514
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  483,
+                  513
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   483,
+                   513
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    483,
+                    487
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     483,
+                     487
+                    ],
+                    "const": null,
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    488,
+                    513
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     488,
+                     513
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      489,
+                      512
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Multiply",
+                      "@": [
+                       489,
+                       512
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        489,
+                        493
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         489,
+                         493
+                        ],
+                        "const": null,
+                        "id": "B¹",
+                        "value": null
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        494,
+                        512
+                       ],
+                       "op": {
+                        "_": "Function",
+                        "@": [
+                         494,
+                         512
+                        ],
+                        "name": "IndicatorVector",
+                        "p": "(",
+                        "params": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           510,
+                           511
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            510,
+                            511
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             510,
+                             511
+                            ],
+                            "const": null,
+                            "id": null,
+                            "value": "G"
+                           }
+                          }
+                         }
+                        ],
+                        "separators": []
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          459,
+          460
+         ],
+         "const": null,
+         "id": null,
+         "value": "G"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       528,
+       600
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        528,
+        600
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         528,
+         536
+        ],
+        "const": "Vertices",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          595,
+          600
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           599,
+           600
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            599,
+            600
+           ],
+           "const": null,
+           "id": null,
+           "value": "E"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            595,
+            596
+           ],
+           "const": null,
+           "id": null,
+           "value": "e"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          542,
+          588
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           542,
+           588
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            542,
+            588
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              552,
+              587
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               552,
+               587
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                552,
+                587
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  561,
+                  586
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   561,
+                   586
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    561,
+                    565
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     561,
+                     565
+                    ],
+                    "const": null,
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    566,
+                    586
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     566,
+                     586
+                    ],
+                    "name": "IndicatorVector",
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       582,
+                       585
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        582,
+                        585
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         582,
+                         585
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           583,
+                           584
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            583,
+                            584
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             583,
+                             584
+                            ],
+                            "const": null,
+                            "id": null,
+                            "value": "e"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          537,
+          538
+         ],
+         "const": null,
+         "id": null,
+         "value": "e"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       601,
+       671
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        601,
+        671
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         601,
+         609
+        ],
+        "const": "Vertices",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          666,
+          671
+         ],
+         "attrib": null,
+         "belong": null,
+         "desc": null,
+         "subset": "⊂",
+         "type": {
+          "_": "MappingType",
+          "@": [
+           670,
+           671
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            670,
+            671
+           ],
+           "const": null,
+           "id": null,
+           "value": "E"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            666,
+            667
+           ],
+           "const": null,
+           "id": null,
+           "value": "H"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          615,
+          659
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           615,
+           659
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            615,
+            659
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": "vertexset",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              625,
+              658
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               625,
+               658
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                625,
+                658
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  634,
+                  657
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   634,
+                   657
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    634,
+                    638
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     634,
+                     638
+                    ],
+                    "const": null,
+                    "id": "B⁰",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    639,
+                    657
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     639,
+                     657
+                    ],
+                    "name": "IndicatorVector",
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       655,
+                       656
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        655,
+                        656
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         655,
+                         656
+                        ],
+                        "const": null,
+                        "id": null,
+                        "value": "H"
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          610,
+          611
+         ],
+         "const": null,
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       674,
+       742
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        674,
+        742
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         674,
+         679
+        ],
+        "const": "Edges",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          737,
+          742
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           741,
+           742
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            741,
+            742
+           ],
+           "const": null,
+           "id": null,
+           "value": "V"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            737,
+            738
+           ],
+           "const": null,
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          685,
+          730
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           685,
+           730
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            685,
+            730
+           ],
+           "e": null,
+           "es": "edgeset",
+           "f": null,
+           "fs": null,
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              693,
+              729
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               693,
+               729
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                693,
+                729
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  702,
+                  728
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   702,
+                   728
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    702,
+                    707
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     702,
+                     707
+                    ],
+                    "const": null,
+                    "id": "B⁰ᵀ",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    708,
+                    728
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     708,
+                     728
+                    ],
+                    "name": "IndicatorVector",
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       724,
+                       727
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        724,
+                        727
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         724,
+                         727
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           725,
+                           726
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            725,
+                            726
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             725,
+                             726
+                            ],
+                            "const": null,
+                            "id": null,
+                            "value": "v"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          680,
+          681
+         ],
+         "const": null,
+         "id": null,
+         "value": "v"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       743,
+       810
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        743,
+        810
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         743,
+         748
+        ],
+        "const": "Edges",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          805,
+          810
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           809,
+           810
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            809,
+            810
+           ],
+           "const": null,
+           "id": null,
+           "value": "F"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            805,
+            806
+           ],
+           "const": null,
+           "id": null,
+           "value": "f"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          754,
+          798
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           754,
+           798
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            754,
+            798
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": "faceset",
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              762,
+              797
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               762,
+               797
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                762,
+                797
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  771,
+                  796
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   771,
+                   796
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    771,
+                    775
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     771,
+                     775
+                    ],
+                    "const": null,
+                    "id": "B¹",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    776,
+                    796
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     776,
+                     796
+                    ],
+                    "name": "IndicatorVector",
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       792,
+                       795
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        792,
+                        795
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         792,
+                         795
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           793,
+                           794
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            793,
+                            794
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             793,
+                             794
+                            ],
+                            "const": null,
+                            "id": null,
+                            "value": "f"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          749,
+          750
+         ],
+         "const": null,
+         "id": null,
+         "value": "f"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       812,
+       888
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        812,
+        888
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         812,
+         817
+        ],
+        "const": "Faces",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          883,
+          888
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           887,
+           888
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            887,
+            888
+           ],
+           "const": null,
+           "id": null,
+           "value": "V"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            883,
+            884
+           ],
+           "const": null,
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          823,
+          876
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           823,
+           876
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            823,
+            876
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": "faceset",
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              831,
+              875
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               831,
+               875
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                831,
+                875
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  840,
+                  874
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   840,
+                   874
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    840,
+                    845
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     840,
+                     845
+                    ],
+                    "const": null,
+                    "id": "B¹ᵀ",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    846,
+                    874
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     846,
+                     874
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      847,
+                      873
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Multiply",
+                      "@": [
+                       847,
+                       873
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        847,
+                        852
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         847,
+                         852
+                        ],
+                        "const": null,
+                        "id": "B⁰ᵀ",
+                        "value": null
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        853,
+                        873
+                       ],
+                       "op": {
+                        "_": "Function",
+                        "@": [
+                         853,
+                         873
+                        ],
+                        "name": "IndicatorVector",
+                        "p": "(",
+                        "params": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           869,
+                           872
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            869,
+                            872
+                           ],
+                           "s": {
+                            "_": "Set",
+                            "@": [
+                             869,
+                             872
+                            ],
+                            "exp": [
+                             {
+                              "_": "Expression",
+                              "@": [
+                               870,
+                               871
+                              ],
+                              "sign": null,
+                              "value": {
+                               "_": "Factor",
+                               "@": [
+                                870,
+                                871
+                               ],
+                               "id0": {
+                                "_": "IdentifierAlone",
+                                "@": [
+                                 870,
+                                 871
+                                ],
+                                "const": null,
+                                "id": null,
+                                "value": "v"
+                               }
+                              }
+                             }
+                            ]
+                           }
+                          }
+                         }
+                        ],
+                        "separators": []
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          818,
+          819
+         ],
+         "const": null,
+         "id": null,
+         "value": "v"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       889,
+       957
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        889,
+        957
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         889,
+         894
+        ],
+        "const": "Faces",
+        "id": null,
+        "value": null
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          952,
+          957
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MappingType",
+          "@": [
+           956,
+           957
+          ],
+          "s": {
+           "_": "IdentifierAlone",
+           "@": [
+            956,
+            957
+           ],
+           "const": null,
+           "id": null,
+           "value": "E"
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            952,
+            953
+           ],
+           "const": null,
+           "id": null,
+           "value": "e"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          900,
+          945
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           900,
+           945
+          ],
+          "op": {
+           "_": "ElementConvertFunc",
+           "@": [
+            900,
+            945
+           ],
+           "e": null,
+           "es": null,
+           "f": null,
+           "fs": "faceset",
+           "s": null,
+           "se": null,
+           "t": null,
+           "ts": null,
+           "tu": null,
+           "v": null,
+           "vs": null,
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              908,
+              944
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               908,
+               944
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                908,
+                944
+               ],
+               "name": "NonZeros",
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  917,
+                  943
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   917,
+                   943
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    917,
+                    922
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     917,
+                     922
+                    ],
+                    "const": null,
+                    "id": "B¹ᵀ",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    923,
+                    943
+                   ],
+                   "op": {
+                    "_": "Function",
+                    "@": [
+                     923,
+                     943
+                    ],
+                    "name": "IndicatorVector",
+                    "p": "(",
+                    "params": [
+                     {
+                      "_": "Expression",
+                      "@": [
+                       939,
+                       942
+                      ],
+                      "sign": null,
+                      "value": {
+                       "_": "Factor",
+                       "@": [
+                        939,
+                        942
+                       ],
+                       "s": {
+                        "_": "Set",
+                        "@": [
+                         939,
+                         942
+                        ],
+                        "exp": [
+                         {
+                          "_": "Expression",
+                          "@": [
+                           940,
+                           941
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            940,
+                            941
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             940,
+                             941
+                            ],
+                            "const": null,
+                            "id": null,
+                            "value": "e"
+                           }
+                          }
+                         }
+                        ]
+                       }
+                      }
+                     }
+                    ],
+                    "separators": []
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          895,
+          896
+         ],
+         "const": null,
+         "id": null,
+         "value": "e"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "ElementSets",
+     "Vertices",
+     "Faces"
+    ],
+    "funcs": [
+     "`ElementSets`",
+     "ElementSets",
+     "`Vertices`",
+     "Vertices",
+     "`Faces`",
+     "Faces"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "Vertices, Faces from FundamentalMeshAccessors(M)\nElementSets from MeshConnectivity\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\nA = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     171
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       48
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        21,
+        45
+       ],
+       "id": null,
+       "value": "FundamentalMeshAccessors"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         8
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          8
+         ],
+         "id": null,
+         "value": "Vertices"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         10,
+         15
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          10,
+          15
+         ],
+         "id": null,
+         "value": "Faces"
+        },
+        "r": null
+       }
+      ],
+      "params": [
+       {
+        "_": "IdentifierAlone",
+        "@": [
+         46,
+         47
+        ],
+        "const": null,
+        "id": null,
+        "value": "M"
+       }
+      ],
+      "separators": []
+     },
+     {
+      "_": "Import",
+      "@": [
+       49,
+       82
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        66,
+        82
+       ],
+       "id": null,
+       "value": "MeshConnectivity"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         49,
+         60
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          49,
+          60
+         ],
+         "id": null,
+         "value": "ElementSets"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       83,
+       105
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        83,
+        105
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          83,
+          95
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "NamedType",
+          "@": [
+           87,
+           95
+          ],
+          "m": {
+           "{}": {
+            "f": "FaceMesh"
+           }
+          }
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            83,
+            84
+           ],
+           "const": null,
+           "id": null,
+           "value": "M"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          96,
+          105
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           102,
+           105
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            104,
+            105
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             104,
+             105
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              104,
+              105
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            96,
+            99
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             96,
+             97
+            ],
+            "const": null,
+            "id": null,
+            "value": "x"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              98,
+              99
+             ],
+             "const": null,
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       106,
+       130
+      ],
+      "stat": {
+       "_": "Destructure",
+       "@": [
+        106,
+        130
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          106,
+          107
+         ],
+         "const": null,
+         "id": null,
+         "value": "V"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          109,
+          110
+         ],
+         "const": null,
+         "id": null,
+         "value": "E"
+        },
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          112,
+          113
+         ],
+         "const": null,
+         "id": null,
+         "value": "F"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          116,
+          130
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           116,
+           130
+          ],
+          "op": {
+           "_": "Function",
+           "@": [
+            116,
+            130
+           ],
+           "name": "ElementSets",
+           "p": "(",
+           "params": [
+            {
+             "_": "Expression",
+             "@": [
+              128,
+              129
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               128,
+               129
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                128,
+                129
+               ],
+               "const": null,
+               "id": null,
+               "value": "M"
+              }
+             }
+            }
+           ],
+           "separators": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       131,
+       170
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        131,
+        170
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          131,
+          132
+         ],
+         "const": null,
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          135,
+          170
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           135,
+           170
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            135,
+            170
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Factor",
+            "@": [
+             145,
+             170
+            ],
+            "op": {
+             "_": "Summation",
+             "@": [
+              145,
+              170
+             ],
+             "cond": null,
+             "exp": {
+              "_": "Factor",
+              "@": [
+               165,
+               170
+              ],
+              "op": {
+               "_": "Norm",
+               "@": [
+                165,
+                170
+               ],
+               "double": "‖",
+               "power": null,
+               "single": null,
+               "sub": null,
+               "value": {
+                "_": "Expression",
+                "@": [
+                 166,
+                 169
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  166,
+                  169
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   166,
+                   169
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    166,
+                    167
+                   ],
+                   "const": null,
+                   "id": null,
+                   "value": "x"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     168,
+                     169
+                    ],
+                    "const": null,
+                    "id": null,
+                    "value": "v"
+                   }
+                  ]
+                 }
+                }
+               }
+              }
+             },
+             "id": null,
+             "lower": null,
+             "range": {
+              "_": "Function",
+              "@": [
+               152,
+               163
+              ],
+              "name": "Vertices",
+              "p": "(",
+              "params": [
+               {
+                "_": "Expression",
+                "@": [
+                 161,
+                 162
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  161,
+                  162
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   161,
+                   162
+                  ],
+                  "const": null,
+                  "id": null,
+                  "value": "f"
+                 }
+                }
+               }
+              ],
+              "separators": []
+             },
+             "sign": null,
+             "sub": null,
+             "u": null,
+             "upper": null,
+             "enum": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                148,
+                149
+               ],
+               "const": null,
+               "id": null,
+               "value": "v"
+              }
+             ],
+             "extra": []
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": {
+            "_": "IdentifierAlone",
+            "@": [
+             142,
+             143
+            ],
+            "const": null,
+            "id": null,
+            "value": "F"
+           },
+           "sign": null,
+           "sub": null,
+           "u": null,
+           "upper": null,
+           "enum": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              138,
+              139
+             ],
+             "const": null,
+             "id": null,
+             "value": "f"
+            }
+           ],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nVertices, Faces from FundamentalMeshAccessors(M)\nElementSets from MeshConnectivity\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\nA = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\nfrom triangle_mesh import *\n\n\nclass heartlib:\n    def __init__(self, M, x):\n        rhs = M.ElementSets()\n        self.V = rhs[0]\n        self.E = rhs[1]\n        self.F = rhs[2]\n        dimv_0 = M.n_vertices()\n        dime_0 = M.n_edges()\n        dimf_0 = M.n_faces()\n        x = np.asarray(x, dtype=np.float64)\n        dim_0 = x.shape[0]\n        assert x.shape == (dim_0, 3, )\n\n        self.M = M\n        _FundamentalMeshAccessors = self.FundamentalMeshAccessors(M)\n        self.Vertices = _FundamentalMeshAccessors.Vertices\n        self.Vertices_0 = _FundamentalMeshAccessors.Vertices_0\n        self.Vertices_1 = _FundamentalMeshAccessors.Vertices_1\n        self.Vertices_2 = _FundamentalMeshAccessors.Vertices_2\n        self.Vertices_3 = _FundamentalMeshAccessors.Vertices_3\n        self.Faces = _FundamentalMeshAccessors.Faces\n        self.Faces_0 = _FundamentalMeshAccessors.Faces_0\n        self.Faces_1 = _FundamentalMeshAccessors.Faces_1\n        # A = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n        sum_0 = 0\n        for f in self.F:\n            sum_1 = 0\n            for v in self.Vertices_0(f):\n                sum_1 += np.linalg.norm(x[v], 2)\n            sum_0 += sum_1\n        self.A = sum_0\n\n    class FundamentalMeshAccessors:\n        def __init__(self, M):\n            rhs = M.ElementSets()\n            self.V = rhs[0]\n            self.E = rhs[1]\n            self.F = rhs[2]\n            dimv_0 = M.n_vertices()\n            dime_0 = M.n_edges()\n            dimf_0 = M.n_faces()\n            self.M = M\n            rhs_1 = M.BoundaryMatrices()\n            self.dee0 = rhs_1[0]\n            self.dee1 = rhs_1[1]\n            rhs_2 = M.UnsignedBoundaryMatrices()\n            self.B0 = rhs_2[0]\n            self.B1 = rhs_2[1]\n            # `B⁰ᵀ` = `B⁰`ᵀ\n            self.B0T = self.B0.T\n            # `B¹ᵀ` = `B¹`ᵀ\n            self.B1T = self.B1.T\n        def Vertices(self, S):\n            return S[1-1]\n        def Edges(self, S):\n            return S[2-1]\n        def Faces(self, S):\n            return S[3-1]\n        def Vertices_0(self, f):\n            assert np.ndim(f) == 0\n            assert f in self.F\n            return nonzeros(self.B0 @ (self.B1 @ indicator({f}, self.M.n_faces())))\n        def Vertices_1(self, G):\n            G = frozenset(G)\n            return nonzeros(self.B0 @ (self.B1 @ indicator(G, self.M.n_faces())))\n        def Vertices_2(self, e):\n            assert np.ndim(e) == 0\n            assert e in self.E\n            return nonzeros(self.B0 @ indicator({e}, self.M.n_edges()))\n        def Vertices_3(self, H):\n            H = frozenset(H)\n            return nonzeros(self.B0 @ indicator(H, self.M.n_edges()))\n        def Edges_0(self, v):\n            assert np.ndim(v) == 0\n            assert v in self.V\n            return nonzeros(self.B0T @ indicator({v}, self.M.n_vertices()))\n        def Edges_1(self, f):\n            assert np.ndim(f) == 0\n            assert f in self.F\n            return nonzeros(self.B1 @ indicator({f}, self.M.n_faces()))\n        def Faces_0(self, v):\n            assert np.ndim(v) == 0\n            assert v in self.V\n            return nonzeros(self.B1T @ (self.B0T @ indicator({v}, self.M.n_vertices())))\n        def Faces_1(self, e):\n            assert np.ndim(e) == 0\n            assert e in self.E\n            return nonzeros(self.B1T @ indicator({e}, self.M.n_edges()))\n\n\n\n\n\n",
+  "eigen": "/*\nVertices, Faces from FundamentalMeshAccessors(M)\nElementSets from MeshConnectivity\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\nA = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n#include \"FaceMesh.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT_ = double;\n    using MatrixD_ = Eigen::MatrixXd;\n    using VectorD_ = Eigen::VectorXd;\n    std::vector<int > V;\n    std::vector<int > E;\n    std::vector<int > F;\n    DT_ A;\n    FaceMesh M;\n    struct FundamentalMeshAccessors {\n        using DT = double;\n        using MatrixD = Eigen::MatrixXd;\n        using VectorD = Eigen::VectorXd;\n        std::vector<int > V;\n        std::vector<int > E;\n        std::vector<int > F;\n        Eigen::SparseMatrix<int> dee0;\n        Eigen::SparseMatrix<int> dee1;\n        Eigen::SparseMatrix<int> B0;\n        Eigen::SparseMatrix<int> B1;\n        Eigen::SparseMatrix<int> B0T;\n        Eigen::SparseMatrix<int> B1T;\n        FaceMesh M;\n        std::vector<int > Vertices(\n            const std::tuple< std::vector<int >, std::vector<int >, std::vector<int >, std::vector<int > > & S)\n        {\n            return std::get<1-1>(S);    \n        }\n        std::vector<int > Edges(\n            const std::tuple< std::vector<int >, std::vector<int >, std::vector<int >, std::vector<int > > & S)\n        {\n            return std::get<2-1>(S);    \n        }\n        std::vector<int > Faces(\n            const std::tuple< std::vector<int >, std::vector<int >, std::vector<int >, std::vector<int > > & S)\n        {\n            return std::get<3-1>(S);    \n        }\n        std::vector<int > Vertices_0(\n            const int & f)\n        {\n            assert( std::binary_search(F.begin(), F.end(), f) );\n            std::vector<int > Vertices_0set_0({f});\n            if(Vertices_0set_0.size() > 1){\n                sort(Vertices_0set_0.begin(), Vertices_0set_0.end());\n                Vertices_0set_0.erase(unique(Vertices_0set_0.begin(), Vertices_0set_0.end() ), Vertices_0set_0.end());\n            }\n            return nonzeros(this->B0 * (this->B1 * indicator(Vertices_0set_0, M.n_faces())));    \n        }\n        std::vector<int > Vertices_1(\n            const std::vector<int > & G)\n        {\n            return nonzeros(this->B0 * (this->B1 * indicator(G, M.n_faces())));    \n        }\n        std::vector<int > Vertices_2(\n            const int & e)\n        {\n            assert( std::binary_search(E.begin(), E.end(), e) );\n            std::vector<int > Vertices_2set_0({e});\n            if(Vertices_2set_0.size() > 1){\n                sort(Vertices_2set_0.begin(), Vertices_2set_0.end());\n                Vertices_2set_0.erase(unique(Vertices_2set_0.begin(), Vertices_2set_0.end() ), Vertices_2set_0.end());\n            }\n            return nonzeros(this->B0 * indicator(Vertices_2set_0, M.n_edges()));    \n        }\n        std::vector<int > Vertices_3(\n            const std::vector<int > & H)\n        {\n            return nonzeros(this->B0 * indicator(H, M.n_edges()));    \n        }\n        std::vector<int > Edges_0(\n            const int & v)\n        {\n            assert( std::binary_search(V.begin(), V.end(), v) );\n            std::vector<int > Edges_0set_0({v});\n            if(Edges_0set_0.size() > 1){\n                sort(Edges_0set_0.begin(), Edges_0set_0.end());\n                Edges_0set_0.erase(unique(Edges_0set_0.begin(), Edges_0set_0.end() ), Edges_0set_0.end());\n            }\n            return nonzeros(this->B0T * indicator(Edges_0set_0, M.n_vertices()));    \n        }\n        std::vector<int > Edges_1(\n            const int & f)\n        {\n            assert( std::binary_search(F.begin(), F.end(), f) );\n            std::vector<int > Edges_1set_0({f});\n            if(Edges_1set_0.size() > 1){\n                sort(Edges_1set_0.begin(), Edges_1set_0.end());\n                Edges_1set_0.erase(unique(Edges_1set_0.begin(), Edges_1set_0.end() ), Edges_1set_0.end());\n            }\n            return nonzeros(this->B1 * indicator(Edges_1set_0, M.n_faces()));    \n        }\n        std::vector<int > Faces_0(\n            const int & v)\n        {\n            assert( std::binary_search(V.begin(), V.end(), v) );\n            std::vector<int > Faces_0set_0({v});\n            if(Faces_0set_0.size() > 1){\n                sort(Faces_0set_0.begin(), Faces_0set_0.end());\n                Faces_0set_0.erase(unique(Faces_0set_0.begin(), Faces_0set_0.end() ), Faces_0set_0.end());\n            }\n            return nonzeros(this->B1T * (this->B0T * indicator(Faces_0set_0, M.n_vertices())));    \n        }\n        std::vector<int > Faces_1(\n            const int & e)\n        {\n            assert( std::binary_search(E.begin(), E.end(), e) );\n            std::vector<int > Faces_1set_0({e});\n            if(Faces_1set_0.size() > 1){\n                sort(Faces_1set_0.begin(), Faces_1set_0.end());\n                Faces_1set_0.erase(unique(Faces_1set_0.begin(), Faces_1set_0.end() ), Faces_1set_0.end());\n            }\n            return nonzeros(this->B1T * indicator(Faces_1set_0, M.n_edges()));    \n        }\n        FundamentalMeshAccessors(const FaceMesh & M)\n        {\n            // V, E, F = ElementSets( M )\n            std::tuple< std::vector<int >, std::vector<int >, std::vector<int > > rhs = M.ElementSets();\n            V = std::get<0>(rhs);\n            E = std::get<1>(rhs);\n            F = std::get<2>(rhs);\n            int dimv_0 = M.n_vertices();\n            int dime_0 = M.n_edges();\n            int dimf_0 = M.n_faces();\n            this->M = M;\n            // `∂⁰`, `∂¹` = BoundaryMatrices(M)\n            std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > rhs_1 = M.BoundaryMatrices();\n            dee0 = std::get<0>(rhs_1);\n            dee1 = std::get<1>(rhs_1);\n            // `B⁰`, `B¹` = UnsignedBoundaryMatrices(M)\n            std::tuple< Eigen::SparseMatrix<int>, Eigen::SparseMatrix<int> > rhs_2 = M.UnsignedBoundaryMatrices();\n            B0 = std::get<0>(rhs_2);\n            B1 = std::get<1>(rhs_2);\n            // `B⁰ᵀ` = `B⁰`ᵀ\n            B0T = B0.transpose();\n            // `B¹ᵀ` = `B¹`ᵀ\n            B1T = B1.transpose();\n        }\n    };\n    FundamentalMeshAccessors _FundamentalMeshAccessors;\n    std::vector<int > Vertices(std::tuple< std::vector<int >, std::vector<int >, std::vector<int >, std::vector<int > > p0){\n        return _FundamentalMeshAccessors.Vertices(p0);\n    };\n    std::vector<int > Vertices_0(int p0){\n        return _FundamentalMeshAccessors.Vertices_0(p0);\n    };\n    std::vector<int > Vertices_1(std::vector<int > p0){\n        return _FundamentalMeshAccessors.Vertices_1(p0);\n    };\n    std::vector<int > Vertices_2(int p0){\n        return _FundamentalMeshAccessors.Vertices_2(p0);\n    };\n    std::vector<int > Vertices_3(std::vector<int > p0){\n        return _FundamentalMeshAccessors.Vertices_3(p0);\n    };\n    std::vector<int > Faces(std::tuple< std::vector<int >, std::vector<int >, std::vector<int >, std::vector<int > > p0){\n        return _FundamentalMeshAccessors.Faces(p0);\n    };\n    std::vector<int > Faces_0(int p0){\n        return _FundamentalMeshAccessors.Faces_0(p0);\n    };\n    std::vector<int > Faces_1(int p0){\n        return _FundamentalMeshAccessors.Faces_1(p0);\n    };\n    heartlib(\n        const FaceMesh & M,\n        const std::vector<Eigen::Matrix<double, 3, 1>> & x)\n    :\n    _FundamentalMeshAccessors(M)\n    {\n        // V, E, F = ElementSets(M)\n        std::tuple< std::vector<int >, std::vector<int >, std::vector<int > > rhs = M.ElementSets();\n        V = std::get<0>(rhs);\n        E = std::get<1>(rhs);\n        F = std::get<2>(rhs);\n        int dimv_0 = M.n_vertices();\n        int dime_0 = M.n_edges();\n        int dimf_0 = M.n_faces();\n        const long dim_0 = x.size();\n        this->M = M;\n        // A = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n        DT_ sum_0 = 0;\n        for(int f : this->F){\n            DT_ sum_1 = 0;\n            for(int v : Vertices_0(f)){\n                sum_1 += (x.at(v)).template lpNorm<2>();\n            }\n            sum_0 += sum_1;\n        }\n        A = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ Vertices, Faces from FundamentalMeshAccessors(M) }\\\\\n \\\\\n \\omit \\span \\text{ ElementSets from MeshConnectivity }\\\\\n \\\\\n\\\\\nM & ∈ \\text{ FaceMesh} \\\\\nx_{i} & ∈ \\mathbb{R}^{ 3} \\\\\n\\\\\nV,E,F & = \\mathit{ElementSets}(M) \\\\\nA & = \\sum_{f\\in F} \\sum_{v\\in \\mathit{Vertices}\\left( f \\right)} \\left\\|x_{ v }\\right\\| \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ Vertices, Faces from FundamentalMeshAccessors(M) }\\\\\n \\\\\n & \\text{ ElementSets from MeshConnectivity }\\\\\n \\\\\n\\\\\nM & ∈ \\text{ FaceMesh} \\\\\nx_{i} & ∈ \\mathbb{R}^{ 3} \\\\\n\\\\\n & V,E,F & = \\mathit{ElementSets}(M) \\\\\nA & = \\sum_{f\\in F} \\sum_{v\\in \\mathit{Vertices}\\left( f \\right)} \\left\\|x_{ v }\\right\\| \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(M, x)\n% output = heartlib(M, x)\n%\n%    Vertices, Faces from FundamentalMeshAccessors(M)\n%    ElementSets from MeshConnectivity\n%    M ∈ FaceMesh\n%    x_i ∈ ℝ^3\n%    V, E, F = ElementSets(M)\n%    A = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n%    \n    dimv_0 = M.n_vertices();\n    dime_0 = M.n_edges();\n    dimf_0 = M.n_faces();\n    [V, E, F] = M.ElementSets();\n    dim_0 = size(x, 1);\n    assert( isequal(size(x), [dim_0, 3]) );\n\n    function output = FundamentalMeshAccessors(M)\n    % output = FundamentalMeshAccessors(M)\n    %\n    %    ElementSets, BoundaryMatrices, UnsignedBoundaryMatrices, NonZeros, IndicatorVector  from MeshConnectivity\n    %    \n    %    M : FaceMesh \n    %    \n    %    V, E, F = ElementSets( M )\n    %    `∂⁰`, `∂¹` = BoundaryMatrices(M) \n    %    `B⁰`, `B¹` = UnsignedBoundaryMatrices(M)\n    %    `B⁰ᵀ` = `B⁰`ᵀ\n    %    `B¹ᵀ` = `B¹`ᵀ\n    %    \n    %    Vertices(S) = S₁ where S: CellularSet\n    %    Edges(S)    = S₂ where S: CellularSet \n    %    Faces(S)    = S₃ where S: CellularSet\n    %     \n    %    Vertices(f) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector({f})))) where f ∈ F\n    %    Vertices(G) = vertexset(NonZeros(`B⁰` (`B¹` IndicatorVector(G)))) where G ⊂ F\n    %    Vertices(e) = vertexset(NonZeros(`B⁰` IndicatorVector({e}))) where e ∈ E\n    %    Vertices(H) = vertexset(NonZeros(`B⁰` IndicatorVector(H))) where H ⊂ E\n    %     \n    %    Edges(v) = edgeset(NonZeros(`B⁰ᵀ` IndicatorVector({v}))) where v ∈ V\n    %    Edges(f) = faceset(NonZeros(`B¹` IndicatorVector({f}))) where f ∈ F\n    %    \n    %    Faces(v) = faceset(NonZeros(`B¹ᵀ` (`B⁰ᵀ` IndicatorVector({v})))) where v ∈ V\n    %    Faces(e) = faceset(NonZeros(`B¹ᵀ` IndicatorVector({e}))) where e ∈ E\n        dimv_0 = M.n_vertices();\n        dime_0 = M.n_edges();\n        dimf_0 = M.n_faces();\n        [V, E, F] = M.ElementSets();\n        [dee0, dee1] = M.BoundaryMatrices();\n        [B0, B1] = M.UnsignedBoundaryMatrices();\n        % `B⁰ᵀ` = `B⁰`ᵀ\n        B0T = B0';\n        % `B¹ᵀ` = `B¹`ᵀ\n        B1T = B1';\n        function [ret] = Vertices(S)\n            ret = S(1);\n        end\n        function [ret_1] = Edges(S)\n            ret_1 = S(2);\n        end\n        function [ret_2] = Faces(S)\n            ret_2 = S(3);\n        end\n        function [ret_3] = Vertices_0(f)\n            assert(numel(f) == 1);\n            assert( ismember(f, F) );\n            ret_3 = NonZeros(B0 * (B1 * indicator([f], M.n_faces())));\n        end\n        function [ret_4] = Vertices_1(G)\n            ret_4 = NonZeros(B0 * (B1 * indicator(G, M.n_faces())));\n        end\n        function [ret_5] = Vertices_2(e)\n            assert(numel(e) == 1);\n            assert( ismember(e, E) );\n            ret_5 = NonZeros(B0 * indicator([e], M.n_edges()));\n        end\n        function [ret_6] = Vertices_3(H)\n            ret_6 = NonZeros(B0 * indicator(H, M.n_edges()));\n        end\n        function [ret_7] = Edges_0(v)\n            assert(numel(v) == 1);\n            assert( ismember(v, V) );\n            ret_7 = NonZeros(B0T * indicator([v], M.n_vertices()));\n        end\n        function [ret_8] = Edges_1(f)\n            assert(numel(f) == 1);\n            assert( ismember(f, F) );\n            ret_8 = NonZeros(B1 * indicator([f], M.n_faces()));\n        end\n        function [ret_9] = Faces_0(v)\n            assert(numel(v) == 1);\n            assert( ismember(v, V) );\n            ret_9 = NonZeros(B1T * (B0T * indicator([v], M.n_vertices())));\n        end\n        function [ret_10] = Faces_1(e)\n            assert(numel(e) == 1);\n            assert( ismember(e, E) );\n            ret_10 = NonZeros(B1T * indicator([e], M.n_edges()));\n        end\n        output.V = V;\n        output.E = E;\n        output.F = F;\n        output.dee0 = dee0;\n        output.dee1 = dee1;\n        output.B0 = B0;\n        output.B1 = B1;\n        output.B0T = B0T;\n        output.B1T = B1T;\n        output.Vertices = @Vertices;\n        output.Edges = @Edges;\n        output.Faces = @Faces;\n        output.Vertices_0 = @Vertices_0;\n        output.Vertices_1 = @Vertices_1;\n        output.Vertices_2 = @Vertices_2;\n        output.Vertices_3 = @Vertices_3;\n        output.Edges_0 = @Edges_0;\n        output.Edges_1 = @Edges_1;\n        output.Faces_0 = @Faces_0;\n        output.Faces_1 = @Faces_1;\n        output.M = M;\n    end\n    FundamentalMeshAccessors_ = FundamentalMeshAccessors(M);\n    Vertices = @FundamentalMeshAccessors_.Vertices;\n    Vertices_0 = @FundamentalMeshAccessors_.Vertices_0;\n    Vertices_1 = @FundamentalMeshAccessors_.Vertices_1;\n    Vertices_2 = @FundamentalMeshAccessors_.Vertices_2;\n    Vertices_3 = @FundamentalMeshAccessors_.Vertices_3;\n    Faces = @FundamentalMeshAccessors_.Faces;\n    Faces_0 = @FundamentalMeshAccessors_.Faces_0;\n    Faces_1 = @FundamentalMeshAccessors_.Faces_1;\n    % A = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n\n    sum_0 = 0;\n    range_1 = F;\n    for index_1 = 1:length(range_1)\n        f = range_1(index_1);\n        sum_1 = 0;\n        range = Vertices_0(f);\n        for index = 1:length(range)\n            v = range(index);\n            sum_1 = sum_1 + norm(x(v,:)', 2);\n        end\n        sum_0 = sum_0 + sum_1;\n    end\n    A = sum_0;\n    output.V = V;\n    output.E = E;\n    output.F = F;\n    output.A = A;\n    output.M = M;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ Vertices, Faces from FundamentalMeshAccessors(\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-M\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {M} }) }\\\\\n \\\\\n & \\text{ ElementSets from MeshConnectivity }\\\\\n \\\\\n\\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-M\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {M} } & ∈ \\text{ FaceMesh} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x_i\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }_{i} & ∈ \\mathbb{R}^{ 3} \\\\\n\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'V', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-V\", \"sym\":\"V\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {V} },\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'E', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-E\", \"sym\":\"E\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {E} },\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'F', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-F\", \"sym\":\"F\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {F} } & = \\mathit{ElementSets}(\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-M\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {M} })\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['V'], false, [], [], 'ViwgRSwgRiA9IEVsZW1lbnRTZXRzKE0p');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = \\sum_{f\\in \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'F', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-F\", \"sym\":\"F\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F} }} \\sum_{v\\in \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'Vertices', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-Vertices\", \"sym\":\"Vertices\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{Vertices}} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} } \\right)} \\left\\|\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }_{ v }\\right\\|\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['x', 'A'], false, [], [], 'QSA9IOKIkV8oZiDiiIggRikg4oiRXyh2IOKIiCBWZXJ0aWNlcyhmKSkg4oCWeF924oCW');\"} }{}\n \\\\\n\\end{align*}\n"
+ }
+}

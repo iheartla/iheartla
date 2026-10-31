@@ -1,0 +1,899 @@
+{
+ "id": "t_backtick_05",
+ "src": "cc = 2\n        `dd` = 3\n        ee = aa bb cc dd\n        ff = `aa` `bb` `cc` `dd`\n        where\n        `aa`: ℝ\n        bb: ℝ ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "cc = 2\n        `dd` = 3\n        ee = aa bb cc dd\n        ff = `aa` `bb` `cc` `dd`\n        where\n        `aa`: ℝ\n        bb: ℝ ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     126
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       6
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        6
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          2
+         ],
+         "id": null,
+         "value": "cc"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          5,
+          6
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           5,
+           6
+          ],
+          "num": {
+           "_": "Integer",
+           "@": [
+            5,
+            6
+           ],
+           "value": [
+            "2"
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       15,
+       23
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        15,
+        23
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          15,
+          19
+         ],
+         "id": "dd",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          22,
+          23
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           22,
+           23
+          ],
+          "num": {
+           "_": "Integer",
+           "@": [
+            22,
+            23
+           ],
+           "value": [
+            "3"
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       32,
+       48
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        32,
+        48
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          32,
+          34
+         ],
+         "id": null,
+         "value": "ee"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          37,
+          48
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           37,
+           48
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            37,
+            45
+           ],
+           "left": {
+            "_": "Multiply",
+            "@": [
+             37,
+             42
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              37,
+              39
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               37,
+               39
+              ],
+              "id": null,
+              "value": "aa"
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              40,
+              42
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               40,
+               42
+              ],
+              "id": null,
+              "value": "bb"
+             }
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             43,
+             45
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              43,
+              45
+             ],
+             "id": null,
+             "value": "cc"
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            46,
+            48
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             46,
+             48
+            ],
+            "id": null,
+            "value": "dd"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       57,
+       81
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        57,
+        81
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          57,
+          59
+         ],
+         "id": null,
+         "value": "ff"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          62,
+          81
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           62,
+           81
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            62,
+            76
+           ],
+           "left": {
+            "_": "Multiply",
+            "@": [
+             62,
+             71
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              62,
+              66
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               62,
+               66
+              ],
+              "id": "aa",
+              "value": null
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              67,
+              71
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               67,
+               71
+              ],
+              "id": "bb",
+              "value": null
+             }
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             72,
+             76
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              72,
+              76
+             ],
+             "id": "cc",
+             "value": null
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            77,
+            81
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             77,
+             81
+            ],
+            "id": "dd",
+            "value": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       90,
+       125
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        104,
+        125
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          104,
+          111
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            104,
+            108
+           ],
+           "id": "aa",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          120,
+          125
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            120,
+            122
+           ],
+           "id": null,
+           "value": "bb"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "cc",
+     "dd",
+     "aa",
+     "ff",
+     "bb",
+     "ee"
+    ],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "cc = 2\n        `dd` = 3\n        ee = aa bb cc dd\n        ff = `aa` `bb` `cc` `dd`\n        where\n        `aa`: ℝ\n        bb: ℝ ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     126
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       6
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        6
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          2
+         ],
+         "const": "cc",
+         "id": null,
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          5,
+          6
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           5,
+           6
+          ],
+          "num": {
+           "_": "Integer",
+           "@": [
+            5,
+            6
+           ],
+           "value": [
+            "2"
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       15,
+       23
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        15,
+        23
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          15,
+          19
+         ],
+         "const": null,
+         "id": "dd",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          22,
+          23
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           22,
+           23
+          ],
+          "num": {
+           "_": "Integer",
+           "@": [
+            22,
+            23
+           ],
+           "value": [
+            "3"
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       32,
+       48
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        32,
+        48
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          32,
+          34
+         ],
+         "const": "ee",
+         "id": null,
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          37,
+          48
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           37,
+           48
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            37,
+            45
+           ],
+           "left": {
+            "_": "Multiply",
+            "@": [
+             37,
+             42
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              37,
+              39
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               37,
+               39
+              ],
+              "const": "aa",
+              "id": null,
+              "value": null
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              40,
+              42
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               40,
+               42
+              ],
+              "const": "bb",
+              "id": null,
+              "value": null
+             }
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             43,
+             45
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              43,
+              45
+             ],
+             "const": "cc",
+             "id": null,
+             "value": null
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            46,
+            48
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             46,
+             48
+            ],
+            "const": "dd",
+            "id": null,
+            "value": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       57,
+       81
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        57,
+        81
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          57,
+          59
+         ],
+         "const": "ff",
+         "id": null,
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          62,
+          81
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           62,
+           81
+          ],
+          "left": {
+           "_": "Multiply",
+           "@": [
+            62,
+            76
+           ],
+           "left": {
+            "_": "Multiply",
+            "@": [
+             62,
+             71
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              62,
+              66
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               62,
+               66
+              ],
+              "const": null,
+              "id": "aa",
+              "value": null
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              67,
+              71
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               67,
+               71
+              ],
+              "const": null,
+              "id": "bb",
+              "value": null
+             }
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             72,
+             76
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              72,
+              76
+             ],
+             "const": null,
+             "id": "cc",
+             "value": null
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            77,
+            81
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             77,
+             81
+            ],
+            "const": null,
+            "id": "dd",
+            "value": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       90,
+       125
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        104,
+        125
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          104,
+          111
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            104,
+            108
+           ],
+           "const": null,
+           "id": "aa",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          120,
+          125
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            120,
+            122
+           ],
+           "const": "bb",
+           "id": null,
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\ncc = 2\n        `dd` = 3\n        ee = aa bb cc dd\n        ff = `aa` `bb` `cc` `dd`\n        where\n        `aa`: ℝ\n        bb: ℝ \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, aa, bb):\n        assert np.ndim(aa) == 0\n        assert np.ndim(bb) == 0\n        # cc = 2\n        self.cc = 2\n        # `dd` = 3\n        self.dd = 3\n        # ee = aa bb cc dd\n        self.ee = aa * bb * self.cc * self.dd\n        # ff = `aa` `bb` `cc` `dd`\n        self.ff = aa * bb * self.cc * self.dd\n\n\n\n\n\n",
+  "eigen": "/*\ncc = 2\n        `dd` = 3\n        ee = aa bb cc dd\n        ff = `aa` `bb` `cc` `dd`\n        where\n        `aa`: ℝ\n        bb: ℝ \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    int cc;\n    int dd;\n    DT ee;\n    DT ff;\n\n    heartlib(\n        const double & aa,\n        const double & bb)\n    {\n    \n        // cc = 2\n        cc = 2;\n        // `dd` = 3\n        dd = 3;\n        // ee = aa bb cc dd\n        ee = aa * bb * cc * dd;\n        // ff = `aa` `bb` `cc` `dd`\n        ff = aa * bb * cc * dd;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\mathit{cc} & = 2 \\\\\n\\mathit{dd} & = 3 \\\\\n\\mathit{ee} & = \\mathit{aa} \\mathit{bb} \\mathit{cc} \\mathit{dd} \\\\\n\\mathit{ff} & = \\mathit{aa} \\mathit{bb} \\mathit{cc} \\mathit{dd} \\\\\n\\intertext{where} \n\\mathit{aa} & : \\mathbb{R} \\\\\n\\mathit{bb} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\mathit{cc} & = 2 \\\\\n\\mathit{dd} & = 3 \\\\\n\\mathit{ee} & = \\mathit{aa} \\mathit{bb} \\mathit{cc} \\mathit{dd} \\\\\n\\mathit{ff} & = \\mathit{aa} \\mathit{bb} \\mathit{cc} \\mathit{dd} \\\\\nwhere \\\\\n\\mathit{aa} & : \\mathbb{R} \\\\\n\\mathit{bb} & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(aa, bb)\n% output = heartlib(aa, bb)\n%\n%    cc = 2\n%            `dd` = 3\n%            ee = aa bb cc dd\n%            ff = `aa` `bb` `cc` `dd`\n%            where\n%            `aa`: ℝ\n%            bb: ℝ \n    assert(numel(aa) == 1);\n    assert(numel(bb) == 1);\n\n    % cc = 2\n\n    cc = 2;\n    % `dd` = 3\n\n    dd = 3;\n    % ee = aa bb cc dd\n\n    ee = aa * bb * cc * dd;\n    % ff = `aa` `bb` `cc` `dd`\n\n    ff = aa * bb * cc * dd;\n    output.cc = cc;\n    output.dd = dd;\n    output.ee = ee;\n    output.ff = ff;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'cc', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-cc\", \"sym\":\"cc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {\\mathit{cc}} } & = 2\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['cc'], false, [], [], 'Y2MgPSAy');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'dd', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-dd\", \"sym\":\"dd\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {\\mathit{dd}} } & = 3\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['dd'], false, [], [], 'YGRkYCA9IDM=');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ee', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-ee\", \"sym\":\"ee\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {\\mathit{ee}} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'aa', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-aa\", \"sym\":\"aa\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{aa}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bb', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bb\", \"sym\":\"bb\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{bb}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'cc', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-cc\", \"sym\":\"cc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{cc}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'dd', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-dd\", \"sym\":\"dd\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{dd}} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['cc', 'aa', 'dd', 'bb', 'ee'], false, [], [], 'ZWUgPSBhYSBiYiBjYyBkZA==');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ff', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-ff\", \"sym\":\"ff\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {\\mathit{ff}} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'aa', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-aa\", \"sym\":\"aa\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{aa}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bb', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bb\", \"sym\":\"bb\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{bb}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'cc', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-cc\", \"sym\":\"cc\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{cc}} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'dd', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-dd\", \"sym\":\"dd\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{dd}} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['cc', 'aa', 'dd', 'bb', 'ff'], false, [], [], 'ZmYgPSBgYWFgIGBiYmAgYGNjYCBgZGRg');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'aa', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-aa\", \"sym\":\"aa\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{aa}} } & : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'bb', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-bb\", \"sym\":\"bb\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\mathit{bb}} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

@@ -1,0 +1,484 @@
+{
+ "id": "t_subs_15",
+ "src": "B = sum_i A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "B = sum_i A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     62
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       13
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        13
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "B"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          13
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           13
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            13
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Factor",
+            "@": [
+             10,
+             13
+            ],
+            "id0": {
+             "_": "IdentifierSubscript",
+             "@": [
+              10,
+              13
+             ],
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               10,
+               11
+              ],
+              "id": null,
+              "value": "A"
+             },
+             "right": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                12,
+                13
+               ],
+               "id": null,
+               "value": "i"
+              }
+             ]
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       22,
+       62
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        36,
+        62
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          36,
+          62
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           41,
+           52
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            46,
+            47
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             46,
+             47
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              46,
+              47
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            50,
+            51
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             50,
+             51
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              50,
+              51
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            36,
+            39
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             36,
+             37
+            ],
+            "id": null,
+            "value": "A"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              38,
+              39
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "B = sum_i A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     62
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       13
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        13
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "B"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          13
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           13
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            13
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Factor",
+            "@": [
+             10,
+             13
+            ],
+            "id0": {
+             "_": "IdentifierSubscript",
+             "@": [
+              10,
+              13
+             ],
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               10,
+               11
+              ],
+              "id": null,
+              "value": "A"
+             },
+             "right": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                12,
+                13
+               ],
+               "id": null,
+               "value": "i"
+              }
+             ]
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       22,
+       62
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        36,
+        62
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          36,
+          62
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           41,
+           52
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            46,
+            47
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             46,
+             47
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              46,
+              47
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            50,
+            51
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             50,
+             51
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              50,
+              51
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            36,
+            39
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             36,
+             37
+            ],
+            "id": null,
+            "value": "A"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              38,
+              39
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nB = sum_i A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        dim_0 = A.shape[0]\n        assert A.shape == (dim_0, 2, 2)\n        # B = sum_i A_i\n        sum_0 = np.zeros((2, 2))\n        for i in range(1, len(A)+1):\n            sum_0 += A[i-1]\n        self.B = sum_0\n\n\n\n\n\n",
+  "eigen": "/*\nB = sum_i A_i\n        where\n        A_i: ℝ ^ (2 × 2): a matrix\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> B;\n\n    heartlib(const std::vector<Eigen::Matrix<double, 2, 2>> & A)\n    {\n        const long dim_0 = A.size();\n        // B = sum_i A_i\n        MatrixD sum_0 = MatrixD::Zero(2, 2);\n        for(int i=1; i<=A.size(); i++){\n            sum_0 += A.at(i-1);\n        }\n        B = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nB & = \\sum_{i} A_{ i } \\\\\n\\intertext{where} \nA_{i} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nB & = \\sum_{i} A_{ i } \\\\\nwhere \\\\\nA_{i} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    B = sum_i A_i\n%            where\n%            A_i: ℝ ^ (2 × 2): a matrix\n    dim_0 = size(A, 1);\n    assert( isequal(size(A), [dim_0, 2, 2]) );\n\n    % B = sum_i A_i\n\n    sum_0 = zeros(2, 2);\n    for i = 1:size(A, 1)\n        sum_0 = sum_0 + squeeze(A(i,:,:));\n    end\n    B = sum_0;\n    output.B = B;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{ i }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'B'], false, [], [], 'QiA9IHN1bV9pIEFfaQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A_i\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i} & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

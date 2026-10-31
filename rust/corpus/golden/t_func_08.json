@@ -1,0 +1,610 @@
+{
+ "id": "t_func_08",
+ "src": "A = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 ): a function",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "A = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 ): a function",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     130
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       10
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        10
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          10
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           10
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            4,
+            5
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             4,
+             5
+            ],
+            "id": null,
+            "value": "P"
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            6,
+            10
+           ],
+           "op": {
+            "_": "Function",
+            "@": [
+             6,
+             10
+            ],
+            "name": [
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               6,
+               7
+              ],
+              "id": null,
+              "value": "f"
+             },
+             []
+            ],
+            "p": "(",
+            "params": [
+             {
+              "_": "Expression",
+              "@": [
+               8,
+               9
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                8,
+                9
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 8,
+                 9
+                ],
+                "value": [
+                 "2"
+                ]
+               }
+              }
+             }
+            ],
+            "separators": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       31,
+       130
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        57,
+        130
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          57,
+          78
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           60,
+           68
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            64,
+            65
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             64,
+             65
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              64,
+              65
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            66,
+            67
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             66,
+             67
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              66,
+              67
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            57,
+            58
+           ],
+           "id": null,
+           "value": "P"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          99,
+          130
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a function",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           102,
+           118
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret": [
+           {
+            "_": "VectorType",
+            "@": [
+             112,
+             118
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              115,
+              116
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               115,
+               116
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                115,
+                116
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            99,
+            100
+           ],
+           "id": null,
+           "value": "f"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`f`",
+     "f"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "A = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 ): a function",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     130
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       10
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        10
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          10
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           10
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            4,
+            5
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             4,
+             5
+            ],
+            "id": null,
+            "value": "P"
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            6,
+            10
+           ],
+           "op": {
+            "_": "Function",
+            "@": [
+             6,
+             10
+            ],
+            "name": "f",
+            "p": "(",
+            "params": [
+             {
+              "_": "Expression",
+              "@": [
+               8,
+               9
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                8,
+                9
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 8,
+                 9
+                ],
+                "value": [
+                 "2"
+                ]
+               }
+              }
+             }
+            ],
+            "separators": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       31,
+       130
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        57,
+        130
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          57,
+          78
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           60,
+           68
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            64,
+            65
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             64,
+             65
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              64,
+              65
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            66,
+            67
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             66,
+             67
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              66,
+              67
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            57,
+            58
+           ],
+           "id": null,
+           "value": "P"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          99,
+          130
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a function",
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           102,
+           118
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret": [
+           {
+            "_": "VectorType",
+            "@": [
+             112,
+             118
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              115,
+              116
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               115,
+               116
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                115,
+                116
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            99,
+            100
+           ],
+           "id": null,
+           "value": "f"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nA = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 ): a function\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, P, f):\n        P = np.asarray(P, dtype=np.float64)\n        assert P.shape == (2, 2)\n        # A = P f(2)\n        self.A = P @ f(2)\n\n\n\n\n\n",
+  "eigen": "/*\nA = P f(2)\n                    where\n                    P: ℝ ^(2×2): a matrix\n                    f: scalar -> ℝ^(2 ): a function\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 1> A;\n\n    heartlib(\n        const Eigen::Matrix<double, 2, 2> & P,\n        const std::function<Eigen::Matrix<double, 2, 1>(double)> & f)\n    {\n    \n        // A = P f(2)\n        A = P * f(2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nA & = P f\\left( 2 \\right) \\\\\n\\intertext{where} \nP & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\nf & : \\mathbb{R}\\rightarrow \\mathbb{R}^{ 2} \\text{ a function} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nA & = P f\\left( 2 \\right) \\\\\nwhere \\\\\nP & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\nf & : \\mathbb{R}\\rightarrow \\mathbb{R}^{ 2} \\text{ a function} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(P, f)\n% output = heartlib(P, f)\n%\n%    A = P f(2)\n%                        where\n%                        P: ℝ ^(2×2): a matrix\n%                        f: scalar -> ℝ^(2 ): a function\n    assert( isequal(size(P), [2, 2]) );\n\n    % A = P f(2)\n\n    A = P * f(2);\n    output.A = A;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'P', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-P\", \"sym\":\"P\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {P} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }\\left( 2 \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['P', 'f', 'A'], false, [], [], 'QSA9IFAgZigyKQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'P', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-P\", \"sym\":\"P\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {P} } & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} } & : \\mathbb{R}\\rightarrow \\mathbb{R}^{ 2} \\text{ a function} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

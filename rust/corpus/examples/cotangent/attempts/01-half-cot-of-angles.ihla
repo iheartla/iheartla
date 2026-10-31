@@ -1,0 +1,7 @@
+C_f = 1/2 [cot(acos((b_f²+c_f²-a_f²)/(2 b_f c_f))), cot(acos((c_f²+a_f²-b_f²)/(2 c_f a_f))), cot(acos((a_f²+b_f²-c_f²)/(2 a_f b_f)))]
+
+where
+
+a_i ∈ ℝ
+b_i ∈ ℝ
+c_i ∈ ℝ
