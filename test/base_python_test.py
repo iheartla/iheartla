@@ -11,14 +11,16 @@ import numpy as np
 import logging
 from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
 import os
+# C++ test dependencies: test/fetch_deps.sh puts them in test/third_party/
+third_party = os.path.join(os.path.dirname(os.path.abspath(__file__)), "third_party")
 # required; override with the EIGEN_PATH environment variable
 eigen_path = os.environ.get("EIGEN_PATH") or next(
-    (p for p in ["/usr/local/include/eigen3", "/opt/homebrew/include/eigen3", "/usr/include/eigen3"] if os.path.isdir(p)),
+    (p for p in [os.path.join(third_party, "eigen"), "/usr/local/include/eigen3", "/opt/homebrew/include/eigen3", "/usr/include/eigen3"] if os.path.isdir(p)),
     "/usr/local/include/eigen3")
 # generated C++ includes "type_helper.h", which needs the header-only autodiff library;
 # override its parent include directory with the AUTODIFF_PATH environment variable
 autodiff_path = os.environ.get("AUTODIFF_PATH") or next(
-    (p for p in ["/usr/local/include", "/opt/homebrew/include", "/usr/include"] if os.path.isdir(os.path.join(p, "autodiff"))),
+    (p for p in [os.path.join(third_party, "autodiff"), "/usr/local/include", "/opt/homebrew/include", "/usr/include"] if os.path.isdir(os.path.join(p, "autodiff"))),
     "/usr/local/include")
 import cppyy
 cppyy.add_include_path(autodiff_path)
