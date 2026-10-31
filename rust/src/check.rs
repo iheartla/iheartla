@@ -17,6 +17,7 @@ use crate::helper::{get_err_msg_info, get_unicode_fraction, get_unicode_number, 
 use crate::pnode::Val;
 use crate::ty::*;
 use indexmap::{IndexMap, IndexSet};
+use std::collections::HashMap;
 use std::rc::Rc;
 
 #[derive(Debug, Clone)]
@@ -68,6 +69,8 @@ pub struct Checker<'a> {
     overloads: IndexMap<String, Vec<(Ty, String)>>,
     /// matrices declared in a where block but defined by an assignment
     declared_only: IndexSet<String>,
+    expr_types: HashMap<(usize, usize), Ty>,
+    base_types: HashMap<(usize, usize), Ty>,
 }
 
 impl<'a> Checker<'a> {
@@ -88,6 +91,8 @@ impl<'a> Checker<'a> {
             func_counts: IndexMap::new(),
             overloads: IndexMap::new(),
             declared_only: IndexSet::new(),
+            expr_types: HashMap::new(),
+            base_types: HashMap::new(),
         }
     }
 
@@ -246,6 +251,8 @@ impl<'a> Checker<'a> {
             stmts: out,
             ret,
             defs: self.defs,
+            expr_types: self.expr_types,
+            base_types: self.base_types,
         })
     }
 
@@ -798,7 +805,16 @@ impl<'a> Checker<'a> {
 
     // -- expressions ---------------------------------------------------------
 
+    /// Check an expression, recording its type under its source span.
     pub fn expr(&mut self, n: &Val) -> R<Expr> {
+        let e = self.expr_kind(n)?;
+        if let Some(span) = n.node().and_then(|x| x.span) {
+            self.expr_types.insert(span, e.ty.clone());
+        }
+        Ok(e)
+    }
+
+    fn expr_kind(&mut self, n: &Val) -> R<Expr> {
         match n.class() {
             "Expression" | "ExpInMatrix" => {
                 let v = self.expr(n.get("value"))?;
@@ -991,6 +1007,9 @@ impl<'a> Checker<'a> {
             return self.err(id, format!("Symbol {base} is not defined"));
         };
         let bty = sym.ty();
+        if let Some(span) = id.node().and_then(|x| x.span) {
+            self.base_types.insert(span, bty.clone());
+        }
         let mut idx = Vec::new();
         for (axis, node) in idx_nodes.iter().enumerate() {
             if node.as_str() == Some("*") {

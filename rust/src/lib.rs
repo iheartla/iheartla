@@ -79,12 +79,31 @@ fn rule_description(rule: &str) -> Option<&'static str> {
     })
 }
 
-/// Parse and check a program.
-pub fn check_source(src: &str) -> Result<ast::Program, String> {
+/// Parse a program (both passes) and check it: the second parse tree and
+/// the typed program.
+pub fn front_end(src: &str) -> Result<(pnode::Val, ast::Program), String> {
     let first = grammar::parse_init(src).map_err(|e| parse_error_message(src, &e))?;
     let config = decls::second_parse_config(&first, &|n| node_text(src, n).to_string());
     let tree = grammar::parse_default(src, &config).map_err(|e| parse_error_message(src, &e))?;
-    check::Checker::new(src).check(&tree).map_err(|e| e.message)
+    let prog = check::Checker::new(src).check(&tree).map_err(|e| e.message)?;
+    Ok((tree, prog))
+}
+
+/// Parse and check a program.
+pub fn check_source(src: &str) -> Result<ast::Program, String> {
+    front_end(src).map(|(_, p)| p)
+}
+
+/// Compile to a LaTeX document.
+pub fn compile_latex(src: &str) -> Result<String, String> {
+    let (tree, prog) = front_end(src)?;
+    Ok(back::latex::generate(&prog, &tree, back::latex::Flavor::Latex))
+}
+
+/// Compile to MathJax (an `align*` block).
+pub fn compile_mathjax(src: &str) -> Result<String, String> {
+    let (tree, prog) = front_end(src)?;
+    Ok(back::latex::generate(&prog, &tree, back::latex::Flavor::Mathjax))
 }
 
 /// Compile to NumPy (Python) code.

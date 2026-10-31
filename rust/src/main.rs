@@ -174,6 +174,8 @@ fn main() {
             let result = match backend.as_str() {
                 "numpy" => iheartla::compile_numpy(&text, &name),
                 "eigen" => iheartla::compile_eigen(&text, &name),
+                "latex" => iheartla::compile_latex(&text),
+                "mathjax" => iheartla::compile_mathjax(&text),
                 other => Err(format!("unknown backend {other}")),
             };
             match result {

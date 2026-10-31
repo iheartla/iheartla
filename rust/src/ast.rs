@@ -22,6 +22,10 @@ pub struct Program {
     pub ret: Option<String>,
     /// all symbols the program defines (outputs), with types
     pub defs: Vec<(String, Ty)>,
+    /// the type of every checked expression, by byte span in `source`
+    pub expr_types: std::collections::HashMap<(usize, usize), Ty>,
+    /// the type of the indexed symbol of every indexing expression (`A_ij`), by span
+    pub base_types: std::collections::HashMap<(usize, usize), Ty>,
 }
 
 #[derive(Clone, Debug)]
