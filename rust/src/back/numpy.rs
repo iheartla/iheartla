@@ -42,7 +42,7 @@ pub fn generate(prog: &Program, class_name: &str) -> String {
 
 /// A valid Python identifier for an I❤LA name.
 pub fn py_ident(name: &str) -> String {
-    let n = if name.contains('`') || has_special_symbol(name) { convert_unicode(Kind::Numpy, name) } else { name.to_string() };
+    let n = if name.contains('`') || has_special_symbol(name) { convert_unicode(Kind::Numpy, name).replace('-', "_") } else { name.to_string() };
     if crate::helper::is_keyword(&n, crate::helper::KeywordSet::Numpy) {
         return format!("{n}_");
     }
@@ -96,7 +96,16 @@ impl<'p> Gen<'p> {
 
     fn dim(&self, d: &Dim) -> String {
         match d {
-            Dim::Str(s) if s.ends_with("[i]") => format!("{}", s),
+            Dim::Str(s) if s.starts_with("@len:") => {
+                // the extent of axis `a` of item `i` of a ragged sequence
+                let parts: Vec<&str> = s.splitn(4, ':').collect();
+                let item = match parts[2].parse::<i64>() {
+                    Ok(i) => (i - 1).to_string(),
+                    Err(_) => format!("{}-1", self.name(parts[2])),
+                };
+                format!("np.shape({}[{item}])[{}]", self.name(parts[1]), parts[3])
+            }
+            Dim::Str(s) if s.ends_with("[i]") => s.clone(),
             Dim::Str(s) if self.is_dim(s) || self.is_param(s) || self.is_local(s) => self.name(s),
             Dim::Sym(_) | Dim::Str(_) => {
                 // an expression of dimension symbols
@@ -355,11 +364,12 @@ impl<'p> Gen<'p> {
             Mul(a, b) => self.mul(a, b, &e.ty),
             Div(a, b) => format!("{} / {}", self.paren(a), self.paren(b)),
             Hadamard(a, b) => format!("np.multiply({}, {})", self.expr(a), self.expr(b)),
+            Kronecker(a, b) if e.ty.is_sparse() => format!("sparse.kron({}, {})", self.expr(a), self.expr(b)),
             Kronecker(a, b) => format!("np.kron({}, {})", self.expr(a), self.expr(b)),
             Cross(a, b) => format!("np.cross({}, {})", self.expr(a), self.expr(b)),
             Dot(a, b) => format!("np.dot(({}).ravel(), ({}).ravel())", self.expr(a), self.expr(b)),
             Inner(a, b, None) => format!("np.dot(({}).ravel(), ({}).ravel())", self.expr(a), self.expr(b)),
-            Inner(a, b, Some(m)) => format!("({}) @ ({}) @ ({})", self.expr(a), self.expr(m), self.expr(b)),
+            Inner(a, b, Some(m)) => format!("({}).T @ ({}) @ ({})", self.expr(b), self.expr(m), self.expr(a)),
             Frobenius(a, b) => format!("np.sum(np.multiply({}, {}))", self.expr(a), self.expr(b)),
             Pow(a, b) => {
                 if a.ty.is_matrix() {
@@ -400,6 +410,7 @@ impl<'p> Gen<'p> {
                 match kind {
                     NormKind::P => match p {
                         None => format!("np.linalg.norm({x}, 2)"),
+                        Some(p) if p.ty.is_matrix() => format!("np.sqrt(({x}).T @ {} @ ({x}))", self.expr(p)),
                         Some(p) => format!("np.linalg.norm({x}, {})", self.expr(p)),
                     },
                     NormKind::Max => format!("np.linalg.norm({x}, np.inf)"),
@@ -525,7 +536,9 @@ impl<'p> Gen<'p> {
                 .iter()
                 .map(|e| {
                     let s = self.expr(e);
-                    if e.ty.is_vector() {
+                    if e.ty.is_scalar() && ty.is_sparse() {
+                        format!("np.array([[{s}]])")
+                    } else if e.ty.is_vector() {
                         format!("({s}).reshape(-1, 1)")
                     } else if e.ty.is_sparse() {
                         format!("({s}).toarray()")
@@ -537,6 +550,9 @@ impl<'p> Gen<'p> {
             parts.push(format!("[{}]", items.join(", ")));
         }
         let elem = if ty.is_int() { "np.int64" } else { "np.float64" };
+        if ty.is_sparse() {
+            return format!("sparse.bmat([{}])", parts.join(", ").replace(".toarray()", ""));
+        }
         if all_scalar {
             format!("np.array([{}], dtype={elem})", parts.join(", "))
         } else {
@@ -674,6 +690,22 @@ impl<'p> Gen<'p> {
     }
 
     fn optimize(&mut self, kind: OptKind, vars: &[(String, Ty)], objective: &Expr, constraints: &[Cond]) -> String {
+        // one scalar variable restricted to a finite set: search the set
+        if let ([(v, Scalar(_))], [Cond::In(items, set)]) = (vars, constraints) {
+            if items.len() == 1 && matches!(&*items[0].kind, ExprKind::Var(n) if n == v) {
+                let s = self.expr(set);
+                self.locals.push(HashSet::from([v.clone()]));
+                let obj = self.expr(objective);
+                self.locals.pop();
+                let var = py_ident(v);
+                return match kind {
+                    OptKind::Min => format!("min({obj} for {var} in {s})"),
+                    OptKind::Max => format!("max({obj} for {var} in {s})"),
+                    OptKind::Argmin => format!("min({s}, key=lambda {var}: {obj})"),
+                    OptKind::Argmax => format!("max({s}, key=lambda {var}: {obj})"),
+                };
+            }
+        }
         // pack all variables into one vector for scipy.optimize.minimize
         let x = self.fresh("x");
         let mut sizes = Vec::new();

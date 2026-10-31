@@ -1000,7 +1000,18 @@ impl<'a> Checker<'a> {
             let e = self.index_expr(node)?;
             // infer the extent of a subscript variable from this axis
             if let ExprKind::Var(v) = &*e.kind {
-                let extent = axis_extent(&bty, axis);
+                let mut extent = axis_extent(&bty, axis);
+                // a ragged sequence (x_i ∈ ℝ^(n_i)): the extent depends on the item
+                if let (Some(Dim::Str(s)), Some(Idx::At(first))) = (&extent, idx.first()) {
+                    if s.ends_with("[i]") && axis >= 1 {
+                        let item = match &*first.kind {
+                            ExprKind::Var(n) => n.clone(),
+                            ExprKind::Int(i) => i.to_string(),
+                            _ => "1".into(),
+                        };
+                        extent = Some(Dim::Str(format!("@len:{base}:{item}:{}", axis - 1)));
+                    }
+                }
                 for frame in self.extents.iter_mut().rev() {
                     if let Some(seen) = frame.get_mut(v) {
                         if let Some(d) = extent.clone() {
