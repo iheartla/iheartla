@@ -3,7 +3,7 @@ import copy
 import os
 import time
 from enum import Enum, Flag
-from tatsu._version import __version__
+import tatsu
 import sys
 from textwrap import dedent
 import keyword
@@ -18,7 +18,9 @@ DEBUG_PARSER = False  # used for new grammer files
 DEBUG_TIME = False    # used for time recoding (to optimize)
 TEST_MATLAB = False   # used for running tests for MATLAB
 CLASS_ONLY = True     # output class without random data and main func
-CACHE_MODULE = True   # whether to cache compiled module into local files
+CACHE_MODULE = False  # whether to cache compiled module into local files. Off: deep-copying a type walker
+                      # fails on TatSu objects, and importers modify the walker (replace_sym_dims);
+                      # parser.py caches parse trees instead (parse_cached)
 start_time = None
 # constants used as folder name
 INPUT_HISTORY = "input_history"
@@ -121,7 +123,9 @@ def simpify_dims(dims):
 
 
 def is_new_tatsu_version():
-    return __version__ >= '5.0.0'
+    # tatsu._version.__version__ is not the package version in TatSu 5.14 ('1.14.0'),
+    # and versions must be compared numerically ('5.14' < '5.9' as strings)
+    return int(tatsu.__version__.split('.')[0]) >= 5
 
 
 def base64_encode(content):

@@ -1,4 +1,5 @@
 import copy
+from collections import OrderedDict
 
 from tatsu.exceptions import (
     FailedCut,
@@ -56,6 +57,9 @@ class VarData(object):
 
 
 def get_codegen(parser_type):
+    # A new code generator each time: reusing one across compiles leaked state
+    # (scopes, substitutions, local-function labels) into later outputs.
+    _codegen_dict.pop(parser_type, None)
     if parser_type not in _codegen_dict:
         if parser_type == ParserTypeEnum.LATEX:
             gen = CodeGenLatex()
@@ -165,6 +169,33 @@ def get_default_parser():
     return create_parser()
 
 
+# TatSu parse trees, keyed by the parser's configuration and the source text.
+# Parsing dominates compile time, and the same program and modules were otherwise
+# re-parsed once per output type and on every compile. The type walker builds new
+# IR from a parse tree without modifying it, so trees can be shared.
+_parse_cache = OrderedDict()
+_PARSE_CACHE_SIZE = 128
+
+
+def parse_cached(parser, text):
+    # the default parser is reconfigured in place (ParserManager.modify_default_parser)
+    config = (type(parser).__name__,
+              tuple(getattr(parser, 'new_id_list', None) or ()),
+              tuple(getattr(parser, 'new_func_list', None) or ()),
+              tuple(getattr(parser, 'builtin_list', None) or ()),
+              tuple(sorted((getattr(parser, 'conversion_dict', None) or {}).items())),
+              getattr(parser, 'const_e', False))
+    key = (config, text)
+    if key in _parse_cache:
+        _parse_cache.move_to_end(key)
+        return _parse_cache[key]
+    model = parser.parse(text, parseinfo=True)
+    _parse_cache[key] = model
+    if len(_parse_cache) > _PARSE_CACHE_SIZE:
+        _parse_cache.popitem(last=False)
+    return model
+
+
 def generate_latex_code(type_walker, node_info, frame):
     tex_content = ''
     show_pdf = None
@@ -245,7 +276,7 @@ def get_compiled_module(module_name, parser_type, class_only):
         # regenerate
         module_content = read_from_file(module_file)
         parser = get_default_parser()
-        new_model = parser.parse(module_content, parseinfo=True)
+        new_model = parse_cached(parser, module_content)
         tmp_type_walker, tmp_start_node = parse_ir_node(module_content, new_model, parser_type, class_only=class_only)
         pre_frame = walk_model_frame(parser_type, tmp_type_walker, tmp_start_node, module_name)
         if CACHE_MODULE:
@@ -314,7 +345,7 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
         extra_dict['rename'] = builtin_func_rdict
     # get new parser
     # parser = get_compiled_parser(current_content, parse_key, extra_dict)
-    # model = parser.parse(content, parseinfo=True)
+    # model = parse_cached(parser, content)
     for parameter in type_walker.parameters:
         if parameter is None:
             continue
@@ -455,7 +486,7 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
     # get new parser
     parser, existed_syms_dict, module_list, dependent_modules, module_param_list, module_sym_list = get_new_parser(start_node, current_content, type_walker, False, parser_type, class_only=class_only)
     record("Second Parsing, before")
-    model = parser.parse(content, parseinfo=True)
+    model = parse_cached(parser, content)
     record("Second type walker, before")
     # second parsing
     type_walker.reset_state(content)  # reset
@@ -506,11 +537,13 @@ def clean_parsers():
 
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
+    # Eigen type aliases (DT, DT_, ...) are numbered per compile, not per process
+    CacheModuleManager.getInstance().reset_post()
     record("parse_and_translate")
     def get_parse_result(parser_type):
         parser = get_default_parser()
         #
-        model = parser.parse(content, parseinfo=True)
+        model = parse_cached(parser, content)
         # type walker
         type_walker, start_node = parse_ir_node(content, model, parser_type, class_only=CLASS_ONLY)
         # parsing Latex at the same time
@@ -568,6 +601,8 @@ def compile_la_content(la_content,
                        get_json=False,
                        get_vars=False,
                        class_only=CLASS_ONLY):
+    # Eigen type aliases (DT, DT_, ...) are numbered per compile, not per process
+    CacheModuleManager.getInstance().reset_post()
     set_source_name(func_name)
     if path:
         global _module_path
@@ -576,7 +611,7 @@ def compile_la_content(la_content,
     record("First parsing, before")
     if True:
     # try:
-        model = parser.parse(la_content, parseinfo=True)
+        model = parse_cached(parser, la_content)
         ret = {}
         json = ''
         var_data = ''
@@ -696,12 +731,14 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
 
 
 def parse_la(content, parser_type):
+    # Eigen type aliases (DT, DT_, ...) are numbered per compile, not per process
+    CacheModuleManager.getInstance().reset_post()
     """
     used for testing
     """
     _parser_manager.set_test_mode()
     parser = get_default_parser()
-    model = parser.parse(content, parseinfo=True)
+    model = parse_cached(parser, content)
     type_walker, node_info = parse_ir_node(content, model)
     res = walk_model(parser_type, type_walker, node_info)
     return res

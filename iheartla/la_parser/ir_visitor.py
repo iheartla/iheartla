@@ -613,6 +613,9 @@ class IRVisitor(IRBaseVisitor):
         self.logger.info("lhs_on_der:{}".format(self.lhs_on_der))
 
     def init_type(self, type_walker, func_name):
+        # code generators are reused across compiles; one that raised mid-visit
+        # leaves scopes pushed, which broke every later compile (KeyError)
+        self.scope_list = ['global']
         self.main_param = type_walker.main_param
         # self.symtable = self.main_param.symtable
         # self.parameters = self.main_param.parameters
