@@ -8,7 +8,7 @@ validated by running the Python test suite on it, not by byte comparison.
 
 ```
 cargo build --release                       # → target/release/iheartla
-target/release/iheartla compile --backend numpy < program.la   # or --backend eigen
+target/release/iheartla compile --backend numpy < program.la   # or eigen, latex, mathjax
 target/release/iheartla parse [--init|--full] < program.la     # parse tree as JSON
 ```
 
@@ -21,7 +21,8 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 | Type checker → typed AST | Covers every program in the Python test suite |
 | NumPy backend | 207/207 Python tests |
 | Eigen (C++) backend | 207/207 Python tests (via cppyy) |
-| LaTeX, MathJax, MATLAB backends | Not yet |
+| LaTeX and MathJax backends | 220 of 221 corpus programs without modules give output identical to Python's. The one exception is a Python bug: it prints `None` as the name of `asin²` |
+| MATLAB backend | Not yet. MATLAB can't run here (license error), and the Python MATLAB backend isn't a reliable reference: it is untested, and for some inputs it emits Python syntax |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Not yet |
 | Continuous optimization in C++ (`argmin` over ℝⁿ) | Throws at run time (Python uses LBFGSpp). Optimization over a finite set works |
 
@@ -74,7 +75,11 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
   dependencies, not by the Python compiler's multi-walker passes. Subscript extents,
   overloads (`f_0`, `f_1`), index sets (0-based `index` values used 1-based) and ragged
   sequences (`x_i ∈ ℝ^(n_i)`) are all resolved here, so backends never re-infer types.
-- **Backends** (`back/`): straightforward printers of the typed AST.
+- **Backends** (`back/`): the code backends are straightforward printers of the typed AST.
+  The LaTeX and MathJax backends (`back/latex.rs`) print the parse tree instead, so the
+  output shows the program as written. The checker supplies the types that the notation
+  depends on, recording every expression's type by source span (`Program::expr_types`).
+  That same span-to-type map can support correspondence links between prose, math and code.
   - NumPy follows the Python compiler's conventions: `np.asarray` parameters, shape
     asserts, `scipy.sparse` for sparse matrices.
   - Eigen emits a `struct heartlib` with fixed-size types where sizes are numeric.
@@ -89,5 +94,7 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
 - `cmp_backend.py BACKEND 'source text'`: show the Python output for a corpus program
   next to the Rust output.
 - `run_tests_rust.py`: run the Python test suite on Rust output (see above).
+- `cmp_all.py BACKEND [-v N]`: compare one backend's output with the goldens over the whole
+  corpus (identical / equal up to whitespace / different / error).
 - `bench.py`: the timing table above.
 - `gen_parser.py`: regenerate `src/grammar/` from the TatSu grammars.
