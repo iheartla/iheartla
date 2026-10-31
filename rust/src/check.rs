@@ -1295,7 +1295,9 @@ impl<'a> Checker<'a> {
         let mut widths: Vec<Option<Dim>> = vec![None; n_cols];
         for (i, row) in items.iter().enumerate() {
             for (j, e) in row.iter().enumerate() {
-                if e.ty.is_scalar() && is_lifted(e) || e.ty.is_scalar() {
+                // 0, 1 and I take the size of their block; other scalars are 1×1
+                let adapts = matches!(&*e.kind, ExprKind::Int(0) | ExprKind::Int(1)) || matches!(&*e.kind, ExprKind::Var(n) if n == "I");
+                if e.ty.is_scalar() && (adapts || is_lifted(e)) {
                     continue;
                 }
                 let (h, w) = (e.ty.rows(), e.ty.cols());
@@ -1318,6 +1320,7 @@ impl<'a> Checker<'a> {
                     match (&heights[i], &widths[j]) {
                         (Some(h), None) => widths[j] = Some(h.clone()),
                         (None, Some(w)) => heights[i] = Some(w.clone()),
+                        (None, None) => return self.err(m, "Block matrix error. Can't infer the size of I; write I_n"),
                         _ => {}
                     }
                 }
