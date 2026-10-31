@@ -281,6 +281,28 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_block_matrix_5_unsized_identity(self):
+        # nothing else in its block row or column sizes I, so it is 1×1 (B is 3×3)
+        la_str = """B = [ A 0 ; 0 I ]
+        where
+        A: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2], [3, 4]])
+        B = np.array([[1, 2, 0], [3, 4, 0], [0, 0, 1]])
+        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, 2, 3, 4;",
+                     "    Eigen::Matrix<double, 3, 3> B;",
+                     "    B << 1, 2, 0, 3, 4, 0, 0, 0, 1;",
+                     "    Eigen::Matrix<double, 3, 3> C = {}(A).B;".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_block_matrix_6(self):
         # scalar value
         la_str = """B = [ A 1 ]

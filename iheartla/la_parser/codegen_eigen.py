@@ -1817,6 +1817,9 @@ class CodeGenEigen(CodeGen):
                         dims = type_info.la_type.list_dim[(i, j)]
                         if dims[0] == 1 and dims[1] == 1:
                             # scalar value
+                            if ret[i][j] == 'I' and 'I' not in self.symtable:
+                                # an identity that nothing else in its block row or column sizes is 1×1
+                                ret[i][j] = '{}::Identity(1, 1)'.format(self.matrixd_type)
                             continue
                         if ret[i][j] == '0':
                             func_name = '{}::Zero'.format(self.matrixd_type)
