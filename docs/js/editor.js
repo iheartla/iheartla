@@ -20,73 +20,9 @@ let unicode_dict = {'R': 'ℝ', 'Z': 'ℤ', 'x': '×', 'times': '×', 'inf': '�
                              'hat': '\u0302', 'bar': '\u0304'
                              }
 function checkBrowserVer(){
-    var nVer = navigator.appVersion;
-    var nAgt = navigator.userAgent;
-    var browserName  = navigator.appName;
-    var fullVersion  = ''+parseFloat(navigator.appVersion);
-    var majorVersion = parseInt(navigator.appVersion,10);
-    var nameOffset,verOffset,ix;
-    var validBrowser = false;
-    // In Opera, the true version is after "Opera" or after "Version"
-    if ((verOffset=nAgt.indexOf("Opera"))!=-1) {
-        browserName = "Opera";
-        fullVersion = nAgt.substring(verOffset+6);
-        if ((verOffset=nAgt.indexOf("Version"))!=-1)
-            fullVersion = nAgt.substring(verOffset+8);
-    }
-    // In MSIE, the true version is after "MSIE" in userAgent
-    else if ((verOffset=nAgt.indexOf("MSIE"))!=-1) {
-        browserName = "Microsoft Internet Explorer";
-        fullVersion = nAgt.substring(verOffset+5);
-    }
-    // In Chrome, the true version is after "Chrome"
-    else if ((verOffset=nAgt.indexOf("Chrome"))!=-1) {
-        browserName = "Chrome";
-        fullVersion = nAgt.substring(verOffset+7);
-        validBrowser = true;
-    }
-    // In Safari, the true version is after "Safari" or after "Version"
-    else if ((verOffset=nAgt.indexOf("Safari"))!=-1) {
-        browserName = "Safari";
-        fullVersion = nAgt.substring(verOffset+7);
-        if ((verOffset=nAgt.indexOf("Version"))!=-1)
-            fullVersion = nAgt.substring(verOffset+8);
-        }
-    // In Firefox, the true version is after "Firefox"
-    else if ((verOffset=nAgt.indexOf("Firefox"))!=-1) {
-        browserName = "Firefox";
-        fullVersion = nAgt.substring(verOffset+8);
-        validBrowser = true;
-    }
-    // In most other browsers, "name/version" is at the end of userAgent
-    else if ( (nameOffset=nAgt.lastIndexOf(' ')+1) <
-            (verOffset=nAgt.lastIndexOf('/')) )
-    {
-        browserName = nAgt.substring(nameOffset,verOffset);
-        fullVersion = nAgt.substring(verOffset+1);
-        if (browserName.toLowerCase()==browserName.toUpperCase()) {
-            browserName = navigator.appName;
-        }
-    }
-    // trim the fullVersion string at semicolon/space if present
-    if ((ix=fullVersion.indexOf(";"))!=-1)
-        fullVersion=fullVersion.substring(0,ix);
-    if ((ix=fullVersion.indexOf(" "))!=-1)
-        fullVersion=fullVersion.substring(0,ix);
-
-    majorVersion = parseInt(''+fullVersion,10);
-    if (isNaN(majorVersion)) {
-        fullVersion  = ''+parseFloat(navigator.appVersion);
-        majorVersion = parseInt(navigator.appVersion,10);
-    }
-    let result = false;
-    if (validBrowser){
-        result = true;
-        msg = "Valid browser!";
-    }
-    else{
-        msg = "You are using " + browserName + ". Please use Chrome or Firefox.";
-    }
+    // Pyodide runs in any browser with WebAssembly (current Chrome, Firefox, Safari, Edge).
+    let result = typeof WebAssembly === "object";
+    let msg = result ? "Valid browser!" : "This browser does not support WebAssembly, which the compiler needs.";
     console.log(msg);
 
     // Also check for a secure context.
@@ -121,49 +57,20 @@ function isChrome(){
     return false;
 }
 
- async function initPyodide(){
-    await loadPyodide({
-          indexURL : self.location.origin + "/iheartla/js/pyodide/"
-        });
-    let wheel = "./iheartla-0.0.1-py3-none-any.whl";
-    let tatsu = "./TatSu-4.4.0-py2.py3-none-any.whl";
-    pythonCode = `
-    import micropip
-    micropip.install('appdirs')
-    micropip.install('sympy')
-    micropip.install('regex')
-    micropip.install('${tatsu}')
-    micropip.install('${wheel}')
-    `
-    await pyodide.loadPackage(['micropip']);
-    await pyodide.runPython(pythonCode);
+let pyodide = null;
+
+async function initPyodide(){
+    pyodide = await loadPyodide();
+    await pyodide.loadPackage(['micropip', 'regex', 'sympy']);
+    // The wheel is built from this repository with: uv build --wheel -o docs
+    // TatSu 5.7.3 is required by the generated parsers (it is yanked on PyPI, but an exact pin installs).
+    let wheel = new URL("iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
+    await pyodide.runPythonAsync(`
+import micropip
+await micropip.install(['appdirs', 'tatsu==5.7.3', '${wheel}'])
+`);
     activateBtnStatus();
 }
-
-async function background(source){
-    try {
-        const {results, error} = await asyncRun(source);
-        activateBtnStatus();
-        if (results) {
-            console.log('pyodideWorker return results: ', results);
-            if (Array.isArray(results)){
-              updateEditor(results);
-            }
-            else{
-                console.log(results)
-                updateError(results);
-            }
-        } else if (error) {
-            updateError(error);
-            console.log('pyodideWorker error: ', error);
-        }
-    }
-    catch (e){
-        console.log(`Error in pyodideWorker at ${e.filename}, Line: ${e.lineno}, ${e.message}`)
-        activateBtnStatus();
-    }
-}
-
 
 function convert(input) {
     output = document.getElementById('output');
@@ -205,10 +112,10 @@ function compileFunction(){
     var iheartla = ace.edit("editor");
     var source = iheartla.getValue();
     console.log(source)
+    pyodide.globals.set('source_code', source);
     pythonCode = `
 import iheartla.la_parser.parser
 from iheartla.la_tools.la_helper import ParserTypeEnum
-source_code = r"""${source}"""
 code_dict = iheartla.la_parser.parser.compile_la_content(source_code)
 code = [code_dict[ParserTypeEnum.NUMPY], code_dict[ParserTypeEnum.EIGEN], code_dict[ParserTypeEnum.LATEX], code_dict[ParserTypeEnum.MATHJAX], code_dict[ParserTypeEnum.MATLAB]]
 `
