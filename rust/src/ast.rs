@@ -61,6 +61,8 @@ pub struct Assign {
     pub rhs: Expr,
     /// `+=`
     pub accumulate: bool,
+    /// elementwise assignment into an existing matrix/vector
+    pub update: bool,
     /// source text, for comments
     pub text: String,
     /// for elementwise definitions: the extent of each subscript

@@ -62,6 +62,12 @@ pub struct Checker<'a> {
     extents: Vec<IndexMap<String, Vec<Dim>>>,
     defs: Vec<(String, Ty)>,
     counter: usize,
+    /// number of definitions of each function name (several: overloads)
+    func_counts: IndexMap<String, usize>,
+    /// overloads of each function name: (type, name of this overload)
+    overloads: IndexMap<String, Vec<(Ty, String)>>,
+    /// matrices declared in a where block but defined by an assignment
+    declared_only: IndexSet<String>,
 }
 
 impl<'a> Checker<'a> {
@@ -79,6 +85,9 @@ impl<'a> Checker<'a> {
             extents: Vec::new(),
             defs: Vec::new(),
             counter: 0,
+            func_counts: IndexMap::new(),
+            overloads: IndexMap::new(),
+            declared_only: IndexSet::new(),
         }
     }
 
@@ -140,6 +149,24 @@ impl<'a> Checker<'a> {
 
     pub fn check(mut self, start: &Val) -> R<Program> {
         let vblocks: Vec<Val> = start.get("vblock").items().to_vec();
+        // count definitions of each function name, to name overloads
+        for b in &vblocks {
+            match b.class() {
+                "ParamsBlock" => {
+                    for cond in b.get("conds").get("value").items() {
+                        if cond.get("type").class() == "FunctionType" {
+                            for id in cond.get("id").items() {
+                                *self.func_counts.entry(crate::decls::main_name(id)).or_default() += 1;
+                            }
+                        }
+                    }
+                }
+                "Statements" if b.get("stat").class() == "LocalFunc" => {
+                    *self.func_counts.entry(local_func_name(b.get("stat"))).or_default() += 1;
+                }
+                _ => {}
+            }
+        }
         for b in vblocks.iter().filter(|b| b.class() == "Import") {
             self.import(b)?;
         }
@@ -194,6 +221,7 @@ impl<'a> Checker<'a> {
                         ty,
                         rhs,
                         accumulate: false,
+                        update: false,
                         text: self.text(s),
                         extents: vec![],
                     }));
@@ -202,6 +230,13 @@ impl<'a> Checker<'a> {
                     }
                 }
             }
+        }
+        // matrices declared in a where block but defined by an assignment are
+        // not parameters; then find where to read each dimension
+        let declared_only = self.declared_only.clone();
+        self.params.retain(|p| !declared_only.contains(&p.name));
+        for p in self.params.clone() {
+            self.register_dims(&p.name, &p.ty);
         }
         Ok(Program {
             source: self.src.to_string(),
@@ -271,16 +306,39 @@ impl<'a> Checker<'a> {
 
     fn where_condition(&mut self, cond: &Val, global: bool) -> R<Vec<(String, Ty)>> {
         let tnode = cond.get("type");
-        let mut ty = self.la_type(tnode, global)?;
+        let mut ty = if tnode.class() == "MappingType" && tnode.get("s").truthy() {
+            // x ∈ S: an element of the set S (x ⊂ S: a subset)
+            let set_name = crate::decls::main_name(tnode.get("s"));
+            match self.lookup(&set_name).map(|s| s.ty()) {
+                Some(t @ Set { .. }) => {
+                    if cond.get("subset").truthy() {
+                        t
+                    } else {
+                        match &t {
+                            Set { elems, .. } if elems.len() == 1 => Scalar(elems[0]),
+                            Set { elems, .. } => Tuple(elems.iter().map(|e| Scalar(*e)).collect()),
+                            _ => unreachable!(),
+                        }
+                    }
+                }
+                Some(_) => return self.err(tnode, format!("Symbol {set_name} should be a set")),
+                None => return self.err(tnode, format!("Symbol {set_name} is not defined")),
+            }
+        } else {
+            self.la_type(tnode, global)?
+        };
         if let Some(a) = cond.get("attrib").as_str() {
             let elem = match a {
                 "vertices" => Elem::Vertex,
                 "edges" => Elem::Edge,
                 "faces" => Elem::Face,
                 "tets" => Elem::Tet,
-                _ => Elem::Int,
+                _ => Elem::Index,
             };
-            ty = ty.with_elem(elem);
+            ty = match ty {
+                Set { elems, length } => Set { elems: vec![elem; elems.len()], length },
+                t => t.with_elem(elem),
+            };
         }
         let desc = cond.get("desc").as_str().map(|s| s.trim().to_string()).filter(|s| !s.is_empty());
         let mut out = Vec::new();
@@ -297,9 +355,6 @@ impl<'a> Checker<'a> {
                 }
                 _ => (ident_name(id), false),
             };
-            if self.globals.get(&name).is_some_and(|s| !matches!(s, Sym::Dim)) {
-                return self.err(id, format!("Parameter {name} has been defined."));
-            }
             let pty = if seq {
                 // x_i ∈ ℝ^n: a sequence whose size is read from the argument
                 let size = format!("{}_n", name);
@@ -308,9 +363,17 @@ impl<'a> Checker<'a> {
                 ty.clone()
             };
             if global {
-                self.register_dims(&name, &pty);
-                self.globals.insert(name.clone(), if pty.is_func() { Sym::Func(pty.clone()) } else { Sym::Param(pty.clone()) });
-                self.params.push(Param { name: name.clone(), ty: pty.clone(), desc: desc.clone() });
+                if pty.is_func() {
+                    let impl_name = self.add_func(&name, pty.clone(), id)?;
+                    self.params.push(Param { name: impl_name, ty: pty.clone(), desc: desc.clone() });
+                } else {
+                    if self.globals.get(&name).is_some_and(|s| !matches!(s, Sym::Dim)) {
+                        return self.err(id, format!("Parameter {name} has been defined."));
+                    }
+                    self.globals.insert(name.clone(), Sym::Param(pty.clone()));
+                    self.params.push(Param { name: name.clone(), ty: pty.clone(), desc: desc.clone() });
+                    self.note_dim_symbols(&pty);
+                }
             }
             out.push((name, pty));
         }
@@ -345,10 +408,41 @@ impl<'a> Checker<'a> {
                         continue;
                     }
                     self.dims.push(DimSym { name: name.clone(), param: param.to_string(), axis });
+                }
+            }
+        }
+    }
+
+    /// Define the dimension symbols of a parameter's type.
+    fn note_dim_symbols(&mut self, ty: &Ty) {
+        let dims = match ty {
+            Seq { size, elem } => vec![size.clone(), elem.rows(), elem.cols()],
+            t => vec![t.rows(), t.cols()],
+        };
+        for d in dims {
+            if let Dim::Str(name) = &d {
+                if is_simple_name(name) {
                     self.globals.entry(name.clone()).or_insert(Sym::Dim);
                 }
             }
         }
+    }
+
+    /// Define a function (a parameter or local function); returns the name
+    /// of this definition (`f_0`, `f_1`, ... when `f` is overloaded).
+    fn add_func(&mut self, name: &str, ty: Ty, node: &Val) -> R<String> {
+        let count = self.func_counts.get(name).copied().unwrap_or(1);
+        let list = self.overloads.entry(name.to_string()).or_default();
+        if list.iter().any(|(t, _)| same_signature(t, &ty)) {
+            return self.err(node, "Multiple functions with same signature");
+        }
+        let impl_name = if count > 1 { format!("{name}_{}", list.len()) } else { name.to_string() };
+        list.push((ty.clone(), impl_name.clone()));
+        if count <= 1 && self.globals.get(name).is_some_and(|s| !matches!(s, Sym::Dim)) {
+            return self.err(node, format!("Symbol {name} has been defined"));
+        }
+        self.globals.insert(name.to_string(), Sym::Func(ty));
+        Ok(impl_name)
     }
 
     fn la_type(&mut self, t: &Val, global: bool) -> R<Ty> {
@@ -507,7 +601,7 @@ impl<'a> Checker<'a> {
                 } else {
                     self.define_global(left, &name, ty.clone())?;
                 }
-                Ok(Stmt::Assign(Assign { lhs: name, subs: vec![], ty, rhs, accumulate, text, extents: vec![] }))
+                Ok(Stmt::Assign(Assign { lhs: name, subs: vec![], ty, rhs, accumulate, update: false, text, extents: vec![] }))
             }
         }
     }
@@ -534,15 +628,25 @@ impl<'a> Checker<'a> {
     fn elementwise(&mut self, left: &Val, right: &Val, accumulate: bool, text: String) -> R<Stmt> {
         let name = ident_name(left.get("left"));
         let subs: Vec<String> = left.get("right").items().iter().map(|s| sub_name(s)).collect();
-        if self.is_defined(&name) && !accumulate {
-            // assigning an element of an existing matrix/sequence is not supported
-            let sym = self.lookup(&name).unwrap();
-            let msg = if matches!(sym, Sym::Param(_)) {
-                format!("{name} is a parameter, can not be assigned")
-            } else {
-                format!("{}_{} has been assigned before", name, subs.concat())
-            };
-            return self.err(left, msg);
+        // an existing matrix: either declared in a where block and defined
+        // here (a sparse matrix over an index set), or updated elementwise
+        let mut update = false;
+        let mut declared: Option<Ty> = None;
+        if let Some(sym) = self.lookup(&name) {
+            match (&sym, sym.ty()) {
+                (Sym::Param(_), t @ Matrix { .. })
+                    if subs.len() == 2 && right.class() == "MultiCondExpr" && !self.declared_only.contains(&name) =>
+                {
+                    self.declared_only.insert(name.clone());
+                    self.globals.shift_remove(&name);
+                    declared = Some(t);
+                }
+                (Sym::Def(_), Matrix { .. }) if subs.len() == 2 => update = true,
+                (Sym::Def(_), Vector { .. }) | (Sym::Def(_), Seq { .. }) if subs.len() == 1 => update = true,
+                _ if accumulate => {}
+                (Sym::Param(_), _) => return self.err(left, format!("{name} is a parameter, can not be assigned")),
+                _ => return self.err(left, format!("{}_{} has been assigned before", name, subs.concat())),
+            }
         }
         for s in &subs {
             if s != "*" && self.is_defined(s) {
@@ -562,12 +666,22 @@ impl<'a> Checker<'a> {
         let frame = self.extents.pop().unwrap();
         let rhs = rhs?;
         let mut extents = Vec::new();
-        for s in &subs {
-            let seen = &frame[s];
-            match seen.first() {
-                Some(d) => extents.push(d.clone()),
+        let existing = if update { self.lookup(&name).map(|s| s.ty()) } else { declared.clone() };
+        for (k, s) in subs.iter().enumerate() {
+            let known = existing.as_ref().and_then(|t| axis_extent(t, k));
+            match frame[s].first().cloned().or(known) {
+                Some(d) => extents.push(d),
                 None => return self.err(left, "Subscript hasn't been used on rhs"),
             }
+        }
+        if update {
+            let ty = self.lookup(&name).unwrap().ty();
+            return Ok(Stmt::Assign(Assign { lhs: name, subs, ty, rhs, accumulate, update: true, text, extents }));
+        }
+        if let Some(Matrix { rows, cols, elem, .. }) = declared {
+            let ty = Matrix { rows, cols, elem: elem.join(rhs.ty.elem()), sparse: true };
+            self.define_global(left, &name, ty.clone())?;
+            return Ok(Stmt::Assign(Assign { lhs: name, subs, ty, rhs, accumulate, update: false, text, extents }));
         }
         let ty = match subs.len() {
             1 => {
@@ -591,7 +705,7 @@ impl<'a> Checker<'a> {
         if !accumulate {
             self.define_global(left, &name, ty.clone())?;
         }
-        Ok(Stmt::Assign(Assign { lhs: name, subs, ty, rhs, accumulate, text, extents }))
+        Ok(Stmt::Assign(Assign { lhs: name, subs, ty, rhs, accumulate, update: false, text, extents }))
     }
 
     fn destructure(&mut self, s: &Val) -> R<Stmt> {
@@ -615,10 +729,7 @@ impl<'a> Checker<'a> {
     }
 
     fn local_func(&mut self, s: &Val) -> R<LocalFunc> {
-        let name = match s.get("name") {
-            Val::Str(n) => n.to_string(),
-            n => crate::decls::main_name(n),
-        };
+        let name = local_func_name(s);
         let mut scope = IndexMap::new();
         let mut defs = IndexMap::new();
         for d in s.get("defs").items() {
@@ -628,12 +739,14 @@ impl<'a> Checker<'a> {
         }
         let mut params = Vec::new();
         let mut pnodes: Vec<Val> = s.get("params").items().to_vec();
-        if s.get("name").class() == "IdentifierSubscript" {
-            // f_x(...): subscripts are parameters too
-            let mut subs: Vec<Val> = s.get("name").get("right").items().to_vec();
-            subs.extend(pnodes);
-            pnodes = subs;
-        }
+        // f_x(...): subscripts are parameters too
+        let mut subs: Vec<Val> = if s.get("name").class() == "IdentifierSubscript" {
+            s.get("name").get("right").items().to_vec()
+        } else {
+            s.get("subs").items().to_vec()
+        };
+        subs.extend(pnodes);
+        pnodes = subs;
         for p in &pnodes {
             let pn = ident_name(p);
             match defs.get(&pn) {
@@ -679,11 +792,8 @@ impl<'a> Checker<'a> {
         }
         self.scopes.pop();
         let ty = Func { params: params.iter().map(|(_, t)| t.clone()).collect(), rets };
-        if let Some(Sym::Func(_)) = self.globals.get(&name) {
-            return self.err(s, format!("Symbol {name} has been defined"));
-        }
-        self.globals.insert(name.clone(), Sym::Func(ty.clone()));
-        Ok(LocalFunc { name, params, body, expr: expr.unwrap(), ty, text: self.text(s) })
+        let impl_name = self.add_func(&name, ty.clone(), s)?;
+        Ok(LocalFunc { name: impl_name, params, body, expr: expr.unwrap(), ty, text: self.text(s) })
     }
 
     // -- expressions ---------------------------------------------------------
@@ -743,7 +853,13 @@ impl<'a> Checker<'a> {
             _ => false,
         };
         self.ensure(ok, n, || self.mismatch(op, &l, &r, n))?;
-        let elem = l.ty.elem().join(r.ty.elem());
+        let (li, ri) = (l.ty.elem() == Elem::Index, r.ty.elem() == Elem::Index);
+        // an index plus an integer is an index; the difference of two indices is not
+        let elem = if (li || ri) && l.ty.is_int() && r.ty.is_int() && !(li && ri && !add) {
+            Elem::Index
+        } else {
+            l.ty.elem().join(r.ty.elem())
+        };
         let ty = match &l.ty {
             Matrix { rows, cols, sparse, .. } => {
                 Matrix { rows: rows.clone(), cols: cols.clone(), elem, sparse: *sparse && r.ty.is_sparse() }
@@ -1114,7 +1230,12 @@ impl<'a> Checker<'a> {
             }
             "InCondition" | "NotInCondition" => {
                 let items: Vec<Expr> = c.get("left").items().iter().map(|e| self.expr(e)).collect::<R<_>>()?;
-                let set = self.expr(c.get("right"))?;
+                let r = c.get("right");
+                let set = match r.class() {
+                    "IdentifierAlone" | "IdentifierSubscript" => self.identifier(r)?,
+                    "Function" => self.call(r)?,
+                    _ => self.expr(r)?,
+                };
                 Ok(if c.class() == "InCondition" { Cond::In(items, set) } else { Cond::NotIn(items, set) })
             }
             cls => {
@@ -1501,7 +1622,7 @@ impl<'a> Checker<'a> {
 
     /// A call `f(x)` of a local function, function parameter or sequence item.
     fn call(&mut self, op: &Val) -> R<Expr> {
-        let name = op.get("name").flat_text();
+        let name = func_name(&op.get("name").flat_text());
         let mut args = Vec::new();
         for s in op.get("subs").items() {
             args.push(self.index_expr(s)?);
@@ -1509,8 +1630,25 @@ impl<'a> Checker<'a> {
         for p in op.get("params").items() {
             args.push(self.expr(p)?);
         }
+        let local = self.scopes.iter().rev().any(|s| s.contains_key(&name));
         let (callee, fty) = match self.lookup(&name) {
-            Some(sym) if sym.ty().is_func() => (Callee::Named(name.clone()), sym.ty()),
+            Some(sym) if sym.ty().is_func() => match self.overloads.get(&name) {
+                Some(list) if list.len() > 1 && !local => {
+                    let fits = |t: &Ty, exact: bool| match t {
+                        Func { params, .. } => {
+                            params.len() == args.len()
+                                && params.iter().zip(&args).all(|(p, a)| p.same(&a.ty) && (!exact || p.is_int() == a.ty.is_int()))
+                        }
+                        _ => false,
+                    };
+                    let found = list.iter().find(|(t, _)| fits(t, true)).or_else(|| list.iter().find(|(t, _)| fits(t, false)));
+                    match found {
+                        Some((t, n)) => (Callee::Named(n.clone()), t.clone()),
+                        None => return self.err(op, "Function error. Can't find function with current parameter types."),
+                    }
+                }
+                _ => (Callee::Named(name.clone()), sym.ty()),
+            },
             _ => {
                 // f_i(x): an item of a sequence of functions
                 let parts: Vec<&str> = name.splitn(2, '_').collect();
@@ -1779,6 +1917,30 @@ fn flatten_ifs(ifs: &Val, out: &mut Vec<Val>) {
     if ifs.get("value").truthy() {
         out.push(ifs.get("value").clone());
     }
+}
+
+/// The name of a local function definition.
+fn local_func_name(s: &Val) -> String {
+    match s.get("name") {
+        Val::Str(n) => n.to_string(),
+        n => crate::decls::main_name(n),
+    }
+}
+
+/// Whether two function types have the same parameter signature (exact
+/// element kinds), so they cannot overload each other.
+fn same_signature(a: &Ty, b: &Ty) -> bool {
+    match (a, b) {
+        (Func { params: p1, .. }, Func { params: p2, .. }) => {
+            p1.len() == p2.len() && p1.iter().zip(p2).all(|(x, y)| x.same(y) && x.is_int() == y.is_int())
+        }
+        _ => false,
+    }
+}
+
+/// A function name as written: backticks are dropped from plain words.
+fn func_name(raw: &str) -> String {
+    crate::decls::strip_backticks(raw)
 }
 
 /// Names a statement defines.

@@ -14,6 +14,8 @@ pub enum Elem {
     Edge,
     Face,
     Tet,
+    /// an index stored 0-based (the `index` attribute): 1-based as a subscript
+    Index,
 }
 
 impl Elem {

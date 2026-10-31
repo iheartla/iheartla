@@ -208,17 +208,30 @@ impl<'p> Gen<'p> {
     fn elementwise(&mut self, a: &Assign, target: &str) {
         let subs: Vec<String> = a.subs.iter().map(|s| py_ident(s)).collect();
         let ext: Vec<String> = a.extents.iter().map(|d| self.dim(d)).collect();
+        let fresh = !a.accumulate && !a.update;
+        // sparse matrices are built densely and converted at the end
+        let mut write_to = target.to_string();
         match &a.ty {
             Vector { .. } => {
-                if !a.accumulate {
+                if fresh {
                     self.line(format!("{target} = np.zeros({})", ext[0]));
                 }
             }
-            Matrix { .. } => {
-                if !a.accumulate {
+            Matrix { sparse, rows, cols, .. } => {
+                if *sparse {
+                    write_to = self.fresh("dense");
+                    if fresh {
+                        self.line(format!("{write_to} = np.zeros(({}, {}))", self.dim(rows), self.dim(cols)));
+                    } else {
+                        self.line(format!("{write_to} = np.asarray(sparse.csr_matrix({target}).toarray(), dtype=np.float64)"));
+                    }
+                } else if fresh {
                     self.line(format!("{target} = np.zeros(({}, {}))", ext[0], ext[1]));
+                } else if a.update {
+                    self.line(format!("{target} = np.array({target}, dtype=np.float64)"));
                 }
             }
+            Seq { .. } if a.update => {}
             _ => {
                 let tmp = self.fresh("seq");
                 self.locals.push(HashSet::from([a.subs[0].clone()]));
@@ -247,9 +260,12 @@ impl<'p> Gen<'p> {
         let v = self.expr(&a.rhs);
         let index: Vec<String> = subs.iter().map(|s| format!("{s}-1")).collect();
         let op = if a.accumulate { "+=" } else { "=" };
-        self.line(format!("{target}[{}] {op} {v}", index.join(", ")));
+        self.line(format!("{write_to}[{}] {op} {v}", index.join(", ")));
         self.indent -= loops;
         self.locals.pop();
+        if write_to != target {
+            self.line(format!("{target} = sparse.csr_matrix({write_to})"));
+        }
     }
 
     fn local_func(&mut self, f: &LocalFunc) -> String {
@@ -296,9 +312,11 @@ impl<'p> Gen<'p> {
     fn index(&mut self, i: &Idx) -> String {
         match i {
             Idx::All => ":".into(),
+            // index-typed values are already 0-based
+            Idx::At(e) if e.ty.elem() == Elem::Index => self.expr(e),
             Idx::At(e) => match &*e.kind {
                 ExprKind::Int(v) => (v - 1).to_string(),
-                _ => format!("{}-1", self.expr(e)),
+                _ => format!("{}-1", self.paren(e)),
             },
         }
     }
@@ -634,7 +652,18 @@ impl<'p> Gen<'p> {
                 format!("{} {o} {}", self.expr(a), self.expr(b))
             }
             Cond::In(items, s) | Cond::NotIn(items, s) => {
-                let it: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
+                // an index set stores 0-based indices
+                let index_set = matches!(&s.ty, Set { elems, .. } if elems.contains(&Elem::Index));
+                let it: Vec<String> = items
+                    .iter()
+                    .map(|x| {
+                        if index_set && x.ty.elem() != Elem::Index {
+                            format!("{}-1", self.paren(x))
+                        } else {
+                            self.expr(x)
+                        }
+                    })
+                    .collect();
                 let lhs = if it.len() == 1 { it[0].clone() } else { format!("({})", it.join(", ")) };
                 let neg = if matches!(c, Cond::NotIn(..)) { "not in" } else { "in" };
                 format!("{lhs} {neg} {}", self.expr(s))

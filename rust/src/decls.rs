@@ -63,13 +63,18 @@ pub fn ident_name(node: &Val) -> String {
     } else {
         node.get("const").flat_text()
     };
+    strip_backticks(&raw)
+}
+
+/// Drop the backticks of a backticked name that is a plain word (and not a keyword).
+pub fn strip_backticks(raw: &str) -> String {
     if raw.contains('`') {
         let inner = raw.replace('`', "");
         if ident_word(&inner) && !is_keyword(&inner, KeywordSet::Both) {
             return inner;
         }
     }
-    raw
+    raw.to_string()
 }
 
 /// The main name of an identifier node (without subscripts).
