@@ -156,6 +156,27 @@ fn main() {
         }
         Some("check-parses") => check_parses(args.get(2).map(String::as_str).unwrap_or("corpus/golden")),
         Some("check-config") => check_config(args.get(2).map(String::as_str).unwrap_or("corpus/golden")),
+        Some("compile") => {
+            // iheartla compile [--backend numpy] [--name heartlib] < source
+            let mut text = String::new();
+            std::io::stdin().read_to_string(&mut text).unwrap();
+            let opt = |flag: &str, default: &str| -> String {
+                args.iter().position(|a| a == flag).and_then(|i| args.get(i + 1)).cloned().unwrap_or(default.into())
+            };
+            let backend = opt("--backend", "numpy");
+            let name = opt("--name", "heartlib");
+            let result = match backend.as_str() {
+                "numpy" => iheartla::compile_numpy(&text, &name),
+                other => Err(format!("unknown backend {other}")),
+            };
+            match result {
+                Ok(code) => print!("{code}"),
+                Err(e) => {
+                    eprint!("{e}");
+                    std::process::exit(1)
+                }
+            }
+        }
         _ => usage(),
     }
 }

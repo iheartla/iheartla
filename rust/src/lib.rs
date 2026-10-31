@@ -1,11 +1,20 @@
 //! I❤️LA compiler.
+//!
+//! Pipeline: `grammar` parses the source twice (the first parse, with the
+//! simplified grammar, feeds `decls`, which finds declared names; the
+//! second parse uses the full grammar), `check` turns the parse tree into a
+//! typed `ast::Program`, and the backends in `back` generate code.
 
+pub mod ast;
+pub mod back;
+pub mod check;
 pub mod decls;
 pub mod dims;
 pub mod grammar;
 pub mod helper;
 pub mod peg;
 pub mod pnode;
+pub mod ty;
 
 /// Map byte offsets in `text` to character offsets (Python string indices).
 pub fn char_offsets(text: &str) -> Vec<usize> {
@@ -27,4 +36,59 @@ pub fn node_text<'a>(src: &'a str, node: &pnode::Val) -> &'a str {
         Some((a, b)) => &src[a..b],
         None => "",
     }
+}
+
+/// Format a parse error like the Python compiler.
+fn parse_error_message(src: &str, e: &peg::ParseError) -> String {
+    let source = helper::Source::new(src);
+    let pos = source.char_of_byte(e.pos);
+    let li = source.line_info(pos);
+    let rule = e.stack.iter().find_map(|r| rule_description(r)).unwrap_or("None");
+    let mut text = li.text.clone();
+    if !text.ends_with('\n') {
+        text.push('\n');
+    }
+    format!(
+        "{}. Failed to parse {}: {}\n{}{}",
+        helper::get_line_desc(&li),
+        rule,
+        e.message,
+        text,
+        helper::get_pos_marker(li.col)
+    )
+}
+
+fn rule_description(rule: &str) -> Option<&'static str> {
+    Some(match rule {
+        "identifier_alone" => "identifier",
+        "statements" => "statement",
+        "where_conditions" => "where conditions",
+        "where_condition" => "where condition",
+        "matrix_type" => "matrix type",
+        "vector_type" => "vector type",
+        "scalar_type" => "scalar type",
+        "expression" => "expression",
+        "matrix" => "matrix",
+        "addition" => "addition",
+        "multiplication" => "multiplication",
+        "power_operator" => "power",
+        "sum_operator" => "sum",
+        "norm_operator" => "norm",
+        "function_operator" => "function",
+        _ => return None,
+    })
+}
+
+/// Parse and check a program.
+pub fn check_source(src: &str) -> Result<ast::Program, String> {
+    let first = grammar::parse_init(src).map_err(|e| parse_error_message(src, &e))?;
+    let config = decls::second_parse_config(&first, &|n| node_text(src, n).to_string());
+    let tree = grammar::parse_default(src, &config).map_err(|e| parse_error_message(src, &e))?;
+    check::Checker::new(src).check(&tree).map_err(|e| e.message)
+}
+
+/// Compile to NumPy (Python) code.
+pub fn compile_numpy(src: &str, class_name: &str) -> Result<String, String> {
+    let prog = check_source(src)?;
+    Ok(back::numpy::generate(&prog, class_name))
 }

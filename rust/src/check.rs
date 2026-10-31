@@ -1,0 +1,1827 @@
+//! Type checker: lowers the parse tree of the full grammar to a typed
+//! `ast::Program`.
+//!
+//! Design (compared with the Python compiler's type walker):
+//! - types are immutable values (`ty::Ty`); nothing is patched after the fact;
+//! - statements are ordered by their dependencies (which names each one
+//!   defines and uses), not by retrying them until they succeed;
+//! - the extent of an implicit subscript (`∑_i x_i`, `y_i = 2 x_i`) is
+//!   inferred from the shapes of what it subscripts;
+//! - errors carry the source position and use the Python compiler's message
+//!   format ("Error on line L at column C. message.").
+
+use crate::ast::*;
+use crate::decls::ident_name;
+use crate::dims::{add_syms, is_same_expr, mul_dims, Dim};
+use crate::helper::{get_err_msg_info, get_unicode_fraction, get_unicode_number, get_unicode_sub_number, ParseInfo, Source};
+use crate::pnode::Val;
+use crate::ty::*;
+use indexmap::{IndexMap, IndexSet};
+use std::rc::Rc;
+
+#[derive(Debug, Clone)]
+pub struct CheckError {
+    pub message: String,
+}
+
+type R<T> = Result<T, CheckError>;
+
+/// What a name refers to.
+#[derive(Clone, Debug)]
+enum Sym {
+    Param(Ty),
+    Def(Ty),
+    /// a dimension symbol (an integer read from a parameter's shape)
+    Dim,
+    /// a local (function parameter, summation index, subscript variable)
+    Local(Ty),
+    Func(Ty),
+}
+
+impl Sym {
+    fn ty(&self) -> Ty {
+        match self {
+            Sym::Param(t) | Sym::Def(t) | Sym::Local(t) | Sym::Func(t) => t.clone(),
+            Sym::Dim => Ty::int(),
+        }
+    }
+}
+
+pub struct Checker<'a> {
+    src: &'a str,
+    source: Rc<Source>,
+    globals: IndexMap<String, Sym>,
+    scopes: Vec<IndexMap<String, Sym>>,
+    params: Vec<Param>,
+    dims: Vec<DimSym>,
+    dim_checks: Vec<(Dim, Dim)>,
+    /// renamed builtins: new name -> builtin name
+    builtin_names: IndexMap<String, String>,
+    const_e: bool,
+    /// subscript variables whose extent is being inferred: var -> extents seen
+    extents: Vec<IndexMap<String, Vec<Dim>>>,
+    defs: Vec<(String, Ty)>,
+    counter: usize,
+}
+
+impl<'a> Checker<'a> {
+    pub fn new(src: &'a str) -> Self {
+        Checker {
+            src,
+            source: Source::new(src),
+            globals: IndexMap::new(),
+            scopes: Vec::new(),
+            params: Vec::new(),
+            dims: Vec::new(),
+            dim_checks: Vec::new(),
+            builtin_names: IndexMap::new(),
+            const_e: false,
+            extents: Vec::new(),
+            defs: Vec::new(),
+            counter: 0,
+        }
+    }
+
+    // -- positions and errors ------------------------------------------------
+
+    fn pinfo(&self, node: &Val) -> Option<ParseInfo> {
+        let (a, b) = node.node()?.span?;
+        Some(ParseInfo { src: self.source.clone(), pos: self.source.char_of_byte(a), endpos: self.source.char_of_byte(b) })
+    }
+
+    fn text(&self, node: &Val) -> String {
+        crate::node_text(self.src, node).to_string()
+    }
+
+    fn err<T>(&self, node: &Val, msg: impl AsRef<str>) -> R<T> {
+        Err(CheckError { message: get_err_msg_info(self.pinfo(node).as_ref(), msg.as_ref()) })
+    }
+
+    fn ensure(&self, cond: bool, node: &Val, msg: impl FnOnce() -> String) -> R<()> {
+        if cond {
+            Ok(())
+        } else {
+            self.err(node, msg())
+        }
+    }
+
+    // -- symbols -------------------------------------------------------------
+
+    fn lookup(&self, name: &str) -> Option<Sym> {
+        for s in self.scopes.iter().rev() {
+            if let Some(x) = s.get(name) {
+                return Some(x.clone());
+            }
+        }
+        self.globals.get(name).cloned()
+    }
+
+    fn is_defined(&self, name: &str) -> bool {
+        self.lookup(name).is_some()
+    }
+
+    fn define_local(&mut self, name: &str, ty: Ty) {
+        match self.scopes.last_mut() {
+            Some(s) => {
+                s.insert(name.to_string(), Sym::Local(ty));
+            }
+            None => {
+                self.globals.insert(name.to_string(), Sym::Local(ty));
+            }
+        }
+    }
+
+    fn fresh(&mut self, base: &str) -> String {
+        self.counter += 1;
+        format!("{base}_{}", self.counter)
+    }
+
+    // -- program -------------------------------------------------------------
+
+    pub fn check(mut self, start: &Val) -> R<Program> {
+        let vblocks: Vec<Val> = start.get("vblock").items().to_vec();
+        for b in vblocks.iter().filter(|b| b.class() == "Import") {
+            self.import(b)?;
+        }
+        for b in vblocks.iter().filter(|b| b.class() == "ParamsBlock") {
+            for cond in b.get("conds").get("value").items() {
+                self.where_condition(cond, true)?;
+            }
+        }
+        let stmts: Vec<Val> = vblocks.iter().filter(|b| b.class() == "Statements").map(|b| b.get("stat").clone()).collect();
+        let last_index = stmts.len().saturating_sub(1);
+        let order = self.def_use_order(&stmts);
+        let mut out = Vec::new();
+        let mut ret = None;
+        for i in order {
+            let s = &stmts[i];
+            let is_last = i == last_index;
+            match s.class() {
+                "Assignment" | "GeneralAssignment" => {
+                    let st = self.assignment(s)?;
+                    if is_last {
+                        ret = Some(match &st {
+                            Stmt::Assign(a) => a.lhs.clone(),
+                            Stmt::Multi { lhs, .. } => lhs.last().unwrap().0.clone(),
+                            Stmt::Func(f) => f.name.clone(),
+                        });
+                    }
+                    out.push(st);
+                }
+                "Destructure" => {
+                    let st = self.destructure(s)?;
+                    if is_last {
+                        if let Stmt::Multi { lhs, .. } = &st {
+                            ret = Some(lhs.last().unwrap().0.clone());
+                        }
+                    }
+                    out.push(st);
+                }
+                "LocalFunc" => {
+                    let f = self.local_func(s)?;
+                    out.push(Stmt::Func(f));
+                }
+                _ => {
+                    // an expression: its value is the result `ret`
+                    let rhs = self.expr(s)?;
+                    let ty = rhs.ty.clone();
+                    let name = "ret".to_string();
+                    self.globals.insert(name.clone(), Sym::Def(ty.clone()));
+                    self.defs.push((name.clone(), ty.clone()));
+                    out.push(Stmt::Assign(Assign {
+                        lhs: name.clone(),
+                        subs: vec![],
+                        ty,
+                        rhs,
+                        accumulate: false,
+                        text: self.text(s),
+                        extents: vec![],
+                    }));
+                    if is_last {
+                        ret = Some(name);
+                    }
+                }
+            }
+        }
+        Ok(Program {
+            source: self.src.to_string(),
+            params: self.params,
+            dims: self.dims,
+            dim_checks: self.dim_checks,
+            stmts: out,
+            ret,
+            defs: self.defs,
+        })
+    }
+
+    /// Order statements so that every statement comes after the statements
+    /// defining the names it uses (keeping source order otherwise).
+    fn def_use_order(&self, stmts: &[Val]) -> Vec<usize> {
+        let defines: Vec<IndexSet<String>> = stmts.iter().map(stmt_defines).collect();
+        let uses: Vec<IndexSet<String>> = stmts.iter().map(|s| {
+            let mut u = IndexSet::new();
+            collect_names(s, &mut u);
+            u
+        }).collect();
+        let mut done = vec![false; stmts.len()];
+        let mut order = Vec::new();
+        while order.len() < stmts.len() {
+            let ready = (0..stmts.len()).find(|&i| {
+                !done[i]
+                    && uses[i].iter().all(|n| {
+                        (0..stmts.len()).all(|j| j == i || done[j] || !defines[j].contains(n))
+                    })
+            });
+            // a cycle (or a use of an undefined name): continue in source order
+            let i = ready.unwrap_or_else(|| (0..stmts.len()).find(|&i| !done[i]).unwrap());
+            done[i] = true;
+            order.push(i);
+        }
+        order
+    }
+
+    fn import(&mut self, node: &Val) -> R<()> {
+        let pkg = ident_name(node.get("package"));
+        let Some(names) = crate::decls::package_names(&pkg) else {
+            return self.err(node, format!("Module {pkg} is not supported yet"));
+        };
+        let mut imported: Vec<(String, String)> = Vec::new();
+        if node.get("star").truthy() {
+            imported = names.iter().map(|n| (n.to_string(), n.to_string())).collect();
+        }
+        for v in node.get("names").items() {
+            let name = ident_name(v.get("name"));
+            let r = if v.get("r").truthy() { ident_name(v.get("r")) } else { name.clone() };
+            if !names.contains(&name.as_str()) {
+                return self.err(node, format!("Function {name} not exist"));
+            }
+            imported.push((name, r));
+        }
+        for (name, r) in imported {
+            if name == "e" {
+                self.const_e = true;
+            } else {
+                self.builtin_names.insert(r, name);
+            }
+        }
+        Ok(())
+    }
+
+    // -- parameters ----------------------------------------------------------
+
+    fn where_condition(&mut self, cond: &Val, global: bool) -> R<Vec<(String, Ty)>> {
+        let tnode = cond.get("type");
+        let mut ty = self.la_type(tnode, global)?;
+        if let Some(a) = cond.get("attrib").as_str() {
+            let elem = match a {
+                "vertices" => Elem::Vertex,
+                "edges" => Elem::Edge,
+                "faces" => Elem::Face,
+                "tets" => Elem::Tet,
+                _ => Elem::Int,
+            };
+            ty = ty.with_elem(elem);
+        }
+        let desc = cond.get("desc").as_str().map(|s| s.trim().to_string()).filter(|s| !s.is_empty());
+        let mut out = Vec::new();
+        for id in cond.get("id").items() {
+            let (name, seq) = match id.class() {
+                "IdentifierSubscript" => {
+                    let main = ident_name(id.get("left"));
+                    let subs = id.get("right").items();
+                    self.ensure(subs.len() == 1, id, || format!("Parameter {main} can't use multiple subscripts"))?;
+                    if subs[0].class() == "Integer" || subs[0].class() == "SubInteger" {
+                        return self.err(id, format!("Parameter {main} can't have constant subscript"));
+                    }
+                    (main, true)
+                }
+                _ => (ident_name(id), false),
+            };
+            if self.globals.get(&name).is_some_and(|s| !matches!(s, Sym::Dim)) {
+                return self.err(id, format!("Parameter {name} has been defined."));
+            }
+            let pty = if seq {
+                // x_i ∈ ℝ^n: a sequence whose size is read from the argument
+                let size = format!("{}_n", name);
+                Seq { size: Dim::Str(size), elem: Box::new(ty.clone()) }
+            } else {
+                ty.clone()
+            };
+            if global {
+                self.register_dims(&name, &pty);
+                self.globals.insert(name.clone(), if pty.is_func() { Sym::Func(pty.clone()) } else { Sym::Param(pty.clone()) });
+                self.params.push(Param { name: name.clone(), ty: pty.clone(), desc: desc.clone() });
+            }
+            out.push((name, pty));
+        }
+        Ok(out)
+    }
+
+    /// Record where each dimension symbol of a parameter's type can be read.
+    fn register_dims(&mut self, param: &str, ty: &Ty) {
+        let mut axes: Vec<Dim> = Vec::new();
+        match ty {
+            Seq { size, elem } => {
+                axes.push(size.clone());
+                axes.push(elem.rows());
+                if elem.is_matrix() {
+                    axes.push(elem.cols());
+                }
+                if elem.is_scalar() || elem.is_func() || elem.is_set() {
+                    axes.truncate(1);
+                }
+            }
+            Vector { rows, .. } => axes.push(rows.clone()),
+            Matrix { rows, cols, .. } => {
+                axes.push(rows.clone());
+                axes.push(cols.clone());
+            }
+            _ => {}
+        }
+        for (axis, d) in axes.into_iter().enumerate() {
+            if let Dim::Str(name) = &d {
+                if is_simple_name(name) {
+                    if self.dims.iter().any(|x| &x.name == name) || self.params.iter().any(|p| &p.name == name) {
+                        continue;
+                    }
+                    self.dims.push(DimSym { name: name.clone(), param: param.to_string(), axis });
+                    self.globals.entry(name.clone()).or_insert(Sym::Dim);
+                }
+            }
+        }
+    }
+
+    fn la_type(&mut self, t: &Val, global: bool) -> R<Ty> {
+        let elem = |n: &Val| if n.get("type").as_str() == Some("ℤ") { Elem::Int } else { Elem::Real };
+        let sparse = |n: &Val| n.get("attr").items().iter().any(|a| a.as_str() == Some("sparse"));
+        Ok(match t.class() {
+            "ScalarType" => Scalar(if t.get("z").truthy() { Elem::Int } else { Elem::Real }),
+            "VectorType" => {
+                let rows = self.dim(t.get("id1"))?;
+                Vector { rows, elem: elem(t) }
+            }
+            "MatrixType" => {
+                let rows = self.dim(t.get("id1"))?;
+                let cols = self.dim(t.get("id2"))?;
+                Matrix { rows, cols, elem: elem(t), sparse: sparse(t) }
+            }
+            "SetType" => {
+                let mut elems = Vec::new();
+                if t.get("type").truthy() {
+                    for x in t.get("type").items() {
+                        elems.push(if x.flat_text() == "ℤ" { Elem::Int } else { Elem::Real });
+                    }
+                } else if t.get("type1").truthy() || t.get("type2").truthy() {
+                    let e = if t.get("type1").flat_text() == "ℤ" || t.get("type2").flat_text() == "ℤ" { Elem::Int } else { Elem::Real };
+                    let n = match t.get("cnt") {
+                        Val::None => 1,
+                        c => self.int_literal(c).unwrap_or(1),
+                    };
+                    elems = vec![e; n.max(1) as usize];
+                } else {
+                    let sub = if t.get("sub_types").truthy() { t.get("sub_types") } else { t.get("homogeneous_types") };
+                    for s in sub.items() {
+                        elems.push(self.la_type(s, global)?.elem());
+                    }
+                }
+                Set { elems, length: Dim::None }
+            }
+            "TupleType" => Tuple(t.get("sub_types").items().iter().map(|s| self.la_type(s, global)).collect::<R<_>>()?),
+            "FunctionType" => {
+                let params = t.get("params").items().iter().map(|s| self.la_type(s, global)).collect::<R<_>>()?;
+                let rets = t.get("ret").items().iter().map(|s| self.la_type(s, global)).collect::<R<_>>()?;
+                Func { params, rets }
+            }
+            "NamedType" => {
+                let m = t.get("m");
+                if m.truthy() {
+                    Mesh(if m.get("e").truthy() {
+                        MeshKind::Edge
+                    } else if m.get("c").truthy() {
+                        MeshKind::Cell
+                    } else {
+                        MeshKind::Face
+                    })
+                } else {
+                    let e = if t.get("v").truthy() {
+                        Elem::Vertex
+                    } else if t.get("e").truthy() {
+                        Elem::Edge
+                    } else if t.get("f").truthy() {
+                        Elem::Face
+                    } else {
+                        Elem::Tet
+                    };
+                    Set { elems: vec![e], length: Dim::None }
+                }
+            }
+            other => return self.err(t, format!("Unsupported type {other}")),
+        })
+    }
+
+    fn int_literal(&self, n: &Val) -> Option<i64> {
+        match n.class() {
+            "Integer" => n.get("value").flat_text().parse().ok(),
+            "SupInteger" => digits(n.get("value"), get_unicode_number),
+            "SubInteger" => digits(n.get("value"), get_unicode_sub_number),
+            _ => None,
+        }
+    }
+
+    /// A dimension in a type: an integer, a symbol, or an arithmetic expression.
+    fn dim(&mut self, n: &Val) -> R<Dim> {
+        match n.class() {
+            "ArithExpression" => {
+                let v = self.dim(n.get("value"))?;
+                if n.get("sign").truthy() {
+                    return Ok(arith("-1", '*', &v));
+                }
+                Ok(v)
+            }
+            "ArithSubexpression" => self.dim(n.get("value")),
+            "ArithAdd" | "ArithSubtract" | "ArithMultiply" | "ArithDivide" => {
+                let l = self.dim(n.get("left"))?;
+                let r = self.dim(n.get("right"))?;
+                let op = match n.class() {
+                    "ArithAdd" => '+',
+                    "ArithSubtract" => '-',
+                    "ArithMultiply" => '*',
+                    _ => '/',
+                };
+                Ok(arith_dims(&l, op, &r))
+            }
+            "ArithFactor" => {
+                if n.get("num").truthy() {
+                    return match self.int_literal(n.get("num")) {
+                        Some(i) => Ok(Dim::Int(i)),
+                        None => self.err(n, "Dimension must be an integer"),
+                    };
+                }
+                if n.get("sub").truthy() {
+                    return self.dim(n.get("sub"));
+                }
+                let id = n.get("id0");
+                if id.class() == "IdentifierSubscript" {
+                    // a dimension that varies per sequence item: n_i
+                    return Ok(Dim::Str(format!("{}[i]", ident_name(id.get("left")))));
+                }
+                Ok(Dim::Str(ident_name(id)))
+            }
+            "Integer" | "SupInteger" | "SubInteger" => Ok(Dim::Int(self.int_literal(n).unwrap())),
+            _ => self.err(n, "Invalid dimension"),
+        }
+    }
+
+    // -- statements ----------------------------------------------------------
+
+    fn assignment(&mut self, s: &Val) -> R<Stmt> {
+        let lefts = s.get("left").items().to_vec();
+        let rights = s.get("right").items().to_vec();
+        let accumulate = s.get("op").as_str() == Some("+=");
+        let text = self.text(s);
+        if lefts.len() > 1 {
+            // a, b = f(x)
+            let rhs = self.expr(&rights[0])?;
+            let tys = match &rhs.ty {
+                Tuple(v) if v.len() == lefts.len() => v.clone(),
+                _ => return self.err(s, format!("Invalid assignment: {} lhs and 1 rhs", lefts.len())),
+            };
+            let mut lhs = Vec::new();
+            for (l, t) in lefts.iter().zip(tys) {
+                let name = ident_name(l);
+                self.define_global(l, &name, t.clone())?;
+                lhs.push((name, t));
+            }
+            return Ok(Stmt::Multi { lhs, rhs, text });
+        }
+        let left = &lefts[0];
+        let right = &rights[0];
+        match left.class() {
+            "IdentifierSubscript" => self.elementwise(left, right, accumulate, text),
+            _ => {
+                let name = ident_name(left);
+                let rhs = self.expr(right)?;
+                let ty = rhs.ty.clone();
+                if accumulate {
+                    self.ensure(self.is_defined(&name), left, || format!("{name} hasn't been defined"))?;
+                } else {
+                    self.define_global(left, &name, ty.clone())?;
+                }
+                Ok(Stmt::Assign(Assign { lhs: name, subs: vec![], ty, rhs, accumulate, text, extents: vec![] }))
+            }
+        }
+    }
+
+    fn define_global(&mut self, node: &Val, name: &str, ty: Ty) -> R<()> {
+        if let Some(sym) = self.lookup(name) {
+            let msg = if matches!(sym, Sym::Param(_)) {
+                format!("{name} is a parameter, can not be assigned")
+            } else {
+                format!("{name} has been assigned before")
+            };
+            return self.err(node, msg);
+        }
+        if self.scopes.is_empty() {
+            self.globals.insert(name.to_string(), if ty.is_func() { Sym::Func(ty.clone()) } else { Sym::Def(ty.clone()) });
+            self.defs.push((name.to_string(), ty));
+        } else {
+            self.define_local(name, ty);
+        }
+        Ok(())
+    }
+
+    /// `y_i = …` (a sequence or vector) or `A_ij = …` (a matrix), elementwise.
+    fn elementwise(&mut self, left: &Val, right: &Val, accumulate: bool, text: String) -> R<Stmt> {
+        let name = ident_name(left.get("left"));
+        let subs: Vec<String> = left.get("right").items().iter().map(|s| sub_name(s)).collect();
+        if self.is_defined(&name) && !accumulate {
+            // assigning an element of an existing matrix/sequence is not supported
+            let sym = self.lookup(&name).unwrap();
+            let msg = if matches!(sym, Sym::Param(_)) {
+                format!("{name} is a parameter, can not be assigned")
+            } else {
+                format!("{}_{} has been assigned before", name, subs.concat())
+            };
+            return self.err(left, msg);
+        }
+        for s in &subs {
+            if s != "*" && self.is_defined(s) {
+                return self.err(left, format!("Subscript {s} has been defined"));
+            }
+        }
+        let mut scope = IndexMap::new();
+        let mut frame = IndexMap::new();
+        for s in &subs {
+            scope.insert(s.clone(), Sym::Local(Ty::int()));
+            frame.insert(s.clone(), Vec::new());
+        }
+        self.scopes.push(scope);
+        self.extents.push(frame);
+        let rhs = self.expr(right);
+        self.scopes.pop();
+        let frame = self.extents.pop().unwrap();
+        let rhs = rhs?;
+        let mut extents = Vec::new();
+        for s in &subs {
+            let seen = &frame[s];
+            match seen.first() {
+                Some(d) => extents.push(d.clone()),
+                None => return self.err(left, "Subscript hasn't been used on rhs"),
+            }
+        }
+        let ty = match subs.len() {
+            1 => {
+                if rhs.ty.is_scalar() {
+                    Vector { rows: extents[0].clone(), elem: rhs.ty.elem() }
+                } else {
+                    Seq { size: extents[0].clone(), elem: Box::new(rhs.ty.clone()) }
+                }
+            }
+            2 => {
+                self.ensure(rhs.ty.is_scalar(), right, || "RHS has to be scalar".into())?;
+                Matrix {
+                    rows: extents[0].clone(),
+                    cols: extents[1].clone(),
+                    elem: rhs.ty.elem(),
+                    sparse: subs[0] == subs[1],
+                }
+            }
+            _ => return self.err(left, "Too many subscripts"),
+        };
+        if !accumulate {
+            self.define_global(left, &name, ty.clone())?;
+        }
+        Ok(Stmt::Assign(Assign { lhs: name, subs, ty, rhs, accumulate, text, extents }))
+    }
+
+    fn destructure(&mut self, s: &Val) -> R<Stmt> {
+        let rhs = self.expr(&s.get("right").items()[0])?;
+        let lefts = s.get("left").items().to_vec();
+        let tys: Vec<Ty> = match &rhs.ty {
+            Tuple(v) => v.clone(),
+            Seq { elem, .. } => vec![(**elem).clone(); lefts.len()],
+            Vector { elem, .. } => vec![Scalar(*elem); lefts.len()],
+            Set { elems, .. } => vec![Scalar(elems.first().copied().unwrap_or_default()); lefts.len()],
+            _ => return self.err(s, "Can only unpack tuples, sequences, sets and vectors"),
+        };
+        self.ensure(tys.len() == lefts.len(), s, || format!("Can only unpack all items: {} lhs and {} items", lefts.len(), tys.len()))?;
+        let mut lhs = Vec::new();
+        for (l, t) in lefts.iter().zip(tys) {
+            let name = ident_name(l);
+            self.define_global(l, &name, t.clone())?;
+            lhs.push((name, t));
+        }
+        Ok(Stmt::Multi { lhs, rhs, text: self.text(s) })
+    }
+
+    fn local_func(&mut self, s: &Val) -> R<LocalFunc> {
+        let name = match s.get("name") {
+            Val::Str(n) => n.to_string(),
+            n => crate::decls::main_name(n),
+        };
+        let mut scope = IndexMap::new();
+        let mut defs = IndexMap::new();
+        for d in s.get("defs").items() {
+            for (n, t) in self.where_condition(d, false)? {
+                defs.insert(n, t);
+            }
+        }
+        let mut params = Vec::new();
+        let mut pnodes: Vec<Val> = s.get("params").items().to_vec();
+        if s.get("name").class() == "IdentifierSubscript" {
+            // f_x(...): subscripts are parameters too
+            let mut subs: Vec<Val> = s.get("name").get("right").items().to_vec();
+            subs.extend(pnodes);
+            pnodes = subs;
+        }
+        for p in &pnodes {
+            let pn = ident_name(p);
+            match defs.get(&pn) {
+                Some(t) => {
+                    params.push((pn.clone(), t.clone()));
+                    scope.insert(pn, Sym::Local(t.clone()));
+                }
+                None => return self.err(p, format!("Parameter {pn} hasn't been defined")),
+            }
+        }
+        // provisional type for recursion is not supported (like Python)
+        self.scopes.push(scope);
+        let mut body = Vec::new();
+        let extras: Vec<Val> = s.get("extra").items().to_vec();
+        let order = self.def_use_order(&extras);
+        for i in order {
+            let st = match extras[i].class() {
+                "Destructure" => self.destructure(&extras[i]),
+                _ => self.assignment(&extras[i]),
+            };
+            match st {
+                Ok(st) => body.push(st),
+                Err(e) => {
+                    self.scopes.pop();
+                    return Err(e);
+                }
+            }
+        }
+        let exprs = s.get("expr").items().to_vec();
+        let mut rets = Vec::new();
+        let mut expr = None;
+        for e in &exprs {
+            match self.expr(e) {
+                Ok(x) => {
+                    rets.push(x.ty.clone());
+                    expr = Some(x);
+                }
+                Err(err) => {
+                    self.scopes.pop();
+                    return Err(err);
+                }
+            }
+        }
+        self.scopes.pop();
+        let ty = Func { params: params.iter().map(|(_, t)| t.clone()).collect(), rets };
+        if let Some(Sym::Func(_)) = self.globals.get(&name) {
+            return self.err(s, format!("Symbol {name} has been defined"));
+        }
+        self.globals.insert(name.clone(), Sym::Func(ty.clone()));
+        Ok(LocalFunc { name, params, body, expr: expr.unwrap(), ty, text: self.text(s) })
+    }
+
+    // -- expressions ---------------------------------------------------------
+
+    pub fn expr(&mut self, n: &Val) -> R<Expr> {
+        match n.class() {
+            "Expression" | "ExpInMatrix" => {
+                let v = self.expr(n.get("value"))?;
+                if n.get("sign").truthy() {
+                    let ty = v.ty.clone();
+                    return Ok(Expr::new(ExprKind::Neg(v), ty));
+                }
+                Ok(v)
+            }
+            "Subexpression" => self.expr(n.get("value")),
+            "Factor" => self.factor(n),
+            "Add" | "Subtract" => self.add_sub(n),
+            "Multiply" => self.multiply(n),
+            "Divide" => {
+                let l = self.expr(n.get("left"))?;
+                let r = self.expr(n.get("right"))?;
+                self.ensure(r.ty.is_scalar(), n, || self.mismatch("divide", &l, &r, n))?;
+                self.ensure(l.ty.is_scalar() || l.ty.is_vector() || l.ty.is_matrix(), n, || self.mismatch("divide", &l, &r, n))?;
+                let ty = l.ty.with_elem(l.ty.elem().join(r.ty.elem()));
+                let ty = if r.ty.is_int() && l.ty.is_int() { ty.with_elem(Elem::Real) } else { ty };
+                Ok(Expr::new(ExprKind::Div(l, r), ty))
+            }
+            "MultiCondExpr" => self.piecewise(n),
+            "Optimize" => self.optimize(n),
+            other => self.err(n, format!("Unsupported expression {other}")),
+        }
+    }
+
+    fn mismatch(&self, op: &str, l: &Expr, r: &Expr, n: &Val) -> String {
+        format!(
+            "Dimension mismatch. Can't {} {} {} and {} {}",
+            op,
+            l.ty.desc(),
+            self.text(n.get("left")),
+            r.ty.desc(),
+            self.text(n.get("right"))
+        )
+    }
+
+    fn add_sub(&mut self, n: &Val) -> R<Expr> {
+        let l = self.expr(n.get("left"))?;
+        let r = self.expr(n.get("right"))?;
+        let add = n.class() == "Add";
+        let op = if add { "add" } else { "subtract" };
+        let ok = match (&l.ty, &r.ty) {
+            (Scalar(_), Scalar(_)) => true,
+            (Vector { rows: a, .. }, Vector { rows: b, .. }) => is_same_expr(a, b),
+            (Matrix { rows: r1, cols: c1, .. }, Matrix { rows: r2, cols: c2, .. }) => {
+                is_same_expr(r1, r2) && is_same_expr(c1, c2)
+            }
+            (Set { .. }, Set { .. }) => true,
+            _ => false,
+        };
+        self.ensure(ok, n, || self.mismatch(op, &l, &r, n))?;
+        let elem = l.ty.elem().join(r.ty.elem());
+        let ty = match &l.ty {
+            Matrix { rows, cols, sparse, .. } => {
+                Matrix { rows: rows.clone(), cols: cols.clone(), elem, sparse: *sparse && r.ty.is_sparse() }
+            }
+            t => t.with_elem(elem),
+        };
+        Ok(Expr::new(if add { ExprKind::Add(l, r) } else { ExprKind::Sub(l, r) }, ty))
+    }
+
+    fn multiply(&mut self, n: &Val) -> R<Expr> {
+        let l = self.expr(n.get("left"))?;
+        let r = self.expr(n.get("right"))?;
+        let dot = n.get("op").as_str() == Some("⋅");
+        if dot && l.ty.is_vector() && r.ty.is_vector() && is_same_expr(&l.ty.rows(), &r.ty.rows()) {
+            let ty = Scalar(l.ty.elem().join(r.ty.elem()));
+            return Ok(Expr::new(ExprKind::Dot(l, r), ty));
+        }
+        let ty = self.product_type(&l, &r, n)?;
+        Ok(Expr::new(ExprKind::Mul(l, r), ty))
+    }
+
+    fn product_type(&self, l: &Expr, r: &Expr, n: &Val) -> R<Ty> {
+        let elem = l.ty.elem().join(r.ty.elem());
+        let bad = || self.mismatch("multiply", l, r, n);
+        Ok(match (&l.ty, &r.ty) {
+            (Scalar(_), t) => {
+                self.ensure(t.is_scalar() || t.is_vector() || t.is_matrix(), n, bad)?;
+                t.with_elem(elem)
+            }
+            (t, Scalar(_)) => {
+                self.ensure(t.is_vector() || t.is_matrix(), n, bad)?;
+                t.with_elem(elem)
+            }
+            (Matrix { rows, cols, sparse: s1, .. }, Matrix { rows: r2, cols: c2, sparse: s2, .. }) => {
+                self.ensure(is_same_expr(cols, r2), n, bad)?;
+                if rows.py_eq(&Dim::Int(1)) && c2.py_eq(&Dim::Int(1)) {
+                    Scalar(elem)
+                } else {
+                    Matrix { rows: rows.clone(), cols: c2.clone(), elem, sparse: *s1 && *s2 }
+                }
+            }
+            (Matrix { rows, cols, .. }, Vector { rows: r2, .. }) => {
+                self.ensure(is_same_expr(cols, r2), n, bad)?;
+                if rows.py_eq(&Dim::Int(1)) {
+                    Scalar(elem)
+                } else {
+                    Vector { rows: rows.clone(), elem }
+                }
+            }
+            (Vector { rows, .. }, Matrix { rows: r2, cols: c2, .. }) => {
+                self.ensure(r2.py_eq(&Dim::Int(1)), n, bad)?;
+                Matrix { rows: rows.clone(), cols: c2.clone(), elem, sparse: false }
+            }
+            _ => return self.err(n, bad()),
+        })
+    }
+
+    fn factor(&mut self, n: &Val) -> R<Expr> {
+        let child = ["id0", "num", "sub", "m", "v", "s", "nm", "op", "c"]
+            .iter()
+            .find_map(|k| {
+                let v = n.get(k);
+                v.truthy().then(|| (*k, v.clone()))
+            });
+        let Some((kind, v)) = child else { return self.err(n, "Empty factor") };
+        match kind {
+            "id0" => self.identifier(&v),
+            "num" => self.number(&v),
+            "sub" => self.expr(v.get("value")),
+            "m" => self.block_matrix(&v),
+            "v" => self.vector_literal(&v),
+            "s" => self.set_literal(&v),
+            "nm" => self.num_matrix(&v),
+            "c" => self.constant(&v),
+            _ => self.operation(&v),
+        }
+    }
+
+    fn constant(&mut self, v: &Val) -> R<Expr> {
+        let c = match v.class() {
+            "Pi" => Constant::Pi,
+            "E" => Constant::E,
+            _ => Constant::Inf,
+        };
+        Ok(Expr::new(ExprKind::Const(c), Ty::real()))
+    }
+
+    fn number(&mut self, v: &Val) -> R<Expr> {
+        match v.class() {
+            "Integer" | "SupInteger" | "SubInteger" => Ok(Expr::new(ExprKind::Int(self.int_literal(v).unwrap()), Ty::int())),
+            "Double" => Ok(Expr::new(ExprKind::Real(self.text(v)), Ty::real())),
+            "Fraction" => {
+                let c = v.get("value").flat_text().chars().next().unwrap();
+                let (a, b) = get_unicode_fraction(c).unwrap();
+                Ok(Expr::new(ExprKind::Fraction(a, b), Ty::real()))
+            }
+            _ => self.err(v, "Unsupported number"),
+        }
+    }
+
+    /// A name, or a subscripted name (indexing, or a dimension-less identity).
+    fn identifier(&mut self, id: &Val) -> R<Expr> {
+        if id.class() == "IdentifierSubscript" {
+            return self.subscripted(id);
+        }
+        let name = ident_name(id);
+        if name == "e" && self.const_e && !self.is_defined("e") {
+            return Ok(Expr::new(ExprKind::Const(Constant::E), Ty::real()));
+        }
+        match self.lookup(&name) {
+            Some(sym) => Ok(Expr::new(ExprKind::Var(name), sym.ty())),
+            None => self.err(id, format!("Symbol {name} is not defined")),
+        }
+    }
+
+    fn subscripted(&mut self, id: &Val) -> R<Expr> {
+        let base = ident_name(id.get("left"));
+        let idx_nodes: Vec<Val> = if id.get("exp").truthy() {
+            id.get("exp").items().to_vec()
+        } else {
+            id.get("right").items().to_vec()
+        };
+        if base == "I" && !self.is_defined("I") {
+            // I_n: identity matrix
+            let d = self.index_dim(&idx_nodes[0])?;
+            return Ok(Expr::new(ExprKind::Identity(d.clone()), Ty::matrix(d.clone(), d)));
+        }
+        let Some(sym) = self.lookup(&base) else {
+            return self.err(id, format!("Symbol {base} is not defined"));
+        };
+        let bty = sym.ty();
+        let mut idx = Vec::new();
+        for (axis, node) in idx_nodes.iter().enumerate() {
+            if node.as_str() == Some("*") {
+                idx.push(Idx::All);
+                continue;
+            }
+            let e = self.index_expr(node)?;
+            // infer the extent of a subscript variable from this axis
+            if let ExprKind::Var(v) = &*e.kind {
+                let extent = axis_extent(&bty, axis);
+                for frame in self.extents.iter_mut().rev() {
+                    if let Some(seen) = frame.get_mut(v) {
+                        if let Some(d) = extent.clone() {
+                            seen.push(d);
+                        }
+                        break;
+                    }
+                }
+            }
+            idx.push(Idx::At(e));
+        }
+        let ty = self.index_type(&bty, &idx, id)?;
+        Ok(Expr::new(ExprKind::Index { base, base_ty: bty, idx }, ty))
+    }
+
+    fn index_expr(&mut self, node: &Val) -> R<Expr> {
+        match node.class() {
+            "IdentifierAlone" => {
+                let name = ident_name(node);
+                match self.lookup(&name) {
+                    Some(s) => Ok(Expr::new(ExprKind::Var(name), s.ty())),
+                    None => self.err(node, format!("Subscript {name} has not been defined")),
+                }
+            }
+            "Integer" | "SubInteger" => Ok(Expr::new(ExprKind::Int(self.int_literal(node).unwrap()), Ty::int())),
+            _ => self.expr(node),
+        }
+    }
+
+    fn index_dim(&mut self, node: &Val) -> R<Dim> {
+        match node.class() {
+            "IdentifierAlone" => Ok(Dim::Str(ident_name(node))),
+            _ => match self.int_literal(node) {
+                Some(i) => Ok(Dim::Int(i)),
+                None => self.err(node, "Invalid identity matrix"),
+            },
+        }
+    }
+
+    fn index_type(&self, bty: &Ty, idx: &[Idx], node: &Val) -> R<Ty> {
+        let all = |i: usize| matches!(idx.get(i), Some(Idx::All));
+        Ok(match (bty, idx.len()) {
+            (Vector { elem, .. }, 1) => Scalar(*elem),
+            (Matrix { elem, .. }, 2) => match (all(0), all(1)) {
+                (false, false) => Scalar(*elem),
+                (true, false) => Vector { rows: bty.rows(), elem: *elem },
+                (false, true) => Vector { rows: bty.cols(), elem: *elem },
+                _ => return self.err(node, "Only one * is allowed as subscripts"),
+            },
+            (Seq { elem, .. }, 1) => (**elem).clone(),
+            (Seq { elem, .. }, 2) if elem.is_vector() => Scalar(elem.elem()),
+            (Seq { elem, .. }, 3) if elem.is_matrix() => match (all(1), all(2)) {
+                (false, false) => Scalar(elem.elem()),
+                (true, false) => Vector { rows: elem.rows(), elem: elem.elem() },
+                (false, true) => Ty::matrix(1, elem.cols()),
+                _ => return self.err(node, "Only one * is allowed as subscripts"),
+            },
+            (Set { elems, .. }, 1) => Scalar(elems.first().copied().unwrap_or_default()),
+            (Tuple(v), 1) => match &idx[0] {
+                Idx::At(e) => match &*e.kind {
+                    ExprKind::Int(i) if *i >= 1 && (*i as usize) <= v.len() => v[*i as usize - 1].clone(),
+                    _ => return self.err(node, "Subscript has to be int value when indexing tuple"),
+                },
+                Idx::All => return self.err(node, "Subscript can't be *"),
+            },
+            (Func { .. }, _) => return self.err(node, "Invalid assignment for function"),
+            _ => return self.err(node, format!("Invalid subscripts for {}", bty.desc())),
+        })
+    }
+
+    fn vector_literal(&mut self, v: &Val) -> R<Expr> {
+        let mut items = Vec::new();
+        let mut rows = Dim::Int(0);
+        let mut elem = Elem::Int;
+        for e in v.get("exp").items() {
+            let x = self.expr(e)?;
+            self.ensure(x.ty.is_scalar() || x.ty.is_vector(), v, || "Item in vector must be scalar or vector".into())?;
+            rows = add_dims(&rows, &x.ty.rows());
+            elem = elem.join(x.ty.elem());
+            items.push(x);
+        }
+        Ok(Expr::new(ExprKind::Stack(items), Vector { rows, elem }))
+    }
+
+    fn set_literal(&mut self, v: &Val) -> R<Expr> {
+        if v.get("enum").truthy() {
+            return self.err(v, "Set comprehensions are not supported yet");
+        }
+        let items: Vec<Expr> = v.get("exp").items().iter().map(|e| self.expr(e)).collect::<R<_>>()?;
+        let elems = vec![items.first().map(|x| x.ty.elem()).unwrap_or_default()];
+        Ok(Expr::new(ExprKind::SetLit(items), Set { elems, length: Dim::None }))
+    }
+
+    fn num_matrix(&mut self, v: &Val) -> R<Expr> {
+        let value = if v.get("left").flat_text() == "0" { 0 } else { 1 };
+        let rows = self.index_dim(v.get("id1"))?;
+        let cols = if v.get("id2").truthy() { Some(self.index_dim(v.get("id2"))?) } else { None };
+        let ty = match &cols {
+            Some(c) => Matrix { rows: rows.clone(), cols: c.clone(), elem: Elem::Int, sparse: false },
+            None => Vector { rows: rows.clone(), elem: Elem::Int },
+        };
+        Ok(Expr::new(ExprKind::Filled { value, rows, cols }, ty))
+    }
+
+    /// `[a b; c d]`, with blocks.
+    fn block_matrix(&mut self, m: &Val) -> R<Expr> {
+        let mut rows: Vec<Vec<Val>> = Vec::new();
+        flatten_rows(m.get("value"), &mut rows);
+        let mut items: Vec<Vec<Expr>> = Vec::new();
+        for r in &rows {
+            let mut row = Vec::new();
+            for e in r {
+                row.push(self.matrix_item(e)?);
+            }
+            items.push(row);
+        }
+        let n_rows = items.len();
+        let n_cols = items.iter().map(|r| r.len()).max().unwrap_or(0);
+        let is_block = items.iter().flatten().any(|e| !e.ty.is_scalar() || is_lifted(e));
+        let elem = items.iter().flatten().fold(Elem::Int, |acc, e| acc.join(e.ty.elem()));
+        if !is_block {
+            return Ok(Expr::new(ExprKind::Block(items), Matrix { rows: Dim::Int(n_rows as i64), cols: Dim::Int(n_cols as i64), elem, sparse: false }));
+        }
+        // block dimensions: height of each block row, width of each block column
+        let mut heights: Vec<Option<Dim>> = vec![None; n_rows];
+        let mut widths: Vec<Option<Dim>> = vec![None; n_cols];
+        for (i, row) in items.iter().enumerate() {
+            for (j, e) in row.iter().enumerate() {
+                if e.ty.is_scalar() && is_lifted(e) || e.ty.is_scalar() {
+                    continue;
+                }
+                let (h, w) = (e.ty.rows(), e.ty.cols());
+                match &heights[i] {
+                    None => heights[i] = Some(h),
+                    Some(x) if !is_same_expr(x, &h) => return self.err(m, "Block matrix error. Invalid dimensions"),
+                    _ => {}
+                }
+                match &widths[j] {
+                    None => widths[j] = Some(w),
+                    Some(x) if !is_same_expr(x, &w) => return self.err(m, "Block matrix error. Invalid dimensions"),
+                    _ => {}
+                }
+            }
+        }
+        let heights: Vec<Dim> = heights.into_iter().map(|h| h.unwrap_or(Dim::Int(1))).collect();
+        let widths: Vec<Dim> = widths.into_iter().map(|w| w.unwrap_or(Dim::Int(1))).collect();
+        // give scalar 0/1 items and I the size of their block
+        for (i, row) in items.iter_mut().enumerate() {
+            for (j, e) in row.iter_mut().enumerate() {
+                if e.ty.is_scalar() {
+                    let (h, w) = (heights[i].clone(), widths[j].clone());
+                    if let ExprKind::Var(name) = &*e.kind {
+                        if name == "I" {
+                            *e = Expr::new(ExprKind::Identity(h.clone()), Ty::matrix(h, w));
+                            continue;
+                        }
+                    }
+                    if !(h.py_eq(&Dim::Int(1)) && w.py_eq(&Dim::Int(1))) {
+                        let v = match &*e.kind {
+                            ExprKind::Int(v) if *v == 0 || *v == 1 => *v,
+                            _ => return self.err(m, "Block matrix error. Invalid dimensions"),
+                        };
+                        *e = Expr::new(ExprKind::Filled { value: v, rows: h.clone(), cols: Some(w.clone()) }, Ty::matrix(h, w));
+                    }
+                }
+            }
+        }
+        let total_rows = heights.iter().fold(Dim::Int(0), |a, b| add_dims(&a, b));
+        let total_cols = widths.iter().fold(Dim::Int(0), |a, b| add_dims(&a, b));
+        let sparse = items.iter().flatten().any(|e| e.ty.is_sparse());
+        Ok(Expr::new(ExprKind::Block(items), Matrix { rows: total_rows, cols: total_cols, elem, sparse }))
+    }
+
+    fn matrix_item(&mut self, e: &Val) -> R<Expr> {
+        // an undefined I inside a block matrix is an identity block
+        if e.class() == "ExpInMatrix" && !e.get("sign").truthy() {
+            let f = e.get("value");
+            if f.class() == "Factor" && f.get("id0").class() == "IdentifierAlone" && ident_name(f.get("id0")) == "I" && !self.is_defined("I") {
+                return Ok(Expr::new(ExprKind::Var("I".into()), Ty::int()));
+            }
+        }
+        self.expr(e)
+    }
+
+    fn piecewise(&mut self, n: &Val) -> R<Expr> {
+        let mut singles = Vec::new();
+        flatten_ifs(n.get("ifs"), &mut singles);
+        let mut cases = Vec::new();
+        let mut ty: Option<Ty> = None;
+        for s in &singles {
+            let c = self.condition(s.get("cond"))?;
+            let e = self.expr(s.get("stat"))?;
+            ty = Some(match ty {
+                None => e.ty.clone(),
+                Some(t) => t.with_elem(t.elem().join(e.ty.elem())),
+            });
+            cases.push((c, e));
+        }
+        let otherwise = if n.get("other").truthy() { Some(self.expr(n.get("other"))?) } else { None };
+        let mut ty = ty.unwrap();
+        if let Some(o) = &otherwise {
+            ty = ty.with_elem(ty.elem().join(o.ty.elem()));
+        }
+        Ok(Expr::new(ExprKind::Piecewise { cases, otherwise }, ty))
+    }
+
+    fn condition(&mut self, c: &Val) -> R<Cond> {
+        match c.class() {
+            "IfCondition" => {
+                if c.get("single").truthy() {
+                    return self.condition(c.get("single"));
+                }
+                Ok(Cond::Or(Box::new(self.condition(c.get("se"))?), Box::new(self.condition(c.get("other"))?)))
+            }
+            "AndCondition" => {
+                if c.get("atom").truthy() {
+                    return self.condition(c.get("atom"));
+                }
+                Ok(Cond::And(Box::new(self.condition(c.get("se"))?), Box::new(self.condition(c.get("other"))?)))
+            }
+            "AtomCondition" => {
+                if c.get("p").truthy() {
+                    self.condition(c.get("p"))
+                } else {
+                    self.condition(c.get("cond"))
+                }
+            }
+            "InCondition" | "NotInCondition" => {
+                let items: Vec<Expr> = c.get("left").items().iter().map(|e| self.expr(e)).collect::<R<_>>()?;
+                let set = self.expr(c.get("right"))?;
+                Ok(if c.class() == "InCondition" { Cond::In(items, set) } else { Cond::NotIn(items, set) })
+            }
+            cls => {
+                let op = match cls {
+                    "EqCondition" => CmpOp::Eq,
+                    "NeCondition" => CmpOp::Ne,
+                    "LessCondition" => CmpOp::Lt,
+                    "LessEqualCondition" => CmpOp::Le,
+                    "GreaterCondition" => CmpOp::Gt,
+                    "GreaterEqualCondition" => CmpOp::Ge,
+                    other => return self.err(c, format!("Unsupported condition {other}")),
+                };
+                let l = self.expr(c.get("left"))?;
+                let r = self.expr(c.get("right"))?;
+                Ok(Cond::Cmp(op, l, r))
+            }
+        }
+    }
+
+    fn optimize(&mut self, n: &Val) -> R<Expr> {
+        let kind = if n.get("min").truthy() {
+            OptKind::Min
+        } else if n.get("max").truthy() {
+            OptKind::Max
+        } else if n.get("amin").truthy() {
+            OptKind::Argmin
+        } else {
+            OptKind::Argmax
+        };
+        let mut scope = IndexMap::new();
+        let mut vars = Vec::new();
+        for d in n.get("defs").items() {
+            for (name, t) in self.where_condition(d, false)? {
+                scope.insert(name.clone(), Sym::Local(t.clone()));
+                vars.push((name, t));
+            }
+        }
+        self.scopes.push(scope);
+        let objective = self.expr(n.get("exp"));
+        let mut constraints = Vec::new();
+        let mut cur = n.get("cond").clone();
+        let mut conds = Vec::new();
+        while cur.truthy() {
+            conds.push(cur.get("cond").clone());
+            cur = cur.get("m_cond").clone();
+        }
+        conds.reverse();
+        let mut failed = None;
+        for c in &conds {
+            match self.condition(c) {
+                Ok(c) => constraints.push(c),
+                Err(e) => failed = Some(e),
+            }
+        }
+        self.scopes.pop();
+        let objective = objective?;
+        if let Some(e) = failed {
+            return Err(e);
+        }
+        self.ensure(objective.ty.is_scalar(), n, || "Objective function must return a scalar".into())?;
+        let ty = match kind {
+            OptKind::Min | OptKind::Max => Ty::real(),
+            _ if vars.len() == 1 => vars[0].1.clone(),
+            _ => Tuple(vars.iter().map(|(_, t)| t.clone()).collect()),
+        };
+        Ok(Expr::new(ExprKind::Optimize { kind, vars, objective, constraints }, ty))
+    }
+
+    /// Operators and function calls (`Factor.op`).
+    fn operation(&mut self, op: &Val) -> R<Expr> {
+        match op.class() {
+            "Power" => self.power(op),
+            "Transpose" => {
+                let f = self.expr(op.get("f"))?;
+                let ty = transpose_type(&f.ty).ok_or(()).or_else(|_| self.err(op, "Transpose error. The base must be a matrix or vector"))?;
+                Ok(Expr::new(ExprKind::Transpose(f), ty))
+            }
+            "PseudoInverse" => {
+                let f = self.expr(op.get("f"))?;
+                let ty = transpose_type(&f.ty).ok_or(()).or_else(|_| self.err(op, "Pseudoinverse error. The base must be a matrix or vector"))?;
+                Ok(Expr::new(ExprKind::PseudoInverse(f), ty))
+            }
+            "Squareroot" => {
+                let f = self.expr(op.get("f"))?;
+                self.ensure(f.ty.is_scalar(), op, || "Squareroot error. The base must be a scalar".into())?;
+                Ok(Expr::new(ExprKind::Sqrt(f), Ty::real()))
+            }
+            "Solver" => self.solver(op),
+            "Norm" => self.norm(op),
+            "Summation" => self.summation(op),
+            "Function" => self.call(op),
+            "Integral" => self.integral(op),
+            "InnerProduct" => {
+                let l = self.expr(op.get("left"))?;
+                let r = self.expr(op.get("right"))?;
+                self.ensure(l.ty.is_vector() && r.ty.is_vector(), op, || "Inner product error. Parameters must be vectors".into())?;
+                let sub = if op.get("sub").truthy() { Some(self.identifier(op.get("sub"))?) } else { None };
+                Ok(Expr::new(ExprKind::Inner(l, r, sub), Ty::real()))
+            }
+            "FroProduct" | "HadamardProduct" | "CrossProduct" | "KroneckerProduct" => self.product(op),
+            "SizeOp" => {
+                let x = self.identifier(op.get("i"))?;
+                Ok(Expr::new(ExprKind::Size(x), Ty::int()))
+            }
+            cls if cls.ends_with("Func") => self.builtin(op),
+            other => self.err(op, format!("Unsupported operation {other}")),
+        }
+    }
+
+    fn power(&mut self, op: &Val) -> R<Expr> {
+        let base = self.expr(op.get("base"))?;
+        let power_text = op.get("power").node().and_then(|_| Some(self.text(op.get("power"))));
+        if op.get("t").truthy() || power_text.as_deref() == Some("ᵀ") {
+            if !self.is_defined("T") {
+                let ty = transpose_type(&base.ty).ok_or(()).or_else(|_| self.err(op, "Transpose error. The base must be a matrix or vecotr"))?;
+                return Ok(Expr::new(ExprKind::Transpose(base), ty));
+            }
+        }
+        if op.get("r").truthy() {
+            return match &base.ty {
+                Matrix { rows, cols, .. } => {
+                    self.ensure(is_same_expr(rows, cols), op, || "Inverse matrix error. The rows should be the same as the columns".into())?;
+                    let ty = Ty::matrix(rows.clone(), rows.clone());
+                    Ok(Expr::new(ExprKind::Inverse(base), ty))
+                }
+                Scalar(_) => Ok(Expr::new(ExprKind::Inverse(base), Ty::real())),
+                _ => self.err(op, "Inverse error. The base must be a matrix or scalar"),
+            };
+        }
+        let power = if op.get("t").truthy() || power_text.as_deref() == Some("ᵀ") {
+            Expr::new(ExprKind::Var("T".into()), self.lookup("T").unwrap().ty())
+        } else {
+            let p = op.get("power");
+            match p.class() {
+                "SupInteger" => Expr::new(ExprKind::Int(self.int_literal(p).unwrap()), Ty::int()),
+                "IdentifierAlone" => {
+                    // a superscript letter: x^a
+                    let name = crate::helper::get_unicode_superscript(&p.get("value").flat_text());
+                    match self.lookup(&name) {
+                        Some(s) => Expr::new(ExprKind::Var(name), s.ty()),
+                        None => return self.err(p, format!("Symbol {name} is not defined")),
+                    }
+                }
+                _ => self.expr(p)?,
+            }
+        };
+        self.ensure(power.ty.is_scalar(), op, || "Power must be scalar".into())?;
+        let ty = match &base.ty {
+            Scalar(e) => {
+                if e.is_int() && power.ty.is_int() && matches!(&*power.kind, ExprKind::Int(v) if *v >= 0) {
+                    Ty::int()
+                } else {
+                    Ty::real()
+                }
+            }
+            Matrix { rows, cols, .. } => {
+                self.ensure(is_same_expr(rows, cols), op, || "Power error. Rows must be the same as columns".into())?;
+                base.ty.clone()
+            }
+            _ => return self.err(op, "Base of power must be scalar or matrix"),
+        };
+        Ok(Expr::new(ExprKind::Pow(base, power), ty))
+    }
+
+    fn solver(&mut self, op: &Val) -> R<Expr> {
+        let l = self.expr(op.get("left"))?;
+        let r = self.expr(op.get("right"))?;
+        if l.ty.is_scalar() {
+            // a⁻¹ b with a scalar
+            let inv = Expr::new(ExprKind::Inverse(l), Ty::real());
+            let ty = self.product_type(&inv, &r, op)?;
+            return Ok(Expr::new(ExprKind::Mul(inv, r), ty));
+        }
+        if l.ty.is_set() {
+            let ty = l.ty.clone();
+            return Ok(Expr::new(ExprKind::Sub(l, r), ty));
+        }
+        self.ensure(l.ty.is_matrix(), op, || format!("Parameter {} must be a matrix", self.text(op.get("left"))))?;
+        self.ensure(is_same_expr(&l.ty.rows(), &r.ty.rows()), op, || {
+            format!("Parameters {} and {} should have the same rows", self.text(op.get("left")), self.text(op.get("right")))
+        })?;
+        let ty = match &r.ty {
+            Matrix { cols, .. } => Ty::matrix(l.ty.cols(), cols.clone()),
+            Vector { .. } => Ty::vector(l.ty.cols()),
+            _ => return self.err(op, format!("Parameter {} must be a matrix or vector", self.text(op.get("right")))),
+        };
+        Ok(Expr::new(ExprKind::Solve(l, r), ty))
+    }
+
+    fn norm(&mut self, op: &Val) -> R<Expr> {
+        let arg = self.expr(op.get("value"))?;
+        let single = op.get("single").truthy();
+        let sub = op.get("sub");
+        let (kind, p) = match &arg.ty {
+            Scalar(_) => {
+                self.ensure(single, op, || "Norm error. Scalar type has to use | rather than ||".into())?;
+                (NormKind::Abs, None)
+            }
+            Set { .. } => (NormKind::Size, None),
+            Matrix { .. } if single => (NormKind::Det, None),
+            Matrix { .. } => match sub.as_str() {
+                Some("*") => (NormKind::Nuclear, None),
+                _ if sub.is_none() || self.text(sub) == "F" => (NormKind::Frobenius, None),
+                _ => return self.err(op, "Norm error. Invalid norm for Matrix"),
+            },
+            Vector { .. } => {
+                self.ensure(!single, op, || "Norm error. Vector type has to use || rather than |".into())?;
+                match sub {
+                    Val::None => (NormKind::P, None),
+                    Val::Str(s) if &**s == "∞" => (NormKind::Max, None),
+                    Val::Str(s) if &**s == "*" => return self.err(op, "Norm error. Invalid norm for Vector"),
+                    s => {
+                        let e = if s.class() == "IdentifierAlone" && ident_name(s) == "∞" {
+                            return Ok(Expr::new(ExprKind::Norm { arg, kind: NormKind::Max, p: None }, Ty::real()));
+                        } else if let Some(i) = self.int_literal(s) {
+                            Expr::new(ExprKind::Int(i), Ty::int())
+                        } else {
+                            self.identifier(s)?
+                        };
+                        (NormKind::P, Some(e))
+                    }
+                }
+            }
+            _ => return self.err(op, "Norm error. Invalid type"),
+        };
+        let ty = if kind == NormKind::Size { Ty::int() } else { Ty::real() };
+        let mut e = Expr::new(ExprKind::Norm { arg, kind, p }, ty);
+        let power = op.get("power");
+        if power.truthy() {
+            let pw = match self.int_literal(power) {
+                Some(i) => Expr::new(ExprKind::Int(i), Ty::int()),
+                None => self.expr(power)?,
+            };
+            e = Expr::new(ExprKind::Pow(e, pw), Ty::real());
+        }
+        Ok(e)
+    }
+
+    fn summation(&mut self, op: &Val) -> R<Expr> {
+        if op.get("u").truthy() {
+            return self.err(op, "Unions of sequences are not supported yet");
+        }
+        let mut scope = IndexMap::new();
+        let vars: Vec<String>;
+        let mut range_kind = 0; // 0 implicit, 1 explicit, 2 cond, 3 set
+        let mut lo = None;
+        let mut hi = None;
+        let mut set_expr = None;
+        if op.get("enum").truthy() {
+            let set = self.expr(op.get("range"))?;
+            let elems = match &set.ty {
+                Set { elems, .. } => elems.clone(),
+                _ => return self.err(op, "Range of a summation must be a set"),
+            };
+            vars = op.get("enum").items().iter().map(ident_name).collect();
+            if vars.len() == elems.len() {
+                for (v, e) in vars.iter().zip(&elems) {
+                    scope.insert(v.clone(), Sym::Local(Scalar(*e)));
+                }
+            } else {
+                self.ensure(vars.len() == 1, op, || "Invalid size".into())?;
+                let t = if elems.len() == 1 { Scalar(elems[0]) } else { Tuple(elems.iter().map(|e| Scalar(*e)).collect()) };
+                scope.insert(vars[0].clone(), Sym::Local(t));
+            }
+            set_expr = Some(set);
+            range_kind = 3;
+        } else {
+            let id = if op.get("id").truthy() { op.get("id") } else { op.get("sub") };
+            let v = ident_name(id);
+            if self.is_defined(&v) {
+                return self.err(id, "Subscript has been defined");
+            }
+            vars = vec![v.clone()];
+            scope.insert(v, Sym::Local(Ty::int()));
+            if op.get("lower").truthy() {
+                lo = Some(self.expr(op.get("lower"))?);
+                let u = op.get("upper");
+                hi = Some(match self.int_literal(u) {
+                    Some(i) => Expr::new(ExprKind::Int(i), Ty::int()),
+                    None if u.class() == "IdentifierAlone" => self.identifier(u)?,
+                    None => self.expr(u)?,
+                });
+                range_kind = 1;
+            } else if op.get("cond").truthy() {
+                range_kind = 2;
+            }
+        }
+        let mut frame = IndexMap::new();
+        for v in &vars {
+            frame.insert(v.clone(), Vec::new());
+        }
+        self.scopes.push(scope);
+        self.extents.push(frame);
+        let result = (|| -> R<(Vec<Stmt>, Option<Cond>, Expr)> {
+            let mut extras = Vec::new();
+            let ex: Vec<Val> = op.get("extra").items().to_vec();
+            for i in self.def_use_order(&ex) {
+                extras.push(self.assignment(&ex[i])?);
+            }
+            let cond = if range_kind == 2 { Some(self.condition(op.get("cond"))?) } else { None };
+            let body = self.expr(op.get("exp"))?;
+            Ok((extras, cond, body))
+        })();
+        self.scopes.pop();
+        let frame = self.extents.pop().unwrap();
+        let (extras, cond, body) = result?;
+        let implicit = || -> R<Dim> {
+            match frame[&vars[0]].first() {
+                Some(d) => Ok(d.clone()),
+                None => self.err(op, "Subscript hasn't been used in summation"),
+            }
+        };
+        let range = match range_kind {
+            0 => SumRange::Implicit(implicit()?),
+            1 => SumRange::Explicit(lo.unwrap(), hi.unwrap()),
+            2 => SumRange::Cond(implicit()?, cond.unwrap()),
+            _ => SumRange::Set(set_expr.unwrap()),
+        };
+        let mut body = body;
+        if op.get("sign").truthy() {
+            let t = body.ty.clone();
+            body = Expr::new(ExprKind::Neg(body), t);
+        }
+        let ty = body.ty.clone();
+        Ok(Expr::new(ExprKind::Sum { var: vars, range, body, extras }, ty))
+    }
+
+    fn integral(&mut self, op: &Val) -> R<Expr> {
+        let var = ident_name(op.get("id"));
+        let (lo, hi) = if op.get("d").truthy() {
+            (self.expr(op.get("d").get("lower"))?, self.expr(op.get("d").get("upper"))?)
+        } else {
+            (self.sub_factor(op.get("lower"))?, self.sub_factor(op.get("upper"))?)
+        };
+        let mut scope = IndexMap::new();
+        scope.insert(var.clone(), Sym::Local(Ty::real()));
+        self.scopes.push(scope);
+        let body = self.expr(op.get("exp"));
+        self.scopes.pop();
+        Ok(Expr::new(ExprKind::Integral { var, lo, hi, body: body? }, Ty::real()))
+    }
+
+    fn sub_factor(&mut self, n: &Val) -> R<Expr> {
+        match n.class() {
+            "IdentifierAlone" => self.identifier(n),
+            "Subexpression" => self.expr(n.get("value")),
+            "Pi" | "Infinity" | "E" => self.constant(n),
+            _ => self.number(n),
+        }
+    }
+
+    fn product(&mut self, op: &Val) -> R<Expr> {
+        let l = self.expr(op.get("left"))?;
+        let r = self.expr(op.get("right"))?;
+        let name = match op.class() {
+            "FroProduct" => "Frobenius",
+            "HadamardProduct" => "Hadamard",
+            "CrossProduct" => "Cross",
+            _ => "Kronecker",
+        };
+        match op.class() {
+            "FroProduct" => Ok(Expr::new(ExprKind::Frobenius(l, r), Ty::real())),
+            "HadamardProduct" => {
+                self.ensure(l.ty.same(&r.ty), op, || format!("{name} product error. Parameters must have the same dimension"))?;
+                let ty = l.ty.with_elem(l.ty.elem().join(r.ty.elem()));
+                Ok(Expr::new(ExprKind::Hadamard(l, r), ty))
+            }
+            "CrossProduct" => {
+                let ok = l.ty.is_vector() && r.ty.is_vector() && l.ty.rows().py_eq(&Dim::Int(3)) && r.ty.rows().py_eq(&Dim::Int(3));
+                self.ensure(ok, op, || "Cross product error. The dimension of parameters must be 3".into())?;
+                Ok(Expr::new(ExprKind::Cross(l, r), Ty::vector(3)))
+            }
+            _ => {
+                let ty = Matrix {
+                    rows: mul_dims(&l.ty.rows(), &r.ty.rows()),
+                    cols: mul_dims(&l.ty.cols(), &r.ty.cols()),
+                    elem: l.ty.elem().join(r.ty.elem()),
+                    sparse: l.ty.is_sparse() || r.ty.is_sparse(),
+                };
+                Ok(Expr::new(ExprKind::Kronecker(l, r), ty))
+            }
+        }
+    }
+
+    /// A call `f(x)` of a local function, function parameter or sequence item.
+    fn call(&mut self, op: &Val) -> R<Expr> {
+        let name = op.get("name").flat_text();
+        let mut args = Vec::new();
+        for s in op.get("subs").items() {
+            args.push(self.index_expr(s)?);
+        }
+        for p in op.get("params").items() {
+            args.push(self.expr(p)?);
+        }
+        let (callee, fty) = match self.lookup(&name) {
+            Some(sym) if sym.ty().is_func() => (Callee::Named(name.clone()), sym.ty()),
+            _ => {
+                // f_i(x): an item of a sequence of functions
+                let parts: Vec<&str> = name.splitn(2, '_').collect();
+                match (parts.len(), parts.first().and_then(|b| self.lookup(b))) {
+                    (2, Some(sym)) => match sym.ty() {
+                        Seq { elem, .. } if elem.is_func() => {
+                            let idx = parts[1].to_string();
+                            let i = match idx.parse::<i64>() {
+                                Ok(v) => Expr::new(ExprKind::Int(v), Ty::int()),
+                                Err(_) => Expr::new(ExprKind::Var(idx.clone()), self.lookup(&idx).map(|s| s.ty()).unwrap_or(Ty::int())),
+                            };
+                            (Callee::SeqItem(parts[0].to_string(), i), (*elem).clone())
+                        }
+                        _ => return self.err(op, format!("{name} is not a function")),
+                    },
+                    _ => return self.err(op, format!("Symbol {name} is not defined")),
+                }
+            }
+        };
+        let Func { params, rets } = fty else { unreachable!() };
+        self.ensure(params.len() == args.len(), op, || "Function error. Parameters count mismatch".into())?;
+        // dimension templates: a parameter dimension not known globally is
+        // bound by the argument's dimension
+        let mut binding: IndexMap<String, Dim> = IndexMap::new();
+        for (p, a) in params.iter().zip(&args) {
+            let pairs: Vec<(Dim, Dim)> = match (p, &a.ty) {
+                (Vector { rows, .. }, Vector { rows: r2, .. }) => vec![(rows.clone(), r2.clone())],
+                (Matrix { rows, cols, .. }, Matrix { rows: r2, cols: c2, .. }) => {
+                    vec![(rows.clone(), r2.clone()), (cols.clone(), c2.clone())]
+                }
+                (Scalar(_), Scalar(_)) | (Set { .. }, Set { .. }) | (Func { .. }, Func { .. }) | (Seq { .. }, Seq { .. }) => vec![],
+                _ => return self.err(op, format!("Function error. Parameter type mismatch: {p} vs {}", a.ty)),
+            };
+            for (pd, ad) in pairs {
+                match &pd {
+                    Dim::Str(s) if !self.is_defined(s) => {
+                        binding.entry(s.clone()).or_insert(ad);
+                    }
+                    _ => self.ensure(is_same_expr(&pd, &ad), op, || "Function error. Parameter type mismatch".into())?,
+                }
+            }
+        }
+        let subst = |d: &Dim| -> Dim {
+            match d {
+                Dim::Str(s) => binding.get(s).cloned().unwrap_or_else(|| d.clone()),
+                _ => d.clone(),
+            }
+        };
+        let rets: Vec<Ty> = rets
+            .iter()
+            .map(|t| match t {
+                Vector { rows, elem } => Vector { rows: subst(rows), elem: *elem },
+                Matrix { rows, cols, elem, sparse } => Matrix { rows: subst(rows), cols: subst(cols), elem: *elem, sparse: *sparse },
+                t => t.clone(),
+            })
+            .collect();
+        let ty = if rets.len() == 1 { rets[0].clone() } else { Tuple(rets) };
+        Ok(Expr::new(ExprKind::Call { callee, args }, ty))
+    }
+
+    /// Builtin functions (`sin`, `trace`, `exp`, ...).
+    fn builtin(&mut self, op: &Val) -> R<Expr> {
+        let cls = op.class();
+        let canonical = match cls {
+            "AsinFunc" | "AcosFunc" | "AtanFunc" | "AsinhFunc" | "AcoshFunc" | "AtanhFunc" | "TraceFunc" => {
+                // the name actually written (asin/arcsin, ...), canonicalized
+                let written = op.get("name").flat_text();
+                let written = self.builtin_names.get(&written).cloned().unwrap_or(written);
+                match written.as_str() {
+                    "arcsin" => "asin".into(),
+                    "arccos" => "acos".into(),
+                    "arctan" => "atan".into(),
+                    "arsinh" => "asinh".into(),
+                    "arcosh" => "acosh".into(),
+                    "artanh" => "atanh".into(),
+                    "tr" => "trace".into(),
+                    w => w.to_string(),
+                }
+            }
+            "LogFunc" => {
+                if op.get("f").truthy() {
+                    "log2".into()
+                } else if op.get("s").truthy() {
+                    "log10".into()
+                } else {
+                    "log".into()
+                }
+            }
+            "MinmaxFunc" => (if op.get("min").truthy() { "min" } else { "max" }).into(),
+            c => c.trim_end_matches("Func").to_lowercase(),
+        };
+        let mut args = Vec::new();
+        if op.get("param").truthy() {
+            args.push(self.expr(op.get("param"))?);
+        }
+        for k in ["second", "origin"] {
+            if op.get(k).truthy() {
+                args.push(self.expr(op.get(k))?);
+            }
+        }
+        for p in op.get("params").items().iter().chain(op.get("extra").items()) {
+            args.push(self.expr(p)?);
+        }
+        let a0 = args.first().map(|a| a.ty.clone()).unwrap_or(Ty::real());
+        let ty = match canonical.as_str() {
+            "sin" | "asin" | "cos" | "acos" | "tan" | "atan" | "sinh" | "asinh" | "cosh" | "acosh" | "tanh" | "atanh"
+            | "cot" | "sec" | "csc" | "exp" | "log" | "log2" | "log10" | "ln" | "sqrt" => {
+                self.ensure(a0.is_scalar() || a0.is_vector() || a0.is_matrix(), op, || "Parameter must be scalar, vector or matrix type".into())?;
+                a0.with_elem(Elem::Real)
+            }
+            "atan2" => Ty::real(),
+            "trace" | "det" | "rank" => {
+                self.ensure(a0.is_matrix(), op, || "Parameter must be valid matrix type".into())?;
+                Ty::real()
+            }
+            "inv" => {
+                self.ensure(a0.is_matrix() && is_same_expr(&a0.rows(), &a0.cols()), op, || "Parameter must be valid matrix type".into())?;
+                Ty::matrix(a0.rows(), a0.cols())
+            }
+            "diag" => match &a0 {
+                Matrix { rows, .. } => Ty::vector(rows.clone()),
+                Vector { rows, .. } => Ty::matrix(rows.clone(), rows.clone()),
+                _ => return self.err(op, "Parameter must be valid matrix or vector type"),
+            },
+            "vec" => match &a0 {
+                Matrix { rows, cols, elem, .. } => Vector { rows: mul_dims(rows, cols), elem: *elem },
+                _ => return self.err(op, "Parameter must be valid matrix type"),
+            },
+            "min" | "max" => {
+                if args.len() > 1 {
+                    Ty::real()
+                } else {
+                    Scalar(a0.elem())
+                }
+            }
+            other => return self.err(op, format!("Function {other} is not supported yet")),
+        };
+        let mut e = Expr::new(ExprKind::Call { callee: Callee::Builtin(canonical), args }, ty);
+        // sin²(x)
+        let power = op.get("power");
+        if power.truthy() {
+            let p = Expr::new(ExprKind::Int(self.int_literal(power).unwrap_or(1)), Ty::int());
+            let t = e.ty.clone();
+            e = Expr::new(ExprKind::Pow(e, p), t);
+        }
+        Ok(e)
+    }
+}
+
+// -- helpers -----------------------------------------------------------------
+
+fn digits(v: &Val, f: fn(char) -> Option<i64>) -> Option<i64> {
+    let s = v.flat_text();
+    let mut n = 0i64;
+    for c in s.chars() {
+        n = n * 10 + f(c)?;
+    }
+    Some(n)
+}
+
+fn is_simple_name(s: &str) -> bool {
+    !s.is_empty() && !s.contains(['+', '-', '*', '/', '(', ')', ' ', '['])
+}
+
+fn arith(a: &str, op: char, b: &Dim) -> Dim {
+    crate::dims::simpify(&format!("({a}){op}({b})"))
+}
+
+fn arith_dims(l: &Dim, op: char, r: &Dim) -> Dim {
+    if let (Dim::Int(a), Dim::Int(b)) = (l, r) {
+        return Dim::Int(match op {
+            '+' => a + b,
+            '-' => a - b,
+            '*' => a * b,
+            _ => a / b,
+        });
+    }
+    crate::dims::simpify(&format!("({l}){op}({r})"))
+}
+
+fn add_dims(a: &Dim, b: &Dim) -> Dim {
+    match (a, b) {
+        (Dim::Int(x), Dim::Int(y)) => Dim::Int(x + y),
+        (Dim::Int(0), d) | (d, Dim::Int(0)) => d.clone(),
+        _ => add_syms(a, b),
+    }
+}
+
+/// The extent of axis `axis` of a value of type `t` (the size of what the
+/// subscript at that position ranges over).
+fn axis_extent(t: &Ty, axis: usize) -> Option<Dim> {
+    match (t, axis) {
+        (Vector { rows, .. }, 0) => Some(rows.clone()),
+        (Matrix { rows, .. }, 0) => Some(rows.clone()),
+        (Matrix { cols, .. }, 1) => Some(cols.clone()),
+        (Seq { size, .. }, 0) => Some(size.clone()),
+        (Seq { elem, .. }, a) => axis_extent(elem, a - 1),
+        (Set { length, .. }, 0) => Some(length.clone()),
+        _ => None,
+    }
+}
+
+fn transpose_type(t: &Ty) -> Option<Ty> {
+    match t {
+        Matrix { rows, cols, elem, sparse } => Some(Matrix { rows: cols.clone(), cols: rows.clone(), elem: *elem, sparse: *sparse }),
+        Vector { rows, elem } => Some(Matrix { rows: Dim::Int(1), cols: rows.clone(), elem: *elem, sparse: false }),
+        _ => None,
+    }
+}
+
+fn is_lifted(e: &Expr) -> bool {
+    matches!(&*e.kind, ExprKind::Var(v) if v == "I")
+}
+
+fn sub_name(s: &Val) -> String {
+    match s {
+        Val::Str(x) => x.to_string(),
+        n if n.class() == "Integer" => n.get("value").flat_text(),
+        n => ident_name(n),
+    }
+}
+
+/// Matrix rows as lists of item expressions.
+fn flatten_rows(rows: &Val, out: &mut Vec<Vec<Val>>) {
+    if rows.get("rs").truthy() {
+        flatten_rows(rows.get("rs"), out);
+    }
+    if rows.get("r").truthy() {
+        let mut items = Vec::new();
+        flatten_row(rows.get("r"), &mut items);
+        out.push(items);
+    }
+}
+
+fn flatten_row(row: &Val, out: &mut Vec<Val>) {
+    match row.class() {
+        "MatrixRow" => {
+            if row.get("value").truthy() {
+                for r in row.get("value").items() {
+                    flatten_row(r, out);
+                }
+            }
+            if row.get("rc").truthy() {
+                flatten_row(row.get("rc"), out);
+            }
+            if row.get("exp").truthy() {
+                out.push(row.get("exp").clone());
+            }
+        }
+        "MatrixRowCommas" => {
+            if row.get("value").truthy() {
+                flatten_row(row.get("value"), out);
+            }
+            if row.get("exp").truthy() {
+                out.push(row.get("exp").clone());
+            }
+        }
+        _ => out.push(row.clone()),
+    }
+}
+
+fn flatten_ifs(ifs: &Val, out: &mut Vec<Val>) {
+    if ifs.get("ifs").truthy() {
+        flatten_ifs(ifs.get("ifs"), out);
+    }
+    if ifs.get("value").truthy() {
+        out.push(ifs.get("value").clone());
+    }
+}
+
+/// Names a statement defines.
+fn stmt_defines(s: &Val) -> IndexSet<String> {
+    let mut d = IndexSet::new();
+    match s.class() {
+        "Assignment" | "Destructure" | "GeneralAssignment" => {
+            for l in s.get("left").items() {
+                d.insert(crate::decls::main_name(l));
+            }
+        }
+        "LocalFunc" => {
+            let n = match s.get("name") {
+                Val::Str(x) => x.to_string(),
+                n => crate::decls::main_name(n),
+            };
+            d.insert(n);
+        }
+        _ => {}
+    }
+    d
+}
+
+/// All names used in a parse tree.
+fn collect_names(n: &Val, out: &mut IndexSet<String>) {
+    match n {
+        Val::Node(p) => {
+            match p.class {
+                Some("IdentifierAlone") => {
+                    out.insert(ident_name(n));
+                }
+                Some("Function") => {
+                    let name = n.get("name").flat_text();
+                    out.insert(name.split('_').next().unwrap_or("").to_string());
+                    out.insert(name);
+                }
+                _ => {}
+            }
+            for (_, v) in &p.fields {
+                collect_names(v, out);
+            }
+        }
+        Val::List(v) | Val::Closure(v) | Val::Tuple(v) => v.iter().for_each(|x| collect_names(x, out)),
+        _ => {}
+    }
+}
