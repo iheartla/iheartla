@@ -6,7 +6,7 @@ use std::io::Read;
 
 fn usage() -> ! {
     eprintln!(
-        "usage:\n  iheartla parse [--init] < file      print the parse tree as JSON\n  \
+        "usage:\n  iheartla parse [--init|--full] < file  print the parse tree as JSON\n  \
          iheartla check-parses <golden-dir>  compare parse trees with TatSu's"
     );
     std::process::exit(2)
@@ -142,6 +142,12 @@ fn main() {
             std::io::stdin().read_to_string(&mut text).unwrap();
             let r = if args.iter().any(|a| a == "--init") {
                 grammar::parse_init(&text)
+            } else if args.iter().any(|a| a == "--full") {
+                // both passes, as a compile does: declared names configure the second
+                grammar::parse_init(&text).and_then(|first| {
+                    let config = iheartla::decls::second_parse_config(&first, &|n| iheartla::node_text(&text, n).to_string());
+                    grammar::parse_default(&text, &config)
+                })
             } else {
                 grammar::parse_default(&text, &ParserConfig::default())
             };
