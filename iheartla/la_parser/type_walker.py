@@ -243,7 +243,7 @@ class TypeWalker(NodeWalker):
         self.ret_symbol = None
         self.is_generate_ret = False
         self.constants = ['π']
-        self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
+        self.pattern = re.compile("[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*")
         self.multi_lhs_list = []
         self.multi_dim_list = []    # P ∈ ℝ^(4 × dd)
         self.lhs_list = []

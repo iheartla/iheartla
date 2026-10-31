@@ -77,7 +77,7 @@ class CodeGenLatex(CodeGen):
         if '`$' not in name and '$`' not in name:
             name = "`${}$`".format(name[1:-1])
         text = name.replace('`', '')
-        pattern = re.compile("\$(?P<context>.*)\$")
+        pattern = re.compile("\\$(?P<context>.*)\\$")
         res = ''
         first = True
         end = 0
@@ -157,7 +157,7 @@ class CodeGenLatex(CodeGen):
         name_list = []
         # convert _ in names
         for name in node.get_name_raw_list():
-            name_list.append(name.replace('_', '\_'))
+            name_list.append(name.replace('_', '\\_'))
         params_str = ''
         if len(node.params) > 0:
             for index in range(len(node.params)):
@@ -170,14 +170,14 @@ class CodeGenLatex(CodeGen):
             name_str = '*'
         if node.package:
             if params_str == '':
-                content = "\\text{{ {} from {} }}\\\\\n".format(name_str, node.package.get_name().replace('_', '\_'))
+                content = "\\text{{ {} from {} }}\\\\\n".format(name_str, node.package.get_name().replace('_', '\\_'))
             else:
-                content = "\\text{{ {} from {}({}) }}\\\\\n".format(name_str, node.package.get_name().replace('_', '\_'), params_str)
+                content = "\\text{{ {} from {}({}) }}\\\\\n".format(name_str, node.package.get_name().replace('_', '\\_'), params_str)
         else:
             if params_str != '':
-                content = "\\text{{ {} from {}({}) }}\\\\\n".format(name_str, node.module.get_name().replace('_', '\_'), params_str)
+                content = "\\text{{ {} from {}({}) }}\\\\\n".format(name_str, node.module.get_name().replace('_', '\\_'), params_str)
             else:
-                content = "\\text{{ {} from {}() }}\\\\\n".format(name_str, node.module.get_name().replace('_', '\_'))
+                content = "\\text{{ {} from {}() }}\\\\\n".format(name_str, node.module.get_name().replace('_', '\\_'))
         return content
 
     def visit_start(self, node, **kwargs):
@@ -345,7 +345,7 @@ class CodeGenLatex(CodeGen):
             if node.empty:
                 params_str = '\\varnothing'
             else:
-                params_str = '\{\}'
+                params_str = '\\{\\}'
         else:
             params_str = ''
             for index in range(len(node.params)):
@@ -459,7 +459,7 @@ class CodeGenLatex(CodeGen):
                 sub = ','.join(node.enum_list)
                 del kwargs['is_sub']
                 range = self.visit(node.range, **kwargs)
-                sub += "\in " + range
+                sub += "\\in " + range
                 content = "\\sum_{" + sub + "} "
             elif node.lower:
                 sub = self.visit(node.id, **kwargs)
@@ -495,7 +495,7 @@ class CodeGenLatex(CodeGen):
                 sub = ','.join(node.enum_list)
                 del kwargs['is_sub']
                 range = self.visit(node.range, **kwargs)
-                sub += "\in " + range
+                sub += "\\in " + range
                 content = "\\bigcup_{" + sub + "} "
             elif node.lower:
                 sub = self.visit(node.id, **kwargs)
@@ -783,7 +783,7 @@ class CodeGenLatex(CodeGen):
             del kwargs['is_sub']
             range = self.visit(node.range, **kwargs)
             sub += "\\in " + range
-            content += ' \mid {}'.format(sub)
+            content += ' \\mid {}'.format(sub)
             if node.cond:
                 content += ', {}'.format(self.visit(node.cond, **kwargs))
         self.pop_scope()
@@ -896,7 +896,7 @@ class CodeGenLatex(CodeGen):
             content = self.visit(node.value.sub.value, **kwargs)
         else:
             content = self.visit(node.value, **kwargs)
-        return "\sqrt{{{}}}".format(content)
+        return "\\sqrt{{{}}}".format(content)
 
     def visit_derivative(self, node, **kwargs):
         upper = self.visit(node.upper, **kwargs)
@@ -1079,19 +1079,19 @@ class CodeGenLatex(CodeGen):
         elif node.func_type == MathFuncType.MathFuncExp:
             return "e^{{{}}}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog:
-            return " \log{{ {} }}".format(param_info)
+            return " \\log{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog2:
-            return " \log_2{{ {} }}".format(param_info)
+            return " \\log_2{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog10:
-            return " \log_{{10}}{{ {} }}".format(param_info)
+            return " \\log_{{10}}{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLn:
-            return " \ln{{ {} }}".format(param_info)
+            return " \\ln{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncSqrt:
             return " \\sqrt{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncTrace:
             content = node.func_name
         elif node.func_type == MathFuncType.MathFuncDiag:
-            content = ' \mathop{\\text{diag}}'
+            content = ' \\mathop{\\text{diag}}'
             if node.remain_params and len(node.remain_params) > 0:
                 # multi params
                 param_list = [param_info]
@@ -1101,7 +1101,7 @@ class CodeGenLatex(CodeGen):
                 param_info = ', '.join(param_list)
             return "{}\\left( {} \\right)".format(content, param_info)
         elif node.func_type == MathFuncType.MathFuncVec:
-            content = ' \mathop{\\text{vec}}'
+            content = ' \\mathop{\\text{vec}}'
         elif node.func_type == MathFuncType.MathFuncInverseVec:
             f_name = node.func_name
             # if '⁻¹' in f_name:
@@ -1120,21 +1120,21 @@ class CodeGenLatex(CodeGen):
                     param_list.append(param_info)
                     param_info = ', '.join(param_list)
         elif node.func_type == MathFuncType.MathFuncDet:
-            content = ' \mathop{\\text{det}}'
+            content = ' \\mathop{\\text{det}}'
         elif node.func_type == MathFuncType.MathFuncRank:
-            content = ' \mathop{\\text{rank}}'
+            content = ' \\mathop{\\text{rank}}'
         elif node.func_type == MathFuncType.MathFuncNull:
-            content = ' \mathop{\\text{null}}'
+            content = ' \\mathop{\\text{null}}'
         elif node.func_type == MathFuncType.MathFuncOrth:
-            content = ' \mathop{\\text{orth}}'
+            content = ' \\mathop{\\text{orth}}'
         elif node.func_type == MathFuncType.MathFuncInv:
-            content = ' \mathop{\\text{inv}}'
+            content = ' \\mathop{\\text{inv}}'
         elif node.func_type == MathFuncType.MathFuncSVD:
-            content = ' \mathop{\\text{svd}}'
+            content = ' \\mathop{\\text{svd}}'
         elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
-            content = ' \mathop{\\text{max}}'
+            content = ' \\mathop{\\text{max}}'
             if node.func_type == MathFuncType.MathFuncMin:
-                content = ' \mathop{\\text{min}}'
+                content = ' \\mathop{\\text{min}}'
             if node.remain_params and len(node.remain_params) > 0:
                 # multi params
                 param_list = [param_info]
@@ -1149,7 +1149,7 @@ class CodeGenLatex(CodeGen):
         for param in node.params:
             param_info = self.visit(param, **kwargs)
             params_content_list.append(param_info)
-        content = node.func_name.replace('_', '\_')
+        content = node.func_name.replace('_', '\\_')
         fmtstring = "\\mathit{{{}}}({})" if len(content) > 1 else "{}({})"
         content = fmtstring.format(content, ', '.join(params_content_list))
         return content

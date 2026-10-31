@@ -42,7 +42,7 @@ from pathlib import Path
 import tempfile
 import io
 
-_id_pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*")
+_id_pattern = re.compile("[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*")
 _backtick_pattern = re.compile("`[^`]*`")
 _codegen_dict = {}
 _builtin_module_path = Path(__file__).parent.parent / 'mesh'    # default module path, fixed
