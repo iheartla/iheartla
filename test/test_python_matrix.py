@@ -731,3 +731,33 @@ class TestMatrix(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_block_matrix_mixed_int_real(self):
+        # integer blocks in a real block matrix (Eigen needs a cast)
+        la_str = """C = [A B]
+        D = [A; B]
+        where
+        A: ℤ ^ (2 × 2): a matrix
+        B: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2], [3, 4]])
+        B = np.array([[0.5, 1.5], [2.5, 3.5]])
+        res = func_info.numpy_func(A, B)
+        self.assertDMatrixEqual(res.C, np.hstack((A, B)))
+        self.assertDMatrixEqual(res.D, np.vstack((A, B)))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 2, 2> A;",
+                     "    A << 1, 2, 3, 4;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 0.5, 1.5, 2.5, 3.5;",
+                     "    Eigen::Matrix<double, 2, 4> C;",
+                     "    C << 1, 2, 0.5, 1.5, 3, 4, 2.5, 3.5;",
+                     "    Eigen::Matrix<double, 4, 2> D;",
+                     "    D << 1, 2, 3, 4, 0.5, 1.5, 2.5, 3.5;",
+                     "    auto r = {}(A, B);".format(func_info.eig_func_name),
+                     "    return ((r.C - C).norm() == 0) && ((r.D - D).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

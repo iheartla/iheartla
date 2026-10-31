@@ -1266,7 +1266,14 @@ class CodeGenEigen(CodeGen):
         if node.params:
             for param in node.params:
                 param_info = self.visit(param, **kwargs)
-                params.append(param_info.content)
+                param_content = param_info.content
+                if param.node_type == IRNodeType.ToDouble and (param.la_type.is_vector() or param.la_type.is_matrix()):
+                    # An integer vector or matrix converted for a real parameter: give the cast expression
+                    # a concrete type, so that a local function's template parameter REAL can be deduced.
+                    real_type = copy.deepcopy(param.la_type)
+                    real_type.set_int(False)
+                    param_content = "{}({})".format(self.get_ctype(real_type), param_content)
+                params.append(param_content)
                 pre_list += param_info.pre_list
         if self.visiting_diff_eq:
             if self.visiting_diff_init:
@@ -1838,6 +1845,14 @@ class CodeGenEigen(CodeGen):
                             ret[i][j] = '{}({}, 1)'.format(func_name, dims[0])
                         else:
                             ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
+        if type_info.la_type.block and not type_info.la_type.is_integer_element() and type_info.la_type.item_types:
+            # Eigen does not convert integer blocks inside a real block matrix: cast them.
+            # (Integer scalars are fine: the comma initializer converts them.)
+            for i in range(min(len(ret), len(type_info.la_type.item_types))):
+                for j in range(min(len(ret[i]), len(type_info.la_type.item_types[i]))):
+                    item_type = type_info.la_type.item_types[i][j].la_type
+                    if item_type is not None and (item_type.is_matrix() or item_type.is_vector()) and item_type.is_integer_element():
+                        ret[i][j] = '({}).template cast<{}>()'.format(ret[i][j], self.get_cur_dtype())
         # matrix
         if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:
             row_index = 0  # start position for item

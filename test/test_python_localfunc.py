@@ -137,3 +137,29 @@ class TestLocalFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_real_param_int_arg(self):
+        # an integer argument to a real parameter is converted (not integer division, not an int vector)
+        la_str = """f(s) = s / 2 where s: ℝ
+                    g(v) = 2 v where v: ℝ ^ 3
+                    a = f(k)
+                    b = g(x)
+                    where
+                    k: ℤ
+                    x: ℤ ^ 3"""
+        func_info = self.gen_func_info(la_str)
+        res = func_info.numpy_func(3, np.array([1, 2, 3]))
+        self.assertEqual(res.a, 1.5)
+        self.assertDMatrixEqual(res.b, np.array([2, 4, 6]))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 3, 1> x;",
+                     "    x << 1, 2, 3;",
+                     "    auto r = {}(3, x);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> b;",
+                     "    b << 2, 4, 6;",
+                     "    return r.a == 1.5 && r.b.isApprox(b);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

@@ -371,3 +371,24 @@ class TestFunction(BasePythonTest):
     #                  "}"]
     #     cppyy.cppdef('\n'.join(func_list))
     #     self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_function_real_param_int_arg(self):
+        # an integer vector passed to a function parameter that takes a real vector
+        la_str = """a = g(x)
+                    where
+                    x: ℤ ^ 3
+                    g: ℝ ^ 3 -> ℝ"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(np.array([1, 2, 3]), lambda v: v.sum() / 2).a, 3)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 3, 1> x;",
+                     "    x << 1, 2, 3;",
+                     "    std::function<double(Eigen::Matrix<double, 3, 1>)> g = [](Eigen::Matrix<double, 3, 1> v)->double{",
+                     "        return v.sum() / 2;",
+                     "    };",
+                     "    return {}(x, g).a == 3;".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
