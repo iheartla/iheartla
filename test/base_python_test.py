@@ -10,7 +10,19 @@ from time import sleep
 import numpy as np
 import logging
 from iheartla.la_tools.la_logger import LaLogger, LoggerTypeEnum
-eigen_path = "/usr/local/include/eigen3"       # required
+import os
+# required; override with the EIGEN_PATH environment variable
+eigen_path = os.environ.get("EIGEN_PATH") or next(
+    (p for p in ["/usr/local/include/eigen3", "/opt/homebrew/include/eigen3", "/usr/include/eigen3"] if os.path.isdir(p)),
+    "/usr/local/include/eigen3")
+# generated C++ includes "type_helper.h", which needs the header-only autodiff library;
+# override its parent include directory with the AUTODIFF_PATH environment variable
+autodiff_path = os.environ.get("AUTODIFF_PATH") or next(
+    (p for p in ["/usr/local/include", "/opt/homebrew/include", "/usr/include"] if os.path.isdir(os.path.join(p, "autodiff"))),
+    "/usr/local/include")
+import cppyy
+cppyy.add_include_path(autodiff_path)
+cppyy.add_include_path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "iheartla", "mesh", "Cpp", "include"))
 if TEST_MATLAB:
     # Install the library using the following link
     # https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
@@ -46,7 +58,7 @@ class BasePythonTest(unittest.TestCase):
             LaLogger.getInstance().set_level(logging.ERROR)
 
     def gen_func_info(self, parse_str):
-        func_name = "iheartla"   # can use different name in future
+        func_name = "heartlib"   # can use different name in future
         parse_type = ParserTypeEnum.NUMPY | ParserTypeEnum.EIGEN
         if TEST_MATLAB:
             parse_type = parse_type | ParserTypeEnum.MATLAB
