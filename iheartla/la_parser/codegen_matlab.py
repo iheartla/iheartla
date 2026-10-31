@@ -147,7 +147,7 @@ class CodeGenMatlab(CodeGen):
             if isinstance(element_type, LaVarType):
                 if ele_type.sparse:
                     if element_type.is_scalar() and element_type.is_int:
-                        test_content.append('sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(ele_type.rows, ele_type.cols))
+                        test_content.append('sparse.random({}, {}, dtype=np.int64, density=0.25)'.format(ele_type.rows, ele_type.cols))
                     else:
                         test_content.append('sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(ele_type.rows, ele_type.cols))
                 else:
@@ -398,7 +398,7 @@ class CodeGenMatlab(CodeGen):
                     test_content.append(test_indent+'    for i = 1:{}'.format(self.get_sym_type(parameter).size))
                     if isinstance(data_type, LaVarType) and data_type.is_scalar() and data_type.is_int:
                         test_content.append(test_indent+
-                            '        {}.append(sparse.random({}, {}, dtype=np.integer, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
+                            '        {}.append(sparse.random({}, {}, dtype=np.int64, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
                     else:
                         test_content.append(test_indent+
                             '        {}.append(sparse.random({}, {}, dtype=np.float64, density=0.25))'.format(parameter, ele_type.rows,
@@ -452,7 +452,7 @@ class CodeGenMatlab(CodeGen):
                         sizes = [self.get_sym_type(parameter).size]
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
-                            #type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
+                            #type_declare.append('    {} = np.asarray({}, dtype=np.int64)'.format(parameter, parameter))
                             if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('        {} = {};'.format(parameter, self.randi_str(rand_int_max,sizes)))
                         elif ele_type.is_set():
@@ -481,7 +481,7 @@ class CodeGenMatlab(CodeGen):
                             test_content.append('        end')
                             #test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
                         else:
-                            #type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter, "np.integer" if ele_type.is_integer_element() else "np.float64"))
+                            #type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter, "np.int64" if ele_type.is_integer_element() else "np.float64"))
                             test_content.append('        {} = {};'.format(parameter, self.randn_str(sizes)))
             elif self.get_sym_type(parameter).is_matrix():
                 element_type = self.get_sym_type(parameter).element_type
@@ -489,7 +489,7 @@ class CodeGenMatlab(CodeGen):
                     if self.get_sym_type(parameter).sparse:
                         if element_type.is_scalar() and element_type.is_int:
                             test_content.append(test_indent+
-                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                '    {} = sparse.random({}, {}, dtype=np.int64, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
                                                                           self.get_sym_type(parameter).cols))
                         else:
                             test_content.append(test_indent+
@@ -500,7 +500,7 @@ class CodeGenMatlab(CodeGen):
                         if element_type.is_scalar() and element_type.is_int:
                             # Alec: I don't understand what this was doing for python,
                             # so I don't know if it would be important for matlab
-                            #type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                            #type_declare.append('    {} = np.asarray({}, dtype=np.int64)'.format(parameter, parameter))
                             test_content.append(test_indent+'    {} = randi({}, {}, {});'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
                         else:
                             # Alec: I don't understand what this was doing for python,
@@ -521,7 +521,7 @@ class CodeGenMatlab(CodeGen):
                 type_declare.append('    {} = reshape({},[],1);'.format(parameter, parameter))
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
-                        #type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                        #type_declare.append('    {} = np.asarray({}, dtype=np.int64)'.format(parameter, parameter))
                         test_content.append(test_indent+'    {} = randi({}, {});'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows))
                     else:
                         #type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))

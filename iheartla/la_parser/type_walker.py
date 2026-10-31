@@ -5334,6 +5334,12 @@ class TypeWalker(NodeWalker):
                             ret_type.set_dynamic_type(DynamicTypeEnum.DYN_INVALID)
                         else:
                             self.assert_expr(is_same_expr(left_type.cols, right_type.rows), get_err_msg())
+                if (left_type.is_matrix() and right_type.is_vector() and left_type.rows == 1) or \
+                        (ret_type.is_matrix() and not ret_type.is_dynamic() and ret_type.rows == 1 and ret_type.cols == 1):
+                    # same as the static case: a row times a vector (or any 1x1 product) is a scalar
+                    ret_type = ScalarType()
+                    need_cast = True
+                    ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
             else:
                 # static
                 if left_type.is_scalar():

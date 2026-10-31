@@ -38,7 +38,10 @@ class CodeGenNumpy(CodeGen):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
             for key, value in self.get_cur_param_data().set_checking.items():
-                check_list.append('    assert {} in {}'.format(key, self.prefix_sym(value)))
+                value = self.prefix_sym(value)
+                if not value.startswith("self.") and self.check_prefix(value):
+                    value = 'self.' + value
+                check_list.append('    assert {} in {}'.format(key, value))
         return check_list
 
     def get_rand_test_str(self, la_type, rand_int_max):
@@ -103,7 +106,7 @@ class CodeGenNumpy(CodeGen):
             if isinstance(element_type, LaVarType):
                 if ele_type.sparse:
                     if element_type.is_scalar() and element_type.is_int:
-                        test_content.append('sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(ele_type.rows, ele_type.cols))
+                        test_content.append('sparse.random({}, {}, dtype=np.int64, density=0.25)'.format(ele_type.rows, ele_type.cols))
                     else:
                         test_content.append('sparse.random({}, {}, dtype=np.float64, density=0.25)'.format(ele_type.rows, ele_type.cols))
                 else:
@@ -370,7 +373,7 @@ class CodeGenNumpy(CodeGen):
                     test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                     if isinstance(data_type, LaVarType) and data_type.is_scalar() and data_type.is_int:
                         test_content.append(
-                            '        {}.append(sparse.random({}, {}, dtype=np.integer, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
+                            '        {}.append(sparse.random({}, {}, dtype=np.int64, density=0.25))'.format(parameter, ele_type.rows, ele_type.cols))
                     else:
                         test_content.append(
                             '        {}.append(sparse.random({}, {}, dtype=np.float64, density=0.25))'.format(parameter, ele_type.rows,
@@ -413,9 +416,9 @@ class CodeGenNumpy(CodeGen):
                     if isinstance(data_type, LaVarType):
                         if data_type.is_scalar() and data_type.is_int:
                             if ele_type.is_dynamic():
-                                type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                                type_declare.append('    {} = np.fromiter((np.asarray(x) for x in {}), dtype=object, count=len({}))'.format(parameter, parameter, parameter))
                             else:
-                                type_declare.append('    {} = np.asarray({}, dtype=np.int)'.format(parameter, parameter))
+                                type_declare.append('    {} = np.asarray({}, dtype=np.int64)'.format(parameter, parameter))
                             if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                         elif ele_type.is_set():
@@ -430,7 +433,7 @@ class CodeGenNumpy(CodeGen):
                             test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
                         else:
                             if ele_type.is_dynamic():
-                                type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                                type_declare.append('    {} = np.fromiter((np.asarray(x) for x in {}), dtype=object, count=len({}))'.format(parameter, parameter, parameter))
                             else:
                                 type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
                             if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
@@ -446,10 +449,10 @@ class CodeGenNumpy(CodeGen):
                             test_content.append('    {} = np.asarray({})'.format(parameter, parameter))
                         else:
                             if ele_type.is_dynamic():
-                                type_declare.append('    {} = np.asarray({})'.format(parameter, parameter))
+                                type_declare.append('    {} = np.fromiter((np.asarray(x) for x in {}), dtype=object, count=len({}))'.format(parameter, parameter, parameter))
                             else:
                                 type_declare.append('    {} = np.asarray({}, dtype={})'.format(parameter, parameter,
-                                                                                               "np.integer" if ele_type.is_integer_element() else "np.float64"))
+                                                                                               "np.int64" if ele_type.is_integer_element() else "np.float64"))
                             test_content.append('    {} = np.random.randn({})'.format(parameter, size_str))
             elif self.get_sym_type(parameter).is_matrix():
                 element_type = self.get_sym_type(parameter).element_type
@@ -457,7 +460,7 @@ class CodeGenNumpy(CodeGen):
                     if self.get_sym_type(parameter).sparse:
                         if element_type.is_scalar() and element_type.is_int:
                             test_content.append(
-                                '    {} = sparse.random({}, {}, dtype=np.integer, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
+                                '    {} = sparse.random({}, {}, dtype=np.int64, density=0.25)'.format(parameter, self.get_sym_type(parameter).rows,
                                                                           self.get_sym_type(parameter).cols))
                         else:
                             test_content.append(
@@ -466,7 +469,7 @@ class CodeGenNumpy(CodeGen):
                     else:
                         # dense
                         if element_type.is_scalar() and element_type.is_int:
-                            type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                            type_declare.append('    {} = np.asarray({}, dtype=np.int64)'.format(parameter, parameter))
                             test_content.append('    {} = np.random.randint({}, size=({}, {}))'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows, self.get_sym_type(parameter).cols))
                         else:
                             type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
@@ -484,7 +487,7 @@ class CodeGenNumpy(CodeGen):
                 element_type = self.get_sym_type(parameter).element_type
                 if isinstance(element_type, LaVarType):
                     if element_type.is_scalar() and element_type.is_int:
-                        type_declare.append('    {} = np.asarray({}, dtype=np.integer)'.format(parameter, parameter))
+                        type_declare.append('    {} = np.asarray({}, dtype=np.int64)'.format(parameter, parameter))
                         test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, self.get_sym_type(parameter).rows))
                     else:
                         type_declare.append('    {} = np.asarray({}, dtype=np.float64)'.format(parameter, parameter))
@@ -1120,7 +1123,7 @@ class CodeGenNumpy(CodeGen):
         else:
             power_info = self.visit(node.power, **kwargs)
             if node.base.la_type.is_scalar():
-                base_info.content = "np.power(({}).astype(float), {})".format(base_info.content, power_info.content)
+                base_info.content = "np.power(np.asarray({}, dtype=np.float64), {})".format(base_info.content, power_info.content)
             else:
                 if node.base.la_type.sparse:
                     base_info.content = "({})**({})".format(base_info.content, power_info.content)
@@ -1382,6 +1385,9 @@ class CodeGenNumpy(CodeGen):
                     # vector type needs to be reshaped as matrix inside block matrix
                     if node.la_type.item_types and node.la_type.item_types[i][j].la_type.is_vector():
                         ret[i][j] = '({}).reshape({}, 1)'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
+                    # scipy sparse stacking no longer accepts bare scalars as blocks
+                    elif self.get_sym_type(cur_m_id).sparse and node.la_type.item_types and node.la_type.item_types[i][j].la_type.is_scalar():
+                        ret[i][j] = '[[{}]]'.format(ret[i][j])
                 all_rows.append('[' + ', '.join(ret[i]) + ']')
             # matrix
             if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:

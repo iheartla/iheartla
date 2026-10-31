@@ -845,6 +845,8 @@ class ToMatrixNode(ExprNode):
 
 class ToDoubleValueNode(ExprNode):
     def __init__(self, la_type=None, parse_info=None, raw_text=None, item=None):
+        if raw_text is None and item is not None:
+            raw_text = item.raw_text
         super().__init__(IRNodeType.ToDouble, la_type=la_type, parse_info=parse_info, raw_text=raw_text)
         self.item = item
 
