@@ -60,14 +60,18 @@ function isChrome(){
 let pyodide = null;
 
 async function initPyodide(){
-    pyodide = await loadPyodide();
+    // Pyodide and all Python packages are vendored in js/pyodide/ (see docs/update_pyodide.sh).
+    let local = new URL("js/pyodide/", document.baseURI).href;
+    pyodide = await loadPyodide({ indexURL: local });
     await pyodide.loadPackage(['micropip', 'regex', 'sympy']);
-    // The wheel is built from this repository with: uv build --wheel -o docs
-    // TatSu 5.7.3 is required by the generated parsers (it is yanked on PyPI, but an exact pin installs).
-    let wheel = new URL("iheartla-0.0.1-py3-none-any.whl", document.baseURI).href;
+    // The iheartla wheel is built from this repository with: uv build --wheel --no-create-gitignore -o docs
+    let wheels = [local + "appdirs-1.4.4-py2.py3-none-any.whl",
+                  local + "tatsu-5.14.0-py3-none-any.whl",
+                  new URL("iheartla-0.0.1-py3-none-any.whl", document.baseURI).href];
+    pyodide.globals.set('wheels', wheels);
     await pyodide.runPythonAsync(`
 import micropip
-await micropip.install(['appdirs', 'tatsu==5.7.3', '${wheel}'])
+await micropip.install(wheels.to_py())
 `);
     activateBtnStatus();
 }
