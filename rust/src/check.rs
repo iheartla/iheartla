@@ -71,6 +71,9 @@ pub struct Checker<'a> {
     declared_only: IndexSet<String>,
     expr_types: HashMap<(usize, usize), Ty>,
     base_types: HashMap<(usize, usize), Ty>,
+    loader: Option<Rc<crate::modules::Loader>>,
+    meshes: Vec<(String, MeshKind)>,
+    modules: Vec<ModuleUse>,
 }
 
 impl<'a> Checker<'a> {
@@ -93,7 +96,16 @@ impl<'a> Checker<'a> {
             declared_only: IndexSet::new(),
             expr_types: HashMap::new(),
             base_types: HashMap::new(),
+            loader: None,
+            meshes: Vec::new(),
+            modules: Vec::new(),
         }
+    }
+
+    /// Find and compile imported modules with `loader`.
+    pub fn with_loader(mut self, loader: Rc<crate::modules::Loader>) -> Self {
+        self.loader = Some(loader);
+        self
     }
 
     // -- positions and errors ------------------------------------------------
@@ -253,6 +265,9 @@ impl<'a> Checker<'a> {
             defs: self.defs,
             expr_types: self.expr_types,
             base_types: self.base_types,
+            meshes: self.meshes,
+            modules: self.modules,
+            funcs: self.overloads.into_iter().collect(),
         })
     }
 
@@ -285,7 +300,7 @@ impl<'a> Checker<'a> {
     fn import(&mut self, node: &Val) -> R<()> {
         let pkg = ident_name(node.get("package"));
         let Some(names) = crate::decls::package_names(&pkg) else {
-            return self.err(node, format!("Module {pkg} is not supported yet"));
+            return self.import_module(node, &pkg);
         };
         let mut imported: Vec<(String, String)> = Vec::new();
         if node.get("star").truthy() {
@@ -306,6 +321,59 @@ impl<'a> Checker<'a> {
                 self.builtin_names.insert(r, name);
             }
         }
+        Ok(())
+    }
+
+    /// `X, Y from Module(args)`: compile the module and bind its parameters
+    /// to the arguments; the imported symbols get the module's types with
+    /// the parameters substituted.
+    fn import_module(&mut self, node: &Val, pkg: &str) -> R<()> {
+        let Some(loader) = self.loader.clone() else {
+            return self.err(node, format!("Module {pkg} is not supported here"));
+        };
+        let prog = match loader.load(pkg) {
+            Ok(p) => p,
+            Err(e) => return self.err(node, e),
+        };
+        let args: Vec<String> = node.get("params").items().iter().map(ident_name).collect();
+        let mparams: Vec<String> = prog.params.iter().map(|p| p.name.clone()).collect();
+        if args.len() != mparams.len() {
+            return self.err(node, format!("Module {pkg} takes {} parameters, {} given", mparams.len(), args.len()));
+        }
+        let map: HashMap<String, String> = mparams.into_iter().zip(args.iter().cloned()).collect();
+        let mut wanted: Vec<(String, String)> = Vec::new();
+        if node.get("star").truthy() {
+            for (n, _) in &prog.funcs {
+                wanted.push((n.clone(), n.clone()));
+            }
+            for (n, _) in &prog.defs {
+                wanted.push((n.clone(), n.clone()));
+            }
+        }
+        for v in node.get("names").items() {
+            let name = ident_name(v.get("name"));
+            let r = if v.get("r").truthy() { ident_name(v.get("r")) } else { name.clone() };
+            wanted.push((name, r));
+        }
+        let mut syms = Vec::new();
+        for (name, r) in wanted {
+            if let Some((_, list)) = prog.funcs.iter().find(|(n, _)| *n == name) {
+                // every overload, named here as in the module (or after the new name)
+                for (k, (t, imp)) in list.iter().enumerate() {
+                    let here = if r == name { imp.clone() } else if k == 0 { r.clone() } else { format!("{r}_{}", k - 1) };
+                    self.overloads.entry(r.clone()).or_default().push((subst_ty(t, &map), here.clone()));
+                    syms.push((imp.clone(), here));
+                }
+                *self.func_counts.entry(r.clone()).or_default() += list.len();
+                self.globals.insert(r.clone(), Sym::Func(subst_ty(&list[0].0, &map)));
+            } else if let Some((_, t)) = prog.defs.iter().find(|(n, _)| *n == name) {
+                self.globals.insert(r.clone(), Sym::Def(subst_ty(t, &map)));
+                syms.push((name, r));
+            } else {
+                return self.err(node, format!("Symbol {name} doesn't exist in module {pkg}"));
+            }
+        }
+        self.modules.push(ModuleUse { name: pkg.to_string(), prog, args, syms });
         Ok(())
     }
 
@@ -369,6 +437,9 @@ impl<'a> Checker<'a> {
             } else {
                 ty.clone()
             };
+            if let (Mesh(kind), true) = (&pty, global) {
+                self.meshes.push((name.clone(), *kind));
+            }
             if global {
                 if pty.is_func() {
                     let impl_name = self.add_func(&name, pty.clone(), id)?;
@@ -443,7 +514,8 @@ impl<'a> Checker<'a> {
         if list.iter().any(|(t, _)| same_signature(t, &ty)) {
             return self.err(node, "Multiple functions with same signature");
         }
-        let impl_name = if count > 1 { format!("{name}_{}", list.len()) } else { name.to_string() };
+        // the first definition keeps the name, later ones are f_0, f_1, ...
+        let impl_name = if count > 1 && !list.is_empty() { format!("{name}_{}", list.len() - 1) } else { name.to_string() };
         list.push((ty.clone(), impl_name.clone()));
         if count <= 1 && self.globals.get(name).is_some_and(|s| !matches!(s, Sym::Dim)) {
             return self.err(node, format!("Symbol {name} has been defined"));
@@ -503,6 +575,11 @@ impl<'a> Checker<'a> {
                     } else {
                         MeshKind::Face
                     })
+                } else if t.get("s").as_str() == Some("CellularSet") {
+                    let set = |e| Set { elems: vec![e], length: Dim::None };
+                    Tuple(vec![set(Elem::Vertex), set(Elem::Edge), set(Elem::Face), set(Elem::Tet)])
+                } else if let Some(e) = t.get("s").as_str().and_then(set_kind) {
+                    Set { elems: vec![e], length: Dim::None }
                 } else {
                     let e = if t.get("v").truthy() {
                         Elem::Vertex
@@ -800,7 +877,18 @@ impl<'a> Checker<'a> {
         self.scopes.pop();
         let ty = Func { params: params.iter().map(|(_, t)| t.clone()).collect(), rets };
         let impl_name = self.add_func(&name, ty.clone(), s)?;
-        Ok(LocalFunc { name: impl_name, params, body, expr: expr.unwrap(), ty, text: self.text(s) })
+        // parameters declared as elements of a set (`v ∈ V`) are checked
+        let mut checks = Vec::new();
+        for d in s.get("defs").items() {
+            let t = d.get("type");
+            if t.class() == "MappingType" && t.get("s").truthy() && !d.get("subset").truthy() {
+                let set = crate::decls::main_name(t.get("s"));
+                for id in d.get("id").items() {
+                    checks.push((ident_name(id), set.clone()));
+                }
+            }
+        }
+        Ok(LocalFunc { name: impl_name, base: name, checks, params, body, expr: expr.unwrap(), ty, text: self.text(s) })
     }
 
     // -- expressions ---------------------------------------------------------
@@ -869,6 +957,11 @@ impl<'a> Checker<'a> {
             _ => false,
         };
         self.ensure(ok, n, || self.mismatch(op, &l, &r, n))?;
+        if l.ty.is_set() {
+            let ty = l.ty.clone();
+            let k = if add { SetOpKind::Union } else { SetOpKind::Difference };
+            return Ok(Expr::new(ExprKind::SetOp(k, l, r), set_of(&ty)));
+        }
         let (li, ri) = (l.ty.elem() == Elem::Index, r.ty.elem() == Elem::Index);
         // an index plus an integer is an index; the difference of two indices is not
         let elem = if (li || ri) && l.ty.is_int() && r.ty.is_int() && !(li && ri && !add) {
@@ -1117,11 +1210,54 @@ impl<'a> Checker<'a> {
 
     fn set_literal(&mut self, v: &Val) -> R<Expr> {
         if v.get("enum").truthy() {
-            return self.err(v, "Set comprehensions are not supported yet");
+            return self.set_comprehension(v);
         }
         let items: Vec<Expr> = v.get("exp").items().iter().map(|e| self.expr(e)).collect::<R<_>>()?;
         let elems = vec![items.first().map(|x| x.ty.elem()).unwrap_or_default()];
         Ok(Expr::new(ExprKind::SetLit(items), Set { elems, length: Dim::None }))
+    }
+
+    /// A set: an expression, or a bare name or call (as in `x ∈ S`, `x ∈ f(y)`).
+    fn set_expr(&mut self, n: &Val) -> R<Expr> {
+        match n.class() {
+            "IdentifierAlone" | "IdentifierSubscript" => self.identifier(n),
+            "Function" => self.call(n),
+            _ => self.expr(n),
+        }
+    }
+
+    /// `{ e for x ∈ S if cond }`
+    fn set_comprehension(&mut self, v: &Val) -> R<Expr> {
+        let range = self.set_expr(v.get("range"))?;
+        let elems = match &range.ty {
+            Set { elems, .. } => elems.clone(),
+            _ => return self.err(v.get("range"), "The range of a set comprehension must be a set"),
+        };
+        let vars: Vec<String> = v.get("enum").items().iter().map(ident_name).collect();
+        let mut scope = IndexMap::new();
+        if vars.len() == elems.len() {
+            for (x, e) in vars.iter().zip(&elems) {
+                scope.insert(x.clone(), Sym::Local(Scalar(*e)));
+            }
+        } else if vars.len() == 1 {
+            scope.insert(vars[0].clone(), Sym::Local(Tuple(elems.iter().map(|e| Scalar(*e)).collect())));
+        } else {
+            return self.err(v, "Set comprehension: the variables don't match the set's elements");
+        }
+        self.scopes.push(scope);
+        let result = (|| -> R<(Option<Cond>, Expr)> {
+            let cond = if v.get("cond").truthy() { Some(self.condition(v.get("cond"))?) } else { None };
+            let items = v.get("exp").items().to_vec();
+            let item = self.expr(&items[0])?;
+            Ok((cond, item))
+        })();
+        self.scopes.pop();
+        let (cond, item) = result?;
+        let out = match &item.ty {
+            Tuple(ts) => ts.iter().map(|t| t.elem()).collect(),
+            t => vec![t.elem()],
+        };
+        Ok(Expr::new(ExprKind::SetComp { vars, range, cond, item }, Set { elems: out, length: Dim::None }))
     }
 
     fn num_matrix(&mut self, v: &Val) -> R<Expr> {
@@ -1378,6 +1514,15 @@ impl<'a> Checker<'a> {
                 Ok(Expr::new(ExprKind::Inner(l, r, sub), Ty::real()))
             }
             "FroProduct" | "HadamardProduct" | "CrossProduct" | "KroneckerProduct" => self.product(op),
+            "Intersection" | "Union" => {
+                let l = self.expr(op.get("left"))?;
+                let r = self.expr(op.get("right"))?;
+                self.ensure(l.ty.is_set() && r.ty.is_set(), op, || "Set operations need sets".into())?;
+                let k = if op.class() == "Union" { SetOpKind::Union } else { SetOpKind::Intersection };
+                let ty = set_of(&l.ty);
+                Ok(Expr::new(ExprKind::SetOp(k, l, r), ty))
+            }
+            "ElementConvertFunc" => self.element_convert(op),
             "SizeOp" => {
                 let x = self.identifier(op.get("i"))?;
                 Ok(Expr::new(ExprKind::Size(x), Ty::int()))
@@ -1527,7 +1672,7 @@ impl<'a> Checker<'a> {
         let mut hi = None;
         let mut set_expr = None;
         if op.get("enum").truthy() {
-            let set = self.expr(op.get("range"))?;
+            let set = self.set_expr(op.get("range"))?;
             let elems = match &set.ty {
                 Set { elems, .. } => elems.clone(),
                 _ => return self.err(op, "Range of a summation must be a set"),
@@ -1673,13 +1818,18 @@ impl<'a> Checker<'a> {
             args.push(self.expr(p)?);
         }
         let local = self.scopes.iter().rev().any(|s| s.contains_key(&name));
+        if let Some(b) = self.builtin_names.get(&name).cloned() {
+            if crate::decls::package_names(crate::decls::MESH_HELPER).unwrap().contains(&b.as_str()) && !self.is_defined(&name) {
+                return self.mesh_call(op, &b, args);
+            }
+        }
         let (callee, fty) = match self.lookup(&name) {
             Some(sym) if sym.ty().is_func() => match self.overloads.get(&name) {
                 Some(list) if list.len() > 1 && !local => {
                     let fits = |t: &Ty, exact: bool| match t {
                         Func { params, .. } => {
                             params.len() == args.len()
-                                && params.iter().zip(&args).all(|(p, a)| p.same(&a.ty) && (!exact || p.is_int() == a.ty.is_int()))
+                                && params.iter().zip(&args).all(|(p, a)| p.same(&a.ty) && same_kind(p, &a.ty) && (!exact || p.is_int() == a.ty.is_int()))
                         }
                         _ => false,
                     };
@@ -1721,7 +1871,7 @@ impl<'a> Checker<'a> {
                 (Matrix { rows, cols, .. }, Matrix { rows: r2, cols: c2, .. }) => {
                     vec![(rows.clone(), r2.clone()), (cols.clone(), c2.clone())]
                 }
-                (Scalar(_), Scalar(_)) | (Set { .. }, Set { .. }) | (Func { .. }, Func { .. }) | (Seq { .. }, Seq { .. }) => vec![],
+                (Scalar(_), Scalar(_)) | (Set { .. }, Set { .. }) | (Func { .. }, Func { .. }) | (Seq { .. }, Seq { .. }) | (Tuple(_), Tuple(_)) | (Mesh(_), Mesh(_)) => vec![],
                 _ => return self.err(op, format!("Function error. Parameter type mismatch: {p} vs {}", a.ty)),
             };
             for (pd, ad) in pairs {
@@ -1749,6 +1899,98 @@ impl<'a> Checker<'a> {
             .collect();
         let ty = if rets.len() == 1 { rets[0].clone() } else { Tuple(rets) };
         Ok(Expr::new(ExprKind::Call { callee, args }, ty))
+    }
+
+    /// `vertexset(S)`, `vertices(i)`, `tuple(a, b)`, `CellularSet(V, E, F)`, ...
+    fn element_convert(&mut self, op: &Val) -> R<Expr> {
+        let text = self.text(op);
+        let name = text.split('(').next().unwrap_or("").trim().to_string();
+        let args: Vec<Expr> = op.get("params").items().iter().map(|p| self.expr(p)).collect::<R<_>>()?;
+        let kind = |c: &str| match c {
+            "vertex" | "vertices" => Some(Elem::Vertex),
+            "edge" | "edges" => Some(Elem::Edge),
+            "face" | "faces" => Some(Elem::Face),
+            "tet" | "tets" | "cell" | "cells" => Some(Elem::Tet),
+            _ => None,
+        };
+        let ty = if let Some(e) = name.strip_suffix("set").and_then(kind) {
+            self.ensure(args.len() == 1 && args[0].ty.is_set(), op, || format!("{name} needs a set"))?;
+            Set { elems: vec![e], length: Dim::None }
+        } else if let Some(e) = kind(&name) {
+            self.ensure(args.len() == 1 && args[0].ty.is_scalar(), op, || format!("{name} needs an integer"))?;
+            Scalar(e)
+        } else if name == "CellularSet" {
+            // vertices, edges, faces and tetrahedra (missing ones are empty)
+            let kinds = [Elem::Vertex, Elem::Edge, Elem::Face, Elem::Tet];
+            self.ensure(args.len() <= 4 && args.iter().all(|a| a.ty.is_set()), op, || "CellularSet takes up to 4 sets".into())?;
+            Tuple(kinds.iter().map(|k| Set { elems: vec![*k], length: Dim::None }).collect())
+        } else if name == "tuple" {
+            Tuple(args.iter().map(|a| a.ty.clone()).collect())
+        } else {
+            return self.err(op, format!("Conversion {name} is not supported yet"));
+        };
+        Ok(Expr::new(ExprKind::Convert(args), ty))
+    }
+
+    /// A MeshConnectivity function.
+    fn mesh_call(&mut self, op: &Val, func: &str, args: Vec<Expr>) -> R<Expr> {
+        let mesh_of = |this: &Self, a: Option<&Expr>| -> R<(String, MeshKind)> {
+            match a.map(|a| (&*a.kind, &a.ty)) {
+                Some((ExprKind::Var(n), Mesh(k))) => Ok((n.clone(), *k)),
+                _ => this.err(op, format!("{func} needs a mesh")),
+            }
+        };
+        let dim = |m: &str, e: Elem| Dim::Str(format!("@mesh:{m}:{}", elem_letter(e)));
+        let set = |m: &str, e: Elem| Set { elems: vec![e], length: dim(m, e) };
+        let bmat = |m: &str, a: Elem, b: Elem| Matrix { rows: dim(m, a), cols: dim(m, b), elem: Elem::Int, sparse: true };
+        use Elem::*;
+        let (f, mesh, ty) = match func {
+            "ElementSets" => {
+                let (m, k) = mesh_of(self, args.first())?;
+                let mut v = vec![set(&m, Vertex), set(&m, Edge)];
+                if k != MeshKind::Edge {
+                    v.push(set(&m, Face));
+                }
+                if k == MeshKind::Cell {
+                    v.push(set(&m, Tet));
+                }
+                (MeshFunc::ElementSets, m, Tuple(v))
+            }
+            "BoundaryMatrices" | "UnsignedBoundaryMatrices" => {
+                let (m, k) = mesh_of(self, args.first())?;
+                let mut v = vec![bmat(&m, Vertex, Edge)];
+                if k != MeshKind::Edge {
+                    v.push(bmat(&m, Edge, Face));
+                }
+                if k == MeshKind::Cell {
+                    v.push(bmat(&m, Face, Tet));
+                }
+                let f = if func == "BoundaryMatrices" { MeshFunc::BoundaryMatrices } else { MeshFunc::UnsignedBoundaryMatrices };
+                // (an edge mesh has one boundary matrix)
+                let ty = if v.len() == 1 { v.pop().unwrap() } else { Tuple(v) };
+                (f, m, ty)
+            }
+            "NonZeros" | "ValueSet" => {
+                let ok = args.first().is_some_and(|a| a.ty.is_matrix() || a.ty.is_vector());
+                self.ensure(ok, op, || format!("{func} needs a matrix or vector"))?;
+                let f = if func == "NonZeros" { MeshFunc::NonZeros } else { MeshFunc::ValueSet };
+                (f, String::new(), Set { elems: vec![Int], length: Dim::None })
+            }
+            "IndicatorVector" => {
+                let e = match args.first().map(|a| &a.ty) {
+                    Some(Set { elems, .. }) if elems.len() == 1 && elems[0].is_mesh_element() => elems[0],
+                    _ => return self.err(op, "IndicatorVector needs a set of mesh elements"),
+                };
+                // the mesh the elements belong to (programs have one mesh)
+                let Some((m, _)) = self.meshes.first().cloned() else {
+                    return self.err(op, "IndicatorVector needs a mesh");
+                };
+                let ty = Matrix { rows: dim(&m, e), cols: Dim::Int(1), elem: Int, sparse: true };
+                (MeshFunc::IndicatorVector(e), m, ty)
+            }
+            _ => return self.err(op, format!("Function {func} is not supported yet")),
+        };
+        Ok(Expr::new(ExprKind::MeshCall { func: f, mesh, args }, ty))
     }
 
     /// Builtin functions (`sin`, `trace`, `exp`, ...).
@@ -1852,7 +2094,81 @@ fn digits(v: &Val, f: fn(char) -> Option<i64>) -> Option<i64> {
 }
 
 fn is_simple_name(s: &str) -> bool {
-    !s.is_empty() && !s.contains(['+', '-', '*', '/', '(', ')', ' ', '['])
+    !s.is_empty() && !s.contains(['+', '-', '*', '/', '(', ')', ' ', '[', ':', '@'])
+}
+
+/// A set type like `t` but of unknown length (the result of a set operation).
+fn set_of(t: &Ty) -> Ty {
+    match t {
+        Set { elems, .. } => Set { elems: elems.clone(), length: Dim::None },
+        t => t.clone(),
+    }
+}
+
+/// The element kind of a set type keyword.
+fn set_kind(s: &str) -> Option<Elem> {
+    match s {
+        "VertexSet" => Some(Elem::Vertex),
+        "EdgeSet" => Some(Elem::Edge),
+        "FaceSet" => Some(Elem::Face),
+        "CellSet" | "TetSet" => Some(Elem::Tet),
+        _ => None,
+    }
+}
+
+/// The letter of a mesh element kind in a mesh dimension (`@mesh:M:v`).
+pub fn elem_letter(e: Elem) -> char {
+    match e {
+        Elem::Vertex => 'v',
+        Elem::Edge => 'e',
+        Elem::Face => 'f',
+        _ => 't',
+    }
+}
+
+/// Mesh elements of different kinds (a vertex and a face, a vertex set and
+/// an edge set) are different types for overloading.
+fn same_kind(a: &Ty, b: &Ty) -> bool {
+    let k = |t: &Ty| match t {
+        Scalar(e) if e.is_mesh_element() => Some(*e),
+        Set { elems, .. } if elems.len() == 1 && elems[0].is_mesh_element() => Some(elems[0]),
+        _ => None,
+    };
+    match (k(a), k(b)) {
+        (Some(x), Some(y)) => x == y,
+        _ => true,
+    }
+}
+
+/// A module's type with its parameters replaced by the importer's arguments.
+fn subst_ty(t: &Ty, map: &HashMap<String, String>) -> Ty {
+    let d = |d: &Dim| -> Dim {
+        match d {
+            Dim::Str(s) => {
+                if let Some(a) = map.get(s) {
+                    return Dim::Str(a.clone());
+                }
+                if let Some(rest) = s.strip_prefix("@mesh:") {
+                    if let Some((m, k)) = rest.split_once(':') {
+                        if let Some(a) = map.get(m) {
+                            return Dim::Str(format!("@mesh:{a}:{k}"));
+                        }
+                    }
+                }
+                d.clone()
+            }
+            _ => d.clone(),
+        }
+    };
+    match t {
+        Vector { rows, elem } => Vector { rows: d(rows), elem: *elem },
+        Matrix { rows, cols, elem, sparse } => Matrix { rows: d(rows), cols: d(cols), elem: *elem, sparse: *sparse },
+        Seq { size, elem } => Seq { size: d(size), elem: Box::new(subst_ty(elem, map)) },
+        Set { elems, length } => Set { elems: elems.clone(), length: d(length) },
+        Tuple(v) => Tuple(v.iter().map(|x| subst_ty(x, map)).collect()),
+        Func { params, rets } => Func { params: params.iter().map(|x| subst_ty(x, map)).collect(), rets: rets.iter().map(|x| subst_ty(x, map)).collect() },
+        t => t.clone(),
+    }
 }
 
 fn arith(a: &str, op: char, b: &Dim) -> Dim {
@@ -1974,7 +2290,7 @@ fn local_func_name(s: &Val) -> String {
 fn same_signature(a: &Ty, b: &Ty) -> bool {
     match (a, b) {
         (Func { params: p1, .. }, Func { params: p2, .. }) => {
-            p1.len() == p2.len() && p1.iter().zip(p2).all(|(x, y)| x.same(y) && x.is_int() == y.is_int())
+            p1.len() == p2.len() && p1.iter().zip(p2).all(|(x, y)| x.same(y) && same_kind(x, y) && x.is_int() == y.is_int())
         }
         _ => false,
     }

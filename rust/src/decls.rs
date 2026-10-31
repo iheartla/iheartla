@@ -158,6 +158,16 @@ fn summation_extras(rhs: &Val) -> Vec<Val> {
 /// Compute the configuration of the second parse from the first parse tree.
 /// `text(node)` returns a node's source text.
 pub fn second_parse_config(start: &Val, text: &dyn Fn(&Val) -> String) -> ParserConfig {
+    second_parse_config_with(start, text, &|_| None)
+}
+
+/// The second parse's configuration, with `module_funcs` giving the names of
+/// the functions an imported module defines (None: no such module).
+pub fn second_parse_config_with(
+    start: &Val,
+    text: &dyn Fn(&Val) -> String,
+    module_funcs: &dyn Fn(&str) -> Option<Vec<String>>,
+) -> ParserConfig {
     let mut c = Collector::default();
     let vblocks = start.get("vblock").items();
     // parameters: where/given blocks, functions last (as the walker orders them)
@@ -188,6 +198,7 @@ pub fn second_parse_config(start: &Val, text: &dyn Fn(&Val) -> String) -> Parser
     let mut package_names_dict: IndexMap<String, Vec<String>> = IndexMap::new();
     let mut package_rdict: IndexMap<String, IndexMap<String, String>> = IndexMap::new();
     let mut module_pars: Vec<String> = Vec::new();
+    let mut imported_funcs: Vec<String> = Vec::new();
     for block in vblocks.iter().filter(|b| b.class() == "Import") {
         let pkg = ident_name(block.get("package"));
         let mut names = Vec::new();
@@ -217,6 +228,18 @@ pub fn second_parse_config(start: &Val, text: &dyn Fn(&Val) -> String) -> Parser
                 package_rdict.entry(pkg).or_insert(r_dict);
             }
             None => {
+                // functions imported from a module are called like local functions
+                if let Some(funcs) = module_funcs(&pkg) {
+                    if block.get("star").truthy() {
+                        imported_funcs.extend(funcs.iter().cloned());
+                    } else {
+                        for n in &names {
+                            if funcs.contains(n) {
+                                imported_funcs.push(r_dict[n].clone());
+                            }
+                        }
+                    }
+                }
                 for p in block.get("params").items() {
                     let n = ident_name(p);
                     if !module_pars.contains(&n) {
@@ -327,6 +350,9 @@ pub fn second_parse_config(start: &Val, text: &dyn Fn(&Val) -> String) -> Parser
     }
     for p in &c.local_func_params {
         func_dict.insert(p.clone(), ());
+    }
+    for f in &imported_funcs {
+        func_dict.insert(f.clone(), ());
     }
 
     // builtin functions imported from packages

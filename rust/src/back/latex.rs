@@ -107,7 +107,17 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
             }
         }
     }
-    let mut p = Printer { prog, flavor, in_sum: false, local_func: false, align_local: false, declared };
+    // functions imported from MeshConnectivity (printed as plain calls)
+    let mut mesh_funcs = std::collections::HashSet::new();
+    for b in tree.get("vblock").items().iter().filter(|b| b.class() == "Import") {
+        if ident_name(b.get("package")) == crate::decls::MESH_HELPER {
+            for v in b.get("names").items() {
+                let r = if v.get("r").truthy() { v.get("r") } else { v.get("name") };
+                mesh_funcs.insert(ident_name(r));
+            }
+        }
+    }
+    let mut p = Printer { prog, flavor, in_sum: false, local_func: false, align_local: false, declared, mesh_funcs };
     let body = p.start(tree);
     match flavor {
         Flavor::Latex => {
@@ -211,6 +221,7 @@ struct Printer<'p> {
     local_func: bool,
     align_local: bool,
     declared: std::collections::HashSet<String>,
+    mesh_funcs: std::collections::HashSet<String>,
 }
 
 fn span(n: &Val) -> Option<(usize, usize)> {
@@ -838,6 +849,9 @@ impl<'p> Printer<'p> {
             "Squareroot" => format!("\\sqrt{{{}}}", self.strip_factor_parens(op.get("value"))),
             "Solver" => {
                 let (l, r) = (self.expr(op.get("left")), self.expr(op.get("right")));
+                if self.ty(op.get("left")).is_some_and(|t| t.is_set()) {
+                    return format!("{l}\\smallsetminus{r}");
+                }
                 if op.get("p").truthy() {
                     format!("{l}^{{-1}}{r}")
                 } else {
@@ -969,6 +983,14 @@ impl<'p> Printer<'p> {
         let params = op.get("params").items().to_vec();
         let params_str = self.joined(&params, op.get("separators"), |s, x| s.expr(x));
         let name = op.get("name");
+        if let Some(raw) = name.as_str() {
+            if self.mesh_funcs.contains(&crate::decls::strip_backticks(raw)) {
+                let p: Vec<String> = params.iter().map(|x| self.expr(x)).collect();
+                let n = raw.replace('_', "\\_");
+                let n = if n.chars().count() > 1 { format!("\\mathit{{{n}}}") } else { n };
+                return format!("{n}({})", p.join(", "));
+            }
+        }
         // a function's name as written: backticked names print as text
         let mut content = match name.as_str() {
             Some(raw) => convert_name(raw),

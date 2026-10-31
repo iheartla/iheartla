@@ -339,7 +339,7 @@ impl<'p> Gen<'p> {
     fn index(&mut self, i: &Idx) -> String {
         match i {
             Idx::All => String::new(),
-            Idx::At(e) if e.ty.elem() == Elem::Index => self.expr(e),
+            Idx::At(e) if e.ty.elem().is_zero_based() => self.expr(e),
             Idx::At(e) => match &*e.kind {
                 ExprKind::Int(v) => (v - 1).to_string(),
                 _ => format!("{}-1", self.paren(e)),
@@ -548,6 +548,10 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                 format!("{}{{{}}}", cpp_type(&e.ty), parts.join(", "))
             }
             Size(x) => format!("int(({}).size())", self.expr(x)),
+            MeshCall { .. } | SetOp(..) | Convert(_) | SetComp { .. } => format!(
+                "[&]() -> {} {{ throw std::runtime_error(\"meshes are not supported by the Eigen backend yet\"); }}()",
+                cpp_type(&e.ty)
+            ),
         }
     }
 
@@ -794,10 +798,10 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                 format!("{} {o} {}", self.expr(a), self.expr(b))
             }
             Cond::In(items, s) | Cond::NotIn(items, s) => {
-                let index_set = matches!(&s.ty, Set { elems, .. } if elems.contains(&Elem::Index));
+                let index_set = matches!(&s.ty, Set { elems, .. } if elems.iter().any(|e| e.is_zero_based()));
                 let it: Vec<String> = items
                     .iter()
-                    .map(|x| if index_set && x.ty.elem() != Elem::Index { format!("{}-1", self.paren(x)) } else { self.expr(x) })
+                    .map(|x| if index_set && !x.ty.elem().is_zero_based() { format!("{}-1", self.paren(x)) } else { self.expr(x) })
                     .collect();
                 let key = if it.len() == 1 { it[0].clone() } else { format!("std::make_tuple({})", it.join(", ")) };
                 let set = self.expr(s);

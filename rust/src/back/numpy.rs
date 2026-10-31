@@ -12,11 +12,27 @@ use crate::ty::*;
 use std::collections::HashSet;
 
 pub fn generate(prog: &Program, class_name: &str) -> String {
-    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, method: false, locals: Vec::new() };
     let mut out = String::new();
     out.push_str(&format!("\"\"\"\n{}\n\"\"\"\n", prog.source));
     out.push_str("import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n");
-    out.push_str("from scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\n");
+    out.push_str("from scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n");
+    if uses_mesh(prog) {
+        out.push_str("from triangle_mesh import *\n");
+    }
+    out.push_str("\n\n");
+    out.push_str(&class(prog, class_name));
+    out
+}
+
+/// Whether a program or a module it imports uses meshes.
+fn uses_mesh(prog: &Program) -> bool {
+    !prog.meshes.is_empty() || prog.modules.iter().any(|m| uses_mesh(&m.prog))
+}
+
+/// A program as a class; imported modules are nested classes.
+fn class(prog: &Program, class_name: &str) -> String {
+    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, method: false, locals: Vec::new() };
+    let mut out = String::new();
     out.push_str(&format!("class {class_name}:\n"));
     let params: Vec<String> = prog.params.iter().map(|p| py_ident(&p.name)).collect();
     out.push_str(&format!("    def __init__(self{}):\n", params.iter().map(|p| format!(", {p}")).collect::<String>()));
@@ -36,6 +52,20 @@ pub fn generate(prog: &Program, class_name: &str) -> String {
     for f in funcs {
         out.push('\n');
         out.push_str(&g.local_func(f));
+    }
+    // each imported module once (a module imported twice is instantiated twice)
+    let mut done = HashSet::new();
+    for m in &prog.modules {
+        if done.insert(m.name.clone()) {
+            out.push('\n');
+            for l in class(&m.prog, &m.name).lines() {
+                if l.is_empty() {
+                    out.push('\n');
+                } else {
+                    out.push_str(&format!("    {l}\n"));
+                }
+            }
+        }
     }
     out
 }
@@ -106,6 +136,17 @@ impl<'p> Gen<'p> {
                 format!("np.shape({}[{item}])[{}]", self.name(parts[1]), parts[3])
             }
             Dim::Str(s) if s.ends_with("[i]") => s.clone(),
+            Dim::Str(s) if s.starts_with("@mesh:") => {
+                // the number of elements of a kind in a mesh
+                let parts: Vec<&str> = s.splitn(3, ':').collect();
+                let f = match parts[2] {
+                    "v" => "n_vertices",
+                    "e" => "n_edges",
+                    "f" => "n_faces",
+                    _ => "n_tets",
+                };
+                format!("{}.{f}()", self.name(parts[1]))
+            }
             Dim::Str(s) if self.is_dim(s) || self.is_param(s) || self.is_local(s) => self.name(s),
             Dim::Sym(_) | Dim::Str(_) => {
                 // an expression of dimension symbols
@@ -178,6 +219,15 @@ impl<'p> Gen<'p> {
         for d in &prog.dims {
             let n = py_ident(&d.name);
             self.line(format!("self.{n} = {n}"));
+        }
+        // imported modules: an instance each, with the imported symbols copied
+        for m in &prog.modules {
+            let inst = format!("_{}", m.name);
+            let args: Vec<String> = m.args.iter().map(|a| self.name(a)).collect();
+            self.line(format!("{inst} = self.{}({})", m.name, args.join(", ")));
+            for (inner, here) in &m.syms {
+                self.line(format!("self.{} = {inst}.{}", py_ident(here), py_ident(inner)));
+            }
         }
     }
 
@@ -301,7 +351,15 @@ impl<'p> Gen<'p> {
             if t.is_vector() || t.is_matrix() && !t.is_sparse() {
                 let dtype = if t.is_int() { "np.int64" } else { "np.float64" };
                 self.line(format!("{n} = np.asarray({n}, dtype={dtype})"));
+            } else if t.is_scalar() && f.checks.iter().any(|(p, _)| py_ident(p) == n) {
+                self.line(format!("assert np.ndim({n}) == 0"));
+            } else if t.is_set() {
+                self.line(format!("{n} = frozenset({n})"));
             }
+        }
+        for (p, set) in &f.checks {
+            let set = self.name(set);
+            self.line(format!("assert {} in {set}", py_ident(p)));
         }
         for s in &f.body {
             self.stmt(s);
@@ -322,7 +380,7 @@ impl<'p> Gen<'p> {
         match i {
             Idx::All => ":".into(),
             // index-typed values are already 0-based
-            Idx::At(e) if e.ty.elem() == Elem::Index => self.expr(e),
+            Idx::At(e) if e.ty.elem().is_zero_based() => self.expr(e),
             Idx::At(e) => match &*e.kind {
                 ExprKind::Int(v) => (v - 1).to_string(),
                 _ => format!("{}-1", self.paren(e)),
@@ -344,13 +402,63 @@ impl<'p> Gen<'p> {
                 let b = self.name(base);
                 let parts: Vec<String> = idx.iter().map(|i| self.index(i)).collect();
                 match base_ty {
+                    Matrix { sparse: true, .. } => format!("{b}.tocsr()[{}]", parts.join(", ")),
                     Matrix { .. } => format!("{b}[{}]", parts.join(", ")),
                     Seq { elem, .. } if elem.is_matrix() && parts.len() == 3 => {
                         format!("{b}[{}][{}, {}]", parts[0], parts[1], parts[2])
                     }
-                    Tuple(_) | Set { .. } => format!("{b}[{}]", parts[0]),
+                    Tuple(_) => format!("{b}[{}]", parts[0]),
+                    // the i-th element of a set, in increasing order
+                    Set { .. } => format!("sorted({b})[{}]", parts[0]),
                     _ => parts.iter().fold(b, |acc, p| format!("{acc}[{p}]")),
                 }
+            }
+            MeshCall { func, mesh, args } => {
+                let a: Vec<String> = args.iter().map(|x| self.expr(x)).collect();
+                match func {
+                    MeshFunc::ElementSets => format!("{}.ElementSets()", self.name(mesh)),
+                    MeshFunc::BoundaryMatrices => format!("{}.BoundaryMatrices()", self.name(mesh)),
+                    MeshFunc::UnsignedBoundaryMatrices => format!("{}.UnsignedBoundaryMatrices()", self.name(mesh)),
+                    MeshFunc::NonZeros => format!("nonzeros({})", a[0]),
+                    MeshFunc::ValueSet => format!("ValueSet({})", a.join(", ")),
+                    MeshFunc::IndicatorVector(k) => {
+                        let n = self.dim(&Dim::Str(format!("@mesh:{mesh}:{}", crate::check::elem_letter(*k))));
+                        format!("indicator({}, {n})", a[0])
+                    }
+                }
+            }
+            SetOp(k, a, b) => {
+                let (l, r) = (self.expr(a), self.expr(b));
+                match k {
+                    SetOpKind::Union => format!("frozenset.union({l}, {r})"),
+                    SetOpKind::Intersection => format!("frozenset.intersection({l}, {r})"),
+                    SetOpKind::Difference => format!("({l}) - ({r})"),
+                }
+            }
+            Convert(args) => {
+                let a: Vec<String> = args.iter().map(|x| self.expr(x)).collect();
+                if a.len() == 1 && !e.ty.is_tuple() {
+                    a[0].clone()
+                } else {
+                    // a CellularSet's missing sets are empty
+                    let mut a = a;
+                    if let Tuple(ts) = &e.ty {
+                        while a.len() < ts.len() {
+                            a.push("frozenset()".into());
+                        }
+                    }
+                    format!("[{}]", a.join(", "))
+                }
+            }
+            SetComp { vars, range, cond, item } => {
+                let r = self.expr(range);
+                self.locals.push(vars.iter().cloned().collect());
+                let v: Vec<String> = vars.iter().map(|x| py_ident(x)).collect();
+                let it = self.expr(item);
+                let c = cond.as_ref().map(|c| format!(" if {}", self.cond(c))).unwrap_or_default();
+                self.locals.pop();
+                let target = if v.len() == 1 { v[0].clone() } else { format!("({})", v.join(", ")) };
+                format!("frozenset({{{it} for {target} in {r}{c}}})")
             }
             Neg(x) => format!("-{}", self.expr(x)),
             Add(a, b) => format!("{} + {}", self.expr(a), self.expr(b)),
@@ -669,11 +777,11 @@ impl<'p> Gen<'p> {
             }
             Cond::In(items, s) | Cond::NotIn(items, s) => {
                 // an index set stores 0-based indices
-                let index_set = matches!(&s.ty, Set { elems, .. } if elems.contains(&Elem::Index));
+                let index_set = matches!(&s.ty, Set { elems, .. } if elems.iter().any(|e| e.is_zero_based()));
                 let it: Vec<String> = items
                     .iter()
                     .map(|x| {
-                        if index_set && x.ty.elem() != Elem::Index {
+                        if index_set && !x.ty.elem().is_zero_based() {
                             format!("{}-1", self.paren(x))
                         } else {
                             self.expr(x)

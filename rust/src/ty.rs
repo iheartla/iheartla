@@ -22,6 +22,15 @@ impl Elem {
     pub fn is_int(self) -> bool {
         self != Elem::Real
     }
+    /// A vertex, edge, face or tetrahedron (an index into a mesh's elements).
+    pub fn is_mesh_element(self) -> bool {
+        matches!(self, Elem::Vertex | Elem::Edge | Elem::Face | Elem::Tet)
+    }
+    /// Stored 0-based (an `index` value or a mesh element): used as a
+    /// subscript without subtracting 1.
+    pub fn is_zero_based(self) -> bool {
+        self == Elem::Index || self.is_mesh_element()
+    }
     pub fn of(int: bool) -> Elem {
         if int {
             Elem::Int
@@ -92,6 +101,9 @@ impl Ty {
     }
     pub fn is_func(&self) -> bool {
         matches!(self, Func { .. })
+    }
+    pub fn is_tuple(&self) -> bool {
+        matches!(self, Tuple(_))
     }
     pub fn is_sparse(&self) -> bool {
         matches!(self, Matrix { sparse: true, .. })

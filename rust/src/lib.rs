@@ -12,6 +12,7 @@ pub mod decls;
 pub mod dims;
 pub mod grammar;
 pub mod helper;
+pub mod modules;
 pub mod peg;
 pub mod pnode;
 pub mod ty;
@@ -82,10 +83,16 @@ fn rule_description(rule: &str) -> Option<&'static str> {
 /// Parse a program (both passes) and check it: the second parse tree and
 /// the typed program.
 pub fn front_end(src: &str) -> Result<(pnode::Val, ast::Program), String> {
+    let dir = std::env::current_dir().map(|d| vec![d]).unwrap_or_default();
+    front_end_with(src, &modules::Loader::new(dir))
+}
+
+/// The front end, with modules found and compiled by `loader`.
+pub fn front_end_with(src: &str, loader: &std::rc::Rc<modules::Loader>) -> Result<(pnode::Val, ast::Program), String> {
     let first = grammar::parse_init(src).map_err(|e| parse_error_message(src, &e))?;
-    let config = decls::second_parse_config(&first, &|n| node_text(src, n).to_string());
+    let config = decls::second_parse_config_with(&first, &|n| node_text(src, n).to_string(), &|m| loader.function_names(m));
     let tree = grammar::parse_default(src, &config).map_err(|e| parse_error_message(src, &e))?;
-    let prog = check::Checker::new(src).check(&tree).map_err(|e| e.message)?;
+    let prog = check::Checker::new(src).with_loader(loader.clone()).check(&tree).map_err(|e| e.message)?;
     Ok((tree, prog))
 }
 
