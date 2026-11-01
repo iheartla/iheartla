@@ -741,7 +741,7 @@ class IRVisitor(IRBaseVisitor):
             name = name.replace(rm, '')
         new_list = []
         pre_unicode = False
-        if name.isnumeric() or name[0].isnumeric():
+        if name[:1].isnumeric():
             name = "num{}".format(name)
         for e in name:
             if e in self.special_symbol_dict:
