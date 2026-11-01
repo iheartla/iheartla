@@ -4318,9 +4318,14 @@ class TypeWalker(NodeWalker):
                 cols = len(row)
             type_array.append(row_type)
         list_dim = None
+        if not block and any(t.symbol is not None and 'I' in t.symbol and 'I' not in self.symtable
+                             for row_type in type_array for t in row_type):
+            # A matrix of scalars that contains the identity I: check only that each I is sized by its
+            # context (a scalar other than 0 and 1 in its row or column makes it 1×1).
+            self.check_bmat_validity(copy.deepcopy(type_array), None, node_info.content)
         if block:
             # check block mat
-            valid, undef_list, type_array, real_dims = self.check_bmat_validity(type_array, None)
+            valid, undef_list, type_array, real_dims = self.check_bmat_validity(type_array, None, node_info.content)
             self.assert_expr(valid, get_err_msg_info(node.parseinfo,  "Block matrix error. Invalid dimensions"))
             rows = real_dims[0]
             cols = real_dims[1]
@@ -5076,11 +5081,12 @@ class TypeWalker(NodeWalker):
             return sum_value
         return simpify_dims(sum_value)
 
-    def check_bmat_validity(self, type_array, mat_size):
+    def check_bmat_validity(self, type_array, mat_size, item_irs=None):
         """
         check the validity of block matrix
         :param type_array: 2d array containing element types
         :param mat_size: the dimensions of the block matrix may be given in future
+        :param item_irs: 2d array of the blocks' IR nodes, for error locations
         :return: valid, index to be changed, modified type_array, dims
         """
         valid = True
@@ -5129,6 +5135,17 @@ class TypeWalker(NodeWalker):
                         if row_dim[i] != col_dim[j]:
                             valid = False
                             break
+        # An I whose block row and block column are both unsized could be any size: report it
+        # rather than default it to 1×1 below (0 and 1 are scalars, so 1×1 is their natural size)
+        if valid and item_irs:
+            def fixes_size_one(i, j):
+                # a scalar block other than the literals 0 and 1 can't be lifted, so it fixes its block row and column at 1
+                return (i, j) in undef_list and (i, j) not in identity_list and item_irs[i][j].raw_text not in ('0', '1')
+            for (i, j) in identity_list:
+                sized = row_dim[i] is not None or col_dim[j] is not None or \
+                        any(fixes_size_one(i, k) for k in range(cols)) or any(fixes_size_one(k, j) for k in range(rows))
+                self.assert_expr(sized, get_err_msg_info(item_irs[i][j].parse_info,
+                                 "Block matrix error. Can't infer the size of I; write I_n"))
         # only scalar value in a row or col
         if valid:
             row_dim = [i if i else 1 for i in row_dim]

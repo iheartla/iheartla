@@ -282,22 +282,29 @@ class TestMatrix(BasePythonTest):
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
     def test_block_matrix_5_unsized_identity(self):
-        # nothing else in its block row or column sizes I, so it is 1×1 (B is 3×3)
-        la_str = """B = [ A 0 ; 0 I ]
+        # nothing in its block row or column gives I a size, so I is ambiguous: an error, not a guess
+        for la_str in ["""B = [ A 0 ; 0 I ]
         where
-        A: ℝ ^ (2 × 2): a matrix"""
+        A: ℝ ^ (2 × 2): a matrix""", """B = [ I 0 ; 0 I ] + A
+        where
+        A: ℝ ^ (2 × 2): a matrix""", "B = [ 0 I ]"]:
+            with self.assertRaises(AssertionError) as cm:
+                self.gen_func_info(la_str)
+            self.assertIn("Can't infer the size of I; write I_n", cm.exception.args[0])
+
+    def test_block_matrix_5_identity_sized_by_scalar(self):
+        # a scalar other than 0 and 1 can't be lifted, so it makes I's block row 1 high: I is 1×1
+        la_str = """B = [ a I ]
+        where
+        a: ℝ: a scalar"""
         func_info = self.gen_func_info(la_str)
-        A = np.array([[1, 2], [3, 4]])
-        B = np.array([[1, 2, 0], [3, 4, 0], [0, 0, 1]])
-        self.assertDMatrixEqual(func_info.numpy_func(A).B, B)
+        self.assertDMatrixEqual(func_info.numpy_func(5).B, np.array([[5, 1]]))
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),
-                     "    Eigen::Matrix<double, 2, 2> A;",
-                     "    A << 1, 2, 3, 4;",
-                     "    Eigen::Matrix<double, 3, 3> B;",
-                     "    B << 1, 2, 0, 3, 4, 0, 0, 0, 1;",
-                     "    Eigen::Matrix<double, 3, 3> C = {}(A).B;".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 1, 2> B;",
+                     "    B << 5, 1;",
+                     "    Eigen::Matrix<double, 1, 2> C = {}(5).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))

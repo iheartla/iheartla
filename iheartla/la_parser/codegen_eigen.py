@@ -1816,6 +1816,9 @@ class CodeGenEigen(CodeGen):
         kwargs["cur_id"] = cur_m_id
         ret_info = self.visit(node.value, **kwargs)
         ret = ret_info.content
+        if not type_info.la_type.block and 'I' not in self.symtable:
+            # an identity in a matrix of scalars is 1×1 (the type walker rejects one that nothing sizes)
+            ret = [['1' if item == 'I' else item for item in row] for row in ret]
         # preprocess
         if type_info.la_type.list_dim:
             for i in range(len(ret)):
