@@ -1600,8 +1600,9 @@ impl<'a> Checker<'a> {
             return Ok(Expr::new(ExprKind::Mul(inv, r), ty));
         }
         if l.ty.is_set() {
-            let ty = l.ty.clone();
-            return Ok(Expr::new(ExprKind::Sub(l, r), ty));
+            // A \ B: set difference
+            let ty = set_of(&l.ty);
+            return Ok(Expr::new(ExprKind::SetOp(SetOpKind::Difference, l, r), ty));
         }
         self.ensure(l.ty.is_matrix(), op, || format!("Parameter {} must be a matrix", self.text(op.get("left"))))?;
         self.ensure(is_same_expr(&l.ty.rows(), &r.ty.rows()), op, || {

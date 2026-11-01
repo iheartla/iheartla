@@ -16,14 +16,81 @@ use std::collections::HashSet;
 
 const HEADER: &str = "#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n\
 #include <Eigen/SVD>\n#include <iostream>\n#include <set>\n#include <vector>\n#include <tuple>\n#include <functional>\n\
-#include <algorithm>\n#include <cmath>\n#include <stdexcept>\n#include <unsupported/Eigen/MatrixFunctions>\n";
+#include <algorithm>\n#include <cmath>\n#include <stdexcept>\n#include <unsupported/Eigen/MatrixFunctions>\n\
+#ifndef IHEARTLA_SORTED_SET\n#define IHEARTLA_SORTED_SET\n\
+// sets are sorted vectors without duplicates\n\
+template<typename T> std::vector<T> sorted_set(std::vector<T> v) { std::sort(v.begin(), v.end()); v.erase(std::unique(v.begin(), v.end()), v.end()); return v; }\n\
+#endif\n";
 
 pub fn generate(prog: &Program, struct_name: &str) -> String {
-    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, locals: Vec::new() };
     let mut out = String::new();
     out.push_str(&format!("/*\n{}\n*/\n", prog.source.replace("*/", "* /")));
     out.push_str(HEADER);
-    out.push_str(&format!("\nstruct {struct_name} {{\n    using DT = double;\n"));
+    let mut kinds = Vec::new();
+    mesh_kinds(prog, &mut kinds);
+    if !kinds.is_empty() {
+        for k in &kinds {
+            out.push_str(&format!("#include \"{}.h\"\n", mesh_class(*k)));
+        }
+        out.push_str("#include \"MeshHelper.h\"\nusing namespace iheartmesh;\n");
+    }
+    out.push('\n');
+    out.push_str(&structure(prog, struct_name));
+    out
+}
+
+/// The mesh kinds a program and the modules it imports use.
+fn mesh_kinds(prog: &Program, out: &mut Vec<MeshKind>) {
+    for (_, k) in &prog.meshes {
+        if !out.contains(k) {
+            out.push(*k);
+        }
+    }
+    for m in &prog.modules {
+        mesh_kinds(&m.prog, out);
+    }
+}
+
+/// The runtime's C++ class for a mesh kind.
+fn mesh_class(k: MeshKind) -> &'static str {
+    match k {
+        MeshKind::Edge => "EdgeMesh",
+        MeshKind::Face => "FaceMesh",
+        MeshKind::Cell => "CellMesh",
+    }
+}
+
+/// A program as a struct; imported modules are nested structs, held as
+/// members and constructed with the importer's arguments.
+fn structure(prog: &Program, struct_name: &str) -> String {
+    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, locals: Vec::new() };
+    let mut out = String::new();
+    out.push_str(&format!("struct {struct_name} {{\n    using DT = double;\n"));
+    let mut done = HashSet::new();
+    for m in &prog.modules {
+        if done.insert(m.name.clone()) {
+            for l in structure(&m.prog, &m.name).lines() {
+                out.push_str(&format!("    {l}\n"));
+            }
+        }
+    }
+    for m in &prog.modules {
+        out.push_str(&format!("    {} _{};\n", m.name, m.name));
+        // imported values are members; imported functions forward to the module
+        let funcs: Vec<&String> = m.prog.funcs.iter().flat_map(|(_, l)| l.iter().map(|(_, n)| n)).collect();
+        for (inner, here) in &m.syms {
+            if funcs.contains(&inner) {
+                out.push_str(&format!(
+                    "    template<typename... Args> auto {}(Args&&... args) {{ return _{}.{}(std::forward<Args>(args)...); }}\n",
+                    cpp_ident(here),
+                    m.name,
+                    cpp_ident(inner)
+                ));
+            } else if let Some((_, t)) = m.prog.defs.iter().find(|(n, _)| n == inner) {
+                out.push_str(&format!("    {} {};\n", cpp_type(t), cpp_ident(here)));
+            }
+        }
+    }
     // members: parameters and dimensions (used by member functions), definitions
     for p in &prog.params {
         out.push_str(&format!("    {} {};\n", cpp_type(&p.ty), cpp_ident(&p.name)));
@@ -39,8 +106,21 @@ pub fn generate(prog: &Program, struct_name: &str) -> String {
         .iter()
         .map(|p| format!("const {} & {}", cpp_type(&p.ty), cpp_ident(&p.name)))
         .collect();
+    if !params.is_empty() {
+        out.push_str(&format!("\n    {struct_name}() {{}}"));
+    }
     out.push_str(&format!("\n    {struct_name}({})\n    {{\n", params.join(", ")));
     g.init_params();
+    for m in &prog.modules {
+        let args: Vec<String> = m.args.iter().map(|a| g.name(a)).collect();
+        g.line(format!("this->_{} = {}({});", m.name, m.name, args.join(", ")));
+        let funcs: Vec<&String> = m.prog.funcs.iter().flat_map(|(_, l)| l.iter().map(|(_, n)| n)).collect();
+        for (inner, here) in &m.syms {
+            if !funcs.contains(&inner) {
+                g.line(format!("this->{} = this->_{}.{};", cpp_ident(here), m.name, cpp_ident(inner)));
+            }
+        }
+    }
     let mut funcs = Vec::new();
     for s in &prog.stmts {
         match s {
@@ -101,7 +181,7 @@ pub fn cpp_type(t: &Ty) -> String {
             (None, false) => "Eigen::VectorXd".into(),
             (None, true) => "Eigen::Matrix<int, Eigen::Dynamic, 1>".into(),
         },
-        Matrix { sparse: true, .. } => "Eigen::SparseMatrix<double>".into(),
+        Matrix { sparse: true, elem, .. } => format!("Eigen::SparseMatrix<{}>", scalar(elem.is_int())),
         Matrix { rows, cols, elem, .. } => match (fixed(rows), fixed(cols)) {
             (Some(r), Some(c)) => format!("Eigen::Matrix<{}, {r}, {c}>", scalar(elem.is_int())),
             _ => dyn_matrix(elem.is_int()),
@@ -120,7 +200,7 @@ pub fn cpp_type(t: &Ty) -> String {
             let ret = if rets.len() == 1 { cpp_type(&rets[0]) } else { cpp_type(&Tuple(rets.clone())) };
             format!("std::function<{ret}({})>", params.iter().map(cpp_type).collect::<Vec<_>>().join(", "))
         }
-        Mesh(_) => "void*".into(),
+        Mesh(k) => mesh_class(*k).into(),
     }
 }
 
@@ -152,6 +232,16 @@ impl<'p> Gen<'p> {
 
     fn dim(&self, d: &Dim) -> String {
         match d {
+            Dim::Str(s) if s.starts_with("@mesh:") => {
+                let parts: Vec<&str> = s.splitn(3, ':').collect();
+                let f = match parts[2] {
+                    "v" => "n_vertices",
+                    "e" => "n_edges",
+                    "f" => "n_faces",
+                    _ => "n_tets",
+                };
+                format!("{}.{f}()", self.name(parts[1]))
+            }
             Dim::Str(s) if s.starts_with("@len:") => {
                 let parts: Vec<&str> = s.splitn(4, ':').collect();
                 let item = match parts[2].parse::<i64>() {
@@ -241,7 +331,12 @@ impl<'p> Gen<'p> {
                         Vector { .. } => format!("{tmp}({k})"),
                         _ => format!("{tmp}.at({k})"),
                     };
-                    self.line(format!("{target} = {item};"));
+                    // a local of a function body is declared here
+                    if self.locals.last().is_some_and(|l| l.contains(n)) {
+                        self.line(format!("{} {} = {item};", cpp_type(&lhs[k].1), cpp_ident(n)));
+                    } else {
+                        self.line(format!("{target} = {item};"));
+                    }
                 }
             }
             Stmt::Func(_) => {}
@@ -315,11 +410,23 @@ impl<'p> Gen<'p> {
         self.indent = 2;
         let mut scope: HashSet<String> = f.params.iter().map(|(n, _)| n.clone()).collect();
         for s in &f.body {
-            if let Stmt::Assign(a) = s {
-                scope.insert(a.lhs.clone());
+            match s {
+                Stmt::Assign(a) => {
+                    scope.insert(a.lhs.clone());
+                }
+                Stmt::Multi { lhs, .. } => {
+                    for (n, _) in lhs {
+                        scope.insert(n.clone());
+                    }
+                }
+                _ => {}
             }
         }
         self.locals.push(scope);
+        for (p, set) in &f.checks {
+            let set = self.name(set);
+            self.line(format!("assert( std::binary_search({set}.begin(), {set}.end(), {}) );", cpp_ident(p)));
+        }
         for s in &f.body {
             self.stmt(s);
         }
@@ -545,13 +652,69 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
             Optimize { kind, vars, objective, constraints } => self.optimize(*kind, vars, objective, constraints, &e.ty),
             SetLit(items) => {
                 let parts: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
-                format!("{}{{{}}}", cpp_type(&e.ty), parts.join(", "))
+                format!("sorted_set({}{{{}}})", cpp_type(&e.ty), parts.join(", "))
             }
             Size(x) => format!("int(({}).size())", self.expr(x)),
-            MeshCall { .. } | SetOp(..) | Convert(_) | SetComp { .. } => format!(
-                "[&]() -> {} {{ throw std::runtime_error(\"meshes are not supported by the Eigen backend yet\"); }}()",
-                cpp_type(&e.ty)
-            ),
+            MeshCall { func, mesh, args } => {
+                let a: Vec<String> = args.iter().map(|x| self.expr(x)).collect();
+                match func {
+                    MeshFunc::ElementSets => format!("{}.ElementSets()", self.name(mesh)),
+                    MeshFunc::BoundaryMatrices => format!("{}.BoundaryMatrices()", self.name(mesh)),
+                    MeshFunc::UnsignedBoundaryMatrices => format!("{}.UnsignedBoundaryMatrices()", self.name(mesh)),
+                    MeshFunc::NonZeros => format!("nonzeros(Eigen::SparseMatrix<int>({}))", a[0]),
+                    MeshFunc::ValueSet => format!("[&](){{ auto s = ValueSet(Eigen::SparseMatrix<int>({}), {}); return std::vector<int>(s.begin(), s.end()); }}()", a[0], a[1]),
+                    MeshFunc::IndicatorVector(k) => {
+                        let n = self.dim(&Dim::Str(format!("@mesh:{mesh}:{}", crate::check::elem_letter(*k))));
+                        format!("indicator({}, {n})", a[0])
+                    }
+                }
+            }
+            SetOp(k, a, b) => {
+                let (l, r) = (self.expr(a), self.expr(b));
+                let f = match k {
+                    SetOpKind::Union => "std::set_union",
+                    SetOpKind::Intersection => "std::set_intersection",
+                    SetOpKind::Difference => "std::set_difference",
+                };
+                // (the operands are bound once: calls return new temporaries)
+                format!(
+                    "[&](){{ const auto l = {l}; const auto r = {r}; {} out; {f}(l.begin(), l.end(), r.begin(), r.end(), std::back_inserter(out)); return out; }}()",
+                    cpp_type(&e.ty)
+                )
+            }
+            Convert(args) => {
+                let mut a: Vec<String> = args.iter().map(|x| self.expr(x)).collect();
+                match &e.ty {
+                    Tuple(ts) => {
+                        // a CellularSet's missing sets are empty
+                        while a.len() < ts.len() {
+                            a.push(format!("{}()", cpp_type(&ts[a.len()])));
+                        }
+                        format!("{}({})", cpp_type(&e.ty), a.join(", "))
+                    }
+                    _ => a.remove(0),
+                }
+            }
+            SetComp { vars, range, cond, item } => {
+                let r = self.expr(range);
+                self.locals.push(vars.iter().cloned().collect());
+                let it = self.expr(item);
+                let c = cond.as_ref().map(|c| self.cond(c));
+                self.locals.pop();
+                let bind = if vars.len() == 1 {
+                    format!("const auto & {} = x;", cpp_ident(&vars[0]))
+                } else {
+                    vars.iter().enumerate().map(|(k, v)| format!("const auto & {} = std::get<{k}>(x);", cpp_ident(v))).collect::<Vec<_>>().join(" ")
+                };
+                let push = match c {
+                    Some(c) => format!("if({c}){{ out.push_back({it}); }}"),
+                    None => format!("out.push_back({it});"),
+                };
+                format!(
+                    "[&](){{ const auto range = {r}; {} out; for(const auto & x : range){{ {bind} {push} }} return sorted_set(out); }}()",
+                    cpp_type(&e.ty)
+                )
+            }
         }
     }
 
