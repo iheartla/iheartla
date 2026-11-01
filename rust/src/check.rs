@@ -491,6 +491,20 @@ impl<'a> Checker<'a> {
         }
     }
 
+    /// Record that the extents a subscript ranges over must be equal (e.g. the
+    /// columns of `w` and the length of `M` in `∑_j w_i,j M_j`).
+    fn note_equal_extents(&mut self, frame: &IndexMap<String, Vec<Dim>>) {
+        for seen in frame.values() {
+            if let Some(first) = seen.first() {
+                for d in &seen[1..] {
+                    if !is_same_expr(first, d) && !self.dim_checks.iter().any(|(a, b)| is_same_expr(a, first) && is_same_expr(b, d)) {
+                        self.dim_checks.push((first.clone(), d.clone()));
+                    }
+                }
+            }
+        }
+    }
+
     /// Define the dimension symbols of a parameter's type.
     fn note_dim_symbols(&mut self, ty: &Ty) {
         let dims = match ty {
@@ -748,6 +762,7 @@ impl<'a> Checker<'a> {
         let rhs = self.expr(right);
         self.scopes.pop();
         let frame = self.extents.pop().unwrap();
+        self.note_equal_extents(&frame);
         let rhs = rhs?;
         let mut extents = Vec::new();
         let existing = if update { self.lookup(&name).map(|s| s.ty()) } else { declared.clone() };
@@ -1732,6 +1747,7 @@ impl<'a> Checker<'a> {
         })();
         self.scopes.pop();
         let frame = self.extents.pop().unwrap();
+        self.note_equal_extents(&frame);
         let (extras, cond, body) = result?;
         let implicit = || -> R<Dim> {
             match frame[&vars[0]].first() {

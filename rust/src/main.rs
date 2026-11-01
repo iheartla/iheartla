@@ -7,7 +7,9 @@ use std::io::Read;
 fn usage() -> ! {
     eprintln!(
         "usage:\n  iheartla parse [--init|--full] < file  print the parse tree as JSON\n  \
-         iheartla check-parses <golden-dir>  compare parse trees with TatSu's"
+         iheartla check-parses <golden-dir>  compare parse trees with TatSu's\n  \
+         iheartla compile [--backend numpy|eigen|matlab|latex|mathjax|macromathjax] [--name heartlib] [--main] < file\n  \
+             (--main: also generateRandomData() and main(), for the code backends)"
     );
     std::process::exit(2)
 }
@@ -164,7 +166,7 @@ fn main() {
         Some("check-parses") => check_parses(args.get(2).map(String::as_str).unwrap_or("corpus/golden")),
         Some("check-config") => check_config(args.get(2).map(String::as_str).unwrap_or("corpus/golden")),
         Some("compile") => {
-            // iheartla compile [--backend numpy] [--name heartlib] < source
+            // iheartla compile [--backend numpy] [--name heartlib] [--main] < source
             let mut text = String::new();
             std::io::stdin().read_to_string(&mut text).unwrap();
             let opt = |flag: &str, default: &str| -> String {
@@ -172,15 +174,8 @@ fn main() {
             };
             let backend = opt("--backend", "numpy");
             let name = opt("--name", "heartlib");
-            let result = match backend.as_str() {
-                "numpy" => iheartla::compile_numpy(&text, &name),
-                "eigen" => iheartla::compile_eigen(&text, &name),
-                "latex" => iheartla::compile_latex(&text),
-                "mathjax" => iheartla::compile_mathjax(&text),
-                "macromathjax" => iheartla::compile_macromathjax(&text),
-                "matlab" => iheartla::compile_matlab(&text, &name),
-                other => Err(format!("unknown backend {other}")),
-            };
+            let with_main = args.iter().any(|a| a == "--main");
+            let result = iheartla::compile(&text, &backend, &name, with_main);
             match result {
                 Ok(code) => print!("{code}"),
                 Err(e) => {

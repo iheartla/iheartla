@@ -13,8 +13,7 @@ pub struct Program {
     pub params: Vec<Param>,
     /// dimension symbols and where to read them
     pub dims: Vec<DimSym>,
-    /// equalities between dimensions to check at run time (e.g. a dimension
-    /// used by two parameters)
+    /// equalities between dimensions (e.g. the extents a subscript ranges over)
     pub dim_checks: Vec<(Dim, Dim)>,
     /// statements in evaluation (def-use) order
     pub stmts: Vec<Stmt>,

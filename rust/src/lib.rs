@@ -107,6 +107,52 @@ pub fn compile_latex(src: &str) -> Result<String, String> {
     Ok(back::latex::generate(&prog, &tree, back::latex::Flavor::Latex))
 }
 
+/// Compile to one backend: numpy, eigen, matlab, latex, mathjax or
+/// macromathjax. `with_main` adds `generateRandomData()` and `main()` to the
+/// code backends (the Python compiler's `class_only=False`).
+pub fn compile(src: &str, backend: &str, name: &str, with_main: bool) -> Result<String, String> {
+    let (tree, prog) = front_end(src)?;
+    Ok(generate(&tree, &prog, backend, name, with_main)?)
+}
+
+/// Generate one backend's output from a checked program.
+pub fn generate(tree: &pnode::Val, prog: &ast::Program, backend: &str, name: &str, with_main: bool) -> Result<String, String> {
+    use back::latex::Flavor;
+    Ok(match backend {
+        "numpy" => {
+            let mut code = back::numpy::generate(prog, name);
+            if with_main {
+                code += &back::random::numpy(prog, name);
+            }
+            code
+        }
+        "eigen" => {
+            let mut code = back::eigen::generate(prog, name);
+            if with_main {
+                code += &back::random::eigen(prog, name);
+            }
+            code
+        }
+        "matlab" => {
+            let code = back::matlab::generate(prog, name);
+            if !with_main {
+                code
+            } else {
+                // the random data goes after the function's header comment
+                let block = back::random::matlab(prog);
+                let mut lines: Vec<&str> = code.lines().collect();
+                let at = lines.iter().position(|l| !l.starts_with("function") && !l.starts_with('%')).unwrap_or(lines.len());
+                lines.insert(at, block.trim_end_matches('\n'));
+                lines.join("\n") + "\n"
+            }
+        }
+        "latex" => back::latex::generate(prog, tree, Flavor::Latex),
+        "mathjax" => back::latex::generate(prog, tree, Flavor::Mathjax),
+        "macromathjax" => back::latex::generate(prog, tree, Flavor::MacroMathjax),
+        other => return Err(format!("unknown backend {other}")),
+    })
+}
+
 /// Compile to MATLAB (or Octave) code.
 pub fn compile_matlab(src: &str, func_name: &str) -> Result<String, String> {
     let prog = check_source(src)?;
