@@ -9,6 +9,7 @@ validated by running the Python test suite on it, not by byte comparison.
 ```
 cargo build --release                       # → target/release/iheartla
 target/release/iheartla compile --backend numpy < program.la   # or eigen, matlab, latex, mathjax, macromathjax
+target/release/iheartla compile --backend numpy --main < program.la   # also generateRandomData() and main()
 target/release/iheartla parse [--init|--full] < program.la     # parse tree as JSON
 ```
 
@@ -25,7 +26,7 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 | MacroMathJax backend (H❤️rtDown click handlers) | 223 of 224 corpus programs match: 161 byte-identical, and 62 equal once equation symbol lists are sorted (Python lists them in hash order). The other is the `asin²` bug |
 | MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 205 of 207 tests pass; the 2 failures are test issues (below). Python's own MATLAB output passes 196 of 207 in Octave |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 611 values equal to the NumPy output |
-| Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp, with constant bounds as box constraints. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy. Python's C++ gets none right except where the answer is 0: it returns the iteration count, ignores constraints, or fails to compile or run |
+| Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp v0.4.0, with constant bounds as box constraints. When the line search fails (near a non-smooth or exactly-zero minimum), the best point evaluated is used. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy, on random inputs and on the test suite's own |
 
 To run the Python test suite with code from the Rust compiler:
 
@@ -48,6 +49,45 @@ The 2 failing tests are test issues:
 - `test_nested_integral` expects a quadrature result to equal 9 exactly; Octave's
   `integral` gives 9 + 1.8e-15. Each test module runs in its own
 process, because a C++ compile error can crash cling and end the whole run.
+
+## `--main`: random data and a main
+
+`--main` adds `generateRandomData()` and `main()` to the NumPy, Eigen and MATLAB output. This
+is what the Python compiler emits with `class_only=False`, and what the web page shows.
+
+The random arguments are drawn so that they fit together:
+- integer parameters that size other parameters are drawn first;
+- dimensions that one subscript ranges over are equal (the checker records these in
+  `Program::dim_checks`);
+- all sequences share one length, 4–9, or the mesh's vertex count when there is a mesh;
+- random functions return values sized as their arguments imply;
+- integers and `index` values stay below the smallest size.
+
+A mesh parameter is an octahedron (NumPy and Eigen).
+
+`tools/main_check.py` runs every corpus program's `main`: NumPy 224/224, Eigen 223/224,
+MATLAB 219/224. The failures fall into two groups:
+- programs that can't run on arbitrary random values (`f(2)` where 2 must be in a random
+  set; subscripts like `a_(b+1)` or `a_(b-c)` with random `b` and `c`), so whether they
+  fail depends on the draw;
+- the 3 mesh programs in MATLAB, which doesn't support meshes.
+
+## On the web
+
+The web page in `docs/` has a **Compiler** choice: Python, which runs in Pyodide, or Rust. The
+choice is kept in the URL as `?compiler=rust`, so "Copy as URL" keeps it.
+
+How the Rust option works:
+- **Build:** the Rust compiler is built for `wasm32-unknown-unknown` with a size-optimised
+  profile. `docs/update_rust_wasm.sh` writes `docs/rust/iheartla.wasm` (2.7 MB, no imports).
+- **Worker:** it runs in `docs/js/compile-worker-rust.js`, with the same messages as the
+  Pyodide worker. Its interface is in `src/wasm.rs`.
+- **Check:** `tools/web_check.py` tests the page in headless Chromium:
+  `uv run --with playwright python rust/tools/web_check.py`.
+
+With Rust, the page is ready in 0.08 s and compiles an I❤️MESH program importing two
+modules in 0.1 s. With Pyodide, PERFORMANCE.md reports 5–9 s for NumPy alone and 40 s or
+more for all outputs.
 
 ## Speed
 

@@ -1050,12 +1050,17 @@ if(first || f {better} best){{ best = f; arg = {var}; first = false; }} }} retur
             })
             .collect();
         let objective_fn = format!("auto objective = [&](const Eigen::VectorXd & X) -> double {{ {} return {sign}(double({obj})); }};", unpack.join(" "));
-        let grad_fn = "auto f = [&](const Eigen::VectorXd & X, Eigen::VectorXd & grad) -> double { Eigen::VectorXd Y = X; \
+        // (the best point evaluated is kept: the line search can fail near a
+        // nonsmooth or exactly-zero minimum, and then that point is used)
+        let grad_fn = "double best_f = std::numeric_limits<double>::infinity(); Eigen::VectorXd best_x; \
+auto f = [&](const Eigen::VectorXd & X, Eigen::VectorXd & grad) -> double { Eigen::VectorXd Y = X; \
 for(int k = 0; k < X.size(); k++){ const double h = 1e-6 * std::max(1.0, std::abs(X(k))); Y(k) = X(k) + h; const double fp = objective(Y); \
-Y(k) = X(k) - h; const double fm = objective(Y); Y(k) = X(k); grad(k) = (fp - fm) / (2 * h); } return objective(X); };";
+Y(k) = X(k) - h; const double fm = objective(Y); Y(k) = X(k); grad(k) = (fp - fm) / (2 * h); } \
+const double value = objective(X); if(value < best_f){ best_f = value; best_x = X; } return value; };";
         let solve = if bounds.is_empty() {
             "LBFGSpp::LBFGSParam<double> param; param.epsilon = 1e-10; param.max_iterations = 1000; \
-LBFGSpp::LBFGSSolver<double> solver(param); double fx; solver.minimize(f, x, fx);"
+LBFGSpp::LBFGSSolver<double> solver(param); double fx; \
+try { solver.minimize(f, x, fx); } catch(const std::runtime_error &) { if(best_x.size() == 0) throw; x = best_x; fx = best_f; }"
                 .to_string()
         } else {
             let mut b = String::from("Eigen::VectorXd lb = Eigen::VectorXd::Constant(N, -std::numeric_limits<double>::infinity()); \
@@ -1065,7 +1070,8 @@ Eigen::VectorXd ub = Eigen::VectorXd::Constant(N, std::numeric_limits<double>::i
                 b += &format!("{vec}({k}) = std::{f}({vec}({k}), double({value})); ");
             }
             b + "x = x.cwiseMax(lb).cwiseMin(ub); LBFGSpp::LBFGSBParam<double> param; param.epsilon = 1e-10; param.max_iterations = 1000; \
-LBFGSpp::LBFGSBSolver<double> solver(param); double fx; solver.minimize(f, x, fx, lb, ub);"
+LBFGSpp::LBFGSBSolver<double> solver(param); double fx; \
+try { solver.minimize(f, x, fx, lb, ub); } catch(const std::runtime_error &) { if(best_x.size() == 0) throw; x = best_x; fx = best_f; }"
         };
         let result = match kind {
             OptKind::Min | OptKind::Max => format!("return {sign}fx;"),

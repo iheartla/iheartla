@@ -34,6 +34,9 @@ CASES = {
     't_gallery_02': [[rng.standard_normal((3, 2)) for _ in range(2)], rng.standard_normal(2), [rng.standard_normal(3) for _ in range(2)]],
     't_gallery_13': [[rng.standard_normal(3) for _ in range(4)] for _ in range(3)],
     't_gallery_14': [[rng.standard_normal(3) for _ in range(4)], [rng.standard_normal((3, 3)) for _ in range(4)]],
+    # the test suite's own inputs (a nonsmooth objective; an exact minimum of 0)
+    't_gallery_02#test': [[np.array([[1.0, 2.0], [4.0, 3.0]])] * 2, np.array([1.0, 2.0]), [np.array([1.0, 2.0]), np.array([4.0, 3.0])]],
+    't_gallery_13#test': [[np.array(r, dtype=float) for r in m] for m in [[[-11, 2, 3], [4, 5, 6], [17, 8, 9]], [[4, 15, 6], [7, -18, 9], [1, 22, 3]], [[7, -8, 9], [1, 12, 3], [4, -5, 6]]]],
     't_others_04': [5.0],
     't_others_05': [np.array([1.0, 2.0, 3.0])],
     't_others_06': [np.array([1.0, -2.0, 3.0])],
@@ -94,12 +97,12 @@ def values(x):
 
 
 for case, args in CASES.items():
-    d = json.load(open(os.path.join(ROOT, 'rust', 'corpus', 'golden', case + '.json')))
+    d = json.load(open(os.path.join(ROOT, 'rust', 'corpus', 'golden', case.split('#')[0] + '.json')))
     src = d['src']
     outs = {b: subprocess.run([BINARY, 'compile', '--backend', b], input=src.encode(), capture_output=True).stdout.decode() for b in ['numpy', 'eigen']}
-    path = os.path.join(TMP, 'np_{}.py'.format(case))
+    path = os.path.join(TMP, 'np_{}.py'.format(case.replace('#', '_')))
     open(path, 'w').write(outs['numpy'])
-    spec = importlib.util.spec_from_file_location('np_' + case, path)
+    spec = importlib.util.spec_from_file_location('np_' + case.replace('#', '_'), path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     attr = 'b' if src.strip().startswith('b =') else 'ret'
@@ -114,4 +117,4 @@ for case, args in CASES.items():
         ok = g.shape == want.shape and np.allclose(g, want, rtol=1e-4, atol=1e-4)
         status = '{}  numpy {}  rust c++ {}'.format('OK' if ok else 'MISMATCH', np.round(want, 5).tolist(), np.round(g, 5).tolist())
     pyc = py_cpp if isinstance(py_cpp, str) else np.round(values(py_cpp), 5).tolist()
-    print('{:13s} {}   (python c++: {})'.format(case, status, pyc), flush=True)
+    print('{:18s} {}   (python c++: {})'.format(case, status, pyc), flush=True)
