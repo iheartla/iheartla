@@ -1329,8 +1329,7 @@ class TypeWalker(NodeWalker):
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
                 if not self.local_func_parsing and not self.visiting_opt and not self.visiting_solver_eq:
                     # main params: due to multiple blocks
-                    if type_node.la_type.is_function() and not self.contain_subscript(id0):
-                        # a sequence of functions (e.g., D_i) is a sequence parameter with no signature
+                    if type_node.la_type.is_function():
                         sig = get_func_signature(id0, type_node.la_type)
                         # if sig in self.func_sig_dict and type_node.la_type.is_overloaded():
                         # make sure it has func overloading
