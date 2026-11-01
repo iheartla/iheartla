@@ -17,13 +17,13 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 | Part | State |
 |---|---|
 | Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus |
-| Declarations pass (second-parse configuration) | 231 of 237 corpus programs. The other 6 import `.hlang` modules |
+| Declarations pass (second-parse configuration) | 237/237 corpus programs |
 | Type checker → typed AST | Covers every program in the Python test suite |
 | NumPy backend | 207/207 Python tests |
 | Eigen (C++) backend | 207/207 Python tests (via cppyy) |
-| LaTeX and MathJax backends | 220 of 221 corpus programs without modules give output identical to Python's. The one exception is a Python bug: it prints `None` as the name of `asin²` |
+| LaTeX and MathJax backends | 231 of 232 corpus programs (including modules) give output identical to Python's. The one exception is a Python bug: it prints `None` as the name of `asin²` |
 | MATLAB backend | Not yet. MATLAB can't run here (license error), and the Python MATLAB backend isn't a reliable reference: it is untested, and for some inputs it emits Python syntax |
-| I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Not yet |
+| I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, mesh expressions compile but throw at run time |
 | Continuous optimization in C++ (`argmin` over ℝⁿ) | Throws at run time (Python uses LBFGSpp). Optimization over a finite set works |
 
 To run the Python test suite with code from the Rust compiler:
@@ -49,11 +49,14 @@ the grammar's regexes).
 | `T₁`, NumPy + Eigen (two Rust processes) | 0.24 s | 0.017 s | 14× |
 | All 207 test programs, NumPy + Eigen | 23.1 s | 3.1 s | 7× |
 | Parse `Neighborhoods.hlang` (first pass only) | 1.64 s | 0.016 s | 103× |
+| I❤️MESH `one_ring` (imports Neighborhoods, which imports FundamentalMeshAccessors), NumPy | 4.91 s | 0.039 s | 126× |
+| Same, NumPy + LaTeX + MathJax (three Rust processes) | 14.85 s | 0.114 s | 130× |
 
 The parser speed-up is the one that matters for I❤️MESH. TatSu parses take almost all of
-the 28 s of an I❤️MESH compile (see `PERFORMANCE.md` in the main checkout), and each
-imported module is parsed twice per output type. In Rust, those parses would take
-milliseconds each, and the typed AST is built once and shared by all backends.
+an I❤️MESH compile (see `PERFORMANCE.md` in the main checkout), and each imported module is
+parsed twice per output type. In Rust, each module is parsed and checked once per
+compilation (`modules.rs`), and the typed AST is shared by all backends.
+(`python rust/tools/bench_mesh.py` gives the I❤️MESH rows.)
 
 ## Design
 
@@ -69,6 +72,12 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
   kept, because the second grammar depends on declared names (how `AB` differs from `A B`).
 - **Declarations** (`decls.rs`): compute the second parse's configuration (identifiers,
   functions, builtins, renames) from the first parse tree.
+- **Modules** (`modules.rs`): `.hlang` modules are found first among the bundled modules,
+  which are embedded in the binary, then in the importer's directory. The order is the
+  same as Python's. Each module is compiled once per compilation. The importer binds its
+  arguments to the module's parameters, substitutes them into the imported types (mesh
+  sizes are dimension markers like `@mesh:M:v`), and adds the module's functions to its own
+  second-parse configuration.
 - **Checker** (`check.rs`, `ty.rs`, `dims.rs`): one pass over the parse tree. It produces
   a typed AST (`ast.rs`) where every expression carries an immutable `Ty`. Dimensions are
   symbolic (`dims::Sym`, a small SymPy subset). Statements are ordered by def–use
@@ -96,5 +105,10 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
 - `run_tests_rust.py`: run the Python test suite on Rust output (see above).
 - `cmp_all.py BACKEND [-v N]`: compare one backend's output with the goldens over the whole
   corpus (identical / equal up to whitespace / different / error).
-- `bench.py`: the timing table above.
+- `bench.py`, `bench_mesh.py`: the timing tables above.
+- `mesh_check.py`: compile I❤️MESH programs with both compilers, run both on an octahedron,
+  and compare every attribute and every function value over all element arguments.
+  `mesh_runtime/triangle_mesh.py` adds `ElementSets` and `indicator` to the I❤️MESH
+  Python runtime. Generated code (from either compiler) calls them, but
+  `iheartla/mesh/Python/triangle_mesh.py` doesn't define them.
 - `gen_parser.py`: regenerate `src/grammar/` from the TatSu grammars.
