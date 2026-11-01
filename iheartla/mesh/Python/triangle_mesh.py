@@ -6,7 +6,15 @@ from util import *
 
 
 def nonzeros(target):
-    return set(target.nonzero()[0])
+    # frozenset: generated NumPy code represents I❤️LA sets as frozensets (e.g. frozenset.intersection)
+    return frozenset(target.nonzero()[0].tolist())
+
+
+def indicator(ele_set, size):
+    # a size × 1 sparse column with a 1 at each index in ele_set (as indicator() in the C++ runtime)
+    idx = sorted(ele_set)
+    return scipy.sparse.coo_matrix((np.ones(len(idx), dtype=int), (idx, np.zeros(len(idx), dtype=int))),
+                                   shape=(size, 1), dtype=int)
 
 
 class TriangleMesh:
@@ -31,7 +39,7 @@ class TriangleMesh:
 
     def initialize(self, T):
         self.V = range(np.amax(T) + 1)
-        self.T = preprocess_matrix(T)
+        self.T = np.asarray(preprocess_matrix(T), dtype=int)  # preprocess_matrix returns floats
         if T.shape[1] == 4:
             # tets
             self.create_faces()
@@ -48,10 +56,10 @@ class TriangleMesh:
         self.init_mesh_indices()
 
     def init_mesh_indices(self):
-        self.Vi = set(self.V)
-        self.Ei = set([i for i in range(self.E.shape[0])])
-        self.Fi = set([i for i in range(self.F.shape[0])])
-        self.Ti = set([i for i in range(self.T.shape[0])])
+        self.Vi = frozenset(self.V)
+        self.Ei = frozenset(range(self.E.shape[0]))
+        self.Fi = frozenset(range(self.F.shape[0]))
+        self.Ti = frozenset(range(self.T.shape[0]))
 
     def create_edges(self):
         E = np.zeros((3 * self.F.shape[0], 2), dtype=int)
@@ -75,10 +83,11 @@ class TriangleMesh:
             self.map_f[self.face_key(self.F[i, 0], self.F[i, 1], self.F[i, 2])] = i
 
     def face_key(self, i, j, k):
-        return hash("i{}j{}k{}".format(i, j, k))
+        # int(): float indices (e.g. from permute_rvector) must give the same key as ints
+        return (int(i), int(j), int(k))
 
     def edge_key(self, i, j):
-        return hash("i{}j{}".format(i, j))
+        return (int(i), int(j))
 
     def get_face_index(self, i, j, k):
         sign = -1
@@ -157,15 +166,29 @@ class TriangleMesh:
         return len(self.Ti)
 
     def nonzeros(self, target):
-        return set(target.nonzero()[0])
+        return nonzeros(target)
 
-    def MeshSets(self):
+    def is_tet_mesh(self):
+        return self.bm3 is not None
+
+    # As in the C++ runtime (FaceMesh, CellMesh): V, E, F (and the tetrahedra C for a tet mesh),
+    # and the boundary matrices between consecutive dimensions.
+    def ElementSets(self):
+        if self.is_tet_mesh():
+            return [self.Vi, self.Ei, self.Fi, self.Ti]
         return [self.Vi, self.Ei, self.Fi]
 
+    def MeshSets(self):
+        return self.ElementSets()
+
     def BoundaryMatrices(self):
+        if self.is_tet_mesh():
+            return [self.bm1, self.bm2, self.bm3]
         return [self.bm1, self.bm2]
 
     def UnsignedBoundaryMatrices(self):
+        if self.is_tet_mesh():
+            return [self.pos_bm1, self.pos_bm2, self.pos_bm3]
         return [self.pos_bm1, self.pos_bm2]
 
     def vertices_to_vector(self, vset):
