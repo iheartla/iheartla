@@ -1273,6 +1273,10 @@ class CodeGenEigen(CodeGen):
                     real_type = copy.deepcopy(param.la_type)
                     real_type.set_int(False)
                     param_content = "{}({})".format(self.get_ctype(real_type), param_content)
+                elif param.node_type != IRNodeType.Id and param.la_type is not None and (param.la_type.is_vector() or param.la_type.is_matrix()):
+                    # An expression such as y + y is a lazy Eigen expression, not a Matrix, so a local
+                    # function's template parameter REAL can't be deduced from it: evaluate it first.
+                    param_content = "({}).eval()".format(param_content)
                 params.append(param_content)
                 pre_list += param_info.pre_list
         if self.visiting_diff_eq:

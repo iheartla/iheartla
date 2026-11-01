@@ -163,3 +163,35 @@ class TestLocalFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_vector_param_expression_arg(self):
+        # expression arguments (a lazy Eigen expression, not a Matrix) for a vector parameter
+        la_str = """f(x) = x + x where x: ℝ ^ 3
+                    a = f(y + y)
+                    b = f(2 y)
+                    c = f(A y)
+                    where
+                    y: ℝ ^ 3
+                    A: ℝ ^ (3 × 3)"""
+        func_info = self.gen_func_info(la_str)
+        y = np.array([1, 2, 3])
+        A = np.array([[1, 0, 0], [0, 2, 0], [0, 0, 3]])
+        res = func_info.numpy_func(y, A)
+        self.assertDMatrixEqual(res.a, np.array([4, 8, 12]))
+        self.assertDMatrixEqual(res.b, np.array([4, 8, 12]))
+        self.assertDMatrixEqual(res.c, np.array([2, 8, 18]))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 3, 1> y;",
+                     "    y << 1, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 3> A;",
+                     "    A << 1, 0, 0, 0, 2, 0, 0, 0, 3;",
+                     "    auto r = {}(y, A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> ab, c;",
+                     "    ab << 4, 8, 12;",
+                     "    c << 2, 8, 18;",
+                     "    return r.a.isApprox(ab) && r.b.isApprox(ab) && r.c.isApprox(c);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
