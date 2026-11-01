@@ -8,7 +8,7 @@ validated by running the Python test suite on it, not by byte comparison.
 
 ```
 cargo build --release                       # → target/release/iheartla
-target/release/iheartla compile --backend numpy < program.la   # or eigen, latex, mathjax
+target/release/iheartla compile --backend numpy < program.la   # or eigen, matlab, latex, mathjax, macromathjax
 target/release/iheartla parse [--init|--full] < program.la     # parse tree as JSON
 ```
 
@@ -22,9 +22,10 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 | NumPy backend | 207/207 Python tests |
 | Eigen (C++) backend | 207/207 Python tests (via cppyy) |
 | LaTeX and MathJax backends | 231 of 232 corpus programs (including modules) give output identical to Python's. The one exception is a Python bug: it prints `None` as the name of `asin²` |
-| MATLAB backend | Not yet. MATLAB can't run here (license error), and the Python MATLAB backend isn't a reliable reference: it is untested, and for some inputs it emits Python syntax |
+| MacroMathJax backend (H❤️rtDown click handlers) | 223 of 224 corpus programs match: 161 byte-identical, and 62 equal once equation symbol lists are sorted (Python lists them in hash order). The other is the `asin²` bug |
+| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 205 of 207 tests pass; the 2 failures are test issues (below). Python's own MATLAB output passes 196 of 207 in Octave |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 611 values equal to the NumPy output |
-| Continuous optimization in C++ (`argmin` over ℝⁿ) | Throws at run time (Python uses LBFGSpp). Optimization over a finite set works |
+| Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp, with constant bounds as box constraints. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy. Python's C++ gets none right except where the answer is 0: it returns the iteration count, ignores constraints, or fails to compile or run |
 
 To run the Python test suite with code from the Rust compiler:
 
@@ -34,7 +35,18 @@ RUST_TEST_VERBOSE=1 python rust/tools/run_tests_rust.py test.test_python_norm   
 ```
 
 The Python compiler still runs, but its output is replaced by the Rust compiler's for
-the backends listed in `IHEARTLA_RUST_BACKENDS`. Each test module runs in its own
+the backends listed in `IHEARTLA_RUST_BACKENDS` (`numpy`, `eigen`, `matlab`).
+
+With `matlab` in that list, the test suite's MATLAB checks run in GNU Octave:
+- the runner needs `octave-cli`, which ships with Homebrew's `octave`, and `pip install oct2py`;
+- a stand-in replaces the `matlab` engine module;
+- `IHEARTLA_OCTAVE=1` runs the same checks on the Python compiler's MATLAB output.
+
+The 2 failing tests are test issues:
+- `test_set_init` compares an array to a list with `assertEqual`, which raises an error for
+  any array.
+- `test_nested_integral` expects a quadrature result to equal 9 exactly; Octave's
+  `integral` gives 9 + 1.8e-15. Each test module runs in its own
 process, because a C++ compile error can crash cling and end the whole run.
 
 ## Speed
@@ -106,6 +118,8 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
 - `cmp_all.py BACKEND [-v N]`: compare one backend's output with the goldens over the whole
   corpus (identical / equal up to whitespace / different / error).
 - `bench.py`, `bench_mesh.py`: the timing tables above.
+- `opt_check_cpp.py`: run the NumPy and Eigen outputs of the corpus's optimization programs
+  and compare results. It needs LBFGSpp, which `test/fetch_deps.sh` fetches, and Eigen 3.4.
 - `mesh_check_cpp.py`: compile the Rust Eigen output with the I❤️MESH C++ runtime
   (`iheartla/mesh/Cpp`, built with clang++), run it on the same octahedron, and compare
   every value with the Rust NumPy output.
