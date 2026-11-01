@@ -22,8 +22,8 @@ Vertices(e) = vertexset(NonZeros(`B⁰` IndicatorVector({e}))) where e ∈ E
 Vertices(H) = vertexset(NonZeros(`B⁰` IndicatorVector(H))) where H ⊂ E
  
 Edges(v) = edgeset(NonZeros(`B⁰ᵀ` IndicatorVector({v}))) where v ∈ V
-Edges(f) = faceset(NonZeros(`B¹` IndicatorVector({f}))) where f ∈ F
-Edges(t) = faceset(NonZeros(`B¹` (`B²` IndicatorVector({t})))) where t ∈ C
+Edges(f) = edgeset(NonZeros(`B¹` IndicatorVector({f}))) where f ∈ F
+Edges(t) = edgeset(NonZeros(`B¹` (`B²` IndicatorVector({t})))) where t ∈ C
 
 Faces(v) = faceset(NonZeros(`B¹ᵀ` (`B⁰ᵀ` IndicatorVector({v})))) where v ∈ V
 Faces(e) = faceset(NonZeros(`B¹ᵀ` IndicatorVector({e}))) where e ∈ E
