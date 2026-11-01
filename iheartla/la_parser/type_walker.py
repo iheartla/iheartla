@@ -1317,21 +1317,30 @@ class TypeWalker(NodeWalker):
             id0_info = self.walk(node.id[id_index], **kwargs)
             ir_node.id.append(id0_info.ir)
             id0 = id0_info.content
+            id_type_node = type_node
+            if type_node.la_type.is_function() and self.contain_subscript(id0):
+                # A subscripted function, D_i: ℝ^3 -> ℝ, is a function of its subscripts too, D: ℤ × ℝ^3 -> ℝ,
+                # as for local functions (f_i(x) = ...): D_i(u_i) calls D(i, u_i)
+                subs = self.get_all_ids(id0)[1]
+                id0 = self.get_all_ids(id0)[0]
+                id_type_node = copy.copy(type_node)
+                id_type_node.la_type = copy.deepcopy(type_node.la_type)
+                id_type_node.la_type.params = [ScalarType(is_int=True) for sub in subs] + id_type_node.la_type.params
             # if node.subset:
             #     # surface def
-            #     if type_node.la_type.is_vector():
-            #         dim = type_node.la_type.rows
+            #     if id_type_node.la_type.is_vector():
+            #         dim = id_type_node.la_type.rows
             #         self.smooth_dict[id0] = dim
             if hasattr(node, 'desc') and node.desc is not None:
                 self.desc_dict[id0_info.ir.get_main_id()] = node.desc
             if True:
-                self.handle_identifier(id0, id0_info.ir, type_node)
+                self.handle_identifier(id0, id0_info.ir, id_type_node)
                 # self.logger.debug("param index:{}".format(kwargs[PARAM_INDEX]))
                 if not self.local_func_parsing and not self.visiting_opt and not self.visiting_solver_eq:
                     # main params: due to multiple blocks
-                    if type_node.la_type.is_function():
-                        sig = get_func_signature(id0, type_node.la_type)
-                        # if sig in self.func_sig_dict and type_node.la_type.is_overloaded():
+                    if id_type_node.la_type.is_function():
+                        sig = get_func_signature(id0, id_type_node.la_type)
+                        # if sig in self.func_sig_dict and id_type_node.la_type.is_overloaded():
                         # make sure it has func overloading
                         # handle parameters in the end, since now the final type of the sym is unknown
                         self.parameters[kwargs[PARAM_INDEX]+id_index] = self.func_sig_dict[sig]
@@ -1340,55 +1349,55 @@ class TypeWalker(NodeWalker):
                         #     self.update_parameters(id0, kwargs[PARAM_INDEX] + id_index)
                     else:
                         self.update_parameters(id0, kwargs[PARAM_INDEX]+id_index)
-                if type_node.la_type.is_matrix():
-                    id1 = type_node.la_type.rows
-                    id2 = type_node.la_type.cols
+                if id_type_node.la_type.is_matrix():
+                    id1 = id_type_node.la_type.rows
+                    id2 = id_type_node.la_type.cols
                     if isinstance(id1, str) and not id1.isnumeric():
-                        if type_node.la_type.is_dynamic_row():
-                            id1 = type_node.id1.get_main_id()
+                        if id_type_node.la_type.is_dynamic_row():
+                            id1 = id_type_node.id1.get_main_id()
                         else:
-                            if id1 not in self.get_cur_param_data().symtable and type_node.la_type.rows_ir is None:
+                            if id1 not in self.get_cur_param_data().symtable and id_type_node.la_type.rows_ir is None:
                                 self.get_cur_param_data().symtable[id1] = ScalarType(is_int=True)
-                        if type_node.la_type.rows_ir is None:
+                        if id_type_node.la_type.rows_ir is None:
                             if self.contain_subscript(id0):
                                 self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 1)
                             else:
                                 self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 0)
                         else:
-                            self.get_cur_param_data().arith_dim_list.append(type_node.la_type.rows)
+                            self.get_cur_param_data().arith_dim_list.append(id_type_node.la_type.rows)
                     if isinstance(id2, str) and not id2.isnumeric():
-                        if type_node.la_type.is_dynamic_col():
-                            id2 = type_node.id2.get_main_id()
+                        if id_type_node.la_type.is_dynamic_col():
+                            id2 = id_type_node.id2.get_main_id()
                         else:
-                            if id2 not in self.symtable and type_node.la_type.cols_ir is None:
+                            if id2 not in self.symtable and id_type_node.la_type.cols_ir is None:
                                 self.get_cur_param_data().symtable[id2] = ScalarType(is_int=True)
-                        if type_node.la_type.cols_ir is None:
+                        if id_type_node.la_type.cols_ir is None:
                             if self.contain_subscript(id0):
                                 self.get_cur_param_data().update_dim_dict(id2, self.get_main_id(id0), 2)
                             else:
                                 self.get_cur_param_data().update_dim_dict(id2, self.get_main_id(id0), 1)
                         else:
-                            self.get_cur_param_data().arith_dim_list.append(type_node.la_type.cols)
-                elif type_node.la_type.is_vector():
-                    id1 = type_node.la_type.rows
+                            self.get_cur_param_data().arith_dim_list.append(id_type_node.la_type.cols)
+                elif id_type_node.la_type.is_vector():
+                    id1 = id_type_node.la_type.rows
                     if isinstance(id1, str) and not id1.isnumeric():
-                        if type_node.la_type.is_dynamic_row():
-                            id1 = type_node.id1.get_main_id()
+                        if id_type_node.la_type.is_dynamic_row():
+                            id1 = id_type_node.id1.get_main_id()
                         else:
-                            if id1 not in self.get_cur_param_data().symtable and type_node.la_type.rows_ir is None:
+                            if id1 not in self.get_cur_param_data().symtable and id_type_node.la_type.rows_ir is None:
                                 self.get_cur_param_data().symtable[id1] = ScalarType(is_int=True)
-                        if type_node.la_type.rows_ir is None:
+                        if id_type_node.la_type.rows_ir is None:
                             if self.contain_subscript(id0):
                                 self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 1)
                             else:
                                 self.get_cur_param_data().update_dim_dict(id1, self.get_main_id(id0), 0)
                         else:
-                            self.get_cur_param_data().arith_dim_list.append(type_node.la_type.rows)
-                elif type_node.la_type.is_mapping():
-                    self.mapping_dict[id0] = type_node
+                            self.get_cur_param_data().arith_dim_list.append(id_type_node.la_type.rows)
+                elif id_type_node.la_type.is_mapping():
+                    self.mapping_dict[id0] = id_type_node
                     if node.subset:
-                        type_node.subset = True
-                        type_node.la_type.subset = True
+                        id_type_node.subset = True
+                        id_type_node.la_type.subset = True
         ir_node.type = type_node
         ir_node.belong = node.belong
         return ir_node
