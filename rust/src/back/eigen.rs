@@ -35,7 +35,12 @@ pub fn generate(prog: &Program, struct_name: &str) -> String {
         out.push_str("#include \"MeshHelper.h\"\nusing namespace iheartmesh;\n");
     }
     out.push('\n');
-    out.push_str(&structure(prog, struct_name));
+    let body = structure(prog, struct_name);
+    if body.contains("LBFGSpp::") {
+        // (header-only: https://github.com/yixuan/LBFGSpp)
+        out.push_str("#include <LBFGS.h>\n#include <LBFGSB.h>\n\n");
+    }
+    out.push_str(&body);
     out
 }
 
@@ -998,10 +1003,127 @@ if(first || f {better} best){{ best = f; arg = {var}; first = false; }} }} retur
                 );
             }
         }
-        format!(
-            "[&]() -> {} {{ throw std::runtime_error(\"continuous optimization is not supported by the Eigen backend yet\"); }}()",
-            cpp_type(ty)
-        )
+        self.continuous_optimize(kind, vars, objective, constraints, ty)
+    }
+
+    /// Minimization over real scalars, vectors and matrices with LBFGSpp:
+    /// the variables are packed into one vector; gradients are central
+    /// differences; constraints that bound a variable (or an entry of one) by
+    /// a constant become box bounds (LBFGS-B). Other constraints are not
+    /// supported (an exception at run time).
+    fn continuous_optimize(&mut self, kind: OptKind, vars: &[(String, Ty)], objective: &Expr, constraints: &[Cond], ty: &Ty) -> String {
+        let rt = cpp_type(ty);
+        // each variable's offset and size (as C++ expressions) in the packed vector
+        let mut layout: Vec<(String, String, String, String)> = Vec::new(); // (name, offset, rows, cols)
+        let mut offset = "0".to_string();
+        for (v, t) in vars {
+            let (r, c) = match t {
+                Scalar(_) => ("1".to_string(), "1".to_string()),
+                Vector { rows, .. } => (self.dim(rows), "1".to_string()),
+                Matrix { rows, cols, .. } => (self.dim(rows), self.dim(cols)),
+                _ => return format!("[&]() -> {rt} {{ throw std::runtime_error(\"optimization over this type is not supported\"); }}()"),
+            };
+            layout.push((v.clone(), offset.clone(), r.clone(), c.clone()));
+            offset = format!("{offset} + ({r})*({c})");
+        }
+        let n = offset;
+        // box bounds
+        let mut bounds = Vec::new();
+        for c in constraints {
+            match self.bound(c, &layout) {
+                Some(b) => bounds.push(b),
+                None => {
+                    return format!("[&]() -> {rt} {{ throw std::runtime_error(\"only constraints that bound a variable by a constant are supported by the Eigen backend\"); }}()")
+                }
+            }
+        }
+        let sign = if matches!(kind, OptKind::Max | OptKind::Argmax) { "-" } else { "" };
+        self.locals.push(vars.iter().map(|(v, _)| v.clone()).collect());
+        let obj = self.conv(objective, &Ty::real());
+        self.locals.pop();
+        let unpack: Vec<String> = vars
+            .iter()
+            .zip(&layout)
+            .map(|((v, t), (_, off, r, c))| match t {
+                Scalar(_) => format!("const double {} = X({off});", cpp_ident(v)),
+                _ => format!("const {} {} = Eigen::Map<const Eigen::MatrixXd>(X.data() + ({off}), {r}, {c});", cpp_type(&t.with_elem(Elem::Real)), cpp_ident(v)),
+            })
+            .collect();
+        let objective_fn = format!("auto objective = [&](const Eigen::VectorXd & X) -> double {{ {} return {sign}(double({obj})); }};", unpack.join(" "));
+        let grad_fn = "auto f = [&](const Eigen::VectorXd & X, Eigen::VectorXd & grad) -> double { Eigen::VectorXd Y = X; \
+for(int k = 0; k < X.size(); k++){ const double h = 1e-6 * std::max(1.0, std::abs(X(k))); Y(k) = X(k) + h; const double fp = objective(Y); \
+Y(k) = X(k) - h; const double fm = objective(Y); Y(k) = X(k); grad(k) = (fp - fm) / (2 * h); } return objective(X); };";
+        let solve = if bounds.is_empty() {
+            "LBFGSpp::LBFGSParam<double> param; param.epsilon = 1e-10; param.max_iterations = 1000; \
+LBFGSpp::LBFGSSolver<double> solver(param); double fx; solver.minimize(f, x, fx);"
+                .to_string()
+        } else {
+            let mut b = String::from("Eigen::VectorXd lb = Eigen::VectorXd::Constant(N, -std::numeric_limits<double>::infinity()); \
+Eigen::VectorXd ub = Eigen::VectorXd::Constant(N, std::numeric_limits<double>::infinity()); ");
+            for (k, lower, value) in &bounds {
+                let (vec, f) = if *lower { ("lb", "max") } else { ("ub", "min") };
+                b += &format!("{vec}({k}) = std::{f}({vec}({k}), double({value})); ");
+            }
+            b + "x = x.cwiseMax(lb).cwiseMin(ub); LBFGSpp::LBFGSBParam<double> param; param.epsilon = 1e-10; param.max_iterations = 1000; \
+LBFGSpp::LBFGSBSolver<double> solver(param); double fx; solver.minimize(f, x, fx, lb, ub);"
+        };
+        let result = match kind {
+            OptKind::Min | OptKind::Max => format!("return {sign}fx;"),
+            _ => {
+                let (v, t) = &vars[0];
+                let (_, off, r, c) = &layout[0];
+                let _ = v;
+                match t {
+                    Scalar(_) => format!("return x({off});"),
+                    _ => format!("return {rt}(Eigen::Map<const Eigen::MatrixXd>(x.data() + ({off}), {r}, {c}));"),
+                }
+            }
+        };
+        format!("[&]() -> {rt} {{ const int N = {n}; {objective_fn} {grad_fn} Eigen::VectorXd x = Eigen::VectorXd::Zero(N); {solve} {result} }}()")
+    }
+
+    /// A constraint `v op c` (or `v_k op c`, `c op v`) as a box bound:
+    /// (index in the packed vector, lower?, value).
+    fn bound(&mut self, c: &Cond, layout: &[(String, String, String, String)]) -> Option<(String, bool, String)> {
+        let Cond::Cmp(op, a, b) = c else { return None };
+        let constant = |e: &Expr| matches!(&*e.kind, ExprKind::Int(_) | ExprKind::Real(_) | ExprKind::Fraction(..))
+            || matches!(&*e.kind, ExprKind::Neg(x) if matches!(&*x.kind, ExprKind::Int(_) | ExprKind::Real(_)));
+        let slot = |e: &Expr| -> Option<String> {
+            match &*e.kind {
+                ExprKind::Var(n) => layout.iter().find(|l| &l.0 == n).filter(|l| l.2 == "1" && l.3 == "1").map(|l| l.1.clone()),
+                ExprKind::Index { base, idx, .. } => {
+                    let l = layout.iter().find(|l| &l.0 == base)?;
+                    let k = |i: &Idx| match i {
+                        Idx::At(x) => match &*x.kind {
+                            ExprKind::Int(v) => Some(v - 1),
+                            _ => None,
+                        },
+                        Idx::All => None,
+                    };
+                    match idx.len() {
+                        1 => Some(format!("({}) + {}", l.1, k(&idx[0])?)),
+                        // column-major, as Eigen::Map packs a matrix
+                        2 => Some(format!("({}) + {} + {}*({})", l.1, k(&idx[0])?, k(&idx[1])?, l.2)),
+                        _ => None,
+                    }
+                }
+                _ => None,
+            }
+        };
+        let (k, lower_if_gt, value) = if let (Some(k), true) = (slot(a), constant(b)) {
+            (k, true, self.expr(b))
+        } else if let (Some(k), true) = (slot(b), constant(a)) {
+            (k, false, self.expr(a))
+        } else {
+            return None;
+        };
+        // v > c, v >= c: a lower bound (strict bounds are closed)
+        let lower = match op {
+            CmpOp::Gt | CmpOp::Ge => lower_if_gt,
+            CmpOp::Lt | CmpOp::Le => !lower_if_gt,
+            _ => return None,
+        };
+        Some((k, lower, value))
     }
 }
 
