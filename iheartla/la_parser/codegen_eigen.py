@@ -959,7 +959,13 @@ class CodeGenEigen(CodeGen):
         content.append("{} {};\n".format(self.get_ctype(assign_id_type), tmp_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
-            if len(node.enum_list) == 1:
+            if len(node.enum_list) == 1 and node.range.la_type.index_type and not node.use_tuple:
+                # index sets store 0-based values; the name is 1-based (as in the NumPy backend)
+                item_name = self.generate_var_name("item")
+                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), item_name,
+                                                            range_info.content))
+                content.append('    int {} = {} + 1;\n'.format(node.enum_list[0], item_name))
+            elif len(node.enum_list) == 1:
                 content.append(
                     'for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
                                                  range_info.content))

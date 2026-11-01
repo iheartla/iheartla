@@ -100,3 +100,28 @@ class TestSet(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_union_index_set(self):
+        # union over an index set: its elements are stored 0-based, and the name i is 1-based
+        la_str = """A = ∪_(i ∈ T) N(i)
+        where
+        N: ℤ -> {ℤ}
+        T: {ℤ} index
+        """
+        func_info = self.gen_func_info(la_str)
+        def N(p0):
+            return [p0, p0 + 10]
+        T = [0, 2]  # i = 1 and i = 3
+        self.assertEqual(sorted(func_info.numpy_func(N, T).A), [1, 3, 11, 13])
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::function<std::vector<int >(int)> N = [](int p)->std::vector<int >{",
+                     "        return {p, p + 10};",
+                     "    };",
+                     "    std::vector<int > T = {0, 2};",
+                     "    std::vector<int > A = {}(N, T).A;".format(func_info.eig_func_name),
+                     "    return A == std::vector<int >({1, 3, 11, 13});",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
