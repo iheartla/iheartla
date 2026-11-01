@@ -178,9 +178,6 @@ class TriangleMesh:
             return [self.Vi, self.Ei, self.Fi, self.Ti]
         return [self.Vi, self.Ei, self.Fi]
 
-    def MeshSets(self):
-        return self.ElementSets()
-
     def BoundaryMatrices(self):
         if self.is_tet_mesh():
             return [self.bm1, self.bm2, self.bm3]
