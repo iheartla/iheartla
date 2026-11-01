@@ -2670,12 +2670,10 @@ class CodeGenEigen(CodeGen):
                 # sym is not defined as local param
                 prefix = True
             elif self.local_func_parsing:
+                # a parameter of this local function, not one of the program's
                 is_param = False
-                if self.local_func_name != '':
-                    for key, value in self.func_data_dict.items():
-                        if sym in value.params_data.parameters:
-                            is_param = True
-                            break
+                if self.local_func_name in self.func_data_dict:
+                    is_param = sym in self.func_data_dict[self.local_func_name].params_data.parameters
                 if not is_param and sym in self.used_params:
                     prefix = True
                 if not is_param:
