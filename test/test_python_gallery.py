@@ -41,6 +41,8 @@ class TestGallery(BasePythonTest):
         `x₀`: ℝ^n
         b_i: ℝ^m  """
         func_info = self.gen_func_info(la_str)
+        # eigen test (continuous optimization with LBFGSpp)
+        self.assertTrue(np.allclose(self.eigen_values(func_info, ["std::vector<Eigen::MatrixXd> A(2, Eigen::MatrixXd(2, 2));", "A[0] << 1, 2, 4, 3;", "A[1] << 1, 2, 4, 3;", "Eigen::VectorXd x0(2);", "x0 << 1, 2;", "std::vector<Eigen::VectorXd> b(2, Eigen::VectorXd(2));", "b[0] << 1, 2;", "b[1] << 4, 3;"], ["A", "x0", "b"], "ret"), [6.76227768454], atol=1e-6))
         A = np.array([[[1, 2], [4, 3]], [[1, 2], [4, 3]]])
         x0 = [1, 2]
         b = np.array([[1, 2], [4, 3]])
@@ -54,6 +56,8 @@ class TestGallery(BasePythonTest):
         n̂_i: ℝ^3
         p_i: ℝ^3  """
         func_info = self.gen_func_info(la_str)
+        # eigen test (continuous optimization with LBFGSpp)
+        self.assertTrue(np.allclose(self.eigen_values(func_info, ["std::vector<Eigen::Matrix<double, 3, 1>> x(3), n(3), p(3);", "x[0] << -11, 2, 3; x[1] << 4, 5, 6; x[2] << 17, 8, 9;", "n[0] << 4, 15, 6; n[1] << 7, -18, 9; n[2] << 1, 22, 3;", "p[0] << 7, -8, 9; p[1] << 1, 12, 3; p[2] << 4, -5, 6;"], ["x", "n", "p"], "ret"), [0], atol=1e-6))
         x = np.array([[-11, 2, 3], [4, 5, 6], [17, 8, 9]])
         n̂ = np.array([[4, 15, 6], [7, -18, 9], [1, 22, 3]])
         p = np.array([[7, -8, 9], [1, 12, 3], [4, -5, 6]])
@@ -66,6 +70,8 @@ class TestGallery(BasePythonTest):
         x_i: ℝ^3
         R_i: ℝ^(3×3)"""
         func_info = self.gen_func_info(la_str)
+        # eigen test (continuous optimization with LBFGSpp)
+        self.assertTrue(np.allclose(self.eigen_values(func_info, ["std::vector<Eigen::Matrix<double, 3, 1>> x(2);", "x[0] << 1, 2, 3; x[1] << 3, 6, 5;", "std::vector<Eigen::Matrix<double, 3, 3>> R(2);", "R[0] << 1, 2, 3, 3, 6, 5, 6, 3, 2;", "R[1] << 2, 2, 1, 2, 3, 5, 9, 3, 1;"], ["x", "R"], "ret"), [11.123203285420], atol=1e-6))
         x = np.array([[1, 2, 3], [3, 6, 5]])
         R = np.array([[[1, 2, 3], [3, 6, 5], [6, 3, 2]], [[2, 2, 1], [2, 3, 5], [9, 3, 1]]])
         self.assertTrue(np.isclose(func_info.numpy_func(x, R).ret, 11.123203285420))
