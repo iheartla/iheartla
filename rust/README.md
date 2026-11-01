@@ -17,16 +17,16 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 
 | Part | State |
 |---|---|
-| Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus |
-| Declarations pass (second-parse configuration) | 237/237 corpus programs |
+| Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus (557 parses) |
+| Declarations pass (second-parse configuration) | 269/269 corpus programs |
 | Type checker → typed AST | Covers every program in the Python test suite |
-| NumPy backend | 207/207 Python tests |
-| Eigen (C++) backend | 207/207 Python tests (via cppyy) |
-| LaTeX and MathJax backends | 231 of 232 corpus programs (including modules) give output identical to Python's. The one exception is a Python bug: it prints `None` as the name of `asin²` |
-| MacroMathJax backend (H❤️rtDown click handlers) | 223 of 224 corpus programs match: 161 byte-identical, and 62 equal once equation symbol lists are sorted (Python lists them in hash order). The other is the `asin²` bug |
-| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 205 of 207 tests pass; the 2 failures are test issues (below). Python's own MATLAB output passes 196 of 207 in Octave |
+| NumPy backend | All 224 Python tests on `mesh` (as of the 2026-11-01 merge) |
+| Eigen (C++) backend | All 224 Python tests, via cppyy and, for optimization, the system C++ compiler |
+| LaTeX and MathJax backends | 261/261 corpus programs (including modules) give output identical to Python's |
+| MacroMathJax backend (H❤️rtDown click handlers) | 253/253 corpus programs match Python's output: 251 byte-identical, and 2 equal once equation symbol lists are sorted |
+| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 222 of 224 tests pass; the 2 failures are test issues (below) |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 611 values equal to the NumPy output |
-| Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp v0.4.0, with constant bounds as box constraints. When the line search fails (near a non-smooth or exactly-zero minimum), the best point evaluated is used. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy, on random inputs and on the test suite's own |
+| Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp v0.4.0. Bounds by expressions without the variables, and equalities, become box constraints; other constraints throw, naming the constraint. When the line search fails (near a non-smooth or exactly-zero minimum), the best point evaluated is used. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy, on random inputs and on the test suite's own |
 
 To run the Python test suite with code from the Rust compiler:
 

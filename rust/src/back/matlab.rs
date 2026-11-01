@@ -432,7 +432,7 @@ impl<'p> Gen<'p> {
                 let v = m_ident(var);
                 format!("integral(@(t) arrayfun(@({v}) {b}, t), {}, {}, 'AbsTol', 1e-14, 'RelTol', 1e-14)", self.expr(lo), self.expr(hi))
             }
-            Optimize { kind, vars, objective, constraints } => self.optimize(*kind, vars, objective, constraints, &e.ty),
+            Optimize { kind, vars, objective, constraints, .. } => self.optimize(*kind, vars, objective, constraints, &e.ty),
             SetLit(items) => {
                 let rows: Vec<String> = items
                     .iter()
@@ -445,6 +445,23 @@ impl<'p> Gen<'p> {
                 format!("unique([{}], 'rows')", rows.join("; "))
             }
             Size(x) => format!("numel({})", self.expr(x)),
+            Union { vars, range, body, .. } => {
+                // (index values are 1-based in MATLAB: no offset)
+                let acc = self.fresh("union");
+                let set = self.expr(range);
+                let k = self.fresh("row");
+                self.line(format!("{acc} = zeros(0, 1);"));
+                self.line(format!("for {k} = 1:size({set}, 1)"));
+                self.indent += 1;
+                for (c, v) in vars.iter().enumerate() {
+                    self.line(format!("{} = {set}({k}, {});", m_ident(v), c + 1));
+                }
+                let b = self.expr(body);
+                self.line(format!("{acc} = union({acc}, reshape({b}, [], 1));"));
+                self.indent -= 1;
+                self.line("end");
+                acc
+            }
             MeshCall { .. } | SetOp(..) | Convert(_) | SetComp { .. } => "error('not supported by the MATLAB backend')".into(),
         }
     }

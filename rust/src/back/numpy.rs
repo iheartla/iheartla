@@ -450,6 +450,31 @@ impl<'p> Gen<'p> {
                     format!("[{}]", a.join(", "))
                 }
             }
+            Union { vars, range, body, one_based } => {
+                let acc = self.fresh("union");
+                let r = self.expr(range);
+                self.line(format!("{acc} = frozenset()"));
+                let items: Vec<String> = vars.iter().map(|v| py_ident(v)).collect();
+                let target = if items.len() == 1 { items[0].clone() } else { format!("({})", items.join(", ")) };
+                self.line(format!("for {target} in {r}:"));
+                self.indent += 1;
+                for (v, plus1) in items.iter().zip(one_based) {
+                    if *plus1 {
+                        self.line(format!("{v} = {v} + 1"));
+                    }
+                }
+                self.locals.push(vars.iter().cloned().collect());
+                let b = self.expr(body);
+                self.locals.pop();
+                self.line(format!("{acc} = {acc} | frozenset({b})"));
+                self.indent -= 1;
+                if let Some(s) = self.locals.last_mut() {
+                    s.insert(acc.clone());
+                } else {
+                    self.locals.push(std::collections::HashSet::from([acc.clone()]));
+                }
+                acc
+            }
             SetComp { vars, range, cond, item } => {
                 let r = self.expr(range);
                 self.locals.push(vars.iter().cloned().collect());
@@ -557,7 +582,7 @@ impl<'p> Gen<'p> {
                 self.locals.pop();
                 format!("quad(lambda {}: {b}, {}, {})[0]", py_ident(var), self.expr(lo), self.expr(hi))
             }
-            Optimize { kind, vars, objective, constraints } => self.optimize(*kind, vars, objective, constraints),
+            Optimize { kind, vars, objective, constraints, .. } => self.optimize(*kind, vars, objective, constraints),
             SetLit(items) => {
                 let parts: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
                 format!("frozenset({{{}}})", parts.join(", "))

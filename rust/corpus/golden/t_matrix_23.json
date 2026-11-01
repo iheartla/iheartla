@@ -1,269 +1,132 @@
 {
  "id": "t_matrix_23",
- "src": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector",
+ "src": "D_ii = sum_j A_ij\n        where\n        A: ℝ^(n × n)\n        ",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector",
+   "text": "D_ii = sum_j A_ij\n        where\n        A: ℝ^(n × n)\n        ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     69
+     61
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       28
+       17
       ],
       "stat": {
        "_": "Assignment",
        "@": [
         0,
-        28
+        17
        ],
        "op": "=",
        "left": [
         {
-         "_": "IdentifierAlone",
+         "_": "IdentifierSubscript",
          "@": [
           0,
-          1
+          4
          ],
-         "id": null,
-         "value": "B"
+         "left": {
+          "_": "IdentifierAlone",
+          "@": [
+           0,
+           1
+          ],
+          "id": null,
+          "value": "D"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            2,
+            4
+           ],
+           "id": null,
+           "value": "ii"
+          }
+         ]
         }
        ],
        "right": [
         {
          "_": "Expression",
          "@": [
-          4,
-          28
+          7,
+          17
          ],
+         "sign": null,
          "value": {
-          "_": "Add",
+          "_": "Factor",
           "@": [
-           4,
-           28
+           7,
+           17
           ],
-          "left": {
-           "_": "Expression",
+          "op": {
+           "_": "Summation",
            "@": [
-            4,
-            13
+            7,
+            17
            ],
-           "sign": null,
-           "value": {
+           "cond": null,
+           "exp": {
             "_": "Factor",
             "@": [
-             4,
-             13
+             13,
+             17
             ],
-            "v": {
-             "_": "Vector",
+            "id0": {
+             "_": "IdentifierSubscript",
              "@": [
-              4,
-              13
+              13,
+              17
              ],
-             "exp": [
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               13,
+               14
+              ],
+              "id": null,
+              "value": "A"
+             },
+             "right": [
               {
-               "_": "Expression",
+               "_": "IdentifierAlone",
                "@": [
-                5,
-                6
+                15,
+                17
                ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 5,
-                 6
-                ],
-                "num": {
-                 "_": "Integer",
-                 "@": [
-                  5,
-                  6
-                 ],
-                 "value": [
-                  "1"
-                 ]
-                }
-               }
-              },
-              {
-               "_": "Expression",
-               "@": [
-                8,
-                9
-               ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 8,
-                 9
-                ],
-                "id0": {
-                 "_": "IdentifierAlone",
-                 "@": [
-                  8,
-                  9
-                 ],
-                 "id": null,
-                 "value": "A"
-                }
-               }
-              },
-              {
-               "_": "Expression",
-               "@": [
-                11,
-                12
-               ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 11,
-                 12
-                ],
-                "num": {
-                 "_": "Integer",
-                 "@": [
-                  11,
-                  12
-                 ],
-                 "value": [
-                  "4"
-                 ]
-                }
-               }
+               "id": null,
+               "value": "ij"
               }
              ]
             }
-           }
-          },
-          "op": "+",
-          "right": {
-           "_": "Factor",
-           "@": [
-            16,
-            28
-           ],
-           "v": {
-            "_": "Vector",
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
             "@": [
-             16,
-             28
+             11,
+             12
             ],
-            "exp": [
-             {
-              "_": "Expression",
-              "@": [
-               17,
-               18
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                17,
-                18
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 17,
-                 18
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             },
-             {
-              "_": "Expression",
-              "@": [
-               20,
-               21
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                20,
-                21
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 20,
-                 21
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             },
-             {
-              "_": "Expression",
-              "@": [
-               23,
-               24
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                23,
-                24
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 23,
-                 24
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             },
-             {
-              "_": "Expression",
-              "@": [
-               26,
-               27
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                26,
-                27
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 26,
-                 27
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             }
-            ]
-           }
+            "id": null,
+            "value": "j"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
           }
          }
         }
@@ -273,55 +136,78 @@
      {
       "_": "ParamsBlock",
       "@": [
-       37,
-       69
+       26,
+       52
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        51,
-        69
+        40,
+        52
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          51,
-          69
+          40,
+          52
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a vector",
+         "desc": null,
          "subset": null,
          "type": {
-          "_": "VectorType",
+          "_": "MatrixType",
           "@": [
-           54,
-           59
+           43,
+           52
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            58,
-            59
+            46,
+            47
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             58,
-             59
+             46,
+             47
             ],
-            "num": {
-             "_": "Integer",
+            "id0": {
+             "_": "IdentifierAlone",
              "@": [
-              58,
-              59
+              46,
+              47
              ],
-             "value": [
-              "2"
-             ]
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            50,
+            51
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             50,
+             51
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              50,
+              51
+             ],
+             "id": null,
+             "value": "n"
             }
            }
           },
@@ -332,8 +218,8 @@
           {
            "_": "IdentifierAlone",
            "@": [
-            51,
-            52
+            40,
+            41
            ],
            "id": null,
            "value": "A"
@@ -355,265 +241,146 @@
     "rename": {},
     "const_e": false
    },
-   "text": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector",
+   "text": "D_ii = sum_j A_ij\n        where\n        A: ℝ^(n × n)\n        ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     69
+     61
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       28
+       17
       ],
       "stat": {
        "_": "Assignment",
        "@": [
         0,
-        28
+        17
        ],
        "op": "=",
        "left": [
         {
-         "_": "IdentifierAlone",
+         "_": "IdentifierSubscript",
          "@": [
           0,
-          1
+          4
          ],
-         "id": null,
-         "value": "B"
+         "left": {
+          "_": "IdentifierAlone",
+          "@": [
+           0,
+           1
+          ],
+          "id": null,
+          "value": "D"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            2,
+            3
+           ],
+           "id": null,
+           "value": "i"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            3,
+            4
+           ],
+           "id": null,
+           "value": "i"
+          }
+         ]
         }
        ],
        "right": [
         {
          "_": "Expression",
          "@": [
-          4,
-          28
+          7,
+          17
          ],
+         "sign": null,
          "value": {
-          "_": "Add",
+          "_": "Factor",
           "@": [
-           4,
-           28
+           7,
+           17
           ],
-          "left": {
-           "_": "Expression",
+          "op": {
+           "_": "Summation",
            "@": [
-            4,
-            13
+            7,
+            17
            ],
-           "sign": null,
-           "value": {
+           "cond": null,
+           "exp": {
             "_": "Factor",
             "@": [
-             4,
-             13
+             13,
+             17
             ],
-            "v": {
-             "_": "Vector",
+            "id0": {
+             "_": "IdentifierSubscript",
              "@": [
-              4,
-              13
+              13,
+              17
              ],
-             "exp": [
+             "left": {
+              "_": "IdentifierAlone",
+              "@": [
+               13,
+               14
+              ],
+              "id": null,
+              "value": "A"
+             },
+             "right": [
               {
-               "_": "Expression",
+               "_": "IdentifierAlone",
                "@": [
-                5,
-                6
+                15,
+                16
                ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 5,
-                 6
-                ],
-                "num": {
-                 "_": "Integer",
-                 "@": [
-                  5,
-                  6
-                 ],
-                 "value": [
-                  "1"
-                 ]
-                }
-               }
+               "id": null,
+               "value": "i"
               },
               {
-               "_": "Expression",
+               "_": "IdentifierAlone",
                "@": [
-                8,
-                9
+                16,
+                17
                ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 8,
-                 9
-                ],
-                "id0": {
-                 "_": "IdentifierAlone",
-                 "@": [
-                  8,
-                  9
-                 ],
-                 "id": null,
-                 "value": "A"
-                }
-               }
-              },
-              {
-               "_": "Expression",
-               "@": [
-                11,
-                12
-               ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 11,
-                 12
-                ],
-                "num": {
-                 "_": "Integer",
-                 "@": [
-                  11,
-                  12
-                 ],
-                 "value": [
-                  "4"
-                 ]
-                }
-               }
+               "id": null,
+               "value": "j"
               }
              ]
             }
-           }
-          },
-          "op": "+",
-          "right": {
-           "_": "Factor",
-           "@": [
-            16,
-            28
-           ],
-           "v": {
-            "_": "Vector",
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
             "@": [
-             16,
-             28
+             11,
+             12
             ],
-            "exp": [
-             {
-              "_": "Expression",
-              "@": [
-               17,
-               18
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                17,
-                18
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 17,
-                 18
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             },
-             {
-              "_": "Expression",
-              "@": [
-               20,
-               21
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                20,
-                21
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 20,
-                 21
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             },
-             {
-              "_": "Expression",
-              "@": [
-               23,
-               24
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                23,
-                24
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 23,
-                 24
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             },
-             {
-              "_": "Expression",
-              "@": [
-               26,
-               27
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                26,
-                27
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 26,
-                 27
-                ],
-                "value": [
-                 "1"
-                ]
-               }
-              }
-             }
-            ]
-           }
+            "id": null,
+            "value": "j"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
           }
          }
         }
@@ -623,55 +390,78 @@
      {
       "_": "ParamsBlock",
       "@": [
-       37,
-       69
+       26,
+       52
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        51,
-        69
+        40,
+        52
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          51,
-          69
+          40,
+          52
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a vector",
+         "desc": null,
          "subset": null,
          "type": {
-          "_": "VectorType",
+          "_": "MatrixType",
           "@": [
-           54,
-           59
+           43,
+           52
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            58,
-            59
+            46,
+            47
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             58,
-             59
+             46,
+             47
             ],
-            "num": {
-             "_": "Integer",
+            "id0": {
+             "_": "IdentifierAlone",
              "@": [
-              58,
-              59
+              46,
+              47
              ],
-             "value": [
-              "2"
-             ]
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            50,
+            51
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             50,
+             51
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              50,
+              51
+             ],
+             "id": null,
+             "value": "n"
             }
            }
           },
@@ -682,8 +472,8 @@
           {
            "_": "IdentifierAlone",
            "@": [
-            51,
-            52
+            40,
+            41
            ],
            "id": null,
            "value": "A"
@@ -698,11 +488,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nB = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (2,)\n        # B = (1, A, 4) + (1, 1, 1, 1)\n        self.B = np.hstack((1, A, 4)) + np.hstack((1, 1, 1, 1))\n\n\n\n\n\n",
-  "eigen": "/*\nB = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 4, 1> B;\n\n    heartlib(const Eigen::Matrix<double, 2, 1> & A)\n    {\n    \n        // B = (1, A, 4) + (1, 1, 1, 1)\n        Eigen::Matrix<DT, 4, 1> B_0;\n        B_0 << 1, A, 4;\n        Eigen::Matrix<int, 4, 1> B_1;\n        B_1 << 1, 1, 1, 1;\n        B = B_0 + (B_1).template cast<DT>();\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nB & = \\begin{pmatrix}\n1\\\\A\\\\4\\end{pmatrix} + \\begin{pmatrix}\n1\\\\1\\\\1\\\\1\\end{pmatrix} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2} \\text{ a vector} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nB & = \\begin{pmatrix}\n1\\\\A\\\\4\\end{pmatrix} + \\begin{pmatrix}\n1\\\\1\\\\1\\\\1\\end{pmatrix} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2} \\text{ a vector} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    B = (1, A, 4) + (1, 1, 1, 1)\n%            where\n%            A: ℝ ^ 2: a vector\n    A = reshape(A,[],1);\n\n    assert( numel(A) == 2 );\n\n    % B = (1, A, 4) + (1, 1, 1, 1)\n\n    B = [1; A; 4] + [1; 1; 1; 1];\n    output.B = B;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = \\begin{pmatrix}\n1\\\\\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }\\\\4\\end{pmatrix} + \\begin{pmatrix}\n1\\\\1\\\\1\\\\1\\end{pmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'B'], false, [], [], 'QiA9ICgxLCBBLCA0KSArICgxLCAxLCAxLCAxKQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2} \\text{ a vector} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nD_ii = sum_j A_ij\n        where\n        A: ℝ^(n × n)\n        \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        n = A.shape[1]\n        assert A.shape == (n, n)\n        Dii_0 = []\n        Dvals_0 = []\n        for i in range(1, n+1):\n            sum_0 = 0\n            for j in range(1, A.shape[1]+1):\n                sum_0 += A[i-1, j-1]\n            Dii_0.append((i - 1, i - 1))\n            Dvals_0.append(sum_0)\n        self.D = scipy.sparse.coo_matrix((Dvals_0, np.asarray(Dii_0).T), shape=(n, n))\n\n\n\n\n\n",
+  "eigen": "/*\nD_ii = sum_j A_ij\n        where\n        A: ℝ^(n × n)\n        \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::SparseMatrix<double> D;\n\n    heartlib(const Eigen::MatrixXd & A)\n    {\n        const long n = A.cols();\n        assert( A.rows() == n );\n        // D_ii = sum_j A_ij\n        D.resize(n, n);\n        std::vector<Eigen::Triplet<DT> > tripletList_D;\n        for( int i=1; i<=n; i++){\n            DT sum_0 = 0;\n            for(int j=1; j<=A.cols(); j++){\n                sum_0 += A(i-1, j-1);\n            }\n            tripletList_D.push_back(Eigen::Triplet<DT>(i-1, i-1, sum_0));\n        }\n        D.setFromTriplets(tripletList_D.begin(), tripletList_D.end());\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nD_{i,i} & = \\sum_{j} A_{i, j} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ n \\times n } \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nD_{i,i} & = \\sum_{j} A_{i, j} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ n \\times n } \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    D_ii = sum_j A_ij\n%            where\n%            A: ℝ^(n × n)\n%            \n    n = size(A, 2);\n    assert( isequal(size(A), [n, n]) );\n\n    Dii_0 = zeros(2,0);\n    Dvals_0 = zeros(1,0);\n    for i = 1:n\n        sum_0 = 0;\n        for j = 1:size(A,2)\n            sum_0 = sum_0 + A(i, j);\n        end\n        Dii_0(1:2,end+1) = [i;i];\n        Dvals_0(end+1) = sum_0;\n    end\n    D = sparse(Dii_0(1,:),Dii_0(2,:),Dvals_0,n,n);\n    output.D = D;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'D', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-D_ii\", \"sym\":\"D\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {D} }_{i,i} & = \\sum_{j} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i, j}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'D'], false, [], [], 'RF9paSA9IHN1bV9qIEFfaWo=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} } \\times \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} } } \\\\\n\\\\\n\\end{align*}\n"
  }
 }

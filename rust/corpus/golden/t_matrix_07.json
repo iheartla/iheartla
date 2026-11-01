@@ -1,16 +1,16 @@
 {
  "id": "t_matrix_07",
- "src": "B = [ A 1 ]\n        where\n        A: ℝ ^ 2: a matrix",
+ "src": "B = [ a I ]\n        where\n        a: ℝ: a scalar",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "B = [ A 1 ]\n        where\n        A: ℝ ^ 2: a matrix",
+   "text": "B = [ a I ]\n        where\n        a: ℝ: a scalar",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     52
+     48
     ],
     "vblock": [
      {
@@ -88,15 +88,14 @@
                  8,
                  9
                 ],
-                "num": {
-                 "_": "Integer",
+                "id0": {
+                 "_": "IdentifierAlone",
                  "@": [
                   8,
                   9
                  ],
-                 "value": [
-                  "1"
-                 ]
+                 "id": null,
+                 "value": "I"
                 }
                }
               },
@@ -126,7 +125,7 @@
                    7
                   ],
                   "id": null,
-                  "value": "A"
+                  "value": "a"
                  }
                 }
                }
@@ -144,59 +143,28 @@
       "_": "ParamsBlock",
       "@": [
        20,
-       52
+       48
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
         34,
-        52
+        48
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
           34,
-          52
+          48
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a matrix",
+         "desc": "a scalar",
          "subset": null,
          "type": {
-          "_": "VectorType",
-          "@": [
-           37,
-           42
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            41,
-            42
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             41,
-             42
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              41,
-              42
-             ],
-             "value": [
-              "2"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
+          "_": "ScalarType"
          },
          "id": [
           {
@@ -206,7 +174,7 @@
             35
            ],
            "id": null,
-           "value": "A"
+           "value": "a"
           }
          ]
         }
@@ -225,12 +193,12 @@
     "rename": {},
     "const_e": false
    },
-   "text": "B = [ A 1 ]\n        where\n        A: ℝ ^ 2: a matrix",
+   "text": "B = [ a I ]\n        where\n        a: ℝ: a scalar",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     52
+     48
     ],
     "vblock": [
      {
@@ -308,15 +276,14 @@
                  8,
                  9
                 ],
-                "num": {
-                 "_": "Integer",
+                "id0": {
+                 "_": "IdentifierAlone",
                  "@": [
                   8,
                   9
                  ],
-                 "value": [
-                  "1"
-                 ]
+                 "id": null,
+                 "value": "I"
                 }
                }
               },
@@ -346,7 +313,7 @@
                    7
                   ],
                   "id": null,
-                  "value": "A"
+                  "value": "a"
                  }
                 }
                }
@@ -364,59 +331,28 @@
       "_": "ParamsBlock",
       "@": [
        20,
-       52
+       48
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
         34,
-        52
+        48
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
           34,
-          52
+          48
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a matrix",
+         "desc": "a scalar",
          "subset": null,
          "type": {
-          "_": "VectorType",
-          "@": [
-           37,
-           42
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            41,
-            42
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             41,
-             42
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              41,
-              42
-             ],
-             "value": [
-              "2"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
+          "_": "ScalarType"
          },
          "id": [
           {
@@ -426,7 +362,7 @@
             35
            ],
            "id": null,
-           "value": "A"
+           "value": "a"
           }
          ]
         }
@@ -438,11 +374,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nB = [ A 1 ]\n        where\n        A: ℝ ^ 2: a matrix\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (2,)\n        # B = [ A 1 ]\n        B_0 = np.hstack(((A).reshape(2, 1), np.ones((2, 1))))\n        self.B = B_0\n\n\n\n\n\n",
-  "eigen": "/*\nB = [ A 1 ]\n        where\n        A: ℝ ^ 2: a matrix\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> B;\n\n    heartlib(const Eigen::Matrix<double, 2, 1> & A)\n    {\n    \n        // B = [ A 1 ]\n        Eigen::Matrix<DT, 2, 2> B_0;\n        B_0 << A, MatrixD::Ones(2, 1);\n        B = B_0;\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nB & = \\begin{bmatrix}\nA & 1\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2} \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nB & = \\begin{bmatrix}\nA & 1\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2} \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    B = [ A 1 ]\n%            where\n%            A: ℝ ^ 2: a matrix\n    A = reshape(A,[],1);\n\n    assert( numel(A) == 2 );\n\n    % B = [ A 1 ]\n\n    B_0 = [[reshape(A, [2, 1]), ones(2, 1)]];\n    B = B_0;\n    output.B = B;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = \\begin{bmatrix}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & 1\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'B'], false, [], [], 'QiA9IFsgQSAxIF0=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2} \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nB = [ a I ]\n        where\n        a: ℝ: a scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        # B = [ a I ]\n        B_0 = np.zeros((1, 2))\n        B_0[0] = [a, 1]\n        self.B = B_0\n\n\n\n\n\n",
+  "eigen": "/*\nB = [ a I ]\n        where\n        a: ℝ: a scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 1, 2> B;\n\n    heartlib(const double & a)\n    {\n    \n        // B = [ a I ]\n        Eigen::Matrix<DT, 1, 2> B_0;\n        B_0 << a, 1;\n        B = B_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nB & = \\begin{bmatrix}\na & I\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \na & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nB & = \\begin{bmatrix}\na & I\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\na & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    B = [ a I ]\n%            where\n%            a: ℝ: a scalar\n    assert(numel(a) == 1);\n\n    % B = [ a I ]\n\n    B_0 = zeros(1, 2);\n    B_0(1,:) = [a, 1];\n    B = B_0;\n    output.B = B;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = \\begin{bmatrix}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I} }\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['I', 'a', 'B'], false, [], [], 'QiA9IFsgYSBJIF0=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n"
  }
 }

@@ -1,0 +1,708 @@
+{
+ "id": "t_matrix_29",
+ "src": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     69
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       28
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        28
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "B"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          28
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           4,
+           28
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            4,
+            13
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             4,
+             13
+            ],
+            "v": {
+             "_": "Vector",
+             "@": [
+              4,
+              13
+             ],
+             "exp": [
+              {
+               "_": "Expression",
+               "@": [
+                5,
+                6
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 5,
+                 6
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  5,
+                  6
+                 ],
+                 "value": [
+                  "1"
+                 ]
+                }
+               }
+              },
+              {
+               "_": "Expression",
+               "@": [
+                8,
+                9
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 8,
+                 9
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  8,
+                  9
+                 ],
+                 "id": null,
+                 "value": "A"
+                }
+               }
+              },
+              {
+               "_": "Expression",
+               "@": [
+                11,
+                12
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 11,
+                 12
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  11,
+                  12
+                 ],
+                 "value": [
+                  "4"
+                 ]
+                }
+               }
+              }
+             ]
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            16,
+            28
+           ],
+           "v": {
+            "_": "Vector",
+            "@": [
+             16,
+             28
+            ],
+            "exp": [
+             {
+              "_": "Expression",
+              "@": [
+               17,
+               18
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                17,
+                18
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 17,
+                 18
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             },
+             {
+              "_": "Expression",
+              "@": [
+               20,
+               21
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                20,
+                21
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 20,
+                 21
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             },
+             {
+              "_": "Expression",
+              "@": [
+               23,
+               24
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                23,
+                24
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 23,
+                 24
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             },
+             {
+              "_": "Expression",
+              "@": [
+               26,
+               27
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                26,
+                27
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 26,
+                 27
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             }
+            ]
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       37,
+       69
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        51,
+        69
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          51,
+          69
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a vector",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           54,
+           59
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            58,
+            59
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             58,
+             59
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              58,
+              59
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            51,
+            52
+           ],
+           "id": null,
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "B = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     69
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       28
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        28
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "B"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          28
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           4,
+           28
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            4,
+            13
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             4,
+             13
+            ],
+            "v": {
+             "_": "Vector",
+             "@": [
+              4,
+              13
+             ],
+             "exp": [
+              {
+               "_": "Expression",
+               "@": [
+                5,
+                6
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 5,
+                 6
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  5,
+                  6
+                 ],
+                 "value": [
+                  "1"
+                 ]
+                }
+               }
+              },
+              {
+               "_": "Expression",
+               "@": [
+                8,
+                9
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 8,
+                 9
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  8,
+                  9
+                 ],
+                 "id": null,
+                 "value": "A"
+                }
+               }
+              },
+              {
+               "_": "Expression",
+               "@": [
+                11,
+                12
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 11,
+                 12
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  11,
+                  12
+                 ],
+                 "value": [
+                  "4"
+                 ]
+                }
+               }
+              }
+             ]
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            16,
+            28
+           ],
+           "v": {
+            "_": "Vector",
+            "@": [
+             16,
+             28
+            ],
+            "exp": [
+             {
+              "_": "Expression",
+              "@": [
+               17,
+               18
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                17,
+                18
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 17,
+                 18
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             },
+             {
+              "_": "Expression",
+              "@": [
+               20,
+               21
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                20,
+                21
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 20,
+                 21
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             },
+             {
+              "_": "Expression",
+              "@": [
+               23,
+               24
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                23,
+                24
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 23,
+                 24
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             },
+             {
+              "_": "Expression",
+              "@": [
+               26,
+               27
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                26,
+                27
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 26,
+                 27
+                ],
+                "value": [
+                 "1"
+                ]
+               }
+              }
+             }
+            ]
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       37,
+       69
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        51,
+        69
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          51,
+          69
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "a vector",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           54,
+           59
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            58,
+            59
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             58,
+             59
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              58,
+              59
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            51,
+            52
+           ],
+           "id": null,
+           "value": "A"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nB = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (2,)\n        # B = (1, A, 4) + (1, 1, 1, 1)\n        self.B = np.hstack((1, A, 4)) + np.hstack((1, 1, 1, 1))\n\n\n\n\n\n",
+  "eigen": "/*\nB = (1, A, 4) + (1, 1, 1, 1)\n        where\n        A: ℝ ^ 2: a vector\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 4, 1> B;\n\n    heartlib(const Eigen::Matrix<double, 2, 1> & A)\n    {\n    \n        // B = (1, A, 4) + (1, 1, 1, 1)\n        Eigen::Matrix<DT, 4, 1> B_0;\n        B_0 << 1, A, 4;\n        Eigen::Matrix<int, 4, 1> B_1;\n        B_1 << 1, 1, 1, 1;\n        B = B_0 + (B_1).template cast<DT>();\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nB & = \\begin{pmatrix}\n1\\\\A\\\\4\\end{pmatrix} + \\begin{pmatrix}\n1\\\\1\\\\1\\\\1\\end{pmatrix} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2} \\text{ a vector} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nB & = \\begin{pmatrix}\n1\\\\A\\\\4\\end{pmatrix} + \\begin{pmatrix}\n1\\\\1\\\\1\\\\1\\end{pmatrix} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2} \\text{ a vector} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    B = (1, A, 4) + (1, 1, 1, 1)\n%            where\n%            A: ℝ ^ 2: a vector\n    A = reshape(A,[],1);\n\n    assert( numel(A) == 2 );\n\n    % B = (1, A, 4) + (1, 1, 1, 1)\n\n    B = [1; A; 4] + [1; 1; 1; 1];\n    output.B = B;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = \\begin{pmatrix}\n1\\\\\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }\\\\4\\end{pmatrix} + \\begin{pmatrix}\n1\\\\1\\\\1\\\\1\\end{pmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'B'], false, [], [], 'QiA9ICgxLCBBLCA0KSArICgxLCAxLCAxLCAxKQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2} \\text{ a vector} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

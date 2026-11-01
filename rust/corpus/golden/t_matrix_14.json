@@ -1,271 +1,637 @@
 {
  "id": "t_matrix_14",
- "src": "[ A   0₂,₂\n        0_2,2   I]\n        where\n        A: ℝ ^ (2 × 2) sparse ",
+ "src": "M_ij = { A_ij if A_ij > 0\n        -1 if A_ij < -2\n        0 otherwise\n        N_ij = { A_ij if A_ij > 0\n        where\n        A: ℝ ^ (2 × 2): a matrix",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "[ A   0₂,₂\n        0_2,2   I]\n        where\n        A: ℝ ^ (2 × 2) sparse ",
+   "text": "M_ij = { A_ij if A_ij > 0\n        -1 if A_ij < -2\n        0 otherwise\n        N_ij = { A_ij if A_ij > 0\n        where\n        A: ℝ ^ (2 × 2): a matrix",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     74
+     150
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       29
+       69
       ],
       "stat": {
-       "_": "Expression",
+       "_": "Assignment",
        "@": [
         0,
-        29
+        69
        ],
-       "sign": null,
-       "value": {
-        "_": "Factor",
-        "@": [
-         0,
-         29
-        ],
-        "m": {
-         "_": "Matrix",
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierSubscript",
          "@": [
           0,
-          29
+          4
          ],
-         "value": {
-          "_": "MatrixRows",
+         "left": {
+          "_": "IdentifierAlone",
           "@": [
-           2,
-           28
+           0,
+           1
           ],
-          "r": {
-           "_": "MatrixRow",
+          "id": null,
+          "value": "M"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
            "@": [
-            19,
-            28
+            2,
+            4
            ],
-           "exp": {
-            "_": "ExpInMatrix",
+           "id": null,
+           "value": "ij"
+          }
+         ]
+        }
+       ],
+       "right": [
+        {
+         "_": "MultiCondExpr",
+         "@": [
+          7,
+          69
+         ],
+         "ifs": {
+          "_": "MultiIfs",
+          "@": [
+           9,
+           49
+          ],
+          "ifs": {
+           "_": "MultiIfs",
+           "@": [
+            9,
+            25
+           ],
+           "value": {
+            "_": "SingleIf",
             "@": [
-             27,
-             28
+             9,
+             25
             ],
-            "sign": null,
-            "value": {
-             "_": "Factor",
+            "cond": {
+             "_": "IfCondition",
              "@": [
-              27,
-              28
+              17,
+              25
              ],
-             "id0": {
-              "_": "IdentifierAlone",
+             "single": {
+              "_": "AndCondition",
               "@": [
-               27,
-               28
+               17,
+               25
               ],
-              "id": null,
-              "value": "I"
+              "atom": {
+               "_": "AtomCondition",
+               "@": [
+                17,
+                25
+               ],
+               "cond": {
+                "_": "GreaterCondition",
+                "@": [
+                 17,
+                 25
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  17,
+                  21
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   17,
+                   21
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    17,
+                    21
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     17,
+                     18
+                    ],
+                    "id": null,
+                    "value": "A"
+                   },
+                   "right": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      19,
+                      21
+                     ],
+                     "id": null,
+                     "value": "ij"
+                    }
+                   ]
+                  }
+                 }
+                },
+                "op": ">",
+                "right": {
+                 "_": "Expression",
+                 "@": [
+                  24,
+                  25
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   24,
+                   25
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    24,
+                    25
+                   ],
+                   "value": [
+                    "0"
+                   ]
+                  }
+                 }
+                }
+               }
+              }
              }
-            }
-           },
-           "rc": {
-            "_": "MatrixRowCommas",
-            "@": [
-             19,
-             27
-            ],
-            "exp": {
-             "_": "ExpInMatrix",
+            },
+            "stat": {
+             "_": "Expression",
              "@": [
-              19,
-              24
+              9,
+              13
              ],
              "sign": null,
              "value": {
               "_": "Factor",
               "@": [
-               19,
-               24
+               9,
+               13
               ],
-              "nm": {
-               "_": "NumMatrix",
+              "id0": {
+               "_": "IdentifierSubscript",
                "@": [
-                19,
-                24
+                9,
+                13
                ],
-               "id1": {
-                "_": "Integer",
+               "left": {
+                "_": "IdentifierAlone",
                 "@": [
-                 21,
-                 22
+                 9,
+                 10
                 ],
-                "value": [
-                 "2"
-                ]
+                "id": null,
+                "value": "A"
                },
-               "id2": {
-                "_": "Integer",
-                "@": [
-                 23,
-                 24
-                ],
-                "value": [
-                 "2"
-                ]
-               },
-               "left": "0"
+               "right": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  11,
+                  13
+                 ],
+                 "id": null,
+                 "value": "ij"
+                }
+               ]
               }
              }
             }
            }
           },
-          "rs": {
-           "_": "MatrixRows",
+          "value": {
+           "_": "SingleIf",
            "@": [
-            2,
-            10
+            34,
+            49
            ],
-           "r": {
-            "_": "MatrixRow",
+           "cond": {
+            "_": "IfCondition",
             "@": [
-             2,
-             10
+             40,
+             49
             ],
-            "exp": {
-             "_": "ExpInMatrix",
+            "single": {
+             "_": "AndCondition",
              "@": [
-              6,
-              10
+              40,
+              49
              ],
-             "sign": null,
-             "value": {
-              "_": "Factor",
+             "atom": {
+              "_": "AtomCondition",
               "@": [
-               6,
-               10
+               40,
+               49
               ],
-              "nm": {
-               "_": "NumMatrix",
+              "cond": {
+               "_": "LessCondition",
                "@": [
-                6,
-                10
+                40,
+                49
                ],
-               "id1": {
-                "_": "SubInteger",
+               "left": {
+                "_": "Expression",
                 "@": [
-                 7,
-                 8
+                 40,
+                 44
                 ],
-                "value": [
-                 "₂"
-                ]
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  40,
+                  44
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   40,
+                   44
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    40,
+                    41
+                   ],
+                   "id": null,
+                   "value": "A"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     42,
+                     44
+                    ],
+                    "id": null,
+                    "value": "ij"
+                   }
+                  ]
+                 }
+                }
                },
-               "id2": {
-                "_": "SubInteger",
+               "op": "<",
+               "right": {
+                "_": "Expression",
                 "@": [
-                 9,
-                 10
+                 47,
+                 49
                 ],
-                "value": [
-                 "₂"
-                ]
-               },
-               "left": "0"
-              }
-             }
-            },
-            "rc": {
-             "_": "MatrixRowCommas",
-             "@": [
-              2,
-              6
-             ],
-             "exp": {
-              "_": "ExpInMatrix",
-              "@": [
-               2,
-               3
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                2,
-                3
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 2,
-                 3
-                ],
-                "id": null,
-                "value": "A"
+                "sign": "-",
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  48,
+                  49
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   48,
+                   49
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                }
                }
               }
              }
             }
+           },
+           "stat": {
+            "_": "Expression",
+            "@": [
+             34,
+             36
+            ],
+            "sign": "-",
+            "value": {
+             "_": "Factor",
+             "@": [
+              35,
+              36
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               35,
+               36
+              ],
+              "value": [
+               "1"
+              ]
+             }
+            }
+           }
+          }
+         },
+         "other": {
+          "_": "Expression",
+          "@": [
+           58,
+           59
+          ],
+          "sign": null,
+          "value": {
+           "_": "Factor",
+           "@": [
+            58,
+            59
+           ],
+           "num": {
+            "_": "Integer",
+            "@": [
+             58,
+             59
+            ],
+            "value": [
+             "0"
+            ]
            }
           }
          }
         }
-       }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       78,
+       103
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        78,
+        103
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierSubscript",
+         "@": [
+          78,
+          82
+         ],
+         "left": {
+          "_": "IdentifierAlone",
+          "@": [
+           78,
+           79
+          ],
+          "id": null,
+          "value": "N"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            80,
+            82
+           ],
+           "id": null,
+           "value": "ij"
+          }
+         ]
+        }
+       ],
+       "right": [
+        {
+         "_": "MultiCondExpr",
+         "@": [
+          85,
+          103
+         ],
+         "ifs": {
+          "_": "MultiIfs",
+          "@": [
+           87,
+           103
+          ],
+          "value": {
+           "_": "SingleIf",
+           "@": [
+            87,
+            103
+           ],
+           "cond": {
+            "_": "IfCondition",
+            "@": [
+             95,
+             103
+            ],
+            "single": {
+             "_": "AndCondition",
+             "@": [
+              95,
+              103
+             ],
+             "atom": {
+              "_": "AtomCondition",
+              "@": [
+               95,
+               103
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                95,
+                103
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 95,
+                 99
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  95,
+                  99
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   95,
+                   99
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    95,
+                    96
+                   ],
+                   "id": null,
+                   "value": "A"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     97,
+                     99
+                    ],
+                    "id": null,
+                    "value": "ij"
+                   }
+                  ]
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 102,
+                 103
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  102,
+                  103
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   102,
+                   103
+                  ],
+                  "value": [
+                   "0"
+                  ]
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "stat": {
+            "_": "Expression",
+            "@": [
+             87,
+             91
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              87,
+              91
+             ],
+             "id0": {
+              "_": "IdentifierSubscript",
+              "@": [
+               87,
+               91
+              ],
+              "left": {
+               "_": "IdentifierAlone",
+               "@": [
+                87,
+                88
+               ],
+               "id": null,
+               "value": "A"
+              },
+              "right": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 89,
+                 91
+                ],
+                "id": null,
+                "value": "ij"
+               }
+              ]
+             }
+            }
+           }
+          }
+         },
+         "other": null
+        }
+       ]
       }
      },
      {
       "_": "ParamsBlock",
       "@": [
-       38,
-       73
+       112,
+       150
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        52,
-        73
+        126,
+        150
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          52,
-          73
+          126,
+          150
          ],
          "attrib": null,
          "belong": ":",
-         "desc": null,
+         "desc": "a matrix",
          "subset": null,
          "type": {
           "_": "MatrixType",
           "@": [
-           55,
-           73
+           129,
+           140
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            60,
-            61
+            134,
+            135
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             60,
-             61
+             134,
+             135
             ],
             "num": {
              "_": "Integer",
              "@": [
-              60,
-              61
+              134,
+              135
              ],
              "value": [
               "2"
@@ -276,21 +642,21 @@
           "id2": {
            "_": "ArithExpression",
            "@": [
-            64,
-            65
+            138,
+            139
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             64,
-             65
+             138,
+             139
             ],
             "num": {
              "_": "Integer",
              "@": [
-              64,
-              65
+              138,
+              139
              ],
              "value": [
               "2"
@@ -299,16 +665,14 @@
            }
           },
           "type": "ℝ",
-          "attr": [
-           "sparse"
-          ]
+          "attr": []
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            52,
-            53
+            126,
+            127
            ],
            "id": null,
            "value": "A"
@@ -330,267 +694,696 @@
     "rename": {},
     "const_e": false
    },
-   "text": "[ A   0₂,₂\n        0_2,2   I]\n        where\n        A: ℝ ^ (2 × 2) sparse ",
+   "text": "M_ij = { A_ij if A_ij > 0\n        -1 if A_ij < -2\n        0 otherwise\n        N_ij = { A_ij if A_ij > 0\n        where\n        A: ℝ ^ (2 × 2): a matrix",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     74
+     150
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       29
+       69
       ],
       "stat": {
-       "_": "Expression",
+       "_": "Assignment",
        "@": [
         0,
-        29
+        69
        ],
-       "sign": null,
-       "value": {
-        "_": "Factor",
-        "@": [
-         0,
-         29
-        ],
-        "m": {
-         "_": "Matrix",
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierSubscript",
          "@": [
           0,
-          29
+          4
          ],
-         "value": {
-          "_": "MatrixRows",
+         "left": {
+          "_": "IdentifierAlone",
           "@": [
-           2,
-           28
+           0,
+           1
           ],
-          "r": {
-           "_": "MatrixRow",
+          "id": null,
+          "value": "M"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
            "@": [
-            19,
-            28
+            2,
+            3
            ],
-           "exp": {
-            "_": "ExpInMatrix",
+           "id": null,
+           "value": "i"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            3,
+            4
+           ],
+           "id": null,
+           "value": "j"
+          }
+         ]
+        }
+       ],
+       "right": [
+        {
+         "_": "MultiCondExpr",
+         "@": [
+          7,
+          69
+         ],
+         "ifs": {
+          "_": "MultiIfs",
+          "@": [
+           9,
+           49
+          ],
+          "ifs": {
+           "_": "MultiIfs",
+           "@": [
+            9,
+            25
+           ],
+           "value": {
+            "_": "SingleIf",
             "@": [
-             27,
-             28
+             9,
+             25
             ],
-            "sign": null,
-            "value": {
-             "_": "Factor",
+            "cond": {
+             "_": "IfCondition",
              "@": [
-              27,
-              28
+              17,
+              25
              ],
-             "id0": {
-              "_": "IdentifierAlone",
+             "single": {
+              "_": "AndCondition",
               "@": [
-               27,
-               28
+               17,
+               25
               ],
-              "id": null,
-              "value": "I"
+              "atom": {
+               "_": "AtomCondition",
+               "@": [
+                17,
+                25
+               ],
+               "cond": {
+                "_": "GreaterCondition",
+                "@": [
+                 17,
+                 25
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  17,
+                  21
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   17,
+                   21
+                  ],
+                  "id0": {
+                   "_": "IdentifierSubscript",
+                   "@": [
+                    17,
+                    21
+                   ],
+                   "left": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     17,
+                     18
+                    ],
+                    "id": null,
+                    "value": "A"
+                   },
+                   "right": [
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      19,
+                      20
+                     ],
+                     "id": null,
+                     "value": "i"
+                    },
+                    {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      20,
+                      21
+                     ],
+                     "id": null,
+                     "value": "j"
+                    }
+                   ]
+                  }
+                 }
+                },
+                "op": ">",
+                "right": {
+                 "_": "Expression",
+                 "@": [
+                  24,
+                  25
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   24,
+                   25
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    24,
+                    25
+                   ],
+                   "value": [
+                    "0"
+                   ]
+                  }
+                 }
+                }
+               }
+              }
              }
-            }
-           },
-           "rc": {
-            "_": "MatrixRowCommas",
-            "@": [
-             19,
-             27
-            ],
-            "exp": {
-             "_": "ExpInMatrix",
+            },
+            "stat": {
+             "_": "Expression",
              "@": [
-              19,
-              24
+              9,
+              13
              ],
              "sign": null,
              "value": {
               "_": "Factor",
               "@": [
-               19,
-               24
+               9,
+               13
               ],
-              "nm": {
-               "_": "NumMatrix",
+              "id0": {
+               "_": "IdentifierSubscript",
                "@": [
-                19,
-                24
+                9,
+                13
                ],
-               "id1": {
-                "_": "Integer",
+               "left": {
+                "_": "IdentifierAlone",
                 "@": [
-                 21,
-                 22
+                 9,
+                 10
                 ],
-                "value": [
-                 "2"
-                ]
+                "id": null,
+                "value": "A"
                },
-               "id2": {
-                "_": "Integer",
-                "@": [
-                 23,
-                 24
-                ],
-                "value": [
-                 "2"
-                ]
-               },
-               "left": "0"
+               "right": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  11,
+                  12
+                 ],
+                 "id": null,
+                 "value": "i"
+                },
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  12,
+                  13
+                 ],
+                 "id": null,
+                 "value": "j"
+                }
+               ]
               }
              }
             }
            }
           },
-          "rs": {
-           "_": "MatrixRows",
+          "value": {
+           "_": "SingleIf",
            "@": [
-            2,
-            10
+            34,
+            49
            ],
-           "r": {
-            "_": "MatrixRow",
+           "cond": {
+            "_": "IfCondition",
             "@": [
-             2,
-             10
+             40,
+             49
             ],
-            "exp": {
-             "_": "ExpInMatrix",
+            "single": {
+             "_": "AndCondition",
              "@": [
-              6,
-              10
+              40,
+              49
              ],
-             "sign": null,
-             "value": {
-              "_": "Factor",
+             "atom": {
+              "_": "AtomCondition",
               "@": [
-               6,
-               10
+               40,
+               49
               ],
-              "nm": {
-               "_": "NumMatrix",
+              "cond": {
+               "_": "LessCondition",
                "@": [
-                6,
-                10
+                40,
+                49
                ],
-               "id1": {
-                "_": "SubInteger",
+               "left": {
+                "_": "Expression",
                 "@": [
-                 7,
-                 8
+                 40,
+                 44
                 ],
-                "value": [
-                 "₂"
-                ]
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  40,
+                  44
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   40,
+                   44
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    40,
+                    41
+                   ],
+                   "id": null,
+                   "value": "A"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     42,
+                     43
+                    ],
+                    "id": null,
+                    "value": "i"
+                   },
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     43,
+                     44
+                    ],
+                    "id": null,
+                    "value": "j"
+                   }
+                  ]
+                 }
+                }
                },
-               "id2": {
-                "_": "SubInteger",
+               "op": "<",
+               "right": {
+                "_": "Expression",
                 "@": [
-                 9,
-                 10
+                 47,
+                 49
                 ],
-                "value": [
-                 "₂"
-                ]
-               },
-               "left": "0"
-              }
-             }
-            },
-            "rc": {
-             "_": "MatrixRowCommas",
-             "@": [
-              2,
-              6
-             ],
-             "exp": {
-              "_": "ExpInMatrix",
-              "@": [
-               2,
-               3
-              ],
-              "sign": null,
-              "value": {
-               "_": "Factor",
-               "@": [
-                2,
-                3
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 2,
-                 3
-                ],
-                "id": null,
-                "value": "A"
+                "sign": "-",
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  48,
+                  49
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   48,
+                   49
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                }
                }
               }
              }
             }
+           },
+           "stat": {
+            "_": "Expression",
+            "@": [
+             34,
+             36
+            ],
+            "sign": "-",
+            "value": {
+             "_": "Factor",
+             "@": [
+              35,
+              36
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               35,
+               36
+              ],
+              "value": [
+               "1"
+              ]
+             }
+            }
+           }
+          }
+         },
+         "other": {
+          "_": "Expression",
+          "@": [
+           58,
+           59
+          ],
+          "sign": null,
+          "value": {
+           "_": "Factor",
+           "@": [
+            58,
+            59
+           ],
+           "num": {
+            "_": "Integer",
+            "@": [
+             58,
+             59
+            ],
+            "value": [
+             "0"
+            ]
            }
           }
          }
         }
-       }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       78,
+       103
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        78,
+        103
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierSubscript",
+         "@": [
+          78,
+          82
+         ],
+         "left": {
+          "_": "IdentifierAlone",
+          "@": [
+           78,
+           79
+          ],
+          "id": null,
+          "value": "N"
+         },
+         "right": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            80,
+            81
+           ],
+           "id": null,
+           "value": "i"
+          },
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            81,
+            82
+           ],
+           "id": null,
+           "value": "j"
+          }
+         ]
+        }
+       ],
+       "right": [
+        {
+         "_": "MultiCondExpr",
+         "@": [
+          85,
+          103
+         ],
+         "ifs": {
+          "_": "MultiIfs",
+          "@": [
+           87,
+           103
+          ],
+          "value": {
+           "_": "SingleIf",
+           "@": [
+            87,
+            103
+           ],
+           "cond": {
+            "_": "IfCondition",
+            "@": [
+             95,
+             103
+            ],
+            "single": {
+             "_": "AndCondition",
+             "@": [
+              95,
+              103
+             ],
+             "atom": {
+              "_": "AtomCondition",
+              "@": [
+               95,
+               103
+              ],
+              "cond": {
+               "_": "GreaterCondition",
+               "@": [
+                95,
+                103
+               ],
+               "left": {
+                "_": "Expression",
+                "@": [
+                 95,
+                 99
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  95,
+                  99
+                 ],
+                 "id0": {
+                  "_": "IdentifierSubscript",
+                  "@": [
+                   95,
+                   99
+                  ],
+                  "left": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    95,
+                    96
+                   ],
+                   "id": null,
+                   "value": "A"
+                  },
+                  "right": [
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     97,
+                     98
+                    ],
+                    "id": null,
+                    "value": "i"
+                   },
+                   {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     98,
+                     99
+                    ],
+                    "id": null,
+                    "value": "j"
+                   }
+                  ]
+                 }
+                }
+               },
+               "op": ">",
+               "right": {
+                "_": "Expression",
+                "@": [
+                 102,
+                 103
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  102,
+                  103
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   102,
+                   103
+                  ],
+                  "value": [
+                   "0"
+                  ]
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "stat": {
+            "_": "Expression",
+            "@": [
+             87,
+             91
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              87,
+              91
+             ],
+             "id0": {
+              "_": "IdentifierSubscript",
+              "@": [
+               87,
+               91
+              ],
+              "left": {
+               "_": "IdentifierAlone",
+               "@": [
+                87,
+                88
+               ],
+               "id": null,
+               "value": "A"
+              },
+              "right": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 89,
+                 90
+                ],
+                "id": null,
+                "value": "i"
+               },
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 90,
+                 91
+                ],
+                "id": null,
+                "value": "j"
+               }
+              ]
+             }
+            }
+           }
+          }
+         },
+         "other": null
+        }
+       ]
       }
      },
      {
       "_": "ParamsBlock",
       "@": [
-       38,
-       73
+       112,
+       150
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        52,
-        73
+        126,
+        150
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          52,
-          73
+          126,
+          150
          ],
          "attrib": null,
          "belong": ":",
-         "desc": null,
+         "desc": "a matrix",
          "subset": null,
          "type": {
           "_": "MatrixType",
           "@": [
-           55,
-           73
+           129,
+           140
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            60,
-            61
+            134,
+            135
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             60,
-             61
+             134,
+             135
             ],
             "num": {
              "_": "Integer",
              "@": [
-              60,
-              61
+              134,
+              135
              ],
              "value": [
               "2"
@@ -601,21 +1394,21 @@
           "id2": {
            "_": "ArithExpression",
            "@": [
-            64,
-            65
+            138,
+            139
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             64,
-             65
+             138,
+             139
             ],
             "num": {
              "_": "Integer",
              "@": [
-              64,
-              65
+              138,
+              139
              ],
              "value": [
               "2"
@@ -624,16 +1417,14 @@
            }
           },
           "type": "ℝ",
-          "attr": [
-           "sparse"
-          ]
+          "attr": []
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            52,
-            53
+            126,
+            127
            ],
            "id": null,
            "value": "A"
@@ -648,11 +1439,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\n[ A   0₂,₂\n        0_2,2   I]\n        where\n        A: ℝ ^ (2 × 2) sparse \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        assert A.shape == (2, 2)\n        ret_0 = sparse.bmat([[A, np.zeros((2, 2))], [np.zeros((2, 2)), np.identity(2)]])\n        self.ret = ret_0\n\n\n\n\n\n",
-  "eigen": "/*\n[ A   0₂,₂\n        0_2,2   I]\n        where\n        A: ℝ ^ (2 × 2) sparse \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::SparseMatrix<double> ret;\n\n    heartlib(const Eigen::SparseMatrix<double> & A)\n    {\n        assert( A.rows() == 2 );\n        assert( A.cols() == 2 );\n        Eigen::SparseMatrix<DT> ret_0(4, 4);\n        std::vector<Eigen::Triplet<DT> > tripletListret_0;\n        Eigen::SparseMatrix<DT> tmp = A;\n        for (int k=0; k < tmp.outerSize(); ++k){\n            for (Eigen::SparseMatrix<DT>::InnerIterator it(tmp, k); it; ++it){\n                tripletListret_0.push_back(Eigen::Triplet<DT>((int)it.row()+0, (int)it.col()+0, it.value()));\n            }\n        }\n        tmp = MatrixD::Identity(2, 2).sparseView();\n        for (int k=0; k < tmp.outerSize(); ++k){\n            for (Eigen::SparseMatrix<DT>::InnerIterator it(tmp, k); it; ++it){\n                tripletListret_0.push_back(Eigen::Triplet<DT>((int)it.row()+2, (int)it.col()+2, it.value()));\n            }\n        }\n        ret_0.setFromTriplets(tripletListret_0.begin(), tripletListret_0.end());\n        ret = ret_0;\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\begin{bmatrix}\nA & \\mathbb{ 0 }_{ 2,2 }\\\\\n\\mathbb{ 0 }_{ 2,2 } & I\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2 \\times 2 } ,\\text{ sparse} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\begin{bmatrix}\nA & \\mathbb{ 0 }_{ 2,2 }\\\\\n\\mathbb{ 0 }_{ 2,2 } & I\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2 \\times 2 } ,\\text{ sparse} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    [ A   0₂,₂\n%            0_2,2   I]\n%            where\n%            A: ℝ ^ (2 × 2) sparse \n    assert( isequal(size(A), [2, 2]) );\n\n    ret_0 = [[A, zeros(2, 2)]; [zeros(2, 2), speye(2)]];\n    ret = ret_0;\n    output.ret = ret;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\begin{bmatrix}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & \\mathbb{ 0 }_{ 2,2 }\\\\\n\\mathbb{ 0 }_{ 2,2 } & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'I', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-I\", \"sym\":\"I\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I} }\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2 \\times 2 } ,\\text{ sparse} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nM_ij = { A_ij if A_ij > 0\n        -1 if A_ij < -2\n        0 otherwise\n        N_ij = { A_ij if A_ij > 0\n        where\n        A: ℝ ^ (2 × 2): a matrix\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (2, 2)\n        # M_ij = { A_ij if A_ij > 0\n        #         -1 if A_ij < -2\n        #         0 otherwise\n        self.M = np.zeros((2, 2))\n        for i in range(1, 2+1):\n            for j in range(1, 2+1):\n                M_ij = 0\n                if A[i-1, j-1] > 0:\n                    M_ij = A[i-1, j-1]\n                elif A[i-1, j-1] < -2:\n                    M_ij = -1\n                else:\n                    M_ij = 0\n                self.M[i-1][j-1] = M_ij\n        # N_ij = { A_ij if A_ij > 0\n        self.N = np.zeros((2, 2))\n        for i in range(1, 2+1):\n            for j in range(1, 2+1):\n                N_ij = 0\n                if A[i-1, j-1] > 0:\n                    N_ij = A[i-1, j-1]\n                self.N[i-1][j-1] = N_ij\n\n\n\n\n\n",
+  "eigen": "/*\nM_ij = { A_ij if A_ij > 0\n        -1 if A_ij < -2\n        0 otherwise\n        N_ij = { A_ij if A_ij > 0\n        where\n        A: ℝ ^ (2 × 2): a matrix\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> M;\n    Eigen::Matrix<DT, 2, 2> N;\n\n    heartlib(const Eigen::Matrix<double, 2, 2> & A)\n    {\n    \n        // M_ij = { A_ij if A_ij > 0\n        //         -1 if A_ij < -2\n        //         0 otherwise\n        M = MatrixD::Zero(2, 2);\n        for( int i=1; i<=2; i++){\n            for( int j=1; j<=2; j++){\n                DT M_ij = 0;\n                if(A(i-1, j-1) > 0){\n                    M_ij = A(i-1, j-1);\n                }\n                else if(A(i-1, j-1) < -2){\n                    M_ij = -1;\n                }\n                else{\n                    M_ij = 0;\n                }\n                M(i-1, j-1) = M_ij;\n            }\n        }\n        // N_ij = { A_ij if A_ij > 0\n        N = MatrixD::Zero(2, 2);\n        for( int i=1; i<=2; i++){\n            for( int j=1; j<=2; j++){\n                DT N_ij = 0;\n                if(A(i-1, j-1) > 0){\n                    N_ij = A(i-1, j-1);\n                }\n                N(i-1, j-1) = N_ij;\n            }\n        }\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nM_{i,j} & = \\begin{cases} A_{i, j} & \\text{if }  A_{i, j} > 0 \\\\-1 & \\text{if }  A_{i, j} < -2 \\\\ 0 & \\text{otherwise} \\end{cases} \\\\\nN_{i,j} & = \\begin{cases} A_{i, j} & \\text{if }  A_{i, j} > 0 \\\\ \\end{cases}  \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nM_{i,j} & = \\begin{cases} A_{i, j} & \\text{if }  A_{i, j} > 0 \\\\-1 & \\text{if }  A_{i, j} < -2 \\\\ 0 & \\text{otherwise} \\end{cases} \\\\\nN_{i,j} & = \\begin{cases} A_{i, j} & \\text{if }  A_{i, j} > 0 \\\\ \\end{cases}  \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    M_ij = { A_ij if A_ij > 0\n%            -1 if A_ij < -2\n%            0 otherwise\n%            N_ij = { A_ij if A_ij > 0\n%            where\n%            A: ℝ ^ (2 × 2): a matrix\n    assert( isequal(size(A), [2, 2]) );\n\n    % M_ij = { A_ij if A_ij > 0\n    %         -1 if A_ij < -2\n    %         0 otherwise\n\n    M = zeros(2, 2);\n    for i = 1:2\n        for j = 1:2\n            if A(i, j) > 0\n                M_ij = A(i, j);\n            elseif A(i, j) < -2\n                M_ij = -1;\n            else\n                M_ij = 0;\n            end\n            M(i, j) = ;\n        end\n    end\n    % N_ij = { A_ij if A_ij > 0\n\n    N = zeros(2, 2);\n    for i = 1:2\n        for j = 1:2\n            if A(i, j) > 0\n                N_ij = A(i, j);\n            end\n            N(i, j) = ;\n        end\n    end\n    output.M = M;\n    output.N = N;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-M_ij\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {M} }_{i,j} & = \\begin{cases} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i, j} & \\text{if }  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i, j} > 0 \\\\-1 & \\text{if }  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i, j} < -2 \\\\ 0 & \\text{otherwise} \\end{cases}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'M'], false, [], [], 'TV9paiA9IHsgQV9paiBpZiBBX2lqID4gMAogICAgICAgIC0xIGlmIEFfaWogPCAtMgogICAgICAgIDAgb3RoZXJ3aXNl');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'N', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-N_ij\", \"sym\":\"N\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {N} }_{i,j} & = \\begin{cases} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i, j} & \\text{if }  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i, j} > 0 \\\\ \\end{cases} \\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'N'], false, [], [], 'Tl9paiA9IHsgQV9paiBpZiBBX2lqID4gMA==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n"
  }
 }

@@ -16,11 +16,13 @@ use std::collections::HashSet;
 
 const HEADER: &str = "#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n\
 #include <Eigen/SVD>\n#include <iostream>\n#include <set>\n#include <vector>\n#include <tuple>\n#include <functional>\n\
-#include <algorithm>\n#include <cmath>\n#include <stdexcept>\n#include <unsupported/Eigen/MatrixFunctions>\n\
+#include <algorithm>\n#include <cmath>\n#include <stdexcept>\n\
 #ifndef IHEARTLA_SORTED_SET\n#define IHEARTLA_SORTED_SET\n\
-// sets are sorted vectors without duplicates\n\
+// sets are sorted vectors without duplicates (defined before the last #include:\n\
+// code that wraps the generated code in a namespace starts it after that)\n\
 template<typename T> std::vector<T> sorted_set(std::vector<T> v) { std::sort(v.begin(), v.end()); v.erase(std::unique(v.begin(), v.end()), v.end()); return v; }\n\
-#endif\n";
+#endif\n\
+#include <unsupported/Eigen/MatrixFunctions>\n";
 
 pub fn generate(prog: &Program, struct_name: &str) -> String {
     let mut out = String::new();
@@ -564,7 +566,13 @@ for(int i = 0; i < A.rows(); i++) for(int j = 0; j < A.cols(); j++) K.block(i*B.
                     k
                 }
             }
-            Cross(a, b) => format!("({}).cross({})", self.dense(a), self.dense(b)),
+            Cross(a, b) => {
+                if a.ty.is_int() != b.ty.is_int() {
+                    format!("({}).cross({})", self.conv(a, &e.ty), self.conv(b, &e.ty))
+                } else {
+                    format!("({}).cross({})", self.dense(a), self.dense(b))
+                }
+            }
             Dot(a, b) | Inner(a, b, None) => {
                 if a.ty.is_int() != b.ty.is_int() {
                     format!("({}).dot({})", self.conv(a, &Ty::real()), self.conv(b, &Ty::real()))
@@ -654,7 +662,7 @@ double s = 0; const int n = 64; const double hh = (b - a) / n; for(int k = 0; k 
 for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 * hh * w5[q] * ({b}); }} }} return s; }}()"
                 )
             }
-            Optimize { kind, vars, objective, constraints } => self.optimize(*kind, vars, objective, constraints, &e.ty),
+            Optimize { kind, vars, objective, constraints, texts } => self.optimize(*kind, vars, objective, constraints, texts, &e.ty),
             SetLit(items) => {
                 let parts: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
                 format!("sorted_set({}{{{}}})", cpp_type(&e.ty), parts.join(", "))
@@ -699,6 +707,27 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                     }
                     _ => a.remove(0),
                 }
+            }
+            Union { vars, range, body, one_based } => {
+                let r = self.expr(range);
+                self.locals.push(vars.iter().cloned().collect());
+                let b = self.expr(body);
+                self.locals.pop();
+                let bind = if vars.len() == 1 {
+                    format!("const int {} = x{};", cpp_ident(&vars[0]), if one_based[0] { " + 1" } else { "" })
+                } else {
+                    vars.iter()
+                        .enumerate()
+                        .map(|(k, v)| format!("const int {} = std::get<{k}>(x){};", cpp_ident(v), if one_based[k] { " + 1" } else { "" }))
+                        .collect::<Vec<_>>()
+                        .join(" ")
+                };
+                let t = cpp_type(&e.ty);
+                // (each term is bound once and sorted: it may be a call's new temporary)
+                format!(
+                    "[&](){{ const auto range = {r}; {t} acc; for(const auto & x : range){{ {bind} const {t} s = sorted_set({t}({b})); {t} u; \
+std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)); acc = u; }} return acc; }}()"
+                )
             }
             SetComp { vars, range, cond, item } => {
                 let r = self.expr(range);
@@ -986,7 +1015,7 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
         }
     }
 
-    fn optimize(&mut self, kind: OptKind, vars: &[(String, Ty)], objective: &Expr, constraints: &[Cond], ty: &Ty) -> String {
+    fn optimize(&mut self, kind: OptKind, vars: &[(String, Ty)], objective: &Expr, constraints: &[Cond], texts: &[String], ty: &Ty) -> String {
         if let ([(v, Scalar(_))], [Cond::In(items, set)]) = (vars, constraints) {
             if items.len() == 1 && matches!(&*items[0].kind, ExprKind::Var(n) if n == v) {
                 let s = self.expr(set);
@@ -1003,7 +1032,7 @@ if(first || f {better} best){{ best = f; arg = {var}; first = false; }} }} retur
                 );
             }
         }
-        self.continuous_optimize(kind, vars, objective, constraints, ty)
+        self.continuous_optimize(kind, vars, objective, constraints, texts, ty)
     }
 
     /// Minimization over real scalars, vectors and matrices with LBFGSpp:
@@ -1011,7 +1040,7 @@ if(first || f {better} best){{ best = f; arg = {var}; first = false; }} }} retur
     /// differences; constraints that bound a variable (or an entry of one) by
     /// a constant become box bounds (LBFGS-B). Other constraints are not
     /// supported (an exception at run time).
-    fn continuous_optimize(&mut self, kind: OptKind, vars: &[(String, Ty)], objective: &Expr, constraints: &[Cond], ty: &Ty) -> String {
+    fn continuous_optimize(&mut self, kind: OptKind, vars: &[(String, Ty)], objective: &Expr, constraints: &[Cond], texts: &[String], ty: &Ty) -> String {
         let rt = cpp_type(ty);
         // each variable's offset and size (as C++ expressions) in the packed vector
         let mut layout: Vec<(String, String, String, String)> = Vec::new(); // (name, offset, rows, cols)
@@ -1029,11 +1058,15 @@ if(first || f {better} best){{ best = f; arg = {var}; first = false; }} }} retur
         let n = offset;
         // box bounds
         let mut bounds = Vec::new();
-        for c in constraints {
+        for (k, c) in constraints.iter().enumerate() {
             match self.bound(c, &layout) {
-                Some(b) => bounds.push(b),
+                Some(b) => bounds.extend(b),
                 None => {
-                    return format!("[&]() -> {rt} {{ throw std::runtime_error(\"only constraints that bound a variable by a constant are supported by the Eigen backend\"); }}()")
+                    let text = texts.get(k).map(|t| t.replace('\\', "\\\\").replace('"', "\\\"")).unwrap_or_default();
+                    return format!(
+                        "[&]() -> {rt} {{ throw std::runtime_error(\"I\\u2764\\ufe0fLA: in C++ output, optimization constraints must bound a variable \
+(or an entry of one) by an expression without the variables; unsupported: {text}\"); }}()"
+                    );
                 }
             }
         }
@@ -1088,12 +1121,13 @@ try { solver.minimize(f, x, fx, lb, ub); } catch(const std::runtime_error &) { i
         format!("[&]() -> {rt} {{ const int N = {n}; {objective_fn} {grad_fn} Eigen::VectorXd x = Eigen::VectorXd::Zero(N); {solve} {result} }}()")
     }
 
-    /// A constraint `v op c` (or `v_k op c`, `c op v`) as a box bound:
-    /// (index in the packed vector, lower?, value).
-    fn bound(&mut self, c: &Cond, layout: &[(String, String, String, String)]) -> Option<(String, bool, String)> {
+    /// A constraint `v op c` (or `v_k op c`, `c op v`, `v = c`), where `c`
+    /// doesn't involve the variables, as box bounds: (index in the packed
+    /// vector, lower?, value) for each bound.
+    fn bound(&mut self, c: &Cond, layout: &[(String, String, String, String)]) -> Option<Vec<(String, bool, String)>> {
         let Cond::Cmp(op, a, b) = c else { return None };
-        let constant = |e: &Expr| matches!(&*e.kind, ExprKind::Int(_) | ExprKind::Real(_) | ExprKind::Fraction(..))
-            || matches!(&*e.kind, ExprKind::Neg(x) if matches!(&*x.kind, ExprKind::Int(_) | ExprKind::Real(_)));
+        let names: Vec<&String> = layout.iter().map(|l| &l.0).collect();
+        let constant = |e: &Expr| e.ty.is_scalar() && !mentions(e, &names);
         let slot = |e: &Expr| -> Option<String> {
             match &*e.kind {
                 ExprKind::Var(n) => layout.iter().find(|l| &l.0 == n).filter(|l| l.2 == "1" && l.3 == "1").map(|l| l.1.clone()),
@@ -1123,13 +1157,31 @@ try { solver.minimize(f, x, fx, lb, ub); } catch(const std::runtime_error &) { i
         } else {
             return None;
         };
-        // v > c, v >= c: a lower bound (strict bounds are closed)
-        let lower = match op {
-            CmpOp::Gt | CmpOp::Ge => lower_if_gt,
-            CmpOp::Lt | CmpOp::Le => !lower_if_gt,
-            _ => return None,
-        };
-        Some((k, lower, value))
+        // v > c, v >= c: a lower bound (strict bounds are closed); v = c: both
+        Some(match op {
+            CmpOp::Gt | CmpOp::Ge => vec![(k, lower_if_gt, value)],
+            CmpOp::Lt | CmpOp::Le => vec![(k, !lower_if_gt, value)],
+            CmpOp::Eq => vec![(k.clone(), true, value.clone()), (k, false, value)],
+            CmpOp::Ne => return None,
+        })
+    }
+}
+
+/// Whether an expression uses any of the names (as variables or indexed).
+fn mentions(e: &Expr, names: &[&String]) -> bool {
+    use ExprKind::*;
+    let any = |xs: &[&Expr]| xs.iter().any(|x| mentions(x, names));
+    match &*e.kind {
+        Var(n) => names.contains(&n),
+        Index { base, idx, .. } => names.contains(&base) || idx.iter().any(|i| matches!(i, Idx::At(x) if mentions(x, names))),
+        Int(_) | Real(_) | Fraction(..) | Const(_) | Filled { .. } | Identity(_) => false,
+        Neg(a) | Transpose(a) | Inverse(a) | PseudoInverse(a) | Sqrt(a) | Size(a) => mentions(a, names),
+        Add(a, b) | Sub(a, b) | Mul(a, b) | Div(a, b) | Hadamard(a, b) | Kronecker(a, b) | Cross(a, b) | Dot(a, b) | Frobenius(a, b)
+        | Pow(a, b) | Solve(a, b) => any(&[a, b]),
+        Norm { arg, .. } => mentions(arg, names),
+        Call { args, .. } => args.iter().any(|x| mentions(x, names)),
+        // (anything else: assume it may)
+        _ => true,
     }
 }
 

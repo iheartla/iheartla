@@ -1,16 +1,16 @@
 {
  "id": "t_product_07",
- "src": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3): a sequence\n                    P: ℝ ^ (2×3): a sequence",
+ "src": "a = x ∘ w\n                    b = x × w\n                    c = x ⋅ w\n                    where\n                    x: ℤ ^ 3\n                    w: ℤ ^ 3",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3): a sequence\n                    P: ℝ ^ (2×3): a sequence",
+   "text": "a = x ∘ w\n                    b = x × w\n                    c = x ⋅ w\n                    where\n                    x: ℤ ^ 3\n                    w: ℤ ^ 3",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     126
+     153
     ],
     "vblock": [
      {
@@ -34,7 +34,7 @@
           1
          ],
          "id": null,
-         "value": "A"
+         "value": "a"
         }
        ],
        "right": [
@@ -52,7 +52,7 @@
            9
           ],
           "op": {
-           "_": "KroneckerProduct",
+           "_": "HadamardProduct",
            "@": [
             4,
             9
@@ -70,7 +70,7 @@
               5
              ],
              "id": null,
-             "value": "T"
+             "value": "x"
             }
            },
            "right": {
@@ -86,8 +86,166 @@
               9
              ],
              "id": null,
-             "value": "P"
+             "value": "w"
             }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       30,
+       39
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        30,
+        39
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          30,
+          31
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          34,
+          39
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           34,
+           39
+          ],
+          "op": {
+           "_": "CrossProduct",
+           "@": [
+            34,
+            39
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             34,
+             35
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              34,
+              35
+             ],
+             "id": null,
+             "value": "x"
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             38,
+             39
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              38,
+              39
+             ],
+             "id": null,
+             "value": "w"
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       60,
+       69
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        60,
+        69
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          60,
+          61
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          64,
+          69
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           64,
+           69
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            64,
+            65
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             64,
+             65
+            ],
+            "id": null,
+            "value": "x"
+           }
+          },
+          "op": "⋅",
+          "right": {
+           "_": "Factor",
+           "@": [
+            68,
+            69
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             68,
+             69
+            ],
+            "id": null,
+            "value": "w"
            }
           }
          }
@@ -98,76 +256,51 @@
      {
       "_": "ParamsBlock",
       "@": [
-       30,
-       126
+       90,
+       153
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        57,
-        126
+        116,
+        153
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          57,
-          81
+          116,
+          124
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a sequence",
+         "desc": null,
          "subset": null,
          "type": {
-          "_": "MatrixType",
+          "_": "VectorType",
           "@": [
-           60,
-           69
+           119,
+           124
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            65,
-            66
+            123,
+            124
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             65,
-             66
+             123,
+             124
             ],
             "num": {
              "_": "Integer",
              "@": [
-              65,
-              66
-             ],
-             "value": [
-              "2"
-             ]
-            }
-           }
-          },
-          "id2": {
-           "_": "ArithExpression",
-           "@": [
-            67,
-            68
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             67,
-             68
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              67,
-              68
+              123,
+              124
              ],
              "value": [
               "3"
@@ -175,80 +308,55 @@
             }
            }
           },
-          "type": "ℝ",
+          "type": "ℤ",
           "attr": []
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            57,
-            58
+            116,
+            117
            ],
            "id": null,
-           "value": "T"
+           "value": "x"
           }
          ]
         },
         {
          "_": "WhereCondition",
          "@": [
-          102,
-          126
+          145,
+          153
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a sequence",
+         "desc": null,
          "subset": null,
          "type": {
-          "_": "MatrixType",
+          "_": "VectorType",
           "@": [
-           105,
-           114
+           148,
+           153
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            110,
-            111
+            152,
+            153
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             110,
-             111
+             152,
+             153
             ],
             "num": {
              "_": "Integer",
              "@": [
-              110,
-              111
-             ],
-             "value": [
-              "2"
-             ]
-            }
-           }
-          },
-          "id2": {
-           "_": "ArithExpression",
-           "@": [
-            112,
-            113
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             112,
-             113
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              112,
-              113
+              152,
+              153
              ],
              "value": [
               "3"
@@ -256,18 +364,18 @@
             }
            }
           },
-          "type": "ℝ",
+          "type": "ℤ",
           "attr": []
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            102,
-            103
+            145,
+            146
            ],
            "id": null,
-           "value": "P"
+           "value": "w"
           }
          ]
         }
@@ -286,12 +394,12 @@
     "rename": {},
     "const_e": false
    },
-   "text": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3): a sequence\n                    P: ℝ ^ (2×3): a sequence",
+   "text": "a = x ∘ w\n                    b = x × w\n                    c = x ⋅ w\n                    where\n                    x: ℤ ^ 3\n                    w: ℤ ^ 3",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     126
+     153
     ],
     "vblock": [
      {
@@ -315,7 +423,7 @@
           1
          ],
          "id": null,
-         "value": "A"
+         "value": "a"
         }
        ],
        "right": [
@@ -333,7 +441,7 @@
            9
           ],
           "op": {
-           "_": "KroneckerProduct",
+           "_": "HadamardProduct",
            "@": [
             4,
             9
@@ -351,7 +459,7 @@
               5
              ],
              "id": null,
-             "value": "T"
+             "value": "x"
             }
            },
            "right": {
@@ -367,8 +475,166 @@
               9
              ],
              "id": null,
-             "value": "P"
+             "value": "w"
             }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       30,
+       39
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        30,
+        39
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          30,
+          31
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          34,
+          39
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           34,
+           39
+          ],
+          "op": {
+           "_": "CrossProduct",
+           "@": [
+            34,
+            39
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             34,
+             35
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              34,
+              35
+             ],
+             "id": null,
+             "value": "x"
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             38,
+             39
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              38,
+              39
+             ],
+             "id": null,
+             "value": "w"
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       60,
+       69
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        60,
+        69
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          60,
+          61
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          64,
+          69
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           64,
+           69
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            64,
+            65
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             64,
+             65
+            ],
+            "id": null,
+            "value": "x"
+           }
+          },
+          "op": "⋅",
+          "right": {
+           "_": "Factor",
+           "@": [
+            68,
+            69
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             68,
+             69
+            ],
+            "id": null,
+            "value": "w"
            }
           }
          }
@@ -379,76 +645,51 @@
      {
       "_": "ParamsBlock",
       "@": [
-       30,
-       126
+       90,
+       153
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        57,
-        126
+        116,
+        153
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          57,
-          81
+          116,
+          124
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a sequence",
+         "desc": null,
          "subset": null,
          "type": {
-          "_": "MatrixType",
+          "_": "VectorType",
           "@": [
-           60,
-           69
+           119,
+           124
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            65,
-            66
+            123,
+            124
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             65,
-             66
+             123,
+             124
             ],
             "num": {
              "_": "Integer",
              "@": [
-              65,
-              66
-             ],
-             "value": [
-              "2"
-             ]
-            }
-           }
-          },
-          "id2": {
-           "_": "ArithExpression",
-           "@": [
-            67,
-            68
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             67,
-             68
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              67,
-              68
+              123,
+              124
              ],
              "value": [
               "3"
@@ -456,80 +697,55 @@
             }
            }
           },
-          "type": "ℝ",
+          "type": "ℤ",
           "attr": []
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            57,
-            58
+            116,
+            117
            ],
            "id": null,
-           "value": "T"
+           "value": "x"
           }
          ]
         },
         {
          "_": "WhereCondition",
          "@": [
-          102,
-          126
+          145,
+          153
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a sequence",
+         "desc": null,
          "subset": null,
          "type": {
-          "_": "MatrixType",
+          "_": "VectorType",
           "@": [
-           105,
-           114
+           148,
+           153
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            110,
-            111
+            152,
+            153
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             110,
-             111
+             152,
+             153
             ],
             "num": {
              "_": "Integer",
              "@": [
-              110,
-              111
-             ],
-             "value": [
-              "2"
-             ]
-            }
-           }
-          },
-          "id2": {
-           "_": "ArithExpression",
-           "@": [
-            112,
-            113
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             112,
-             113
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              112,
-              113
+              152,
+              153
              ],
              "value": [
               "3"
@@ -537,18 +753,18 @@
             }
            }
           },
-          "type": "ℝ",
+          "type": "ℤ",
           "attr": []
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            102,
-            103
+            145,
+            146
            ],
            "id": null,
-           "value": "P"
+           "value": "w"
           }
          ]
         }
@@ -560,11 +776,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nA = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3): a sequence\n                    P: ℝ ^ (2×3): a sequence\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, T, P):\n        T = np.asarray(T, dtype=np.float64)\n        P = np.asarray(P, dtype=np.float64)\n        assert T.shape == (2, 3)\n        assert P.shape == (2, 3)\n        # A = T ⊗ P\n        self.A = np.kron(T, P)\n\n\n\n\n\n",
-  "eigen": "/*\nA = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3): a sequence\n                    P: ℝ ^ (2×3): a sequence\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    MatrixD A;\n\n    heartlib(\n        const Eigen::Matrix<double, 2, 3> & T,\n        const Eigen::Matrix<double, 2, 3> & P)\n    {\n    \n        // A = T ⊗ P\n        MatrixD kron(4, 9);\n        for( int i=0; i<2; i++){\n            for( int j=0; j<3; j++){\n                kron.block(i*2,j*3,2,3) = (T)(i, j)*(P);\n            }\n        }\n        A = kron;\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nA & = T \\otimes P \\\\\n\\intertext{where} \nT & : \\mathbb{R}^{ 2 \\times 3 } \\text{ a sequence} \\\\\nP & : \\mathbb{R}^{ 2 \\times 3 } \\text{ a sequence} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nA & = T \\otimes P \\\\\nwhere \\\\\nT & : \\mathbb{R}^{ 2 \\times 3 } \\text{ a sequence} \\\\\nP & : \\mathbb{R}^{ 2 \\times 3 } \\text{ a sequence} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(T, P)\n% output = heartlib(T, P)\n%\n%    A = T ⊗ P\n%                        where \n%                        T: ℝ ^ (2×3): a sequence\n%                        P: ℝ ^ (2×3): a sequence\n    assert( isequal(size(T), [2, 3]) );\n    assert( isequal(size(P), [2, 3]) );\n\n    % A = T ⊗ P\n\n    A = kron(T, P);\n    output.A = A;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'T', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-T\", \"sym\":\"T\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {T} } \\otimes \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'P', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-P\", \"sym\":\"P\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {P} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['P', 'T', 'A'], false, [], [], 'QSA9IFQg4oqXIFA=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'T', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-T\", \"sym\":\"T\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {T} } & : \\mathbb{R}^{ 2 \\times 3 } \\text{ a sequence} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'P', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-P\", \"sym\":\"P\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {P} } & : \\mathbb{R}^{ 2 \\times 3 } \\text{ a sequence} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\na = x ∘ w\n                    b = x × w\n                    c = x ⋅ w\n                    where\n                    x: ℤ ^ 3\n                    w: ℤ ^ 3\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, x, w):\n        x = np.asarray(x, dtype=np.int64)\n        w = np.asarray(w, dtype=np.int64)\n        assert x.shape == (3,)\n        assert w.shape == (3,)\n        # a = x ∘ w\n        self.a = np.multiply(x, w)\n        # b = x × w\n        self.b = np.cross(x, w)\n        # c = x ⋅ w\n        self.c = np.dot((x).ravel(), (w).ravel())\n\n\n\n\n\n",
+  "eigen": "/*\na = x ∘ w\n                    b = x × w\n                    c = x ⋅ w\n                    where\n                    x: ℤ ^ 3\n                    w: ℤ ^ 3\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<int, 3, 1> a;\n    Eigen::Matrix<int, 3, 1> b;\n    int c;\n\n    heartlib(\n        const Eigen::Matrix<int, 3, 1> & x,\n        const Eigen::Matrix<int, 3, 1> & w)\n    {\n    \n        // a = x ∘ w\n        a = (x).cwiseProduct(w);\n        // b = x × w\n        b = (x).cross(w);\n        // c = x ⋅ w\n        c = (x).dot(w);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\na & = x \\circ w \\\\\nb & = x × w \\\\\nc & = x \\cdot w \\\\\n\\intertext{where} \nx & : \\mathbb{Z}^{ 3} \\\\\nw & : \\mathbb{Z}^{ 3} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\na & = x \\circ w \\\\\nb & = x × w \\\\\nc & = x \\cdot w \\\\\nwhere \\\\\nx & : \\mathbb{Z}^{ 3} \\\\\nw & : \\mathbb{Z}^{ 3} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(x, w)\n% output = heartlib(x, w)\n%\n%    a = x ∘ w\n%                        b = x × w\n%                        c = x ⋅ w\n%                        where\n%                        x: ℤ ^ 3\n%                        w: ℤ ^ 3\n    x = reshape(x,[],1);\n    w = reshape(w,[],1);\n\n    assert( numel(x) == 3 );\n    assert( numel(w) == 3 );\n\n    % a = x ∘ w\n\n    a = x.*w;\n    % b = x × w\n\n    b = cross(x, w);\n    % c = x ⋅ w\n\n    c = dot(x,w);\n    output.a = a;\n    output.b = b;\n    output.c = c;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {a} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\circ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['w', 'x', 'a'], false, [], [], 'YSA9IHgg4oiYIHc=');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } × \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['w', 'x', 'b'], false, [], [], 'YiA9IHggw5cgdw==');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {c} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\cdot \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['w', 'x', 'c'], false, [], [], 'YyA9IHgg4ouFIHc=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & : \\mathbb{Z}^{ 3} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'w', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-w\", \"sym\":\"w\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {w} } & : \\mathbb{Z}^{ 3} \\\\\n\\\\\n\\end{align*}\n"
  }
 }

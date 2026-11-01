@@ -134,34 +134,6 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
             }
         }
     }
-    // (the Python compiler's generator also keeps the parameters of the
-    // local functions of the modules it printed before)
-    fn module_params(prog: &Program, out: &mut std::collections::HashSet<String>) {
-        for m in &prog.modules {
-            module_params(&m.prog, out);
-            for st in &m.prog.stmts {
-                if let crate::ast::Stmt::Func(f) = st {
-                    for (n, _) in &f.params {
-                        out.insert(n.clone());
-                    }
-                    for b in &f.body {
-                        match b {
-                            crate::ast::Stmt::Assign(a) => {
-                                out.insert(a.lhs.clone());
-                            }
-                            crate::ast::Stmt::Multi { lhs, .. } => {
-                                for (n, _) in lhs {
-                                    out.insert(n.clone());
-                                }
-                            }
-                            _ => {}
-                        }
-                    }
-                }
-            }
-        }
-    }
-    module_params(prog, &mut local_params);
     let mut p = Printer {
         prog,
         flavor,
@@ -173,7 +145,7 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
         local_params,
         no_label: 0,
         defining: false,
-        local_func_name: last_module_func(prog),
+        local_func_name: String::new(),
     };
     let body = p.start(tree);
     match flavor {
@@ -189,24 +161,6 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
         }
         Flavor::Mathjax | Flavor::MacroMathjax => format!("{MATHJAX_PRE}{body}{MATHJAX_POST}"),
     }
-}
-
-/// The last local function (in source order) of the last imported module:
-/// MacroMathJax labels in the Python compiler carry it until the program's
-/// own first local function is printed.
-fn last_module_func(prog: &Program) -> String {
-    let Some(m) = prog.modules.last() else { return String::new() };
-    let mut best: Option<(usize, &str)> = None;
-    for st in &m.prog.stmts {
-        if let crate::ast::Stmt::Func(f) = st {
-            if let Some(pos) = m.prog.source.rfind(f.text.trim()) {
-                if best.is_none_or(|(b, _)| pos > b) {
-                    best = Some((pos, &f.base));
-                }
-            }
-        }
-    }
-    best.map(|(_, n)| js_content(n)).unwrap_or_default()
 }
 
 /// A symbol for JavaScript in a click handler.
@@ -382,8 +336,16 @@ impl<'p> Printer<'p> {
         }
         let Some(node) = n.node() else { return };
         let in_matrix = in_matrix || n.class() == "Matrix";
-        if matches!(n.class(), "MultiCondExpr" | "Integral") {
+        if n.class() == "Integral" {
             return;
+        }
+        if n.class() == "Summation" && n.get("u").truthy() {
+            for v in n.get("enum").items() {
+                let name = ident_name(v);
+                if !out.contains(&name) {
+                    out.push(name);
+                }
+            }
         }
         if n.class() == "Optimize" {
             for d in n.get("defs").items() {
@@ -684,7 +646,13 @@ impl<'p> Printer<'p> {
                 return String::new();
             }
             let mut syms = Vec::new();
-            if left.len() == 1 {
+            // (a sparse matrix defined piecewise, `A_ij = { … if (i,j) ∈ E`)
+            let piecewise = |r: &Val| r.class() == "MultiCondExpr" || r.get("value").class() == "MultiCondExpr";
+            let sparse_def = left.len() == 1
+                && left[0].class() == "IdentifierSubscript"
+                && right.first().is_some_and(piecewise)
+                && this.symbol_type(&ident_name(left[0].get("left"))).is_some_and(|t| t.is_sparse());
+            if left.len() == 1 && !sparse_def {
                 for r in &right {
                     this.symbols(r, &mut syms);
                 }
@@ -1212,6 +1180,15 @@ impl<'p> Printer<'p> {
     }
 
     fn summation(&mut self, op: &Val) -> String {
+        let s = self.summation_inner(op);
+        // ∪_(i ∈ S): the same notation with a big cup
+        if op.get("u").truthy() {
+            return s.replacen("\\sum_", "\\bigcup_", 1);
+        }
+        s
+    }
+
+    fn summation_inner(&mut self, op: &Val) -> String {
         let saved = self.in_sum;
         self.in_sum = true;
         let mut content = if op.get("cond").truthy() {
@@ -1263,7 +1240,7 @@ impl<'p> Printer<'p> {
         let mut content = match name.as_str() {
             Some(raw) => {
                 let n = crate::decls::strip_backticks(raw);
-                self.label(&n, &n, convert_name(raw))
+                self.label(&n, &n, convert_name(&n))
             }
             None => self.id_node(name),
         };

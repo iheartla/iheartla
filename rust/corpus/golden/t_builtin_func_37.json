@@ -1,0 +1,421 @@
+{
+ "id": "t_builtin_func_37",
+ "src": "acosh from trigonometry\nb = acosh²(a)\nwhere\na: scalar",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "acosh from trigonometry\nb = acosh²(a)\nwhere\na: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     53
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       23
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        11,
+        23
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         5
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": null,
+         "value": "acosh"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       24,
+       37
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        24,
+        37
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          24,
+          25
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          28,
+          37
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           28,
+           37
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            28,
+            34
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             28,
+             34
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              28,
+              33
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               28,
+               33
+              ],
+              "id": null,
+              "value": "acosh"
+             }
+            },
+            "power": {
+             "_": "SupInteger",
+             "@": [
+              33,
+              34
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            34,
+            37
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             34,
+             37
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              35,
+              36
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               35,
+               36
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                35,
+                36
+               ],
+               "id": null,
+               "value": "a"
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       38,
+       53
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        44,
+        53
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          44,
+          53
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            44,
+            45
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "acosh"
+    ],
+    "funcs": [],
+    "builtins": [
+     "acosh_func"
+    ],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "acosh from trigonometry\nb = acosh²(a)\nwhere\na: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     53
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       23
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        11,
+        23
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         5
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": null,
+         "value": "acosh"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       24,
+       37
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        24,
+        37
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          24,
+          25
+         ],
+         "const": null,
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          28,
+          37
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           28,
+           37
+          ],
+          "op": {
+           "_": "AcoshFunc",
+           "@": [
+            28,
+            37
+           ],
+           "name": "acosh",
+           "param": {
+            "_": "Expression",
+            "@": [
+             35,
+             36
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              35,
+              36
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               35,
+               36
+              ],
+              "const": null,
+              "id": null,
+              "value": "a"
+             }
+            }
+           },
+           "power": {
+            "_": "SupInteger",
+            "@": [
+             33,
+             34
+            ],
+            "value": [
+             "²"
+            ]
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       38,
+       53
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        44,
+        53
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          44,
+          53
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            44,
+            45
+           ],
+           "const": null,
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nacosh from trigonometry\nb = acosh²(a)\nwhere\na: scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        # b = acosh²(a)\n        self.b = np.power(np.asarray(np.arccosh(a), dtype=np.float64), 2)\n\n\n\n\n\n",
+  "eigen": "/*\nacosh from trigonometry\nb = acosh²(a)\nwhere\na: scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n\n    heartlib(const double & a)\n    {\n    \n        // b = acosh²(a)\n        b = pow(acosh(a), 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ acosh from trigonometry }\\\\\n \\\\\nb & = {acosh\\left( a \\right)}^{2} \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ acosh from trigonometry }\\\\\n \\\\\nb & = {acosh\\left( a \\right)}^{2} \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    acosh from trigonometry\n%    b = acosh²(a)\n%    where\n%    a: scalar\n    assert(numel(a) == 1);\n\n    % b = acosh²(a)\n\n    b = acosh(a).^2;\n    output.b = b;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ acosh from trigonometry }\\\\\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } & = {acosh\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } \\right)}^{2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'b'], false, [], [], 'YiA9IGFjb3NowrIoYSk=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

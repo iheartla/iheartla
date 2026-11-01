@@ -1,29 +1,29 @@
 {
  "id": "t_matrix_21",
- "src": "B = A^T\n        where\n        A: ℝ ^ (2 × 2): a matrix",
+ "src": "C = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2) sparse\n        B: ℝ ^ (1 × 2) sparse  ",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "B = A^T\n        where\n        A: ℝ ^ (2 × 2): a matrix",
+   "text": "C = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2) sparse\n        B: ℝ ^ (1 × 2) sparse  ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     54
+     98
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       7
+       22
       ],
       "stat": {
        "_": "Assignment",
        "@": [
         0,
-        7
+        22
        ],
        "op": "=",
        "left": [
@@ -34,7 +34,7 @@
           1
          ],
          "id": null,
-         "value": "B"
+         "value": "C"
         }
        ],
        "right": [
@@ -42,38 +42,186 @@
          "_": "Expression",
          "@": [
           4,
-          7
+          22
          ],
          "sign": null,
          "value": {
           "_": "Factor",
           "@": [
            4,
-           7
+           22
           ],
-          "op": {
-           "_": "Power",
+          "m": {
+           "_": "Matrix",
            "@": [
             4,
-            7
+            22
            ],
-           "base": {
-            "_": "Factor",
+           "value": {
+            "_": "MatrixRows",
             "@": [
-             4,
-             5
+             6,
+             21
             ],
-            "id0": {
-             "_": "IdentifierAlone",
+            "r": {
+             "_": "MatrixRow",
              "@": [
-              4,
-              5
+              6,
+              21
              ],
-             "id": null,
-             "value": "A"
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               20,
+               21
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                20,
+                21
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 20,
+                 21
+                ],
+                "id": null,
+                "value": "B"
+               }
+              }
+             },
+             "rc": {
+              "_": "MatrixRowCommas",
+              "@": [
+               6,
+               20
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                17,
+                18
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 17,
+                 18
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "value": [
+                  "0"
+                 ]
+                }
+               }
+              },
+              "value": {
+               "_": "MatrixRowCommas",
+               "@": [
+                6,
+                17
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 14,
+                 15
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  14,
+                  15
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   14,
+                   15
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                }
+               },
+               "value": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 6,
+                 14
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  10,
+                  11
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   10,
+                   11
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    10,
+                    11
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 }
+                },
+                "value": {
+                 "_": "MatrixRowCommas",
+                 "@": [
+                  6,
+                  10
+                 ],
+                 "exp": {
+                  "_": "ExpInMatrix",
+                  "@": [
+                   6,
+                   7
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    6,
+                    7
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     6,
+                     7
+                    ],
+                    "id": null,
+                    "value": "A"
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
             }
-           },
-           "t": "^T"
+           }
           }
          }
         }
@@ -83,54 +231,54 @@
      {
       "_": "ParamsBlock",
       "@": [
-       16,
-       54
+       31,
+       96
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        30,
-        54
+        45,
+        96
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          30,
-          54
+          45,
+          66
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a matrix",
+         "desc": null,
          "subset": null,
          "type": {
           "_": "MatrixType",
           "@": [
-           33,
-           44
+           48,
+           66
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            38,
-            39
+            53,
+            54
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             38,
-             39
+             53,
+             54
             ],
             "num": {
              "_": "Integer",
              "@": [
-              38,
-              39
+              53,
+              54
              ],
              "value": [
-              "2"
+              "1"
              ]
             }
            }
@@ -138,21 +286,21 @@
           "id2": {
            "_": "ArithExpression",
            "@": [
-            42,
-            43
+            57,
+            58
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             42,
-             43
+             57,
+             58
             ],
             "num": {
              "_": "Integer",
              "@": [
-              42,
-              43
+              57,
+              58
              ],
              "value": [
               "2"
@@ -161,17 +309,102 @@
            }
           },
           "type": "ℝ",
-          "attr": []
+          "attr": [
+           "sparse"
+          ]
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            30,
-            31
+            45,
+            46
            ],
            "id": null,
            "value": "A"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          75,
+          96
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           78,
+           96
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            83,
+            84
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             83,
+             84
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              83,
+              84
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            87,
+            88
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             87,
+             88
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              87,
+              88
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": [
+           "sparse"
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            75,
+            76
+           ],
+           "id": null,
+           "value": "B"
           }
          ]
         }
@@ -190,25 +423,25 @@
     "rename": {},
     "const_e": false
    },
-   "text": "B = A^T\n        where\n        A: ℝ ^ (2 × 2): a matrix",
+   "text": "C = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2) sparse\n        B: ℝ ^ (1 × 2) sparse  ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     54
+     98
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       7
+       22
       ],
       "stat": {
        "_": "Assignment",
        "@": [
         0,
-        7
+        22
        ],
        "op": "=",
        "left": [
@@ -219,7 +452,7 @@
           1
          ],
          "id": null,
-         "value": "B"
+         "value": "C"
         }
        ],
        "right": [
@@ -227,38 +460,186 @@
          "_": "Expression",
          "@": [
           4,
-          7
+          22
          ],
          "sign": null,
          "value": {
           "_": "Factor",
           "@": [
            4,
-           7
+           22
           ],
-          "op": {
-           "_": "Power",
+          "m": {
+           "_": "Matrix",
            "@": [
             4,
-            7
+            22
            ],
-           "base": {
-            "_": "Factor",
+           "value": {
+            "_": "MatrixRows",
             "@": [
-             4,
-             5
+             6,
+             21
             ],
-            "id0": {
-             "_": "IdentifierAlone",
+            "r": {
+             "_": "MatrixRow",
              "@": [
-              4,
-              5
+              6,
+              21
              ],
-             "id": null,
-             "value": "A"
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               20,
+               21
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                20,
+                21
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 20,
+                 21
+                ],
+                "id": null,
+                "value": "B"
+               }
+              }
+             },
+             "rc": {
+              "_": "MatrixRowCommas",
+              "@": [
+               6,
+               20
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                17,
+                18
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 17,
+                 18
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "value": [
+                  "0"
+                 ]
+                }
+               }
+              },
+              "value": {
+               "_": "MatrixRowCommas",
+               "@": [
+                6,
+                17
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 14,
+                 15
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  14,
+                  15
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   14,
+                   15
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                }
+               },
+               "value": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 6,
+                 14
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  10,
+                  11
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   10,
+                   11
+                  ],
+                  "num": {
+                   "_": "Integer",
+                   "@": [
+                    10,
+                    11
+                   ],
+                   "value": [
+                    "1"
+                   ]
+                  }
+                 }
+                },
+                "value": {
+                 "_": "MatrixRowCommas",
+                 "@": [
+                  6,
+                  10
+                 ],
+                 "exp": {
+                  "_": "ExpInMatrix",
+                  "@": [
+                   6,
+                   7
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    6,
+                    7
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     6,
+                     7
+                    ],
+                    "id": null,
+                    "value": "A"
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
             }
-           },
-           "t": "^T"
+           }
           }
          }
         }
@@ -268,54 +649,54 @@
      {
       "_": "ParamsBlock",
       "@": [
-       16,
-       54
+       31,
+       96
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        30,
-        54
+        45,
+        96
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          30,
-          54
+          45,
+          66
          ],
          "attrib": null,
          "belong": ":",
-         "desc": "a matrix",
+         "desc": null,
          "subset": null,
          "type": {
           "_": "MatrixType",
           "@": [
-           33,
-           44
+           48,
+           66
           ],
           "id1": {
            "_": "ArithExpression",
            "@": [
-            38,
-            39
+            53,
+            54
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             38,
-             39
+             53,
+             54
             ],
             "num": {
              "_": "Integer",
              "@": [
-              38,
-              39
+              53,
+              54
              ],
              "value": [
-              "2"
+              "1"
              ]
             }
            }
@@ -323,21 +704,21 @@
           "id2": {
            "_": "ArithExpression",
            "@": [
-            42,
-            43
+            57,
+            58
            ],
            "sign": null,
            "value": {
             "_": "ArithFactor",
             "@": [
-             42,
-             43
+             57,
+             58
             ],
             "num": {
              "_": "Integer",
              "@": [
-              42,
-              43
+              57,
+              58
              ],
              "value": [
               "2"
@@ -346,17 +727,102 @@
            }
           },
           "type": "ℝ",
-          "attr": []
+          "attr": [
+           "sparse"
+          ]
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            30,
-            31
+            45,
+            46
            ],
            "id": null,
            "value": "A"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          75,
+          96
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           78,
+           96
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            83,
+            84
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             83,
+             84
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              83,
+              84
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            87,
+            88
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             87,
+             88
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              87,
+              88
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": [
+           "sparse"
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            75,
+            76
+           ],
+           "id": null,
+           "value": "B"
           }
          ]
         }
@@ -368,11 +834,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nB = A^T\n        where\n        A: ℝ ^ (2 × 2): a matrix\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A):\n        A = np.asarray(A, dtype=np.float64)\n        assert A.shape == (2, 2)\n        # B = A^T\n        self.B = A.T\n\n\n\n\n\n",
-  "eigen": "/*\nB = A^T\n        where\n        A: ℝ ^ (2 × 2): a matrix\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 2> B;\n\n    heartlib(const Eigen::Matrix<double, 2, 2> & A)\n    {\n    \n        // B = A^T\n        B = A.transpose();\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nB & = {A}^T \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nB & = {A}^T \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(A)\n% output = heartlib(A)\n%\n%    B = A^T\n%            where\n%            A: ℝ ^ (2 × 2): a matrix\n    assert( isequal(size(A), [2, 2]) );\n\n    % B = A^T\n\n    B = A';\n    output.B = B;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {B} } & = {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }}^T\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'B'], false, [], [], 'QiA9IEFeVA==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 2 \\times 2 } \\text{ a matrix} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nC = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2) sparse\n        B: ℝ ^ (1 × 2) sparse  \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, A, B):\n        assert A.shape == (1, 2)\n        assert B.shape == (1, 2)\n        # C = [ A   1   2  0  B]\n        C_0 = sparse.hstack((A, [[1]], [[2]], [[0]], B))\n        self.C = C_0\n\n\n\n\n\n",
+  "eigen": "/*\nC = [ A   1   2  0  B]\n        where\n        A: ℝ ^ (1 × 2) sparse\n        B: ℝ ^ (1 × 2) sparse  \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::SparseMatrix<double> C;\n\n    heartlib(\n        const Eigen::SparseMatrix<double> & A,\n        const Eigen::SparseMatrix<double> & B)\n    {\n        assert( A.rows() == 1 );\n        assert( A.cols() == 2 );\n        assert( B.rows() == 1 );\n        assert( B.cols() == 2 );\n        // C = [ A   1   2  0  B]\n        Eigen::SparseMatrix<DT> C_0(1, 7);\n        std::vector<Eigen::Triplet<DT> > tripletListC_0;\n        Eigen::SparseMatrix<DT> tmp = A;\n        for (int k=0; k < tmp.outerSize(); ++k){\n            for (Eigen::SparseMatrix<DT>::InnerIterator it(tmp, k); it; ++it){\n                tripletListC_0.push_back(Eigen::Triplet<DT>((int)it.row()+0, (int)it.col()+0, it.value()));\n            }\n        }\n        tripletListC_0.push_back(Eigen::Triplet<DT>(0, 2, 1));\n        tripletListC_0.push_back(Eigen::Triplet<DT>(0, 3, 2));\n        tripletListC_0.push_back(Eigen::Triplet<DT>(0, 4, 0));\n        tmp = B;\n        for (int k=0; k < tmp.outerSize(); ++k){\n            for (Eigen::SparseMatrix<DT>::InnerIterator it(tmp, k); it; ++it){\n                tripletListC_0.push_back(Eigen::Triplet<DT>((int)it.row()+0, (int)it.col()+5, it.value()));\n            }\n        }\n        C_0.setFromTriplets(tripletListC_0.begin(), tripletListC_0.end());\n        C = C_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nC & = \\begin{bmatrix}\nA & 1 & 2 & 0 & B\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nA & : \\mathbb{R}^{ 1 \\times 2 } ,\\text{ sparse} \\\\\nB & : \\mathbb{R}^{ 1 \\times 2 } ,\\text{ sparse} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nC & = \\begin{bmatrix}\nA & 1 & 2 & 0 & B\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nA & : \\mathbb{R}^{ 1 \\times 2 } ,\\text{ sparse} \\\\\nB & : \\mathbb{R}^{ 1 \\times 2 } ,\\text{ sparse} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(A, B)\n% output = heartlib(A, B)\n%\n%    C = [ A   1   2  0  B]\n%            where\n%            A: ℝ ^ (1 × 2) sparse\n%            B: ℝ ^ (1 × 2) sparse  \n    assert( isequal(size(A), [1, 2]) );\n    assert( isequal(size(B), [1, 2]) );\n\n    % C = [ A   1   2  0  B]\n\n    C_0 = [[A, 1, 2, 0, B]];\n    C = C_0;\n    output.C = C;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'C', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-C\", \"sym\":\"C\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {C} } & = \\begin{bmatrix}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & 1 & 2 & 0 & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {B} }\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'B', 'C'], false, [], [], 'QyA9IFsgQSAgIDEgICAyICAwICBCXQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } & : \\mathbb{R}^{ 1 \\times 2 } ,\\text{ sparse} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'B', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-B\", \"sym\":\"B\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {B} } & : \\mathbb{R}^{ 1 \\times 2 } ,\\text{ sparse} \\\\\n\\\\\n\\end{align*}\n"
  }
 }

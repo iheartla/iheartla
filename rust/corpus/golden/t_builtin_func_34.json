@@ -1,0 +1,428 @@
+{
+ "id": "t_builtin_func_34",
+ "src": "atan from trigonometry\nb = atan^2(a)\nwhere\na: scalar",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "atan from trigonometry\nb = atan^2(a)\nwhere\na: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     52
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       22
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        10,
+        22
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         4
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          4
+         ],
+         "id": null,
+         "value": "atan"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       23,
+       36
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        23,
+        36
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          23,
+          24
+         ],
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          27,
+          36
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           27,
+           36
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            27,
+            33
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             27,
+             33
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              27,
+              31
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               27,
+               31
+              ],
+              "id": null,
+              "value": "atan"
+             }
+            },
+            "power": {
+             "_": "Factor",
+             "@": [
+              32,
+              33
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               32,
+               33
+              ],
+              "value": [
+               "2"
+              ]
+             }
+            }
+           }
+          },
+          "right": {
+           "_": "Factor",
+           "@": [
+            33,
+            36
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             33,
+             36
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              34,
+              35
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               34,
+               35
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                34,
+                35
+               ],
+               "id": null,
+               "value": "a"
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       37,
+       52
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        43,
+        52
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          43,
+          52
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            43,
+            44
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "atan"
+    ],
+    "funcs": [],
+    "builtins": [
+     "atan_func"
+    ],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "atan from trigonometry\nb = atan^2(a)\nwhere\na: scalar",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     52
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       22
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        10,
+        22
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         4
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          4
+         ],
+         "id": null,
+         "value": "atan"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       23,
+       36
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        23,
+        36
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          23,
+          24
+         ],
+         "const": null,
+         "id": null,
+         "value": "b"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          27,
+          36
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           27,
+           36
+          ],
+          "op": {
+           "_": "AtanFunc",
+           "@": [
+            27,
+            36
+           ],
+           "name": "atan",
+           "param": {
+            "_": "Expression",
+            "@": [
+             34,
+             35
+            ],
+            "sign": null,
+            "value": {
+             "_": "Factor",
+             "@": [
+              34,
+              35
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               34,
+               35
+              ],
+              "const": null,
+              "id": null,
+              "value": "a"
+             }
+            }
+           },
+           "power": {
+            "_": "Integer",
+            "@": [
+             32,
+             33
+            ],
+            "value": [
+             "2"
+            ]
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       37,
+       52
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        43,
+        52
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          43,
+          52
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            43,
+            44
+           ],
+           "const": null,
+           "id": null,
+           "value": "a"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\natan from trigonometry\nb = atan^2(a)\nwhere\na: scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        # b = atan^2(a)\n        self.b = np.power(np.asarray(np.arctan(a), dtype=np.float64), 2)\n\n\n\n\n\n",
+  "eigen": "/*\natan from trigonometry\nb = atan^2(a)\nwhere\na: scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n\n    heartlib(const double & a)\n    {\n    \n        // b = atan^2(a)\n        b = pow(atan(a), 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ atan from trigonometry }\\\\\n \\\\\nb & = {atan\\left( a \\right)}^{2} \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ atan from trigonometry }\\\\\n \\\\\nb & = {atan\\left( a \\right)}^{2} \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    atan from trigonometry\n%    b = atan^2(a)\n%    where\n%    a: scalar\n    assert(numel(a) == 1);\n\n    % b = atan^2(a)\n\n    b = atan(a).^2;\n    output.b = b;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ atan from trigonometry }\\\\\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } & = {atan\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } \\right)}^{2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'b'], false, [], [], 'YiA9IGF0YW5eMihhKQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

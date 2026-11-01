@@ -247,7 +247,8 @@ pub enum ExprKind {
     /// `{ e1 if c1, ..., e otherwise }`
     Piecewise { cases: Vec<(Cond, Expr)>, otherwise: Option<Expr> },
     Integral { var: String, lo: Expr, hi: Expr, body: Expr },
-    Optimize { kind: OptKind, vars: Vec<(String, Ty)>, objective: Expr, constraints: Vec<Cond> },
+    /// (`texts`: each constraint as written, for error messages)
+    Optimize { kind: OptKind, vars: Vec<(String, Ty)>, objective: Expr, constraints: Vec<Cond>, texts: Vec<String> },
     /// `{a, b}` or `{e for i ∈ S if c}`
     SetLit(Vec<Expr>),
     /// `#x`: size
@@ -259,6 +260,10 @@ pub enum ExprKind {
     /// `vertexset(S)`, `tuple(a, b)`, `CellularSet(V, E, F)`: a conversion
     /// that changes only the type
     Convert(Vec<Expr>),
+    /// `∪_(i ∈ S) e`: the union of the sets `e` over the elements of `S`
+    /// (each variable is the element's value, plus 1 for `index` values in
+    /// 0-based backends: `one_based`)
+    Union { vars: Vec<String>, range: Expr, body: Expr, one_based: Vec<bool> },
     /// `{ e for x ∈ S if cond }`
     SetComp { vars: Vec<String>, range: Expr, cond: Option<Cond>, item: Expr },
 }

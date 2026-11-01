@@ -1,89 +1,37 @@
 {
  "id": "t_localfunc_05",
- "src": "z = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar",
+ "src": "f(x) = x_1 where x_i: ℝ",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "z = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar",
+   "text": "f(x) = x_1 where x_i: ℝ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     111
+     23
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       5
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        0,
-        5
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          0,
-          1
-         ],
-         "id": null,
-         "value": "z"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          4,
-          5
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           4,
-           5
-          ],
-          "id0": {
-           "_": "IdentifierAlone",
-           "@": [
-            4,
-            5
-           ],
-           "id": null,
-           "value": "y"
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
-      "_": "Statements",
-      "@": [
-       26,
-       49
+       23
       ],
       "stat": {
        "_": "LocalFunc",
        "@": [
-        26,
-        49
+        0,
+        23
        ],
        "def_p": "(",
        "def_s": null,
        "name": {
         "_": "IdentifierAlone",
         "@": [
-         26,
-         27
+         0,
+         1
         ],
         "id": null,
         "value": "f"
@@ -93,8 +41,8 @@
         {
          "_": "WhereCondition",
          "@": [
-          45,
-          49
+          17,
+          23
          ],
          "attrib": null,
          "belong": ":",
@@ -105,13 +53,31 @@
          },
          "id": [
           {
-           "_": "IdentifierAlone",
+           "_": "IdentifierSubscript",
            "@": [
-            45,
-            46
+            17,
+            20
            ],
-           "id": null,
-           "value": "x"
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             17,
+             18
+            ],
+            "id": null,
+            "value": "x"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              19,
+              20
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
           }
          ]
         }
@@ -120,55 +86,43 @@
         {
          "_": "Expression",
          "@": [
-          33,
-          38
+          7,
+          10
          ],
+         "sign": null,
          "value": {
-          "_": "Add",
+          "_": "Factor",
           "@": [
-           33,
-           38
+           7,
+           10
           ],
-          "left": {
-           "_": "Expression",
+          "id0": {
+           "_": "IdentifierSubscript",
            "@": [
-            33,
-            34
+            7,
+            10
            ],
-           "sign": null,
-           "value": {
-            "_": "Factor",
-            "@": [
-             33,
-             34
-            ],
-            "id0": {
-             "_": "IdentifierAlone",
-             "@": [
-              33,
-              34
-             ],
-             "id": null,
-             "value": "x"
-            }
-           }
-          },
-          "op": "+",
-          "right": {
-           "_": "Factor",
-           "@": [
-            37,
-            38
-           ],
-           "id0": {
+           "left": {
             "_": "IdentifierAlone",
             "@": [
-             37,
-             38
+             7,
+             8
             ],
             "id": null,
-            "value": "z"
-           }
+            "value": "x"
+           },
+           "right": [
+            {
+             "_": "Integer",
+             "@": [
+              9,
+              10
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           ]
           }
          }
         }
@@ -178,56 +132,14 @@
         {
          "_": "IdentifierAlone",
          "@": [
-          28,
-          29
+          2,
+          3
          ],
          "id": null,
          "value": "x"
         }
        ],
        "separators": []
-      }
-     },
-     {
-      "_": "ParamsBlock",
-      "@": [
-       70,
-       111
-      ],
-      "annotation": "where",
-      "conds": {
-       "_": "WhereConditions",
-       "@": [
-        96,
-        111
-       ],
-       "value": [
-        {
-         "_": "WhereCondition",
-         "@": [
-          96,
-          111
-         ],
-         "attrib": null,
-         "belong": ":",
-         "desc": "a scalar",
-         "subset": null,
-         "type": {
-          "_": "ScalarType"
-         },
-         "id": [
-          {
-           "_": "IdentifierAlone",
-           "@": [
-            96,
-            97
-           ],
-           "id": null,
-           "value": "y"
-          }
-         ]
-        }
-       ]
       }
      }
     ]
@@ -245,85 +157,33 @@
     "rename": {},
     "const_e": false
    },
-   "text": "z = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar",
+   "text": "f(x) = x_1 where x_i: ℝ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     111
+     23
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       5
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        0,
-        5
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          0,
-          1
-         ],
-         "id": null,
-         "value": "z"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          4,
-          5
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           4,
-           5
-          ],
-          "id0": {
-           "_": "IdentifierAlone",
-           "@": [
-            4,
-            5
-           ],
-           "id": null,
-           "value": "y"
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
-      "_": "Statements",
-      "@": [
-       26,
-       49
+       23
       ],
       "stat": {
        "_": "LocalFunc",
        "@": [
-        26,
-        49
+        0,
+        23
        ],
        "def_p": "(",
        "def_s": null,
        "name": {
         "_": "IdentifierAlone",
         "@": [
-         26,
-         27
+         0,
+         1
         ],
         "id": null,
         "value": "f"
@@ -333,8 +193,8 @@
         {
          "_": "WhereCondition",
          "@": [
-          45,
-          49
+          17,
+          23
          ],
          "attrib": null,
          "belong": ":",
@@ -345,13 +205,31 @@
          },
          "id": [
           {
-           "_": "IdentifierAlone",
+           "_": "IdentifierSubscript",
            "@": [
-            45,
-            46
+            17,
+            20
            ],
-           "id": null,
-           "value": "x"
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             17,
+             18
+            ],
+            "id": null,
+            "value": "x"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              19,
+              20
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
           }
          ]
         }
@@ -360,55 +238,43 @@
         {
          "_": "Expression",
          "@": [
-          33,
-          38
+          7,
+          10
          ],
+         "sign": null,
          "value": {
-          "_": "Add",
+          "_": "Factor",
           "@": [
-           33,
-           38
+           7,
+           10
           ],
-          "left": {
-           "_": "Expression",
+          "id0": {
+           "_": "IdentifierSubscript",
            "@": [
-            33,
-            34
+            7,
+            10
            ],
-           "sign": null,
-           "value": {
-            "_": "Factor",
-            "@": [
-             33,
-             34
-            ],
-            "id0": {
-             "_": "IdentifierAlone",
-             "@": [
-              33,
-              34
-             ],
-             "id": null,
-             "value": "x"
-            }
-           }
-          },
-          "op": "+",
-          "right": {
-           "_": "Factor",
-           "@": [
-            37,
-            38
-           ],
-           "id0": {
+           "left": {
             "_": "IdentifierAlone",
             "@": [
-             37,
-             38
+             7,
+             8
             ],
             "id": null,
-            "value": "z"
-           }
+            "value": "x"
+           },
+           "right": [
+            {
+             "_": "Integer",
+             "@": [
+              9,
+              10
+             ],
+             "value": [
+              "1"
+             ]
+            }
+           ]
           }
          }
         }
@@ -418,8 +284,8 @@
         {
          "_": "IdentifierAlone",
          "@": [
-          28,
-          29
+          2,
+          3
          ],
          "id": null,
          "value": "x"
@@ -428,59 +294,17 @@
        "separators": [],
        "subs": []
       }
-     },
-     {
-      "_": "ParamsBlock",
-      "@": [
-       70,
-       111
-      ],
-      "annotation": "where",
-      "conds": {
-       "_": "WhereConditions",
-       "@": [
-        96,
-        111
-       ],
-       "value": [
-        {
-         "_": "WhereCondition",
-         "@": [
-          96,
-          111
-         ],
-         "attrib": null,
-         "belong": ":",
-         "desc": "a scalar",
-         "subset": null,
-         "type": {
-          "_": "ScalarType"
-         },
-         "id": [
-          {
-           "_": "IdentifierAlone",
-           "@": [
-            96,
-            97
-           ],
-           "id": null,
-           "value": "y"
-          }
-         ]
-        }
-       ]
-      }
      }
     ]
    }
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nz = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, y):\n        assert np.ndim(y) == 0\n        # z = y\n        self.z = y\n\n    def f(self, x):\n        assert np.ndim(x) == 0\n\n        return x + self.z\n\n\n\n\n\n",
-  "eigen": "/*\nz = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT z;\n\n    template<typename REAL>\n    REAL f(\n        const REAL & x)\n    {\n        return x + this->z;    \n    }\n    heartlib(const double & y)\n    {\n    \n        // z = y\n        z = y;\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nz & = y \\\\\nf\\left( x \\right) & = x + z \\text{{ where }}  x : \\mathbb{R} \\\\\n\\intertext{where} \ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nz & = y \\\\\n & f\\left( x \\right) & = x + z \\text{{ where }}  x : \\mathbb{R} \\\\\nwhere \\\\\ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(y)\n% output = heartlib(y)\n%\n%    z = y\n%                        f(x) = x + z where x: ℝ\n%                        where\n%                        y: ℝ : a scalar\n    assert(numel(y) == 1);\n\n    % z = y\n\n    z = y;\n    function [ret] = f(x)\n        assert(numel(x) == 1);\n\n        ret = x + z;\n    end\n\n    output.z = z;\n    output.f = @f;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'z', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-z\", \"sym\":\"z\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {z} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['y', 'z'], false, [], [], 'eiA9IHk=');\"} }{}\n \\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'z', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-z\", \"sym\":\"z\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {z} } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } : \\mathbb{R} \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nf(x) = x_1 where x_i: ℝ\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, ):\n        pass\n\n    def f(self, x):\n        x = np.asarray(x, dtype=np.float64)\n        dim_0 = x.shape[0]\n        assert x.shape == (dim_0,)\n\n        return x[1-1]\n\n\n\n\n\n",
+  "eigen": "/*\nf(x) = x_1 where x_i: ℝ\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n\n\n    template<typename REAL>\n    REAL f(\n        const std::vector<REAL> & x)\n    {\n        const long dim_0 = x.size();\n        return x.at(1-1);    \n    }\n    heartlib()\n    {\n    \n    \n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf\\left( x \\right) & = x_{ 1 } \\text{{ where }}  x_{i} : \\mathbb{R} \\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & f\\left( x \\right) & = x_{ 1 } \\text{{ where }}  x_{i} : \\mathbb{R} \\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib()\n% output = heartlib()\n%\n%    f(x) = x_1 where x_i: ℝ\n    function [ret] = f(x)\n        x = reshape(x,[],1);\n        dim_0 = size(x, 1);\n        assert( size(x,1) == dim_0 );\n\n        ret = x(1);\n    end\n\n    output.f = @f;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }_{ 1 } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-x_i\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }_{i} : \\mathbb{R} \\\\\n\\end{align*}\n"
  }
 }

@@ -1232,6 +1232,35 @@ impl<'a> Checker<'a> {
         Ok(Expr::new(ExprKind::SetLit(items), Set { elems, length: Dim::None }))
     }
 
+    /// `∪_(i ∈ S) e`: as in the Python compiler, a variable ranging over
+    /// `index` values is the 1-based index (the element plus 1).
+    fn union(&mut self, op: &Val) -> R<Expr> {
+        if !op.get("enum").truthy() {
+            return self.err(op, "Unions are supported over a set (∪_(i ∈ S) ...)");
+        }
+        let range = self.set_expr(op.get("range"))?;
+        let elems = match &range.ty {
+            Set { elems, .. } => elems.clone(),
+            _ => return self.err(op, "The range of a union must be a set"),
+        };
+        let vars: Vec<String> = op.get("enum").items().iter().map(ident_name).collect();
+        self.ensure(vars.len() == elems.len(), op, || "Union: the variables don't match the set's elements".into())?;
+        let mut scope = IndexMap::new();
+        let mut one_based = Vec::new();
+        for (v, e) in vars.iter().zip(&elems) {
+            let plus1 = *e == Elem::Index;
+            scope.insert(v.clone(), Sym::Local(Scalar(if plus1 { Elem::Int } else { *e })));
+            one_based.push(plus1);
+        }
+        self.scopes.push(scope);
+        let body = self.expr(op.get("exp"));
+        self.scopes.pop();
+        let body = body?;
+        self.ensure(body.ty.is_set(), op, || "A union's terms must be sets".into())?;
+        let ty = set_of(&body.ty);
+        Ok(Expr::new(ExprKind::Union { vars, range, body, one_based }, ty))
+    }
+
     /// A set: an expression, or a bare name or call (as in `x ∈ S`, `x ∈ f(y)`).
     fn set_expr(&mut self, n: &Val) -> R<Expr> {
         match n.class() {
@@ -1479,6 +1508,7 @@ impl<'a> Checker<'a> {
             cur = cur.get("m_cond").clone();
         }
         conds.reverse();
+        let texts: Vec<String> = conds.iter().map(|c| self.text(c).trim().to_string()).collect();
         let mut failed = None;
         for c in &conds {
             match self.condition(c) {
@@ -1497,7 +1527,7 @@ impl<'a> Checker<'a> {
             _ if vars.len() == 1 => vars[0].1.clone(),
             _ => Tuple(vars.iter().map(|(_, t)| t.clone()).collect()),
         };
-        Ok(Expr::new(ExprKind::Optimize { kind, vars, objective, constraints }, ty))
+        Ok(Expr::new(ExprKind::Optimize { kind, vars, objective, constraints, texts }, ty))
     }
 
     /// Operators and function calls (`Factor.op`).
@@ -1682,7 +1712,7 @@ impl<'a> Checker<'a> {
 
     fn summation(&mut self, op: &Val) -> R<Expr> {
         if op.get("u").truthy() {
-            return self.err(op, "Unions of sequences are not supported yet");
+            return self.union(op);
         }
         let mut scope = IndexMap::new();
         let vars: Vec<String>;
@@ -1813,7 +1843,9 @@ impl<'a> Checker<'a> {
             "CrossProduct" => {
                 let ok = l.ty.is_vector() && r.ty.is_vector() && l.ty.rows().py_eq(&Dim::Int(3)) && r.ty.rows().py_eq(&Dim::Int(3));
                 self.ensure(ok, op, || "Cross product error. The dimension of parameters must be 3".into())?;
-                Ok(Expr::new(ExprKind::Cross(l, r), Ty::vector(3)))
+                // (integer only if both are)
+                let elem = l.ty.elem().join(r.ty.elem());
+                Ok(Expr::new(ExprKind::Cross(l, r), Vector { rows: Dim::Int(3), elem }))
             }
             _ => {
                 let ty = Matrix {
