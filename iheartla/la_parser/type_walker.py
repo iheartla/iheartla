@@ -385,7 +385,8 @@ class TypeWalker(NodeWalker):
         return EquationData('', copy.deepcopy(self.parameters), new_lhs_list,
                             copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),
                             copy.deepcopy(self.desc_dict), self.la_content,
-                            copy.deepcopy(self.func_data_dict),
+                            # func_data_dict also holds scopes such as sum_0; only pass local functions
+                            copy.deepcopy({k: v for k, v in self.func_data_dict.items() if k in self.local_func_dict}),
                             copy.deepcopy(self.expr_dict),
                             copy.deepcopy(self.opt_syms))
 
