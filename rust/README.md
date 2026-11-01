@@ -86,7 +86,7 @@ How the Rust option works:
   `uv run --with playwright python rust/tools/web_check.py`.
 
 With Rust, the page is ready in 0.08 s and compiles an I❤️MESH program importing two
-modules in 0.1 s. With Pyodide, PERFORMANCE.md reports 5–9 s for NumPy alone and 40 s or
+modules in 0.1 s. With Pyodide, notes/Performance.md reports 5–9 s for NumPy alone and 40 s or
 more for all outputs.
 
 ## Speed
@@ -105,7 +105,7 @@ the grammar's regexes).
 | Same, NumPy + LaTeX + MathJax (three Rust processes) | 14.85 s | 0.114 s | 130× |
 
 The parser speed-up is the one that matters for I❤️MESH. TatSu parses take almost all of
-an I❤️MESH compile (see `PERFORMANCE.md` in the main checkout), and each imported module is
+an I❤️MESH compile (see `notes/Performance.md`), and each imported module is
 parsed twice per output type. In Rust, each module is parsed and checked once per
 compilation (`modules.rs`), and the typed AST is shared by all backends.
 (`python rust/tools/bench_mesh.py` gives the I❤️MESH rows.)
