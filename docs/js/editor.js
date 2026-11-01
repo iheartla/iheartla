@@ -57,23 +57,33 @@ function isChrome(){
     return false;
 }
 
-let pyodide = null;
+// The compiler runs in a Web Worker (js/compile-worker.js) so long compiles don't block the page.
+let compileWorker = null;
+let compileCallbacks = {};
+let nextCompileId = 0;
 
-async function initPyodide(){
-    // Pyodide and all Python packages are vendored in js/pyodide/ (see docs/update_pyodide.sh).
-    let local = new URL("js/pyodide/", document.baseURI).href;
-    pyodide = await loadPyodide({ indexURL: local });
-    await pyodide.loadPackage(['micropip', 'regex', 'sympy']);
-    // The iheartla wheel is built from this repository with: uv build --wheel --no-create-gitignore -o docs
-    let wheels = [local + "appdirs-1.4.4-py2.py3-none-any.whl",
-                  local + "tatsu-5.14.0-py3-none-any.whl",
-                  new URL("iheartla-0.0.1-py3-none-any.whl", document.baseURI).href];
-    pyodide.globals.set('wheels', wheels);
-    await pyodide.runPythonAsync(`
-import micropip
-await micropip.install(wheels.to_py())
-`);
-    activateBtnStatus();
+function initPyodide(){
+    compileWorker = new Worker("js/compile-worker.js", { type: "module" });
+    compileWorker.onerror = function(event){
+        updateError("Failed to start the compiler: " + (event.message || "see the browser console"));
+    };
+    compileWorker.onmessage = function(event){
+        let msg = event.data;
+        if (msg.ready !== undefined){
+            if (msg.ready){
+                activateBtnStatus();
+            }
+            else{
+                updateError(msg.error);
+            }
+            return;
+        }
+        let callback = compileCallbacks[msg.id];
+        delete compileCallbacks[msg.id];
+        if (callback){
+            callback(msg);
+        }
+    };
 }
 
 function convert(input) {
@@ -116,29 +126,16 @@ function compileFunction(){
     var iheartla = ace.edit("editor");
     var source = iheartla.getValue();
     console.log(source)
-    pyodide.globals.set('source_code', source);
-    pythonCode = `
-import iheartla.la_parser.parser
-from iheartla.la_tools.la_helper import ParserTypeEnum
-code_dict = iheartla.la_parser.parser.compile_la_content(source_code)
-code = [code_dict[ParserTypeEnum.NUMPY], code_dict[ParserTypeEnum.EIGEN], code_dict[ParserTypeEnum.LATEX], code_dict[ParserTypeEnum.MATHJAX], code_dict[ParserTypeEnum.MATLAB]]
-`
-    setTimeout(function(){
-        try {
-            pyodide.runPython(pythonCode);
-            let code = pyodide.globals.get('code');
-            if (typeof code === 'string'){
-                updateError(code);
-            }
-            else{
-                updateEditor(code.toJs());
-            }
+    let id = nextCompileId++;
+    compileCallbacks[id] = function(msg){
+        if (msg.error !== undefined){
+            updateError(msg.error);
         }
-        catch (error){
-            console.log('Compile error!');
-            updateError('Compile error!');
+        else{
+            updateEditor(msg.code);
         }
-        }, 1000);
+    };
+    compileWorker.postMessage({ id: id, source: source });
 }
 
 function clickCompile(){

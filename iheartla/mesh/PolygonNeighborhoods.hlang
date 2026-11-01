@@ -13,7 +13,7 @@ VertexOneRing(v) = vertexset(NonZeros(`B⁰` (`B⁰ᵀ` IndicatorVector({v})))) 
 VertexOneRing(v) = vertexset(NonZeros(`B⁰` (`B⁰ᵀ` IndicatorVector(v)))) - v where v ⊂  V
 
 EdgeIndex(i, j) = eset_1 where i,j ∈ V,
-eset = edgeset(NonZeros(`∂⁰ᵀ` IndicatorVector({i}))) ∩ vertexset(NonZeros(`∂⁰ᵀ` IndicatorVector({j})))
+eset = edgeset(NonZeros(`∂⁰ᵀ` IndicatorVector({i}))) ∩ edgeset(NonZeros(`∂⁰ᵀ` IndicatorVector({j})))
 
 NeighborVerticesInFace(f, v) = tuple(vset1_1, vset2_1) where v ∈ V, f ∈ F,
 es = edgeset(NonZeros(`∂¹` IndicatorVector({f}))),
