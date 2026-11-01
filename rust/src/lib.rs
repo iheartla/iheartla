@@ -91,11 +91,27 @@ pub fn front_end(src: &str) -> Result<(pnode::Val, ast::Program), String> {
 
 /// The front end, with modules found and compiled by `loader`.
 pub fn front_end_with(src: &str, loader: &std::rc::Rc<modules::Loader>) -> Result<(pnode::Val, ast::Program), String> {
-    let first = grammar::parse_init(src).map_err(|e| parse_error_message(src, &e))?;
+    let first = timed("first parse", src, || grammar::parse_init(src)).map_err(|e| parse_error_message(src, &e))?;
+    // (compiles imported modules, which are timed separately)
     let config = decls::second_parse_config_with(&first, &|n| node_text(src, n).to_string(), &|m| loader.function_names(m));
-    let tree = grammar::parse_default(src, &config).map_err(|e| parse_error_message(src, &e))?;
-    let prog = check::Checker::new(src).with_loader(loader.clone()).check(&tree).map_err(|e| e.message)?;
+    let tree = timed("second parse", src, || grammar::parse_default(src, &config)).map_err(|e| parse_error_message(src, &e))?;
+    let prog = timed("check", src, || check::Checker::new(src).with_loader(loader.clone()).check(&tree)).map_err(|e| e.message)?;
     Ok((tree, prog))
+}
+
+/// Run a phase; with the environment variable `IHEARTLA_TIMING` set, report
+/// its time on stderr (with the first line of the source it works on).
+pub fn timed<T>(phase: &str, src: &str, f: impl FnOnce() -> T) -> T {
+    #[cfg(not(target_arch = "wasm32"))]
+    if std::env::var_os("IHEARTLA_TIMING").is_some() {
+        let t = std::time::Instant::now();
+        let r = f();
+        let first_line: String = src.trim_start().lines().next().unwrap_or("").chars().take(40).collect();
+        eprintln!("{:>9.3} ms  {phase:<13} {first_line}", t.elapsed().as_secs_f64() * 1e3);
+        return r;
+    }
+    let _ = (phase, src);
+    f()
 }
 
 /// Parse and check a program.
@@ -113,8 +129,8 @@ pub fn compile_latex(src: &str) -> Result<String, String> {
 /// macromathjax. `with_main` adds `generateRandomData()` and `main()` to the
 /// code backends (the Python compiler's `class_only=False`).
 pub fn compile(src: &str, backend: &str, name: &str, with_main: bool) -> Result<String, String> {
-    let (tree, prog) = front_end(src)?;
-    Ok(generate(&tree, &prog, backend, name, with_main)?)
+    let (tree, prog) = timed("front end", src, || front_end(src))?;
+    timed(&format!("generate {backend}"), src, || generate(&tree, &prog, backend, name, with_main))
 }
 
 /// Generate one backend's output from a checked program.

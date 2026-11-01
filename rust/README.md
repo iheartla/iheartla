@@ -91,6 +91,11 @@ more for all outputs.
 
 ## Speed
 
+For the current comparison, see `notes/Performance.md`. It covers native and web numbers
+against the Python compiler with its parse-tree cache, and where Rust's time goes
+(`IHEARTLA_TIMING=1`). The table below predates that cache, so its multi-output Python
+numbers are higher than Python's today.
+
 Apple Silicon, release build, Python 3.12 and TatSu 5.14 (`python rust/tools/bench.py`).
 Rust times include process start-up, which is about 4 ms (2 ms to exec and 2 ms to build
 the grammar's regexes).

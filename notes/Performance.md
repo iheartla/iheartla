@@ -22,6 +22,11 @@ Plain programs are fast. Programs that import modules are slow, and almost all o
 that time is spent in the TatSu parser, not in I❤️LA's own type checking or code
 generation (about 2 s of 66 s in a profile).
 
+These are the Python compiler's numbers before the changes described below. For the
+compiler after those changes (7.1 s, or 0.46 s for a repeat compile, for the I❤️MESH
+program with all 6 outputs), see "Changes made". For the Rust compiler (0.04–0.23 s, and
+0.10 s on the web page), see "The Rust compiler" at the end.
+
 ## Where the time goes
 
 Three causes multiply:
@@ -158,3 +163,78 @@ earlier tests of the page.
 
 Still open: TatSu's own speed (the grammar's left recursion), the double parse per
 module, and shipping prebuilt caches; see Options.
+
+## The Rust compiler (2026-11-01)
+
+The Rust rewrite (`rust/`, see `notes/Architecture.md`) compiles the same language to the
+same outputs. Measured on the same Mac (Rust release build) with the current Python
+compiler, which includes the parse-tree cache above. The Python numbers are compile time
+inside a fresh process after imports: "first" is a compile in a new process, "repeat" is
+the same program again in that process. The Rust numbers are wall time of the `iheartla`
+process, start-up included (about 4 ms: 2 ms to start and 2 ms to build the grammar's
+regexes), best of 5. The CLI compiles one output per run, so "all 6 outputs" is 6
+processes, each recompiling everything.
+
+| Program | Outputs | Python first | Python repeat | Rust | Speed-up over Python first |
+|---|---|---|---|---|---|
+| Plain (`T₁`) | NumPy | 0.214 s | 0.001 s | 0.009 s | 24× |
+| Plain (`T₁`) | all 6 (6 processes) | 0.221 s | 0.004 s | 0.054 s | 4× |
+| I❤️MESH (`rust/corpus/mesh/one_ring.ila`) | NumPy | 5.20 s | 0.078 s | 0.039 s | 132× |
+| I❤️MESH | all 6 (6 processes) | 5.24 s | 0.48 s | 0.228 s | 23× |
+| I❤️MESH | all 6, one front end (as on the web page) | 5.24 s | 0.48 s | ≈0.04 s | ≈130× |
+
+The last row is the front end once (34 ms) plus all six generators (together under 1 ms),
+plus process start-up. The web page compiles this way, through `rust/src/wasm.rs`.
+
+The 239 programs the Python test suite compiles, NumPy + Eigen: Python 37.0 s (one process,
+with its cache), Rust 3.9 s (478 processes; mostly start-up).
+
+Python's repeat compiles beat Rust's cold compile for plain programs, because Python
+reuses cached parse trees and Rust doesn't cache. An in-process Rust cache would make
+repeat compiles nearly free too, but at 9–40 ms per compile it hasn't been needed.
+
+**Where Rust's time goes** (`IHEARTLA_TIMING=1 iheartla compile …` prints each phase), for
+the I❤️MESH program, which imports `Neighborhoods`, which imports
+`FundamentalMeshAccessors`:
+
+| Phase | Time |
+|---|---|
+| First parse: program, Neighborhoods, FundamentalMeshAccessors | 5.0, 9.9, 3.2 ms |
+| Second parse: FundamentalMeshAccessors, Neighborhoods, program | 5.0, 11.8, 0.8 ms |
+| Type checking (each) | 0.02–0.3 ms |
+| Front end, total | 34–38 ms |
+| Generate NumPy, Eigen, LaTeX, MathJax, MATLAB, MacroMathJax | 0.22, 0.49, 0.03, 0.03, 0.01, 0.04 ms |
+
+Parsing is still almost all the time, as in Python, but each module parse takes
+milliseconds, not seconds. Parsing `Neighborhoods.hlang` (first pass) takes 16 ms including
+start-up, against 1.64 s with TatSu (103×).
+
+Why Rust is faster:
+- **The parser** (`rust/src/peg.rs`) has TatSu's semantics (the same parse trees and
+  errors, left recursion by seed growing) but memoizes cheaply and signals failure with
+  return values instead of exceptions.
+- **Each module is parsed and checked once per compilation** (`rust/src/modules.rs`), and
+  one typed program serves every output.
+- **There is no interpreter.** Type checking and code generation, about 2 s of the 66 s
+  in the old Python profile, take under a millisecond.
+
+**Web page** (`docs/`, headless Chromium 156 through Playwright, `rust/tools/web_check.py`).
+The page has a Compiler choice. The Rust compiler is a 2.7 MB WebAssembly module
+(`docs/rust/iheartla.wasm`, built by `docs/update_rust_wasm.sh`) and runs in its own Web
+Worker. It returns the five outputs the page shows plus `generateRandomData()` and
+`main()`.
+
+| Web page | Python (Pyodide) | Rust (WebAssembly) |
+|---|---|---|
+| Compiler ready after page load | 2.8 s | 0.08–0.17 s |
+| Plain program | 0.22 s | 0.09 s |
+| I❤️MESH program, first compile | 6.8 s | 0.10 s |
+| I❤️MESH program, repeat compile | 0.64 s | 0.10 s |
+
+In Node 22, without the page, the WebAssembly module compiles the plain program in
+32 ms and the I❤️MESH program in 65 ms, about 1.7× native.
+
+Reproduce:
+- `python rust/tools/bench_notes.py`: the first table and the test-program totals.
+- `python rust/tools/bench.py` and `rust/tools/bench_mesh.py`: older tables, in `rust/README.md`.
+- `uv run --with playwright python rust/tools/web_check.py`: the web page.

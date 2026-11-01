@@ -58,6 +58,10 @@ with sync_playwright() as p:
         print('rust: {} compiled in {:.2f} s; sizes {}; msg {!r}; numpy has main: {}; c++ has main: {}; matlab has random data: {}'.format(
             name, elapsed, {k: len(v) for k, v in out.items()}, msg[:80], 'generateRandomData' in out['python'] and "__main__" in out['python'],
             'int main(' in out['cpp'], 'generateRandomData' in out['matlab']))
+    page.wait_for_function("() => !document.getElementById('compile').disabled", timeout=60000)
+    elapsed, out, msg = compile_on(page, MESH, 60000)
+    print('rust: I❤️MESH program, repeat compile: {:.2f} s'.format(elapsed))
+    page.wait_for_function("() => !document.getElementById('compile').disabled", timeout=60000)
     elapsed, out, msg = compile_on(page, 'x = = 1', 60000)
     print('rust: syntax error message: {!r}'.format(msg[:120]))
     print('rust: MathJax rendered: {}'.format(page.evaluate("() => document.getElementById('output').innerHTML.includes('mjx')")))
@@ -68,6 +72,10 @@ with sync_playwright() as p:
     print('python: ready in {:.2f} s; url: {}'.format(time.time() - t, page.url.split('?')[1][:40]))
     elapsed, out, msg = compile_on(page, PROGRAM, 600000)
     print('python: program compiled in {:.2f} s; sizes {}; msg {!r}'.format(elapsed, {k: len(v) for k, v in out.items()}, msg[:80]))
+    for k in range(2):
+        page.wait_for_function("() => !document.getElementById('compile').disabled", timeout=600000)
+        elapsed, out, msg = compile_on(page, MESH, 600000)
+        print('python: I❤️MESH program, {} compile: {:.2f} s ({!r})'.format('first' if k == 0 else 'repeat', elapsed, msg[:40]))
     print('page errors:', errors or 'none')
     browser.close()
 server.shutdown()
