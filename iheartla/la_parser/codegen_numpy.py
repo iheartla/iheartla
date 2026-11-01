@@ -539,7 +539,7 @@ class CodeGenNumpy(CodeGen):
                                     test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
                                 else:
                                     test_content.append("    {} = {}".format(key, int_dim))
-                                for same_key in cur_set:
+                                for same_key in sorted(cur_set, key=str):  # deterministic order
                                     if same_key != key:
                                         dim_defined_list.append(same_key)
                                         if not isinstance(same_key, int):
@@ -700,7 +700,7 @@ class CodeGenNumpy(CodeGen):
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
         # try to first use dim of parameters
-        target_var = list(set(target_var))
+        target_var = sorted(set(target_var))  # sorted: set order depends on the hash seed
         param_l = []
         remain_l = []
         for cur_v in target_var:
@@ -852,7 +852,7 @@ class CodeGenNumpy(CodeGen):
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
         # try to first use dim of parameters
-        target_var = list(set(target_var))
+        target_var = sorted(set(target_var))  # sorted: set order depends on the hash seed
         param_l = []
         remain_l = []
         for cur_v in target_var:

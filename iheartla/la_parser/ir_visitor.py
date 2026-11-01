@@ -712,7 +712,7 @@ class IRVisitor(IRBaseVisitor):
     def get_dim_check_str(self):
         check_list = []
         for cur_set in self.get_cur_param_data().same_dim_list:
-            cur_list = list(cur_set)
+            cur_list = sorted(cur_set, key=str)  # a set: sort, or the order depends on the hash seed
             for cur_index in range(1, len(cur_list)):
                 check_list.append("{} == {}".format(cur_list[0], cur_list[cur_index]))
         return check_list
@@ -810,7 +810,7 @@ class IRVisitor(IRBaseVisitor):
         # This is conducting the replacements at the output string level rather
         # than the variable name level. If one name appears in another (e.g., φ
         # in `x(φ)` then this leads to clashes, hence the awkward sort.
-        ids_list.sort(key=len,reverse=True)
+        ids_list.sort(key=lambda x: (-len(x), x))  # longest first; ties by name, not by set order
         def replace_str(full, target):
             new_str = self.convert_unicode(target)
             new_str = new_str.replace('-', '_')

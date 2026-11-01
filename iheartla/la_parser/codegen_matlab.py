@@ -343,7 +343,7 @@ class CodeGenMatlab(CodeGen):
                                     test_content.append(test_indent+"    {} = {};".format(key, self.randi_str(rand_int_max)))
                                 else:
                                     test_content.append(test_indent+"    {} = {};".format(key, int_dim))
-                                for same_key in cur_set:
+                                for same_key in sorted(cur_set, key=str):  # deterministic order
                                     if same_key != key:
                                         dim_defined_list.append(same_key)
                                         if not isinstance(same_key, int):
@@ -712,6 +712,7 @@ class CodeGenMatlab(CodeGen):
             name_convention = set_name_conventions(sub)
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
+        target_var = sorted(set(target_var))  # deterministic: node.symbols is a set, whose order depends on the hash seed
         # self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
@@ -853,6 +854,7 @@ class CodeGenMatlab(CodeGen):
             name_convention = set_name_conventions(sub)
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
+        target_var = sorted(set(target_var))  # deterministic: node.symbols is a set, whose order depends on the hash seed
         # self.add_name_conventions(name_convention)
         #
         assign_id = node.symbol
