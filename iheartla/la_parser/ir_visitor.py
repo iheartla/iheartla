@@ -777,16 +777,11 @@ class IRVisitor(IRBaseVisitor):
 
     def fill_comment(self, content):
         for k, v in self.comment_dict.items():
-            comment_re = re.compile(
-                dedent(r'''(?P<prefix>[ \t]*){}'''.format(k)),
-                re.DOTALL | re.VERBOSE
-                )
-            for m in comment_re.finditer(content):
-                if m.group('prefix'):
-                    content = content.replace(m.group(), self.update_prelist_str([v], m.group('prefix'))[:-1] )
-                else:
-                    content = content.replace(m.group(), v)
-                continue
+            # the whole placeholder (iheartlacomment_1 mustn't match iheartlacomment_10), leaving its newline
+            comment_re = re.compile(r'(?P<prefix>[ \t]*)' + re.escape(k.rstrip('\n')) + r'(?=\n)')
+            # (substitute the matches only: a plain replace would also hit iheartlacomment_10)
+            content = comment_re.sub(lambda m: self.update_prelist_str([v], m.group('prefix'))[:-1] if m.group('prefix') else v,
+                                     content)
         return content
 
     def has_special_symbol(self, target):
