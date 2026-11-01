@@ -149,6 +149,11 @@ NOT_PREFIX_KEYWORD
     | NABLA
     | IN
     | DERIVATIVE
+    # symbols juxtapose rather than prefix a name: πd is π times d (only ∑ of SUM, not sum)
+    | PI
+    | /ℝ/ | /ℤ/
+    | /∑/
+    | SUBSET
     ;
     
 PREFIX_KEYWORD 
