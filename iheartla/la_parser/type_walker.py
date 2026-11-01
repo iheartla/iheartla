@@ -3117,9 +3117,11 @@ class TypeWalker(NodeWalker):
     def walk_Function(self, node, **kwargs):
         if isinstance(node.name, str):
             func_name = node.name
-            if self.local_func_parsing and node.name in self.parameters and node.name not in self.used_params:
+            # function parameters are renamed (f -> f_0) until convert_parameters
+            is_param = node.name in self.parameters or any(self.func_mapping_dict.get(p) == node.name for p in self.parameters)
+            if self.local_func_parsing and is_param and node.name not in self.used_params:
                 self.used_params.append(node.name)
-            if self.visiting_opt and node.name in self.parameters and node.name not in self.used_params:
+            if self.visiting_opt and is_param and node.name not in self.used_params:
                 self.used_params.append(node.name)
             # if contains_sub_symbol(node.name):
             #     split_res = split_sub_string(node.name)
