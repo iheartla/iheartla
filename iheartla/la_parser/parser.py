@@ -266,6 +266,9 @@ def get_compiled_module(module_name, parser_type, class_only):
     if not Path(module_file).exists():
         # if not in builtin directory, then find it from the input directory
         module_file = "{}/{}.hlang".format(_module_path, module_name)
+        if not Path(module_file).exists():
+            # legacy extension, e.g., modules written by HeartDown
+            module_file = "{}/{}.ihla".format(_module_path, module_name)
     cur_time = os.path.getmtime(Path(module_file))
     tmp_type_walker = None
     if CACHE_MODULE:
