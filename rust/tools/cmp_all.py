@@ -20,6 +20,13 @@ backend = sys.argv[1]
 show = int(sys.argv[sys.argv.index('-v') + 1]) if '-v' in sys.argv else 0
 squash = (lambda s: re.sub(r'\s+', '', s)) if '-w' in sys.argv else (lambda s: re.sub(r'[ \t]+', ' ', s).strip())
 
+if backend == 'macromathjax':
+    # the Python compiler lists an equation's symbols in hash order: compare as sets
+    _sq = squash
+    def squash(t, _sq=_sq):
+        return _sq(re.sub(r"onClickEq\(this, '([^']*)', \[([^\]]*)\]",
+                          lambda m: "onClickEq(this, '{}', [{}]".format(m.group(1), ', '.join(sorted(x.strip() for x in m.group(2).split(',')))), t))
+
 counts = {'identical': 0, 'whitespace': 0, 'different': 0, 'error': 0}
 shown = 0
 for p in sorted(glob.glob(os.path.join(HERE, '..', 'corpus', 'golden', '*.json'))):
@@ -46,7 +53,12 @@ for p in sorted(glob.glob(os.path.join(HERE, '..', 'corpus', 'golden', '*.json')
                 w = wl[i] if i < len(wl) else '<end>'
                 if squash(g) != squash(w):
                     print('--- {}: {}'.format(d['id'], d['src'].strip().splitlines()[0][:70]))
-                    print('  py:   ' + w[:220])
-                    print('  rust: ' + g[:220])
+                    k = next((j for j in range(min(len(g), len(w))) if g[j] != w[j]), min(len(g), len(w)))
+                    k = max(0, k - 60)
+                    print('  py:   ' + w[k:k + 200])
+                    print('  rust: ' + g[k:k + 200])
                     break
+if backend == 'macromathjax':
+    # (equal after sorting equation symbol lists, which Python orders by hash)
+    counts['equal up to symbol order'] = counts.pop('whitespace')
 print(counts)

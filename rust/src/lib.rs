@@ -107,6 +107,12 @@ pub fn compile_latex(src: &str) -> Result<String, String> {
     Ok(back::latex::generate(&prog, &tree, back::latex::Flavor::Latex))
 }
 
+/// Compile to MathJax for H❤️rtDown (with click handlers).
+pub fn compile_macromathjax(src: &str) -> Result<String, String> {
+    let (tree, prog) = front_end(src)?;
+    Ok(back::latex::generate(&prog, &tree, back::latex::Flavor::MacroMathjax))
+}
+
 /// Compile to MathJax (an `align*` block).
 pub fn compile_mathjax(src: &str) -> Result<String, String> {
     let (tree, prog) = front_end(src)?;

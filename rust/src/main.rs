@@ -177,6 +177,7 @@ fn main() {
                 "eigen" => iheartla::compile_eigen(&text, &name),
                 "latex" => iheartla::compile_latex(&text),
                 "mathjax" => iheartla::compile_mathjax(&text),
+                "macromathjax" => iheartla::compile_macromathjax(&text),
                 other => Err(format!("unknown backend {other}")),
             };
             match result {

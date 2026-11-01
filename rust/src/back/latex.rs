@@ -19,6 +19,9 @@ pub enum Flavor {
     Latex,
     /// an `align*` block for MathJax
     Mathjax,
+    /// MathJax for H❤️rtDown: symbols and equations carry click handlers
+    /// (`\idlabel`, `\eqlabel`) naming each symbol and its definitions and uses
+    MacroMathjax,
 }
 
 const LATEX_PRE: &str = r"\documentclass[12pt]{article}
@@ -117,7 +120,61 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
             }
         }
     }
-    let mut p = Printer { prog, flavor, in_sum: false, local_func: false, align_local: false, declared, mesh_funcs };
+    // parameters of local functions (for MacroMathJax's labels)
+    let mut local_params = std::collections::HashSet::new();
+    for b in tree.get("vblock").items().iter().filter(|b| b.class() == "Statements" && b.get("stat").class() == "LocalFunc") {
+        let f = b.get("stat");
+        for x in f.get("params").items().iter().chain(f.get("subs").items()) {
+            local_params.insert(ident_name(x));
+        }
+        // (and its local definitions)
+        for e in f.get("extra").items() {
+            for l in e.get("left").items() {
+                local_params.insert(crate::decls::main_name(l));
+            }
+        }
+    }
+    // (the Python compiler's generator also keeps the parameters of the
+    // local functions of the modules it printed before)
+    fn module_params(prog: &Program, out: &mut std::collections::HashSet<String>) {
+        for m in &prog.modules {
+            module_params(&m.prog, out);
+            for st in &m.prog.stmts {
+                if let crate::ast::Stmt::Func(f) = st {
+                    for (n, _) in &f.params {
+                        out.insert(n.clone());
+                    }
+                    for b in &f.body {
+                        match b {
+                            crate::ast::Stmt::Assign(a) => {
+                                out.insert(a.lhs.clone());
+                            }
+                            crate::ast::Stmt::Multi { lhs, .. } => {
+                                for (n, _) in lhs {
+                                    out.insert(n.clone());
+                                }
+                            }
+                            _ => {}
+                        }
+                    }
+                }
+            }
+        }
+    }
+    module_params(prog, &mut local_params);
+    let mut p = Printer {
+        prog,
+        flavor,
+        in_sum: false,
+        local_func: false,
+        align_local: false,
+        declared,
+        mesh_funcs,
+        local_params,
+        no_label: 0,
+        defining: false,
+        local_func_name: last_module_func(prog),
+    };
     let body = p.start(tree);
     match flavor {
         Flavor::Latex => {
@@ -130,8 +187,36 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
             let pre = LATEX_PRE.replace("{!}\n", "{!} \n");
             format!("{pre}{body}{LATEX_POST}")
         }
-        Flavor::Mathjax => format!("{MATHJAX_PRE}{body}{MATHJAX_POST}"),
+        Flavor::Mathjax | Flavor::MacroMathjax => format!("{MATHJAX_PRE}{body}{MATHJAX_POST}"),
     }
+}
+
+/// The last local function (in source order) of the last imported module:
+/// MacroMathJax labels in the Python compiler carry it until the program's
+/// own first local function is printed.
+fn last_module_func(prog: &Program) -> String {
+    let Some(m) = prog.modules.last() else { return String::new() };
+    let mut best: Option<(usize, &str)> = None;
+    for st in &m.prog.stmts {
+        if let crate::ast::Stmt::Func(f) = st {
+            if let Some(pos) = m.prog.source.rfind(f.text.trim()) {
+                if best.is_none_or(|(b, _)| pos > b) {
+                    best = Some((pos, &f.base));
+                }
+            }
+        }
+    }
+    best.map(|(_, n)| js_content(n)).unwrap_or_default()
+}
+
+/// A symbol for JavaScript in a click handler.
+fn js_content(s: &str) -> String {
+    s.replace('\\', "\\\\\\\\").replace('`', "").replace('"', "\\\\\"").replace('\'', "\\\\'")
+}
+
+/// URL-safe base64 (an equation's source in its click handler).
+fn b64(s: &str) -> String {
+    crate::helper::base64_encode(s).replace('+', "-").replace('/', "_")
 }
 
 /// `\mathit` for a multi-letter name.
@@ -222,6 +307,13 @@ struct Printer<'p> {
     align_local: bool,
     declared: std::collections::HashSet<String>,
     mesh_funcs: std::collections::HashSet<String>,
+    local_params: std::collections::HashSet<String>,
+    /// > 0: inside subscripts, where names are not labeled
+    no_label: usize,
+    /// printing a definition (an assignment's left side, a function's name)
+    defining: bool,
+    /// the last local function printed (MacroMathJax)
+    local_func_name: String,
 }
 
 fn span(n: &Val) -> Option<(usize, usize)> {
@@ -246,6 +338,102 @@ impl<'p> Printer<'p> {
         self.prog.expr_types.get(&span(n)?)
     }
 
+    fn macro_(&self) -> bool {
+        self.flavor == Flavor::MacroMathjax
+    }
+
+    /// A symbol's LaTeX `content`, with MacroMathJax's click handler.
+    fn label(&self, full: &str, main: &str, content: String) -> String {
+        if !self.macro_() || self.no_label > 0 {
+            return content;
+        }
+        let func = "heartlib";
+        let use_type = if self.defining { "def" } else { "use" };
+        let (local, lf) = if self.local_func {
+            (self.local_params.contains(full), self.local_func_name.as_str())
+        } else {
+            (false, "")
+        };
+        let m = js_content(main);
+        let json = format!(
+            "{{\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '{m}', '{func}', '{use_type}', {}, '{lf}')\", \"id\":\"{func}-{}\", \"sym\":\"{m}\", \"func\":\"{func}\",  \"localFunc\":\"{lf}\", \"type\":\"{use_type}\", \"case\":\"equation\"}}",
+            if local { "true" } else { "false" },
+            js_content(full)
+        );
+        format!("\\idlabel{{ {json} }}{{ {{{content}}} }}")
+    }
+
+    /// The program symbols an expression uses (for MacroMathJax's equation
+    /// labels), in order of first use, without subscripts. Like the Python
+    /// compiler, it leaves out what piecewise expressions, integrals, norm
+    /// and inner product subscripts, summation conditions and optimization
+    /// constraints use, and includes optimization variables and a block
+    /// matrix's I.
+    fn symbols(&self, n: &Val, out: &mut Vec<String>) {
+        self.symbols_in(n, out, false);
+    }
+
+    fn symbols_in(&self, n: &Val, out: &mut Vec<String>, in_matrix: bool) {
+        if n.is_seq() {
+            for x in n.items() {
+                self.symbols_in(x, out, in_matrix);
+            }
+            return;
+        }
+        let Some(node) = n.node() else { return };
+        let in_matrix = in_matrix || n.class() == "Matrix";
+        if matches!(n.class(), "MultiCondExpr" | "Integral") {
+            return;
+        }
+        if n.class() == "Optimize" {
+            for d in n.get("defs").items() {
+                for id in d.get("id").items() {
+                    let v = crate::decls::main_name(id);
+                    if !out.contains(&v) {
+                        out.push(v);
+                    }
+                }
+            }
+        }
+        if in_matrix && n.class() == "IdentifierAlone" && ident_name(n) == "I" && !out.contains(&"I".to_string()) {
+            out.push("I".into());
+        }
+        let name = match n.class() {
+            "IdentifierAlone" => Some(ident_name(n)),
+            "IdentifierSubscript" => Some(ident_name(n.get("left"))),
+            "Function" => n.get("name").as_str().map(crate::decls::strip_backticks),
+            _ => None,
+        };
+        if let Some(name) = name {
+            let known = self.defined(&name) || self.prog.funcs.iter().any(|(f, _)| *f == name) || self.mesh_funcs.contains(&name);
+            if known && !out.contains(&name) {
+                out.push(name);
+            }
+        }
+        if n.class() == "IdentifierSubscript" {
+            return;
+        }
+        for (k, v) in &node.fields {
+            let skip = matches!((n.class(), *k), ("Summation", "cond") | ("Summation", "range") | ("Optimize", "cond") | ("Optimize", "defs") | ("Norm", "sub") | ("InnerProduct", "sub"));
+            if !skip {
+                self.symbols_in(v, out, in_matrix);
+            }
+        }
+    }
+
+    /// MacroMathJax's click handler for an equation.
+    fn eqlabel(&self, syms: &[String], tail: &str) -> String {
+        let list: Vec<String> = syms.iter().map(|x| format!("'{}'", js_content(x))).collect();
+        // (the used symbols sorted, as the Python compiler lists them; the defined one last)
+        let mut list = list;
+        if let Some(last) = list.pop() {
+            list.sort();
+            list.dedup();
+            list.push(last);
+        }
+        format!("\\\\\\eqlabel{{ {{\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', [{}], {tail});\"}} }}{{}}\n", list.join(", "))
+    }
+
     // -- blocks --------------------------------------------------------------
 
     fn start(&mut self, tree: &Val) -> String {
@@ -263,7 +451,7 @@ impl<'p> Printer<'p> {
                             s = format!(" \\omit \\span {s}");
                         }
                     }
-                    Flavor::Mathjax => {
+                    Flavor::Mathjax | Flavor::MacroMathjax => {
                         if !matches!(cls, "Assignment" | "GeneralAssignment") {
                             s = format!(" & {s}");
                         }
@@ -294,7 +482,7 @@ impl<'p> Printer<'p> {
             let a = b.get("annotation").flat_text();
             content = match self.flavor {
                 Flavor::Latex => format!("\\intertext{{{a}}} \n{content}"),
-                Flavor::Mathjax => format!("{a} \\\\\n{content}"),
+                Flavor::Mathjax | Flavor::MacroMathjax => format!("{a} \\\\\n{content}"),
             };
         }
         content + "\\\\\n"
@@ -369,7 +557,12 @@ impl<'p> Printer<'p> {
                 if t.get("src").truthy() {
                     format!("{}\\rightarrow {}", self.la_type(t.get("src")), self.la_type(t.get("dst")))
                 } else if t.get("s").truthy() {
-                    self.la_type(t.get("s"))
+                    let st = t.get("s");
+                    if matches!(st.class(), "IdentifierAlone" | "IdentifierSubscript") {
+                        self.id_node(st)
+                    } else {
+                        self.la_type(st)
+                    }
                 } else {
                     self.src(t)
                 }
@@ -426,7 +619,8 @@ impl<'p> Printer<'p> {
             "ArithDivide" => format!("\\frac{{{}}}{{{}}}", self.dim(n.get("left")), self.dim(n.get("right"))),
             "IdentifierAlone" => self.id_node(n),
             "IdentifierSubscript" => {
-                let main = convert_name(&ident_name(n.get("left")));
+                let name = ident_name(n.get("left"));
+                let main = self.label(&name, &name, convert_name(&name));
                 let subs: Vec<String> = self.subscripts(n).iter().map(|s| self.sub_name(s)).collect();
                 format!("{main}_{{ {} }}", subs.join(", "))
             }
@@ -441,9 +635,18 @@ impl<'p> Printer<'p> {
         match s.class() {
             "Import" => self.import(s),
             "Assignment" | "GeneralAssignment" | "Destructure" => self.assignment(s),
+            "LocalFunc" if self.macro_() => self.macro_local_func(s),
             "LocalFunc" => self.local_func(s),
             "Equation" => format!("{} & = {}", self.expr(s.get("left")), self.expr(s.get("right"))),
-            _ => self.expr(s),
+            _ => {
+                let e = self.expr(s);
+                if self.macro_() && optimize_node(s).is_some() {
+                    let mut syms = Vec::new();
+                    self.symbols(s, &mut syms);
+                    return e + &self.eqlabel(&syms, &format!("false, [], [], '{}', false", b64(&self.src(s))));
+                }
+                e
+            }
         }
     }
 
@@ -473,18 +676,35 @@ impl<'p> Printer<'p> {
     fn assignment(&mut self, s: &Val) -> String {
         let left = self.sides(s.get("left"));
         let right = self.sides(s.get("right"));
+        self.defining = true;
         let lhs: Vec<String> = left.iter().map(|l| self.lhs(l)).collect();
+        self.defining = false;
+        let label = |this: &Self| -> String {
+            if !this.macro_() || this.in_sum {
+                return String::new();
+            }
+            let mut syms = Vec::new();
+            if left.len() == 1 {
+                for r in &right {
+                    this.symbols(r, &mut syms);
+                }
+            }
+            if let Some(l) = left.first() {
+                syms.push(crate::decls::main_name(l));
+            }
+            this.eqlabel(&syms, &format!("false, [], [], '{}'", b64(&this.src(s))))
+        };
         if let Some(r) = right.first() {
             if let Some(opt) = optimize_node(r) {
-                return self.optimize(&opt, Some(lhs.join(", ")));
+                return self.optimize(&opt, Some(lhs.join(", "))) + &label(self);
             }
         }
-        let rhs: Vec<String> = right.iter().map(|r| self.strip_parens(r)).collect();
+        let rhs: Vec<String> = right.iter().map(|r| if self.macro_() { self.expr(r) } else { self.strip_parens(r) }).collect();
         for l in &left {
             self.declared.insert(crate::decls::main_name(l));
         }
         let eq = if self.in_sum { " = " } else { " & = " };
-        format!("{}{eq}{}", lhs.join(","), rhs.join(","))
+        format!("{}{eq}{}", lhs.join(","), rhs.join(",")) + &label(self)
     }
 
     /// An expression, without the parentheses of a parenthesized whole.
@@ -500,7 +720,7 @@ impl<'p> Printer<'p> {
             // an elementwise definition: formatted as an indexing of what it defines
             "IdentifierSubscript" => {
                 let name = ident_name(l.get("left"));
-                let main = convert_name(&name);
+                let main = self.label(&name, &name, convert_name(&name));
                 let subs: Vec<String> = self.subscripts(l).iter().map(|s| self.sub_name(s)).collect();
                 // (the indexing form; for a matrix, only if already declared or defined)
                 let ty = self.symbol_type(&name).filter(|t| !t.is_matrix() || self.declared.contains(&name));
@@ -557,16 +777,43 @@ impl<'p> Printer<'p> {
         content
     }
 
+    /// A local function as MacroMathJax prints it (as the Python compiler
+    /// does: parameters in brackets unless parenthesized, `where` inline, and
+    /// labels of later symbols still naming this function).
+    fn macro_local_func(&mut self, s: &Val) -> String {
+        self.local_func = true;
+        self.defining = true;
+        let name = self.id_node(s.get("name"));
+        self.defining = false;
+        self.local_func_name = js_content(&ident_name(s.get("name")));
+        let params: Vec<Val> = s.get("subs").items().iter().chain(s.get("params").items()).cloned().collect();
+        let params_str = self.joined(&params, s.get("separators"), |p, x| p.id_node(x));
+        let def_params = if s.get("def_p").truthy() { format!("\\left( {params_str} \\right)") } else { format!("\\left[ {params_str} \\right]") };
+        let exprs: Vec<String> = self.sides(s.get("expr")).iter().map(|e| self.expr(e)).collect();
+        let mut content = format!("{name}{def_params} & = {}", exprs.join(", "));
+        let defs = s.get("defs").items().to_vec();
+        if !defs.is_empty() {
+            let pars: Vec<String> = defs.iter().map(|d| self.where_condition(d)).collect();
+            content += &format!(" \\text{{{{ where }}}}  {}", pars.join(", "));
+        }
+        content
+    }
+
     // -- identifiers ---------------------------------------------------------
 
     /// A name as written (with subscripts as `_{…}`), not an indexing.
     fn id_node(&mut self, n: &Val) -> String {
         match n.class() {
-            "IdentifierAlone" => convert_name(&ident_name(n)),
+            "IdentifierAlone" => {
+                let name = ident_name(n);
+                self.label(&name, &name, convert_name(&name))
+            }
             "IdentifierSubscript" => {
-                let main = convert_name(&ident_name(n.get("left")));
+                let name = ident_name(n.get("left"));
                 let subs: Vec<String> = self.subscripts(n).iter().map(|s| self.sub_name(s)).collect();
-                format!("{main}_{{{}}}", subs.join(","))
+                let raw: Vec<String> = self.subscripts(n).iter().map(|s| s.as_str().map(str::to_string).unwrap_or_else(|| self.src(s))).collect();
+                let full = format!("{name}_{}", raw.join(""));
+                format!("{}_{{{}}}", self.label(&full, &name, convert_name(&name)), subs.join(","))
             }
             _ => self.expr(n),
         }
@@ -584,6 +831,13 @@ impl<'p> Printer<'p> {
         if let Some(t) = s.as_str() {
             return t.to_string();
         }
+        self.no_label += 1;
+        let out = self.sub_name_inner(s);
+        self.no_label -= 1;
+        out
+    }
+
+    fn sub_name_inner(&mut self, s: &Val) -> String {
         match s.class() {
             "IdentifierAlone" => convert_name(&ident_name(s)),
             "Integer" | "SubInteger" | "SupInteger" => self.int_text(s),
@@ -594,7 +848,8 @@ impl<'p> Printer<'p> {
     /// A subscripted name in an expression: an indexing, formatted by the
     /// type of what it indexes.
     fn indexing(&mut self, n: &Val) -> String {
-        let main = convert_name(&ident_name(n.get("left")));
+        let name = ident_name(n.get("left"));
+        let main = if name == "I" && !self.defined("I") { convert_name(&name) } else { self.label(&name, &name, convert_name(&name)) };
         let subs: Vec<String> = self.subscripts(n).iter().map(|s| self.sub_name(s)).collect();
         let base = span(n).and_then(|sp| self.prog.base_types.get(&sp));
         if base.is_none() && ident_name(n.get("left")) == "I" {
@@ -666,7 +921,10 @@ impl<'p> Printer<'p> {
                 }
             }
             "Optimize" => self.optimize(n, None),
-            "IdentifierAlone" => convert_name(&ident_name(n)),
+            "IdentifierAlone" => {
+                let name = ident_name(n);
+                self.label(&name, &name, convert_name(&name))
+            }
             "IdentifierSubscript" => self.indexing(n),
             "Integer" | "SupInteger" | "SubInteger" => self.int_text(n),
             "Double" => py_float(&self.src(n)),
@@ -773,6 +1031,13 @@ impl<'p> Printer<'p> {
     }
 
     fn num_matrix(&mut self, n: &Val) -> String {
+        self.no_label += 1;
+        let out = self.num_matrix_inner(n);
+        self.no_label -= 1;
+        out
+    }
+
+    fn num_matrix_inner(&mut self, n: &Val) -> String {
         let id1 = self.dim(n.get("id1"));
         let left = n.get("left").flat_text();
         if left == "I" {
@@ -963,7 +1228,10 @@ impl<'p> Printer<'p> {
             format!("\\sum_{{{s}={lo}}}^{{ {hi}}}")
         } else {
             let id = if op.get("id").truthy() { op.get("id") } else { op.get("sub") };
-            format!("\\sum_{{{}}} ", self.id_node(id))
+            self.no_label += 1;
+            let s = self.id_node(id);
+            self.no_label -= 1;
+            format!("\\sum_{{{s}}} ")
         };
         if op.get("sign").truthy() {
             content += &op.get("sign").flat_text();
@@ -993,7 +1261,10 @@ impl<'p> Printer<'p> {
         }
         // a function's name as written: backticked names print as text
         let mut content = match name.as_str() {
-            Some(raw) => convert_name(raw),
+            Some(raw) => {
+                let n = crate::decls::strip_backticks(raw);
+                self.label(&n, &n, convert_name(raw))
+            }
             None => self.id_node(name),
         };
         if !subs.is_empty() {
@@ -1068,7 +1339,9 @@ impl<'p> Printer<'p> {
         if let Some(l) = lhs {
             content += &format!("{l} = ");
         }
+        self.no_label += 1;
         let defs: Vec<String> = n.get("defs").items().iter().map(|d| self.where_condition(d)).collect();
+        self.no_label -= 1;
         let e = self.expr(n.get("exp"));
         content += &format!("{cat}_{{{}}} \\quad & {e} \\\\\n", defs.join(", ").replace('&', ""));
         let mut conds = Vec::new();
