@@ -310,6 +310,33 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_dense_elementwise_piecewise(self):
+        # M_ij = { ... for a dense matrix: several branches, and no otherwise (unmatched elements stay 0)
+        la_str = """M_ij = { A_ij if A_ij > 0
+        -1 if A_ij < -2
+        0 otherwise
+        N_ij = { A_ij if A_ij > 0
+        where
+        A: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, -2], [-3, 4]])
+        res = func_info.numpy_func(A)
+        self.assertDMatrixEqual(res.M, np.array([[1, 0], [-1, 4]]))
+        self.assertDMatrixEqual(res.N, np.array([[1, 0], [0, 4]]))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, -2, -3, 4;",
+                     "    auto r = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> M, N;",
+                     "    M << 1, 0, -1, 4;",
+                     "    N << 1, 0, 0, 4;",
+                     "    return (r.M - M).norm() == 0 && (r.N - N).norm() == 0;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_block_matrix_6(self):
         # scalar value
         la_str = """B = [ A 1 ]

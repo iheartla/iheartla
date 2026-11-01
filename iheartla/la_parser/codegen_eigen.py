@@ -1573,6 +1573,12 @@ class CodeGenEigen(CodeGen):
             else:
                 pre_list.append('        {} = {};\n'.format(name, other_info.content))
             pre_list.append('    }\n')
+        if not func_ret and assign_node.left[0].contain_subscript() and \
+                not self.get_sym_type(assign_node.left[0].get_main_id()).sparse:
+            # one element of a dense matrix (M_ij = { ...): the branches assign to a temporary,
+            # declared here, which the assignment then stores in the element (0 if no branch applies)
+            pre_list.insert(0, '    {} {} = 0;\n'.format(self.get_ctype(node.la_type), name))
+            cur_m_id = name
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_matrix(self, node, **kwargs):
