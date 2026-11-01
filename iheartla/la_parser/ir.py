@@ -217,8 +217,10 @@ class StartNode(StmtNode):
         package_rdict = {}
         for directive in self.directives:
             if directive.package is not None:
+                # merge all directives of the same package, as get_package_dict does
                 if directive.package.get_name() not in package_rdict:
-                    package_rdict[directive.package.get_name()] = directive.r_dict
+                    package_rdict[directive.package.get_name()] = {}
+                package_rdict[directive.package.get_name()].update(directive.r_dict)
         return package_rdict
 
     def get_module_pars_list(self):
