@@ -60,6 +60,15 @@ P ∈ ℝ^(4 × d)</pre>
             </svg>
             Copy as URL
         </button>
+        <span id="compiler-choice">
+          <a>Compiler:</a>
+          <div class="btn-group" role="group" aria-label="Compiler">
+            <input type="radio" class="btn-check" name="compiler" id="compiler-python" autocomplete="off" onchange="setCompiler('python')" checked />
+            <label class="btn btn-outline-secondary btn-sm" for="compiler-python" title="The Python compiler, in Pyodide">Python</label>
+            <input type="radio" class="btn-check" name="compiler" id="compiler-rust" autocomplete="off" onchange="setCompiler('rust')" />
+            <label class="btn btn-outline-secondary btn-sm" for="compiler-rust" title="The Rust compiler, as WebAssembly (faster; see rust/README.md)">Rust</label>
+          </div>
+        </span>
     </div>
     </div>
     
@@ -121,7 +130,7 @@ P ∈ ℝ^(4 × d)</pre>
     // We have to do this before creating the ace editor, or else call an ace function.
     loadCodeFromURLParameter();
     
-    initPyodide()
+    initCompiler()
     const [ validBrowser, validBrowserMessage ] = checkBrowserVer();
     showMsg( validBrowserMessage, !validBrowser );
     initBtnStatus();

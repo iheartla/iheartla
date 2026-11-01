@@ -16,6 +16,8 @@ pub mod modules;
 pub mod peg;
 pub mod pnode;
 pub mod ty;
+#[cfg(target_arch = "wasm32")]
+pub mod wasm;
 
 /// Map byte offsets in `text` to character offsets (Python string indices).
 pub fn char_offsets(text: &str) -> Vec<usize> {

@@ -57,13 +57,45 @@ function isChrome(){
     return false;
 }
 
-// The compiler runs in a Web Worker (js/compile-worker.js) so long compiles don't block the page.
+// The compiler runs in a Web Worker so long compiles don't block the page: the
+// Python compiler in Pyodide (js/compile-worker.js), or the Rust compiler as
+// WebAssembly (js/compile-worker-rust.js). Both take the same messages. The
+// choice is the URL parameter `compiler` (python or rust).
 let compileWorker = null;
 let compileCallbacks = {};
 let nextCompileId = 0;
+const compilerWorkers = { python: "js/compile-worker.js", rust: "js/compile-worker-rust.js" };
+
+function compilerChoice(){
+    const choice = new URL(window.location.href).searchParams.get("compiler");
+    return compilerWorkers[choice] ? choice : "python";
+}
+
+// Switch compilers (from the Compiler buttons): remember the choice in the
+// URL (so "Copy as URL" keeps it) and restart the worker.
+function setCompiler(choice){
+    const url = new URL(window.location.href);
+    url.searchParams.set("compiler", choice);
+    window.history.replaceState(null, "", url.toString());
+    if (compileWorker){
+        compileWorker.terminate();
+    }
+    compileCallbacks = {};
+    initBtnStatus();
+    initCompiler();
+}
 
 function initPyodide(){
-    compileWorker = new Worker("js/compile-worker.js", { type: "module" });
+    initCompiler();
+}
+
+function initCompiler(){
+    const choice = compilerChoice();
+    const radio = document.getElementById("compiler-" + choice);
+    if (radio){
+        radio.checked = true;
+    }
+    compileWorker = new Worker(compilerWorkers[choice], { type: "module" });
     compileWorker.onerror = function(event){
         updateError("Failed to start the compiler: " + (event.message || "see the browser console"));
     };

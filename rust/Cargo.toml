@@ -7,6 +7,8 @@ license = "MIT"
 
 [lib]
 path = "src/lib.rs"
+# cdylib: the WebAssembly module for the web page (docs/update_rust_wasm.sh)
+crate-type = ["rlib", "cdylib"]
 
 [[bin]]
 name = "iheartla"
@@ -20,3 +22,13 @@ unicode_names2 = "1"
 
 [profile.release]
 debug = 1
+
+# the WebAssembly module: small and fast (cargo build --profile wasm --target wasm32-unknown-unknown)
+[profile.wasm]
+inherits = "release"
+debug = false
+strip = true
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
