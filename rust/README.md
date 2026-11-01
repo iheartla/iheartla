@@ -23,7 +23,7 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 | Eigen (C++) backend | 207/207 Python tests (via cppyy) |
 | LaTeX and MathJax backends | 231 of 232 corpus programs (including modules) give output identical to Python's. The one exception is a Python bug: it prints `None` as the name of `asin²` |
 | MATLAB backend | Not yet. MATLAB can't run here (license error), and the Python MATLAB backend isn't a reliable reference: it is untested, and for some inputs it emits Python syntax |
-| I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, mesh expressions compile but throw at run time |
+| I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 611 values equal to the NumPy output |
 | Continuous optimization in C++ (`argmin` over ℝⁿ) | Throws at run time (Python uses LBFGSpp). Optimization over a finite set works |
 
 To run the Python test suite with code from the Rust compiler:
@@ -106,6 +106,9 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
 - `cmp_all.py BACKEND [-v N]`: compare one backend's output with the goldens over the whole
   corpus (identical / equal up to whitespace / different / error).
 - `bench.py`, `bench_mesh.py`: the timing tables above.
+- `mesh_check_cpp.py`: compile the Rust Eigen output with the I❤️MESH C++ runtime
+  (`iheartla/mesh/Cpp`, built with clang++), run it on the same octahedron, and compare
+  every value with the Rust NumPy output.
 - `mesh_check.py`: compile I❤️MESH programs with both compilers, run both on an octahedron,
   and compare every attribute and every function value over all element arguments.
   `mesh_runtime/triangle_mesh.py` adds `ElementSets` and `indicator` to the I❤️MESH
