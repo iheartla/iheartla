@@ -21,11 +21,51 @@ os.environ.setdefault('SDKROOT', '/Library/Developer/CommandLineTools/SDKs/MacOS
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
 BACKENDS = os.environ.get('IHEARTLA_RUST_BACKENDS', 'numpy').split(',')
 
+if 'matlab' in BACKENDS or os.environ.get('IHEARTLA_OCTAVE'):
+    # Run the test suite's MATLAB checks in GNU Octave: a stand-in for the
+    # `matlab` engine module (matlab.double(...) is a NumPy array; functions
+    # are called through oct2py), and TEST_MATLAB switched on.
+    import types
+    import atexit
+    import numpy as _np
+    os.environ.setdefault('OCTAVE_EXECUTABLE', 'octave-cli')
+    import oct2py
+    _calls = [0]
+    if os.environ.get('RUST_TEST_VERBOSE'):
+        atexit.register(lambda: print('MATLAB functions run in Octave:', _calls[0]))
+
+    class _Engine:
+        def __init__(self):
+            self.oc = oct2py.Oct2Py(executable=os.environ.get('OCTAVE_EXECUTABLE', 'octave-cli'))
+
+        def genpath(self, d):
+            return os.path.abspath(d)
+
+        def addpath(self, d, nargout=0):
+            self.oc.addpath(d)
+
+        def __getattr__(self, name):
+            def call(*args):
+                _calls[0] += 1
+                self.oc.eval('rehash')
+                return self.oc.feval(name, *args)
+            return call
+
+    _matlab = types.ModuleType('matlab')
+    for _t in ['double', 'single', 'int8', 'int16', 'int32', 'int64', 'uint8', 'int']:
+        setattr(_matlab, _t, lambda x, _t=_t: _np.array(x, dtype=float if _t in ('double', 'single') else _np.int64))
+    _matlab.engine = types.ModuleType('matlab.engine')
+    _matlab.engine.start_matlab = _Engine
+    sys.modules['matlab'] = _matlab
+    sys.modules['matlab.engine'] = _matlab.engine
+    import iheartla.la_tools.la_helper as _helper
+    _helper.TEST_MATLAB = True
+
 import iheartla.la_parser.parser as P
 from iheartla.la_tools.la_helper import ParserTypeEnum
 
 _orig = P.compile_la_content
-TYPES = {'numpy': ParserTypeEnum.NUMPY, 'eigen': ParserTypeEnum.EIGEN}
+TYPES = {'numpy': ParserTypeEnum.NUMPY, 'eigen': ParserTypeEnum.EIGEN, 'matlab': ParserTypeEnum.MATLAB}
 
 
 class RustCompileError(Exception):
@@ -33,11 +73,17 @@ class RustCompileError(Exception):
 
 
 def compile_with_rust(la_content, parser_type=None, *args, **kwargs):
-    ret = _orig(la_content, parser_type, *args, **kwargs)
+    py_type = parser_type
+    if parser_type is not None and 'matlab' in BACKENDS and parser_type & ParserTypeEnum.MATLAB:
+        # (Rust supplies the MATLAB output; don't run the Python compiler's)
+        py_type = parser_type & ~ParserTypeEnum.MATLAB
+    ret = _orig(la_content, py_type, *args, **kwargs)
     for b in BACKENDS:
         t = TYPES[b]
         if parser_type is not None and parser_type & t:
-            r = subprocess.run([BINARY, 'compile', '--backend', b], input=la_content.encode(), capture_output=True)
+            # (the test suite names MATLAB functions after `iheartla`)
+            name = ['--name', 'iheartla'] if b == 'matlab' else []
+            r = subprocess.run([BINARY, 'compile', '--backend', b] + name, input=la_content.encode(), capture_output=True)
             if r.returncode != 0:
                 raise RustCompileError(r.stderr.decode())
             ret[t] = r.stdout.decode()

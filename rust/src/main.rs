@@ -178,6 +178,7 @@ fn main() {
                 "latex" => iheartla::compile_latex(&text),
                 "mathjax" => iheartla::compile_mathjax(&text),
                 "macromathjax" => iheartla::compile_macromathjax(&text),
+                "matlab" => iheartla::compile_matlab(&text, &name),
                 other => Err(format!("unknown backend {other}")),
             };
             match result {

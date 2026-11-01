@@ -107,6 +107,12 @@ pub fn compile_latex(src: &str) -> Result<String, String> {
     Ok(back::latex::generate(&prog, &tree, back::latex::Flavor::Latex))
 }
 
+/// Compile to MATLAB (or Octave) code.
+pub fn compile_matlab(src: &str, func_name: &str) -> Result<String, String> {
+    let prog = check_source(src)?;
+    Ok(back::matlab::generate(&prog, func_name))
+}
+
 /// Compile to MathJax for H❤️rtDown (with click handlers).
 pub fn compile_macromathjax(src: &str) -> Result<String, String> {
     let (tree, prog) = front_end(src)?;
