@@ -35,6 +35,44 @@ class TestProduct(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_mixed_int_real_products(self):
+        # an integer vector times a real scalar or vector is real (Eigen needs a cast)
+        la_str = """a = 2.5 x
+                    b = x s
+                    c = x ⋅ y
+                    d = x ∘ y
+                    e = x × y
+                    where
+                    x: ℤ ^ 3
+                    y: ℝ ^ 3
+                    s: ℝ"""
+        func_info = self.gen_func_info(la_str)
+        x = np.array([1, 2, 3])
+        y = np.array([0.5, 0.25, 2])
+        res = func_info.numpy_func(x, y, 0.5)
+        self.assertDMatrixEqual(res.a, np.array([2.5, 5, 7.5]))
+        self.assertDMatrixEqual(res.b, np.array([0.5, 1, 1.5]))
+        self.assertEqual(res.c, 7)
+        self.assertDMatrixEqual(res.d, np.array([0.5, 0.5, 6]))
+        self.assertDMatrixEqual(res.e, np.array([3.25, -0.5, -0.75]))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 3, 1> x;",
+                     "    x << 1, 2, 3;",
+                     "    Eigen::Matrix<double, 3, 1> y;",
+                     "    y << 0.5, 0.25, 2;",
+                     "    auto r = {}(x, y, 0.5);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 3, 1> a, b, d, e;",
+                     "    a << 2.5, 5, 7.5;",
+                     "    b << 0.5, 1, 1.5;",
+                     "    d << 0.5, 0.5, 6;",
+                     "    e << 3.25, -0.5, -0.75;",
+                     "    return r.a.isApprox(a) && r.b.isApprox(b) && r.c == 7 && r.d.isApprox(d) && r.e.isApprox(e);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_inner_product_subscript(self):
         la_str = """A = <T , P>_M
                     where 
@@ -286,6 +324,37 @@ class TestProduct(BasePythonTest):
                      "    P << 4, 5, 6;",
                      "    double B = {}(T, P).A;".format(func_info.eig_func_name),
                      "    return (B == 32);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_int_elementwise_cross_products(self):
+        # products of integer vectors are integer (they were declared real, which Eigen rejects)
+        la_str = """a = x ∘ w
+                    b = x × w
+                    c = x ⋅ w
+                    where
+                    x: ℤ ^ 3
+                    w: ℤ ^ 3"""
+        func_info = self.gen_func_info(la_str)
+        x = np.array([1, 2, 3])
+        w = np.array([4, 5, 6])
+        res = func_info.numpy_func(x, w)
+        self.assertDMatrixEqual(res.a, np.array([4, 10, 18]))
+        self.assertDMatrixEqual(res.b, np.array([-3, 6, -3]))
+        self.assertEqual(res.c, 32)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 3, 1> x;",
+                     "    x << 1, 2, 3;",
+                     "    Eigen::Matrix<int, 3, 1> w;",
+                     "    w << 4, 5, 6;",
+                     "    auto r = {}(x, w);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<int, 3, 1> a, b;",
+                     "    a << 4, 10, 18;",
+                     "    b << -3, 6, -3;",
+                     "    return r.a == a && r.b == b && r.c == 32;",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

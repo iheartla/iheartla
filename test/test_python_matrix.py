@@ -281,6 +281,62 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_block_matrix_5_unsized_identity(self):
+        # nothing in its block row or column gives I a size, so I is ambiguous: an error, not a guess
+        for la_str in ["""B = [ A 0 ; 0 I ]
+        where
+        A: ℝ ^ (2 × 2): a matrix""", """B = [ I 0 ; 0 I ] + A
+        where
+        A: ℝ ^ (2 × 2): a matrix""", "B = [ 0 I ]"]:
+            with self.assertRaises(AssertionError) as cm:
+                self.gen_func_info(la_str)
+            self.assertIn("Can't infer the size of I; write I_n", cm.exception.args[0])
+
+    def test_block_matrix_5_identity_sized_by_scalar(self):
+        # a scalar other than 0 and 1 can't be lifted, so it makes I's block row 1 high: I is 1×1
+        la_str = """B = [ a I ]
+        where
+        a: ℝ: a scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertDMatrixEqual(func_info.numpy_func(5).B, np.array([[5, 1]]))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 1, 2> B;",
+                     "    B << 5, 1;",
+                     "    Eigen::Matrix<double, 1, 2> C = {}(5).B;".format(func_info.eig_func_name),
+                     "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_dense_elementwise_piecewise(self):
+        # M_ij = { ... for a dense matrix: several branches, and no otherwise (unmatched elements stay 0)
+        la_str = """M_ij = { A_ij if A_ij > 0
+        -1 if A_ij < -2
+        0 otherwise
+        N_ij = { A_ij if A_ij > 0
+        where
+        A: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, -2], [-3, 4]])
+        res = func_info.numpy_func(A)
+        self.assertDMatrixEqual(res.M, np.array([[1, 0], [-1, 4]]))
+        self.assertDMatrixEqual(res.N, np.array([[1, 0], [0, 4]]))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<double, 2, 2> A;",
+                     "    A << 1, -2, -3, 4;",
+                     "    auto r = {}(A);".format(func_info.eig_func_name),
+                     "    Eigen::Matrix<double, 2, 2> M, N;",
+                     "    M << 1, 0, -1, 4;",
+                     "    N << 1, 0, 0, 4;",
+                     "    return (r.M - M).norm() == 0 && (r.N - N).norm() == 0;",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_block_matrix_6(self):
         # scalar value
         la_str = """B = [ A 1 ]
@@ -706,6 +762,36 @@ class TestMatrix(BasePythonTest):
                      "    B << 2, 2, 3, 5;",
                      "    Eigen::Matrix<double, 4, 1> C = {}(A).B;".format(func_info.eig_func_name),
                      "    return ((B - C).norm() == 0);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_block_matrix_mixed_int_real(self):
+        # integer blocks in a real block matrix (Eigen needs a cast)
+        la_str = """C = [A B]
+        D = [A; B]
+        where
+        A: ℤ ^ (2 × 2): a matrix
+        B: ℝ ^ (2 × 2): a matrix"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([[1, 2], [3, 4]])
+        B = np.array([[0.5, 1.5], [2.5, 3.5]])
+        res = func_info.numpy_func(A, B)
+        self.assertDMatrixEqual(res.C, np.hstack((A, B)))
+        self.assertDMatrixEqual(res.D, np.vstack((A, B)))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::Matrix<int, 2, 2> A;",
+                     "    A << 1, 2, 3, 4;",
+                     "    Eigen::Matrix<double, 2, 2> B;",
+                     "    B << 0.5, 1.5, 2.5, 3.5;",
+                     "    Eigen::Matrix<double, 2, 4> C;",
+                     "    C << 1, 2, 0.5, 1.5, 3, 4, 2.5, 3.5;",
+                     "    Eigen::Matrix<double, 4, 2> D;",
+                     "    D << 1, 2, 3, 4, 0.5, 1.5, 2.5, 3.5;",
+                     "    auto r = {}(A, B);".format(func_info.eig_func_name),
+                     "    return ((r.C - C).norm() == 0) && ((r.D - D).norm() == 0);",
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

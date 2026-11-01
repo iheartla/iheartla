@@ -25,6 +25,12 @@ autodiff_path = os.environ.get("AUTODIFF_PATH") or next(
 import cppyy
 cppyy.add_include_path(autodiff_path)
 cppyy.add_include_path(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "iheartla", "mesh", "Cpp", "include"))
+# continuous optimization (min/argmin over ℝⁿ) uses LBFGSpp; override with the LBFGSPP_PATH environment variable
+lbfgspp_path = os.environ.get("LBFGSPP_PATH") or next(
+    (p for p in [os.path.join(third_party, "LBFGSpp", "include"), "/usr/local/include", "/opt/homebrew/include", "/usr/include"]
+     if os.path.isfile(os.path.join(p, "LBFGS.h"))), os.path.join(third_party, "LBFGSpp", "include"))
+if os.path.isdir(lbfgspp_path):
+    cppyy.add_include_path(lbfgspp_path)
 if TEST_MATLAB:
     # Install the library using the following link
     # https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
@@ -95,6 +101,48 @@ class BasePythonTest(unittest.TestCase):
         # update cnt
         BasePythonTest.cnt += 1
         return TestFuncInfo(getattr(module, func_name), eig_file_name, eig_test_name, eig_func_name, mat_file_name, mat_func_name)
+
+    def eigen_values(self, func_info, setup, args, member):
+        # Compile and run the generated C++ with the system compiler (not cppyy: Cling cannot catch a C++
+        # exception inside its own compiled code, and the optimization code catches LBFGSpp's line-search
+        # failures). `setup` lines declare the inputs, `args` are the constructor arguments. Returns the
+        # member as a list of floats (a matrix in column-major order); a C++ exception raises RuntimeError.
+        import tempfile
+        source = """#include <cstdio>
+#include <exception>
+#include <vector>
+#include "{}"
+template<typename T> std::vector<double> iheartla_test_values(const T & m){{
+    std::vector<double> v;
+    for(int k = 0; k < m.size(); ++k) v.push_back(m.data()[k]);
+    return v;
+}}
+inline std::vector<double> iheartla_test_values(double d){{ return {{d}}; }}
+int main(){{
+    try {{
+        {}
+        for(double x : iheartla_test_values({}({}).{})) std::printf("%.17g\\n", x);
+    }} catch(const std::exception & e) {{
+        std::printf("exception: %s\\n", e.what());
+        return 1;
+    }}
+    return 0;
+}}
+""".format(os.path.abspath(func_info.eig_file_name), '\n        '.join(setup), func_info.eig_func_name, ', '.join(args), member)
+        with tempfile.TemporaryDirectory() as tmp:
+            main = os.path.join(tmp, 'main.cpp')
+            exe = os.path.join(tmp, 'main')
+            with open(main, 'w') as f:
+                f.write(source)
+            includes = [eigen_path, lbfgspp_path, autodiff_path,
+                        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "iheartla", "mesh", "Cpp", "include")]
+            compiled = subprocess.run([os.environ.get('CXX', 'c++'), '-std=c++17', '-O1', '-o', exe, main] + ['-I' + i for i in includes],
+                                      capture_output=True, text=True)
+            self.assertEqual(compiled.returncode, 0, compiled.stderr[-3000:])
+            run = subprocess.run([exe], capture_output=True, text=True)
+        if run.returncode != 0:
+            raise RuntimeError(run.stdout + run.stderr)
+        return [float(x) for x in run.stdout.split()]
 
     def assertDMatrixEqual(self, A, B):
         # dense matrix comparision

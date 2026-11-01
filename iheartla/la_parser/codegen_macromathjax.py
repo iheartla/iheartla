@@ -24,7 +24,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         sym_list = []
         for sym in node.symbols:
             sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
-        sym_list = list(set(sym_list))
+        sym_list = sorted(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.left[0].get_main_id())))
         if node.right[0].node_type == IRNodeType.Optimize:
             content = self.visit(node.right[0], **kwargs)
@@ -51,7 +51,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             sym_list = []
             for sym in node.symbols:
                 sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
-            sym_list = list(set(sym_list))
+            sym_list = sorted(set(sym_list))
             json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, [], [], '{}', false);"}}""".format(
                 self.func_name, ', '.join(sym_list),
                 base64.urlsafe_b64encode(node.raw_text.encode("utf-8")).decode("utf-8"))
@@ -86,7 +86,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         sym_list = []
         for sym in node.symbols:
             sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))
-        sym_list = list(set(sym_list))
+        sym_list = sorted(set(sym_list))
         sym_list.append("'{}'".format(self.convert_content(node.name.get_main_id())))
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], true, '{}', [{}], '{}');"}}""".format(
             self.func_name, ', '.join(sym_list), self.local_func_name, ', '.join(local_param_list), base64.urlsafe_b64encode(node.raw_text.encode("utf-8")).decode("utf-8"))

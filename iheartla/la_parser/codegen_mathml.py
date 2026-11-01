@@ -259,7 +259,7 @@ class CodeGenMathML(CodeGen):
             if node.empty:
                 params_str = '\\varnothing'
             else:
-                params_str = '\{\}'
+                params_str = '\\{\\}'
         else:
             params_str = ''
             for index in range(len(node.params)):
@@ -586,7 +586,7 @@ class CodeGenMathML(CodeGen):
         right_info = self.visit(node.right, **kwargs)
         if node.pow:
             return left_info + '^{-1}' + right_info
-        return left_info + ' \setminus ' + right_info
+        return left_info + ' \\setminus ' + right_info
 
     def visit_norm(self, node, **kwargs):
         if node.value.la_type.is_scalar():
@@ -617,7 +617,7 @@ class CodeGenMathML(CodeGen):
         return "{{{}}}^T".format(self.visit(node.f, **kwargs))
 
     def visit_squareroot(self, node, **kwargs):
-        return "\sqrt{{{}}}".format(self.visit(node.value, **kwargs))
+        return "\\sqrt{{{}}}".format(self.visit(node.value, **kwargs))
 
     def visit_derivative(self, node, **kwargs):
         return "\\partial" + self.visit(node.value, **kwargs)
@@ -729,13 +729,13 @@ class CodeGenMathML(CodeGen):
         elif node.func_type == MathFuncType.MathFuncExp:
             content = 'exp'
         elif node.func_type == MathFuncType.MathFuncLog:
-            return " \log{{ {} }}".format(param_info)
+            return " \\log{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog2:
-            return " \log_2{{ {} }}".format(param_info)
+            return " \\log_2{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLog10:
-            return " \log_{{10}}{{ {} }}".format(param_info)
+            return " \\log_{{10}}{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncLn:
-            return " \ln{{ {} }}".format(param_info)
+            return " \\ln{{ {} }}".format(param_info)
         elif node.func_type == MathFuncType.MathFuncSqrt:
             content = 'sqrt'
         elif node.func_type == MathFuncType.MathFuncTrace:

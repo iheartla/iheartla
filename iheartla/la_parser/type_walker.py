@@ -243,7 +243,7 @@ class TypeWalker(NodeWalker):
         self.ret_symbol = None
         self.is_generate_ret = False
         self.constants = ['π']
-        self.pattern = re.compile("[A-Za-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*([A-Z0-9a-z\p{Ll}\p{Lu}\p{Lo}]\p{M}*)*")
+        self.pattern = re.compile("[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*([A-Z0-9a-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*)*")
         self.multi_lhs_list = []
         self.multi_dim_list = []    # P ∈ ℝ^(4 × dd)
         self.lhs_list = []
@@ -2764,8 +2764,11 @@ class TypeWalker(NodeWalker):
             sub_node = self.walk(node.sub, **kwargs).ir
             self.assert_expr(sub_node.la_type.is_matrix() and sub_node.la_type.rows==sub_node.la_type.cols==left_info.ir.la_type.rows, \
                 get_err_msg_info(sub_node.parse_info, "Inner product error. The dimension of subscript {} must correspond to the vector dimension".format(node.sub.text)))
-        ir_node = InnerProductNode(left_info.ir, right_info.ir, sub_node, parse_info=node.parseinfo, raw_text=node.text)
-        ret_type = ScalarType()
+        left_ir, right_ir, all_int = left_info.ir, right_info.ir, False
+        if sub_node is None:
+            left_ir, right_ir, all_int = self.unify_int_real(left_ir, right_ir)
+        ir_node = InnerProductNode(left_ir, right_ir, sub_node, parse_info=node.parseinfo, raw_text=node.text)
+        ret_type = ScalarType(is_int=all_int)
         ir_node.la_type = ret_type
         node_info = NodeInfo(ret_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
         return node_info
@@ -2782,7 +2785,8 @@ class TypeWalker(NodeWalker):
     def walk_HadamardProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ir_node = HadamardProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        left_ir, right_ir, all_int = self.unify_int_real(left_info.ir, right_info.ir)
+        ir_node = HadamardProductNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
         self.assert_expr(left_info.la_type.is_vector() or left_info.la_type.is_matrix(), get_err_msg_info(left_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.left.text)))
         self.assert_expr(right_info.la_type.is_vector() or right_info.la_type.is_matrix(), get_err_msg_info(right_info.ir.parse_info, "Hadamard product error. Parameter {} must be vector or matrix".format(node.right.text)))
         self.assert_expr(is_same_expr(left_info.la_type.rows, right_info.la_type.rows), get_err_msg_info(node.parseinfo,
@@ -2793,6 +2797,7 @@ class TypeWalker(NodeWalker):
             ir_node.la_type = MatrixType(rows=left_info.la_type.rows, cols=left_info.la_type.cols)
         else:
             ir_node.la_type = VectorType(rows=left_info.la_type.rows)
+        ir_node.la_type.set_int(all_int)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_CrossProduct(self, node, **kwargs):
@@ -2802,8 +2807,10 @@ class TypeWalker(NodeWalker):
         self.assert_expr(right_info.la_type.is_vector(), get_err_msg_info(right_info.ir.parse_info, "Cross product error. Parameter {} must be vector".format(node.right.text)))
         self.assert_expr(left_info.la_type.rows == 3, get_err_msg_info(left_info.ir.parse_info, "Cross product error. The dimension of parameter {} must be 3".format(node.left.text)))
         self.assert_expr(right_info.la_type.rows == 3, get_err_msg_info(right_info.ir.parse_info, "Cross product error. The dimension of parameter {} must be 3".format(node.right.text)))
-        ir_node = CrossProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        left_ir, right_ir, all_int = self.unify_int_real(left_info.ir, right_info.ir)
+        ir_node = CrossProductNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
         ir_node.la_type = VectorType(rows=left_info.la_type.rows)
+        ir_node.la_type.set_int(all_int)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def walk_KroneckerProduct(self, node, **kwargs):
@@ -2820,12 +2827,13 @@ class TypeWalker(NodeWalker):
     def walk_DotProduct(self, node, **kwargs):
         left_info = self.walk(node.left, **kwargs)
         right_info = self.walk(node.right, **kwargs)
-        ir_node = DotProductNode(left_info.ir, right_info.ir, parse_info=node.parseinfo, raw_text=node.text)
+        left_ir, right_ir, all_int = self.unify_int_real(left_info.ir, right_info.ir)
+        ir_node = DotProductNode(left_ir, right_ir, parse_info=node.parseinfo, raw_text=node.text)
         self.assert_expr(left_info.la_type.is_vector(), get_err_msg_info(left_info.ir.parse_info, "Dot product error. Parameter {} must be vector".format(node.left.text)))
         self.assert_expr(right_info.la_type.is_vector(), get_err_msg_info(right_info.ir.parse_info, "Dot product error. Parameter {} must be vector".format(node.right.text)))
         self.assert_expr(is_same_expr(left_info.la_type.rows, right_info.la_type.rows), get_err_msg_info(node.parseinfo,
                                                                                         "Dot product error. Parameters {} and {} must have the same dimension".format(node.left.text, node.right.text)))
-        ir_node.la_type = ScalarType()
+        ir_node.la_type = ScalarType(is_int=all_int)
         return NodeInfo(ir_node.la_type, ir=ir_node, symbols=left_info.symbols.union(right_info.symbols))
 
     def create_power_node(self, base, power):
@@ -3212,10 +3220,19 @@ class TypeWalker(NodeWalker):
                 ir_node.identity_name = func_name
             self.assert_expr(len(param_node_list) == len(name_type.params) or len(node.params) == 0,
                              get_err_msg_info(node.parseinfo, "Function error. Parameters count mismatch"))
+            def is_numeric(t):
+                return t is not None and (t.is_scalar() or t.is_vector() or t.is_matrix())
             for index in range(len(param_node_list)):
                 param_info = param_node_list[index]
                 symbols = symbols.union(param_info.symbols)
-                param_list.append(param_info.ir)
+                param_ir = param_info.ir
+                if index < len(name_type.params) and is_numeric(name_type.params[index]) and not name_type.params[index].is_integer_element() \
+                        and is_numeric(param_ir.la_type) and param_ir.la_type.is_integer_element():
+                    # An integer argument for a real parameter: convert it. Eigen won't convert an integer
+                    # vector or matrix implicitly, and a local function's template parameter REAL would be
+                    # deduced as int (so s / 2 would divide integers).
+                    param_ir = self.to_double_node(param_ir)
+                param_list.append(param_ir)
                 # owner checking
                 if name_type.params[index].owner:
                     self.assert_expr(name_type.params[index].owner == param_info.ir.la_type.owner,
@@ -4301,9 +4318,14 @@ class TypeWalker(NodeWalker):
                 cols = len(row)
             type_array.append(row_type)
         list_dim = None
+        if not block and any(t.symbol is not None and 'I' in t.symbol and 'I' not in self.symtable
+                             for row_type in type_array for t in row_type):
+            # A matrix of scalars that contains the identity I: check only that each I is sized by its
+            # context (a scalar other than 0 and 1 in its row or column makes it 1×1).
+            self.check_bmat_validity(copy.deepcopy(type_array), None, node_info.content)
         if block:
             # check block mat
-            valid, undef_list, type_array, real_dims = self.check_bmat_validity(type_array, None)
+            valid, undef_list, type_array, real_dims = self.check_bmat_validity(type_array, None, node_info.content)
             self.assert_expr(valid, get_err_msg_info(node.parseinfo,  "Block matrix error. Invalid dimensions"))
             rows = real_dims[0]
             cols = real_dims[1]
@@ -4619,7 +4641,9 @@ class TypeWalker(NodeWalker):
         node_info.ir = tri_node
         return node_info
 
-    def create_trig_node_info(self, func_type, param_info, power):
+    def create_trig_node_info(self, func_type, param_info, power, func_name=None):
+        # func_name: the name as written (e.g. asin or arcsin), set on the function node itself,
+        # not on the power node that wraps it for asin²(x)
         symbols = param_info.symbols
         param = param_info.ir
         if power:
@@ -4627,58 +4651,49 @@ class TypeWalker(NodeWalker):
             power_info = self.walk(power)
             symbols = symbols.union(power_info.symbols)
             math_info = self.create_math_node_info(func_type, param_info)
+            math_info.ir.func_name = func_name
             ir_node = self.create_power_node(math_info.ir, power_info.ir)
             return NodeInfo(ir_node.la_type, ir=ir_node, symbols=symbols)
         else:
-            return self.create_math_node_info(func_type, param_info)
+            math_info = self.create_math_node_info(func_type, param_info)
+            math_info.ir.func_name = func_name
+            return math_info
 
     def walk_SinFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncSin, self.walk(node.param, **kwargs), node.power)
 
     def walk_AsinFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs), node.power)
-        node_info.ir.func_name = node.name
-        return node_info
+        return self.create_trig_node_info(MathFuncType.MathFuncAsin, self.walk(node.param, **kwargs), node.power, node.name)
 
     def walk_CosFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncCos, self.walk(node.param, **kwargs), node.power)
 
     def walk_AcosFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs), node.power)
-        node_info.ir.func_name = node.name
-        return node_info
+        return self.create_trig_node_info(MathFuncType.MathFuncAcos, self.walk(node.param, **kwargs), node.power, node.name)
 
     def walk_TanFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncTan, self.walk(node.param, **kwargs), node.power)
 
     def walk_AtanFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs), node.power)
-        node_info.ir.func_name = node.name
-        return node_info
+        return self.create_trig_node_info(MathFuncType.MathFuncAtan, self.walk(node.param, **kwargs), node.power, node.name)
 
     def walk_SinhFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncSinh, self.walk(node.param, **kwargs), node.power)
 
     def walk_AsinhFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs), node.power)
-        node_info.ir.func_name = node.name
-        return node_info
+        return self.create_trig_node_info(MathFuncType.MathFuncAsinh, self.walk(node.param, **kwargs), node.power, node.name)
 
     def walk_CoshFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncCosh, self.walk(node.param, **kwargs), node.power)
 
     def walk_AcoshFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs), node.power)
-        node_info.ir.func_name = node.name
-        return node_info
+        return self.create_trig_node_info(MathFuncType.MathFuncAcosh, self.walk(node.param, **kwargs), node.power, node.name)
 
     def walk_TanhFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncTanh, self.walk(node.param, **kwargs), node.power)
 
     def walk_AtanhFunc(self, node, **kwargs):
-        node_info = self.create_trig_node_info(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs), node.power)
-        node_info.ir.func_name = node.name
-        return node_info
+        return self.create_trig_node_info(MathFuncType.MathFuncAtanh, self.walk(node.param, **kwargs), node.power, node.name)
 
     def walk_CotFunc(self, node, **kwargs):
         return self.create_trig_node_info(MathFuncType.MathFuncCot, self.walk(node.param, **kwargs), node.power)
@@ -5059,11 +5074,12 @@ class TypeWalker(NodeWalker):
             return sum_value
         return simpify_dims(sum_value)
 
-    def check_bmat_validity(self, type_array, mat_size):
+    def check_bmat_validity(self, type_array, mat_size, item_irs=None):
         """
         check the validity of block matrix
         :param type_array: 2d array containing element types
         :param mat_size: the dimensions of the block matrix may be given in future
+        :param item_irs: 2d array of the blocks' IR nodes, for error locations
         :return: valid, index to be changed, modified type_array, dims
         """
         valid = True
@@ -5112,6 +5128,17 @@ class TypeWalker(NodeWalker):
                         if row_dim[i] != col_dim[j]:
                             valid = False
                             break
+        # An I whose block row and block column are both unsized could be any size: report it
+        # rather than default it to 1×1 below (0 and 1 are scalars, so 1×1 is their natural size)
+        if valid and item_irs:
+            def fixes_size_one(i, j):
+                # a scalar block other than the literals 0 and 1 can't be lifted, so it fixes its block row and column at 1
+                return (i, j) in undef_list and (i, j) not in identity_list and item_irs[i][j].raw_text not in ('0', '1')
+            for (i, j) in identity_list:
+                sized = row_dim[i] is not None or col_dim[j] is not None or \
+                        any(fixes_size_one(i, k) for k in range(cols)) or any(fixes_size_one(k, j) for k in range(rows))
+                self.assert_expr(sized, get_err_msg_info(item_irs[i][j].parse_info,
+                                 "Block matrix error. Can't infer the size of I; write I_n"))
         # only scalar value in a row or col
         if valid:
             row_dim = [i if i else 1 for i in row_dim]
@@ -5173,6 +5200,24 @@ class TypeWalker(NodeWalker):
                 if row_sum != mat_size[0] or col_sum != mat_size[1]:
                     valid = False
         return valid, undef_list, type_array, real_dims
+
+    def to_double_node(self, ir):
+        # Wrap an integer-valued expression so that the backends convert it to real:
+        # Eigen does not mix scalar types without an explicit cast.
+        new_node = ToDoubleValueNode(parse_info=ir.parse_info, item=ir)
+        new_node.la_type = copy.deepcopy(ir.la_type)
+        new_node.la_type.set_int(True)
+        return new_node
+
+    def unify_int_real(self, left_ir, right_ir):
+        # If exactly one operand has integer elements, convert it to real (as type_inference does for + - *).
+        left_int = left_ir.la_type.is_integer_element()
+        right_int = right_ir.la_type.is_integer_element()
+        if left_int and not right_int:
+            left_ir = self.to_double_node(left_ir)
+        elif right_int and not left_int:
+            right_ir = self.to_double_node(right_ir)
+        return left_ir, right_ir, left_int and right_int
 
     def type_inference(self, op, left_info, right_info):
         need_cast = False
@@ -5389,6 +5434,11 @@ class TypeWalker(NodeWalker):
                     elif right_type.is_vector():
                         self.assert_expr(is_same_expr(left_type.cols, right_type.rows), get_err_msg())
                         ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            if ret_type is not None:
+                # A product is integer only if both factors are. Some branches above copy one
+                # operand's type unchanged (e.g. a real scalar times an integer vector, or the
+                # dynamic cases), which made 2.5 x integer.
+                ret_type.set_int(left_type.is_integer_element() and right_type.is_integer_element())
         elif op == TypeInferenceEnum.INF_DIV:
             # assert left_type.is_scalar() and right_type.is_scalar(), error_msg
             self.assert_expr(left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), get_err_msg())

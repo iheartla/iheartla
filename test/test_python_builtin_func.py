@@ -312,6 +312,16 @@ class TestBuiltinFunctions(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
 
+    def test_builtin_trig_power_latex(self):
+        # the name of an inverse trig function raised to a power (asin²) was printed as None
+        for f in ['asin', 'arcsin', 'acos', 'atan', 'asinh', 'acosh', 'atanh']:
+            for form in [f + '²(a)', f + '^2(a)']:
+                la_str = "{} from trigonometry\nb = {}\nwhere\na: scalar".format(f, form)
+                result = compile_la_content(la_str, ParserTypeEnum.LATEX | ParserTypeEnum.MATHJAX)
+                for target in (ParserTypeEnum.LATEX, ParserTypeEnum.MATHJAX):
+                    self.assertNotIn('None', result[target], form)
+                    self.assertIn('{{{}\\left( a \\right)}}^{{2}}'.format(f), result[target], form)
+
     def test_builtin_trig_power(self):
         # space
         la_str = self.import_trig+"""b = asin^2(a)

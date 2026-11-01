@@ -539,7 +539,7 @@ class CodeGenNumpy(CodeGen):
                                     test_content.append("    {} = np.random.randint({})".format(key, rand_int_max))
                                 else:
                                     test_content.append("    {} = {}".format(key, int_dim))
-                                for same_key in cur_set:
+                                for same_key in sorted(cur_set, key=str):  # deterministic order
                                     if same_key != key:
                                         dim_defined_list.append(same_key)
                                         if not isinstance(same_key, int):
@@ -700,7 +700,7 @@ class CodeGenNumpy(CodeGen):
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
         # try to first use dim of parameters
-        target_var = list(set(target_var))
+        target_var = sorted(set(target_var))  # sorted: set order depends on the hash seed
         param_l = []
         remain_l = []
         for cur_v in target_var:
@@ -852,7 +852,7 @@ class CodeGenNumpy(CodeGen):
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
         # try to first use dim of parameters
-        target_var = list(set(target_var))
+        target_var = sorted(set(target_var))  # sorted: set order depends on the hash seed
         param_l = []
         remain_l = []
         for cur_v in target_var:
@@ -872,17 +872,24 @@ class CodeGenNumpy(CodeGen):
         exp_info = self.visit(node.exp)
         exp_str = exp_info.content
         assign_id_type = self.get_sym_type(assign_id)
-        content.append("{} = {{}}\n".format(assign_id))
+        # an empty frozenset ({} would be a dict, which frozenset.union rejects)
+        content.append("{} = frozenset()\n".format(assign_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
             index_name = self.generate_var_name('tuple')
             content.append('for {} in {}:\n'.format(index_name, range_info.content))
-            extra_content = ''
-            for i in range(len(node.enum_list)):
-                if node.range.la_type.index_type:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+            # index sets store 0-based values; non-index sets store the values themselves
+            extra_content = ' + 1' if node.range.la_type.index_type else ''
+            if len(node.enum_list) == 1:
+                if node.use_tuple:
+                    # one name for a whole tuple element (as in the Eigen backend)
+                    content.append('    {} = {}\n'.format(node.enum_list[0], index_name))
                 else:
-                    content.append('    {} = {}[{}]{} + 1\n'.format(node.enum_list[i], index_name, i, extra_content))
+                    # a set of scalars: each element is a number, not a tuple
+                    content.append('    {} = {}{}\n'.format(node.enum_list[0], index_name, extra_content))
+            else:
+                for i in range(len(node.enum_list)):
+                    content.append('    {} = {}[{}]{}\n'.format(node.enum_list[i], index_name, i, extra_content))
             exp_pre_list = []
             if exp_info.pre_list:  # catch pre_list
                 list_content = "".join(exp_info.pre_list)
@@ -1162,6 +1169,12 @@ class CodeGenNumpy(CodeGen):
                 pre_list.append('        {}_ret = {}\n'.format(name, other_info.content))
             else:
                 pre_list.append('        {} = {}\n'.format(name, other_info.content))
+        if not func_ret and assign_node.left[0].contain_subscript() and \
+                not self.get_sym_type(assign_node.left[0].get_main_id()).sparse:
+            # one element of a dense matrix (M_ij = { ...): the branches assign to a temporary,
+            # which the assignment then stores in the element (0 if no branch applies, as in a sparse matrix)
+            pre_list.insert(0, '    {} = 0\n'.format(name))
+            cur_m_id = name
         return CodeNodeInfo(cur_m_id, pre_list)
 
 
@@ -1354,6 +1367,9 @@ class CodeGenNumpy(CodeGen):
         kwargs["cur_id"] = cur_m_id
         ret_info = self.visit(node.value, **kwargs)
         ret = ret_info.content
+        if not type_info.la_type.block and 'I' not in self.symtable:
+            # an identity in a matrix of scalars is 1×1 (the type walker rejects one that nothing sizes)
+            ret = [['1' if item == 'I' else item for item in row] for row in ret]
         if type_info.la_type.block:
             all_rows = []
             m_content = ""
@@ -1364,6 +1380,9 @@ class CodeGenNumpy(CodeGen):
                             dims = type_info.la_type.list_dim[(i, j)]
                             if dims[0] == 1 and dims[1] == 1:
                                 # scalar value
+                                if ret[i][j] == 'I' and 'I' not in self.symtable:
+                                    # an identity that nothing else in its block row or column sizes is 1×1
+                                    ret[i][j] = 'np.identity(1)'
                                 continue
                             if ret[i][j] == '0':
                                 func_name = 'np.zeros'

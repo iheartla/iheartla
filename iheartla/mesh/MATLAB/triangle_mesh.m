@@ -343,7 +343,7 @@ function mesh = triangle_mesh(T)
         ret_set = transpose(row);
     end
 
-    function [v, e, f] = MeshSets
+    function [v, e, f] = ElementSets
         v = mesh.Vi;
         e = mesh.Ei;
         f = mesh.Fi;
@@ -370,7 +370,7 @@ function mesh = triangle_mesh(T)
     mesh.n_edges = @n_edges;
     mesh.n_faces = @n_faces;
     mesh.n_tets = @n_tets;
-    mesh.MeshSets = @MeshSets;
+    mesh.ElementSets = @ElementSets;
     mesh.BoundaryMatrices = @BoundaryMatrices;
     mesh.UnsignedBoundaryMatrices = @UnsignedBoundaryMatrices;
 %     a= triangle_mesh([0 1 2 3; 1 2 3 4] + ones(2, 4))

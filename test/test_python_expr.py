@@ -109,7 +109,7 @@ class TestExpr(BasePythonTest):
 
     def test_solver(self):
         # matrix
-        la_str = """y = A \ C
+        la_str = """y = A \\ C
         where
         A: ℝ ^ (2 × 2): a matrix
         C: ℝ ^ (2 × 2): a matrix """

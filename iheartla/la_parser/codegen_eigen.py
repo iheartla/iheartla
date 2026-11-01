@@ -16,6 +16,9 @@ class CodeGenEigen(CodeGen):
             self.pre_str += '#include <unsupported/Eigen/MatrixFunctions>\n'
         if self.has_opt:
             self.pre_str += '#include <LBFGS.h>\n'
+            self.pre_str += '#include <LBFGSB.h>\n'
+            self.pre_str += '#include <limits>\n'
+            self.pre_str += '#include <stdexcept>\n'
         if self.has_derivative:
             self.pre_str += '#include <autodiff/reverse/var.hpp>\n'
             self.pre_str += '#include <autodiff/reverse/var/eigen.hpp>\n'
@@ -679,7 +682,7 @@ class CodeGenEigen(CodeGen):
                                     test_content.append("    const int {} = rand()%{};".format(key, rand_int_max))
                                 else:
                                     test_content.append("    const int {} = {};".format(key, int_dim))
-                                for same_key in cur_set:
+                                for same_key in sorted(cur_set, key=str):  # deterministic order
                                     if same_key != key:
                                         dim_defined_list.append(same_key)
                                         if not isinstance(same_key, int):
@@ -935,6 +938,7 @@ class CodeGenEigen(CodeGen):
             name_convention = set_name_conventions(sub)
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
+        target_var = sorted(set(target_var))  # deterministic: node.symbols is a set, whose order depends on the hash seed
         #
         assign_id = node.symbol
         cond_content = ""
@@ -945,6 +949,13 @@ class CodeGenEigen(CodeGen):
         content = []
         exp_info = self.visit(node.exp)
         exp_str = exp_info.content
+        if node.exp.node_type != IRNodeType.Id:
+            # Bind the set expression once per iteration: std::set_union takes begin() and end(),
+            # which must come from the same object, but a call such as N(i) returns a new temporary each time.
+            exp_bind = self.generate_var_name("set")
+            exp_info.pre_list = list(exp_info.pre_list) + ["    const {}& {} = {};\n".format(
+                self.get_ctype(node.exp.la_type), exp_bind, exp_str)]
+            exp_str = exp_bind
         assign_id_type = self.get_sym_type(assign_id)
         # set declaration
         tmp_id = self.generate_var_name("tmp")
@@ -952,7 +963,13 @@ class CodeGenEigen(CodeGen):
         content.append("{} {};\n".format(self.get_ctype(assign_id_type), tmp_id))
         if node.enum_list:
             range_info = self.visit(node.range, **kwargs)
-            if len(node.enum_list) == 1:
+            if len(node.enum_list) == 1 and node.range.la_type.index_type and not node.use_tuple:
+                # index sets store 0-based values; the name is 1-based (as in the NumPy backend)
+                item_name = self.generate_var_name("item")
+                content.append('for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), item_name,
+                                                            range_info.content))
+                content.append('    int {} = {} + 1;\n'.format(node.enum_list[0], item_name))
+            elif len(node.enum_list) == 1:
                 content.append(
                     'for({} {} : {}){{\n'.format(self.get_set_item_str(node.range.la_type), node.enum_list[0],
                                                  range_info.content))
@@ -988,7 +1005,7 @@ class CodeGenEigen(CodeGen):
                     extra_info = self.visit(et, **kwargs)
                     content += [self.update_prelist_str([extra_info.content], '    ')]
             content.append("    std::set_union({}.begin(), {}.end(), {}.begin(), {}.end(), std::back_inserter({}));\n".format(
-            assign_id, assign_id, exp_str, exp_str, assign_id))
+            assign_id, assign_id, exp_str, exp_str, tmp_id))
             content.append("    {}.assign({}.begin(), {}.end());\n".format(assign_id, tmp_id, tmp_id))
             content.append("    {}.clear();\n".format(tmp_id))
             # content.append("    sort({}.begin(), {}.end());\n".format(assign_id, assign_id))
@@ -1083,6 +1100,7 @@ class CodeGenEigen(CodeGen):
             name_convention = set_name_conventions(sub)
         for sym, subs in node.sym_dict.items():
             target_var.append(sym)
+        target_var = sorted(set(target_var))  # deterministic: node.symbols is a set, whose order depends on the hash seed
         #
         assign_id = node.symbol
         cond_content = ""
@@ -1259,7 +1277,18 @@ class CodeGenEigen(CodeGen):
         if node.params:
             for param in node.params:
                 param_info = self.visit(param, **kwargs)
-                params.append(param_info.content)
+                param_content = param_info.content
+                if param.node_type == IRNodeType.ToDouble and (param.la_type.is_vector() or param.la_type.is_matrix()):
+                    # An integer vector or matrix converted for a real parameter: give the cast expression
+                    # a concrete type, so that a local function's template parameter REAL can be deduced.
+                    real_type = copy.deepcopy(param.la_type)
+                    real_type.set_int(False)
+                    param_content = "{}({})".format(self.get_ctype(real_type), param_content)
+                elif param.node_type != IRNodeType.Id and param.la_type is not None and (param.la_type.is_vector() or param.la_type.is_matrix()):
+                    # An expression such as y + y is a lazy Eigen expression, not a Matrix, so a local
+                    # function's template parameter REAL can't be deduced from it: evaluate it first.
+                    param_content = "({}).eval()".format(param_content)
+                params.append(param_content)
                 pre_list += param_info.pre_list
         if self.visiting_diff_eq:
             if self.visiting_diff_init:
@@ -1555,6 +1584,12 @@ class CodeGenEigen(CodeGen):
             else:
                 pre_list.append('        {} = {};\n'.format(name, other_info.content))
             pre_list.append('    }\n')
+        if not func_ret and assign_node.left[0].contain_subscript() and \
+                not self.get_sym_type(assign_node.left[0].get_main_id()).sparse:
+            # one element of a dense matrix (M_ij = { ...): the branches assign to a temporary,
+            # declared here, which the assignment then stores in the element (0 if no branch applies)
+            pre_list.insert(0, '    {} {} = 0;\n'.format(self.get_ctype(node.la_type), name))
+            cur_m_id = name
         return CodeNodeInfo(cur_m_id, pre_list)
 
     def visit_sparse_matrix(self, node, **kwargs):
@@ -1802,6 +1837,9 @@ class CodeGenEigen(CodeGen):
         kwargs["cur_id"] = cur_m_id
         ret_info = self.visit(node.value, **kwargs)
         ret = ret_info.content
+        if not type_info.la_type.block and 'I' not in self.symtable:
+            # an identity in a matrix of scalars is 1×1 (the type walker rejects one that nothing sizes)
+            ret = [['1' if item == 'I' else item for item in row] for row in ret]
         # preprocess
         if type_info.la_type.list_dim:
             for i in range(len(ret)):
@@ -1810,6 +1848,9 @@ class CodeGenEigen(CodeGen):
                         dims = type_info.la_type.list_dim[(i, j)]
                         if dims[0] == 1 and dims[1] == 1:
                             # scalar value
+                            if ret[i][j] == 'I' and 'I' not in self.symtable:
+                                # an identity that nothing else in its block row or column sizes is 1×1
+                                ret[i][j] = '{}::Identity(1, 1)'.format(self.matrixd_type)
                             continue
                         if ret[i][j] == '0':
                             func_name = '{}::Zero'.format(self.matrixd_type)
@@ -1828,6 +1869,14 @@ class CodeGenEigen(CodeGen):
                             ret[i][j] = '{}({}, 1)'.format(func_name, dims[0])
                         else:
                             ret[i][j] = '{}({}, {})'.format(func_name, dims[0], dims[1])
+        if type_info.la_type.block and not type_info.la_type.is_integer_element() and type_info.la_type.item_types:
+            # Eigen does not convert integer blocks inside a real block matrix: cast them.
+            # (Integer scalars are fine: the comma initializer converts them.)
+            for i in range(min(len(ret), len(type_info.la_type.item_types))):
+                for j in range(min(len(ret[i]), len(type_info.la_type.item_types[i]))):
+                    item_type = type_info.la_type.item_types[i][j].la_type
+                    if item_type is not None and (item_type.is_matrix() or item_type.is_vector()) and item_type.is_integer_element():
+                        ret[i][j] = '({}).template cast<{}>()'.format(ret[i][j], self.get_cur_dtype())
         # matrix
         if self.get_sym_type(cur_m_id).sparse and self.get_sym_type(cur_m_id).block:
             row_index = 0  # start position for item
@@ -2156,12 +2205,11 @@ class CodeGenEigen(CodeGen):
         return left_info
 
     def visit_cast(self, node, **kwargs):
+        # A CastNode wraps a product of matrices/vectors whose result is 1×1 (type_inference's need_cast).
+        # .value() gives its scalar; a C-style cast only compiles when the size is fixed at compile time.
         value_info = self.visit(node.value, **kwargs)
         if node.la_type.is_scalar():
-            if node.la_type.is_integer_element():
-                value_info.content = "(int)({})".format(value_info.content)
-            else:
-                value_info.content = "({})({})".format(self.get_cur_dtype(), value_info.content)
+            value_info.content = "({}).value()".format(value_info.content)
         return value_info
 
     def visit_equation(self, node, **kwargs):
@@ -2210,7 +2258,15 @@ class CodeGenEigen(CodeGen):
         self.comment_dict[placeholder] = self.update_prelist_str([node.raw_text], '    // ')
         content = ''
         if node.optimize_param:
-            pass
+            # b = argmin_(...) ...: the optimization's code, then the assignment
+            lhs_list = [self.visit(left, **kwargs).content for left in node.left]
+            right_info = self.visit(node.right[0], **kwargs)
+            if right_info.pre_list:
+                content += self.update_prelist_str(right_info.pre_list, "    ")
+            if len(lhs_list) == 1:
+                content += "    {} = {};\n".format(lhs_list[0], right_info.content)
+            else:
+                content += "    std::tie({}) = std::make_tuple({});\n".format(', '.join(lhs_list), right_info.content)
         else:
             if len(node.left) > 1 and len(node.right) == 1:
                 # only accept direct assignment, without subscript
@@ -2555,6 +2611,7 @@ class CodeGenEigen(CodeGen):
         item_list = []
         pre_list = []
         right_info = self.visit(node.set, **kwargs)
+        pre_list += right_info.pre_list
         if node.set.la_type.index_type:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -2562,6 +2619,7 @@ class CodeGenEigen(CodeGen):
                 if not item.la_type.index_type:
                     item_content = "{}-1".format(item_info.content)
                 item_list.append(item_content)
+                pre_list += item_info.pre_list
         else:
             for item in node.items:
                 item_info = self.visit(item, **kwargs)
@@ -2570,11 +2628,16 @@ class CodeGenEigen(CodeGen):
                 else:
                     item_content = "{}+1".format(item_info.content)
                 item_list.append(item_content)
-        # content = '{}.find({}({})) == {}.end()'.format(right_info.content,
-        #                                                self.get_set_item_str(self.get_sym_type(right_info.content)),
-        #                                                ', '.join(item_list), right_info.content)
-        content = 'std::binary_search({}.begin(), {}.end(), {}({}))'.format(right_info.content, right_info.content,
-                                                       self.get_set_item_str(self.get_sym_type(right_info.content)),
+                pre_list += item_info.pre_list
+        set_content = right_info.content
+        if node.set.node_type != IRNodeType.Id:
+            # As in visit_in: bind a set expression (e.g. a call N(i) that returns a temporary)
+            # once, so that begin() and end() refer to the same object.
+            set_content = self.generate_var_name('set')
+            pre_list.append('const {}& {} = {};\n'.format(self.get_ctype(node.set.la_type), set_content, right_info.content))
+        # The element type comes from the set node's type: the set need not be a symbol.
+        content = '!std::binary_search({}.begin(), {}.end(), {}({}))'.format(set_content, set_content,
+                                                       self.get_set_item_str(node.set.la_type),
                                                        ', '.join(item_list))
         return CodeNodeInfo(content=content, pre_list=pre_list)
 
@@ -2754,117 +2817,249 @@ class CodeGenEigen(CodeGen):
         self.local_func_def += content
         return CodeNodeInfo()
 
+    def opt_bare(self, node):
+        # the node inside Expression/Factor wrappers (None if there is a sign, e.g. -i)
+        while node is not None and node.node_type in (IRNodeType.Expression, IRNodeType.Factor):
+            if node.node_type == IRNodeType.Expression:
+                if node.sign:
+                    return None
+                node = node.value
+            else:
+                node = node.id or node.num or node.sub or node.m or node.v or node.s
+        return node
+
+    def opt_entry(self, node, offsets, types):
+        # (offset expression, entry count) of an optimization variable or one of its entries with
+        # constant indices, packed column-major; None if node is something else
+        node = self.opt_bare(node)
+        if node is None:
+            return None
+        if node.node_type == IRNodeType.Id and node.get_main_id() in offsets:
+            sym = node.get_main_id()
+            t = types[sym]
+            count = 1 if t.is_scalar() else (t.rows if t.is_vector() else mul_syms(t.rows, t.cols))
+            return offsets[sym], count
+        if node.node_type == IRNodeType.VectorIndex and node.main.node_type == IRNodeType.Id and node.main.get_main_id() in offsets \
+                and node.row_index.node_type == IRNodeType.Integer:
+            return add_syms(offsets[node.main.get_main_id()], node.row_index.value - 1), 1
+        if node.node_type == IRNodeType.MatrixIndex and node.main.node_type == IRNodeType.Id and node.main.get_main_id() in offsets \
+                and node.row_index is not None and node.col_index is not None \
+                and node.row_index.node_type == IRNodeType.Integer and node.col_index.node_type == IRNodeType.Integer:
+            t = types[node.main.get_main_id()]
+            return add_syms(offsets[node.main.get_main_id()],
+                            add_syms(mul_syms(node.col_index.value - 1, t.rows), node.row_index.value - 1)), 1
+        return None
+
     def visit_optimize(self, node, **kwargs):
+        # min/max/argmin/argmax over real scalars, vectors and matrices: the variables are packed
+        # into one vector X (matrices column-major) and minimized with LBFGSpp, using central-
+        # difference gradients. Constraints that bound a variable, or an entry of one, by an
+        # expression without the variables become box bounds (LBFGS-B); a scalar variable in a
+        # finite set is optimized by evaluating every element; other constraints throw at run time.
+        self.push_scope(node.scope_name)  # the optimization's symbols (e.g. a sum in the objective) live in its scope
         self.enable_tmp_sym = True
         self.opt_key = node.key
+        dtype = self.get_cur_dtype()
         cur_len = 0
         param_name = self.generate_var_name('X')
         pre_list = []
         id_list = []
-        init_list = []
-        pack_list = []
         unpack_list = []
         param_list = []  # as function params
         decl_list = []   # declared params
+        offsets = {}
+        types = {}
+        init_list = []   # (offset, count, symbol): initial values from symbols defined earlier
         for cur_index in range(len(node.base_list)):
             cur_la_type = node.base_type_list[cur_index].la_type
             id_info = self.visit(node.base_list[cur_index], **kwargs)
-            id_list.append(id_info.content)
-            init_value = 0
-            pack_str = ''
-            unpack_str = ''
+            name = id_info.content
+            id_list.append(name)
+            offsets[node.base_list[cur_index].get_main_id()] = cur_len
+            types[node.base_list[cur_index].get_main_id()] = cur_la_type
             if cur_la_type.is_scalar():
-                init_value = 0
-                pack_str = "{}".format(id_info.content)
-                unpack_str = "        {} = {}.seqN({}, {})[0];\n".format(id_info.content, param_name, cur_len, 1)
-                cur_len = add_syms(cur_len, 1)
+                count = 1
+                unpack_list.append("        {} = {}({});\n".format(name, param_name, cur_len))
             elif cur_la_type.is_vector():
-                init_value = "np.zeros({})".format(cur_la_type.rows)
-                pack_str = id_info.content
-                unpack_str = "        {} = {}(Eigen::seqN({}, {}));\n".format(id_info.content, param_name, cur_len, cur_la_type.rows)
-                cur_len = add_syms(cur_len, cur_la_type.rows)
-            elif cur_la_type.is_matrix():
-                pack_str = "Eigen::Map<{}>({}.data(), {}.cols()*{}.rows())".format(self.vectord_type, id_info.content, id_info.content, id_info.content)
-                init_value = "np.zeros({}*{})".format(cur_la_type.rows, cur_la_type.cols)
-                unpack_str = "        {}* a = {}(Eigen::seqN({}, {})).data();\n".format(self.get_cur_dtype(), param_name, cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
-                unpack_str += "        {} = Eigen::Map<{} >(a);\n".format(id_info.content, self.get_ctype(cur_la_type))
-                cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
-            init_list.append(init_value)
-            pack_list.append(pack_str)
-            unpack_list.append(unpack_str)
-            param_list.append("{} & {}".format(self.get_ctype(cur_la_type), id_info.content))
-            decl_list.append("{} {}".format(self.get_ctype(cur_la_type), id_info.content))
-        init_var = self.generate_var_name("init")
-        #
+                count = cur_la_type.rows
+                unpack_list.append("        {} = {}.segment({}, {});\n".format(name, param_name, cur_len, count))
+            else:
+                count = mul_syms(cur_la_type.rows, cur_la_type.cols)
+                unpack_list.append("        {} = Eigen::Map<const {}>({}.data() + {}, {}, {});\n".format(
+                    name, self.get_ctype(cur_la_type), param_name, cur_len, cur_la_type.rows, cur_la_type.cols))
+            if name in node.init_syms:
+                init_list.append((cur_len, count, name, cur_la_type))
+            cur_len = add_syms(cur_len, count)
+            param_list.append("{} & {}".format(self.get_ctype(cur_la_type), name))
+            decl_list.append("{} {}".format(self.get_ctype(cur_la_type), name))
         exp_info = self.visit(node.exp, **kwargs)
-        bfgs_param_name = self.generate_var_name('param')
-        solver_name = self.generate_var_name('solver')
-        # Handle target
-        join_vec_name = self.generate_var_name('vec_joined')
-        pre_list += ["    auto pack = [&]({})\n".format(', '.join(param_list)),
-                     "    {\n",
-                     "        {} {}({});\n".format(self.vectord_type, join_vec_name, cur_len),
-                     "        {} << {};\n".format(join_vec_name, ', '.join(pack_list)),
-                     "        return {};\n".format(join_vec_name),
-                     "    };\n",
-                     "    auto unpack = [&]({} & {}, {})\n".format(self.vectord_type, param_name, ', '.join(param_list)),
-                     "    {\n",
-                     "{}\n".format(''.join(unpack_list)),
-                     "    };\n",
-                     "    LBFGSpp::LBFGSParam<{}> {};\n".format(self.get_cur_dtype(), bfgs_param_name),
-                     "    {}.epsilon = 1e-6;\n".format(bfgs_param_name),
-                     "    {}.max_iterations = 100;\n".format(bfgs_param_name),
-                     "    LBFGSpp::LBFGSSolver<{}> {}({}); \n".format(self.get_cur_dtype(), solver_name, bfgs_param_name),
-                     ]
-        target_func = self.generate_var_name('target')
         exp = exp_info.content
-        # Handle optimization type
         if node.opt_type == OptimizeType.OptimizeMax or node.opt_type == OptimizeType.OptimizeArgmax:
-            exp = "-({})".format(exp)
-        # target function
-        pre_list.append("    auto {} = [&]({} & {})\n".format(target_func, self.vectord_type, param_name))
+            exp = "-({})".format(exp)  # maximize by minimizing the negation
+        unpack_func = self.generate_var_name('unpack')
+        target_func = self.generate_var_name('target')
+        helper_func = self.generate_var_name('helper')
+        init_var = self.generate_var_name("init")
+        lb_var = self.generate_var_name("lower")
+        ub_var = self.generate_var_name("upper")
+        fx_var = self.generate_var_name("fx")
+        pre_list += ["    auto {} = [&](const {} & {}, {})\n".format(unpack_func, self.vectord_type, param_name, ', '.join(param_list)),
+                     "    {\n",
+                     "{}".format(''.join(unpack_list)),
+                     "    };\n"]
+        # objective
+        pre_list.append("    auto {} = [&](const {} & {})\n".format(target_func, self.vectord_type, param_name))
         pre_list.append("    {\n")
         pre_list.append("        {};\n".format(';\n        '.join(decl_list)))
-        pre_list.append("        unpack({}, {});\n".format(param_name, ', '.join(id_list)))
-        if len(exp_info.pre_list) > 0:
-            for pre in exp_info.pre_list:
-                lines = pre.split('\n')
-                for line in lines:
-                    if line != "":
-                        pre_list.append("    {}\n".format(line))
-        pre_list.append("        return {};\n".format(exp))
+        pre_list.append("        {}({}, {});\n".format(unpack_func, param_name, ', '.join(id_list)))
+        for pre in exp_info.pre_list:
+            for line in pre.split('\n'):
+                if line != "":
+                    pre_list.append("    {}\n".format(line))
+        pre_list.append("        return {}({});\n".format(dtype, exp))
         pre_list.append("    };\n")
-        # gradient function for LBFGS
-        helper_func = self.generate_var_name("helper")
-        eps_name = self.generate_var_name("eps")
-        pre_list.append("    double {} = 1e-6;\n".format(eps_name))
-        pre_list.append("    auto {} = [&]({} & {}, {} & grad)\n".format(helper_func, self.vectord_type, param_name, self.vectord_type))
-        pre_list.append("    {\n")
-        pre_list.append("        double f_X = {}({});\n".format(target_func, param_name))
-        pre_list.append("        for(int i = 0; i < grad.size(); ++i )\n")
-        pre_list.append("        {\n")
-        pre_list.append("            const double {}_i = {}[i];\n".format(param_name, param_name))
-        pre_list.append("            {}[i] += {};\n".format(param_name, eps_name))
-        pre_list.append("            grad[i] = ({}({}) - f_X)/{};\n".format(target_func, param_name, eps_name))
-        pre_list.append("            {}[i] = {}_i;\n".format(param_name, param_name))
-        pre_list.append("        }\n")
-        pre_list.append("        return f_X;\n")
-        pre_list.append("    };\n")
-        #
+        # objective and central-difference gradient, as LBFGSpp expects
+        best_x = self.generate_var_name("best_X")
+        best_f = self.generate_var_name("best_f")
+        pre_list += ["    {} {};\n".format(self.vectord_type, best_x),
+                     "    {} {} = std::numeric_limits<{}>::infinity();\n".format(dtype, best_f, dtype),
+                     "    auto {} = [&](const {} & {}, {} & grad)\n".format(helper_func, self.vectord_type, param_name, self.vectord_type),
+                     "    {\n",
+                     "        {} Xh = {};\n".format(self.vectord_type, param_name),
+                     "        for(int k = 0; k < {}.size(); ++k)\n".format(param_name),
+                     "        {\n",
+                     "            const {} h = 1e-6 * std::max({}(1), std::abs({}(k)));\n".format(dtype, dtype, param_name),
+                     "            Xh(k) = {}(k) + h;\n".format(param_name),
+                     "            const {} f_plus = {}(Xh);\n".format(dtype, target_func),
+                     "            Xh(k) = {}(k) - h;\n".format(param_name),
+                     "            const {} f_minus = {}(Xh);\n".format(dtype, target_func),
+                     "            Xh(k) = {}(k);\n".format(param_name),
+                     "            grad(k) = (f_plus - f_minus) / (2 * h);\n",
+                     "        }\n",
+                     "        const {} f = {}({});\n".format(dtype, target_func, param_name),
+                     "        if(f < {}){{ {} = f; {} = {}; }}  // the best point evaluated, kept if the line search gives up\n".format(best_f, best_f, best_x, param_name),
+                     "        return f;\n",
+                     "    };\n"]
+        # bounds and the other constraints
+        pre_list.append("    {} {} = {}::Constant({}, -std::numeric_limits<{}>::infinity());\n".format(self.vectord_type, lb_var, self.vectord_type, cur_len, dtype))
+        pre_list.append("    {} {} = {}::Constant({}, std::numeric_limits<{}>::infinity());\n".format(self.vectord_type, ub_var, self.vectord_type, cur_len, dtype))
+        has_bounds = False
+        set_cond = None
+        unsupported = []
+        var_names = set(id_list)
+
+        def mentions_var(content):
+            return any(re.search(r'(?<![\w]){}(?![\w])'.format(re.escape(v)), content) for v in var_names)
+        for cond_node in node.cond_list:
+            cond = cond_node.cond
+            if cond.node_type == IRNodeType.BinComp and cond.comp_type in (IRNodeType.Gt, IRNodeType.Ge, IRNodeType.Lt, IRNodeType.Le, IRNodeType.Eq):
+                lower = cond.comp_type in (IRNodeType.Gt, IRNodeType.Ge)   # var > value bounds var below
+                entry, value = self.opt_entry(cond.left, offsets, types), cond.right
+                if entry is None:
+                    entry, value = self.opt_entry(cond.right, offsets, types), cond.left
+                    lower = cond.comp_type in (IRNodeType.Lt, IRNodeType.Le)   # value < var
+                value_info = self.visit(value, **kwargs) if entry is not None else None
+                if entry is None or mentions_var(value_info.content) or value_info.pre_list or \
+                        not (value.la_type.is_scalar() or entry[1] != 1):
+                    unsupported.append(cond.raw_text)
+                    continue
+                has_bounds = True
+                offset, count = entry
+                segment = "{}.segment({}, {})".format('{}', offset, count) if count != 1 else "{}({})".format('{}', offset)
+                bound = "{}::Constant({}, {})".format(self.vectord_type, count, value_info.content) if count != 1 and value.la_type.is_scalar() else value_info.content
+                if count != 1 and not value.la_type.is_scalar():
+                    bound = "{}({})".format(self.vectord_type, value_info.content)
+                for is_lower in ([True, False] if cond.comp_type == IRNodeType.Eq else [lower]):
+                    var = lb_var if is_lower else ub_var
+                    op = 'cwiseMax' if is_lower else 'cwiseMin'
+                    if count == 1:
+                        pre_list.append("    {} = std::{}({}, {}({}));\n".format(segment.format(var), 'max' if is_lower else 'min', segment.format(var), dtype, bound))
+                    else:
+                        pre_list.append("    {} = {}.{}({});\n".format(segment.format(var), segment.format(var), op, bound))
+            elif cond.node_type == IRNodeType.In and set_cond is None and len(node.base_list) == 1 and \
+                    types[node.base_list[0].get_main_id()].is_scalar() and len(cond.items) == 1 and \
+                    self.opt_entry(cond.items[0], offsets, types) is not None:
+                set_cond = cond
+            else:
+                unsupported.append(cond.raw_text)
+        if unsupported:
+            pre_list.append('    throw std::runtime_error("I\\u2764\\uFE0FLA: in C++ output, optimization constraints must bound a variable (or an entry of one) by an expression without the variables, or put a scalar variable in a set; unsupported: {}");\n'.format(
+                '; '.join(unsupported).replace('\\', '\\\\').replace('"', '\\"').replace('\n', ' ')))
+        # initial point: 0, or a symbol's earlier value, inside the bounds
         pre_list.append("    {} {} = {}::Zero({});\n".format(self.vectord_type, init_var, self.vectord_type, cur_len))
-        pre_list.append("    double fx;\n")
-        #
-        content = ''
+        for offset, count, name, la_type in init_list:
+            if la_type.is_scalar():
+                pre_list.append("    {}({}) = {};\n".format(init_var, offset, name))
+            elif la_type.is_vector():
+                pre_list.append("    {}.segment({}, {}) = {};\n".format(init_var, offset, count, name))
+            else:
+                pre_list.append("    {}.segment({}, {}) = Eigen::Map<const {}>({}.data(), {});\n".format(init_var, offset, count, self.vectord_type, name, count))
+        pre_list.append("    {} = {}.cwiseMax({}).cwiseMin({});\n".format(init_var, init_var, lb_var, ub_var))
+        pre_list.append("    {} {};\n".format(dtype, fx_var))
+        if set_cond is not None:
+            # a scalar variable in a finite set: evaluate every element inside the bounds
+            set_info = self.visit(set_cond.set, **kwargs)
+            pre_list += self.update_prelist_str(set_info.pre_list, '    ').splitlines(keepends=True) if set_info.pre_list else []
+            found_var = self.generate_var_name("found")
+            item_var = self.generate_var_name("item")
+            pre_list += ["    bool {} = false;\n".format(found_var),
+                         "    for(const auto & {} : {})\n".format(item_var, set_info.content),
+                         "    {\n",
+                         "        {} Xs = {}::Constant(1, {});\n".format(self.vectord_type, self.vectord_type, item_var),
+                         "        if(Xs(0) < {}(0) || Xs(0) > {}(0)) continue;\n".format(lb_var, ub_var),
+                         "        const {} f = {}(Xs);\n".format(dtype, target_func),
+                         "        if(!{} || f < {}){{ {} = true; {} = f; {} = Xs; }}\n".format(found_var, fx_var, found_var, fx_var, init_var),
+                         "    }\n",
+                         '    if(!{}) throw std::runtime_error("I\\u2764\\uFE0FLA: no element of the set satisfies the optimization constraints");\n'.format(found_var)]
+        elif has_bounds:
+            param_var = self.generate_var_name('param')
+            solver_var = self.generate_var_name('solver')
+            pre_list += ["    LBFGSpp::LBFGSBParam<{}> {};\n".format(dtype, param_var),
+                         "    {}.epsilon = 1e-8;\n".format(param_var),
+                         "    {}.max_iterations = 1000;\n".format(param_var),
+                         "    LBFGSpp::LBFGSBSolver<{}> {}({});\n".format(dtype, solver_var, param_var),
+                         "    try\n",
+                         "    {\n",
+                         "        {}.minimize({}, {}, {}, {}, {});\n".format(solver_var, helper_func, init_var, fx_var, lb_var, ub_var),
+                         "    }\n",
+                         "    catch(const std::runtime_error &)\n",
+                         "    {\n",
+                         "        // LBFGSpp's line search could not decrease the objective further (e.g. near a\n",
+                         "        // nonsmooth or exactly zero minimum): use the best point evaluated\n",
+                         "        if(!({} < std::numeric_limits<{}>::infinity())) throw;\n".format(best_f, dtype),
+                         "    }\n",
+                         "    {} = {};\n".format(init_var, best_x),
+                         "    {} = {};\n".format(fx_var, best_f)]
+        else:
+            param_var = self.generate_var_name('param')
+            solver_var = self.generate_var_name('solver')
+            pre_list += ["    LBFGSpp::LBFGSParam<{}> {};\n".format(dtype, param_var),
+                         "    {}.epsilon = 1e-8;\n".format(param_var),
+                         "    {}.max_iterations = 1000;\n".format(param_var),
+                         "    LBFGSpp::LBFGSSolver<{}> {}({});\n".format(dtype, solver_var, param_var),
+                         "    try\n",
+                         "    {\n",
+                         "        {}.minimize({}, {}, {});\n".format(solver_var, helper_func, init_var, fx_var),
+                         "    }\n",
+                         "    catch(const std::runtime_error &)\n",
+                         "    {\n",
+                         "        // LBFGSpp's line search could not decrease the objective further (e.g. near a\n",
+                         "        // nonsmooth or exactly zero minimum): use the best point evaluated\n",
+                         "        if(!({} < std::numeric_limits<{}>::infinity())) throw;\n".format(best_f, dtype),
+                         "    }\n",
+                         "    {} = {};\n".format(init_var, best_x),
+                         "    {} = {};\n".format(fx_var, best_f)]
+        # result
         if node.opt_type == OptimizeType.OptimizeMin:
-            content = "{}.minimize({}, {}, fx)".format(solver_name, helper_func, init_var)
+            content = fx_var
         elif node.opt_type == OptimizeType.OptimizeMax:
-            content = "{}.minimize({}, {}, fx)".format(solver_name, helper_func, init_var)
-        elif node.opt_type == OptimizeType.OptimizeArgmin or node.opt_type == OptimizeType.OptimizeArgmax:
+            content = "(-{})".format(fx_var)
+        else:  # argmin, argmax: the variables at the optimum
             pre_list.append("    {};\n".format(';\n    '.join(decl_list)))
-            pre_list.append("    {}.minimize({}, {}, fx);\n".format(solver_name, helper_func, init_var))
-            pre_list.append("    unpack({}, {});\n".format(init_var, ', '.join(id_list)))
+            pre_list.append("    {}({}, {});\n".format(unpack_func, init_var, ', '.join(id_list)))
             content = ', '.join(id_list)
         self.enable_tmp_sym = False
+        self.pop_scope()
         return CodeNodeInfo(content, pre_list=pre_list)
 
     def visit_domain(self, node, **kwargs):
