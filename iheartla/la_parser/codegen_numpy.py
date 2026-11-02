@@ -2336,6 +2336,9 @@ class CodeGenNumpy(CodeGen):
                 f_name = 'np.amax'
                 if node.func_type == MathFuncType.MathFuncMin:
                     f_name = 'np.amin'
+                if node.param.la_type.is_set():
+                    # (np.amin of a Python set is the set itself)
+                    f_name = f_name[len('np.a'):]
                 content = "{}({})".format(f_name, params_content)
             return CodeNodeInfo(content, pre_list=pre_list)
         return CodeNodeInfo("{}({})".format(content, params_content), pre_list=pre_list)

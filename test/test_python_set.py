@@ -162,3 +162,16 @@ class TestSet(BasePythonTest):
         func_info = self.gen_func_info(la_str)
         h = func_info.numpy_func({1, 2, 3}, np.array([[1., 0, 0], [0, 2, 0], [0, 0, 3]]))
         self.assertDMatrixApproximateEqual(h.f({1, 2, 3}), np.array([3., 2., 1.]))
+
+    def test_min_max_of_set(self):
+        # the minimum of a set of values (np.amin of a Python set was the set itself)
+        la_str = """f(S) = min({x_i for i ∈ S}) where S ⊂ V
+                    g(S) = max({x_i for i ∈ S}) where S ⊂ V
+                    z = 1
+                    where
+                    V ∈ {ℤ}
+                    x_i ∈ ℝ"""
+        func_info = self.gen_func_info(la_str)
+        h = func_info.numpy_func({1, 2, 3}, np.array([2.5, -1., 4.]))
+        self.assertEqual(h.f({1, 2, 3}), -1)
+        self.assertEqual(h.g({1, 3}), 4)
