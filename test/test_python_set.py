@@ -125,3 +125,40 @@ class TestSet(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_sequence_of_sets(self):
+        # a sequence of sets as a parameter (not an integer array), sequence() appending to it, ∪_i
+        la_str = """f(U) = sequence(U, {5}) where U_i ⊂ V
+                    g(U) = ∪_i U_i where U_i ⊂ V
+                    z = 1
+                    where
+                    V ∈ {ℤ}"""
+        func_info = self.gen_func_info(la_str)
+        h = func_info.numpy_func({1, 2, 5})
+        self.assertEqual([sorted(s) for s in h.f([{1}, {2}])], [[1], [2], [5]])
+        self.assertEqual(sorted(h.g([{1}, {2, 5}])), [1, 2, 5])
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<int> V = {1, 2, 5};",
+                     "    auto h = {}(V);".format(func_info.eig_func_name),
+                     "    std::vector<std::vector<int>> s = h.f({{1}, {2}});",
+                     "    return s.size() == 3 && s[2] == std::vector<int>({5}) && h.g({{1}, {2, 5}}) == std::vector<int>({1, 2, 5});",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_set_of_vectors_rows_svd(self):
+        # rows from a set of vectors (m_i,* = d_i) in a local function, and svd (U, singular values, V)
+        la_str = """svd from linearalgebra
+                    f(S) = s where S ⊂ V,
+                    d = {x_i for i ∈ S},
+                    m_i,* = d_i,
+                    u, s, vv = svd(m)
+                    z = 1
+                    where
+                    V ∈ {ℤ}
+                    x_i ∈ ℝ^3"""
+        func_info = self.gen_func_info(la_str)
+        h = func_info.numpy_func({1, 2, 3}, np.array([[1., 0, 0], [0, 2, 0], [0, 0, 3]]))
+        self.assertDMatrixApproximateEqual(h.f({1, 2, 3}), np.array([3., 2., 1.]))
