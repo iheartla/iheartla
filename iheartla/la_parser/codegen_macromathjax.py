@@ -84,12 +84,15 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         params_str = ''
         # raw local params
         local_param_list = []
-        if len(node.params) > 0:
-            for index in range(len(node.params)):
-                local_param_list.append("'{}'".format(self.convert_content(filter_subscript(node.params[index].get_name()))))
-                params_str += self.visit(node.params[index], **kwargs)
-                if index < len(node.params)-1:
-                    params_str += node.separators[index] + ''
+        for index in range(len(node.params)):
+            local_param_list.append("'{}'".format(self.convert_content(filter_subscript(node.params[index].get_name()))))
+        # the first n_subs parameters are the name's subscripts (Ω_f(𝐩)), as in LaTeX
+        for index in range(len(node.params) - node.n_subs):
+            params_str += self.visit(node.params[index + node.n_subs], **kwargs)
+            if index < len(node.params) - node.n_subs - 1:
+                params_str += node.separators[index] + ''
+        if node.n_subs > 0:
+            func_name = "{}_{{{}}}".format(func_name, ','.join(self.visit(node.params[index], **kwargs) for index in range(node.n_subs)))
         if node.def_type == LocalFuncDefType.LocalFuncDefParenthesis:
             def_params = '\\left( ' + params_str + ' \\right)'
         else:
