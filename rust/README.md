@@ -88,7 +88,8 @@ How the Rust option works:
   finds the builtin modules.)
 - **Command line:** `iheartla-rust` (`iheartla/rust_wasm.py`) runs the same module with
   wasmtime, finding other modules next to the input file as the Python compiler does. The
-  Python package carries it through the link `iheartla/rust/iheartla.wasm`.
+  Python package carries a copy, `iheartla/rust/iheartla.wasm`, which
+  `docs/update_rust_wasm.sh` writes too.
 - **Check:** `tools/web_check.py` tests the page in headless Chromium:
   `uv run --with playwright python rust/tools/web_check.py`.
 

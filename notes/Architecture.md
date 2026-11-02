@@ -110,8 +110,8 @@ compile_la_content (la_parser/parser.py)
   - `class_only=False` adds `generateRandomData()` and `main()`. The CLI's default is
     `CLASS_ONLY = True`; the web page passes `False`.
 - **Web.** `docs/js/compile-worker.js` runs the compiler in Pyodide (vendored in
-  `docs/js/pyodide`) in a module Web Worker. It installs the wheel built with
-  `uv build --wheel --no-create-gitignore -o docs`.
+  `docs/js/pyodide`) in a module Web Worker. It installs the wheel built by
+  `docs/update_wheel.sh`.
 
 ## The Rust compiler
 
@@ -188,7 +188,8 @@ function, `iheartla.read_module`, through which the loader asks the host for a m
 isn't builtin. `docs/js/compile-worker-rust.js` runs it with the same messages as the
 Pyodide worker (and finds no modules); the page's Compiler choice (`?compiler=rust`) picks
 the worker. `iheartla-rust` (`iheartla/rust_wasm.py`) runs it with wasmtime and reads
-modules from the input file's directory. Rebuild with `docs/update_rust_wasm.sh`.
+modules from the input file's directory; the package carries a copy of the module,
+`iheartla/rust/iheartla.wasm`. Rebuild both with `docs/update_rust_wasm.sh`.
 
 ## Keeping the two equivalent
 
@@ -215,8 +216,8 @@ the Python compiler changes, regenerate them:
 
 Then re-run the checks. When the grammar changes, regenerate the Rust parsers with
 `python rust/tools/gen_parser.py`. The bundled `.hlang` modules are compiled into the Rust
-binary, so a change to them needs a rebuild, and for the web page a rebuild of
-`docs/rust/iheartla.wasm`.
+binary, so a change to them needs a rebuild, and for the web page and `iheartla-rust` a
+rebuild of the WebAssembly module (`docs/update_rust_wasm.sh`).
 
 The Rust compiler differs from the Python one in a few deliberate ways:
 - **First element of a set:** it takes the smallest element, where Python's depends on hash

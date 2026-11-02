@@ -40,6 +40,7 @@ include = ["iheartla*"]
 
 [tool.setuptools.package-data]
 # built-in I❤️MESH modules (.hlang) are read at compile time; the C++/MATLAB/Python
-# support files are what generated code includes; rust/iheartla.wasm (a link to
-# docs/rust/iheartla.wasm) is the Rust compiler iheartla-rust runs
+# support files are what generated code includes; rust/iheartla.wasm (a copy of
+# docs/rust/iheartla.wasm, from docs/update_rust_wasm.sh) is the Rust compiler
+# iheartla-rust runs
 iheartla = ["mesh/**/*", "pygments/*", "rust/*.wasm"]

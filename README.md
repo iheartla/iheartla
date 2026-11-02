@@ -107,10 +107,24 @@ To use the code output for the various backends, you will need:
 
 `DejaVu Sans Mono` is a font with good Unicode support. Windows users should install it. You can download it [here](https://dejavu-fonts.github.io/Download.html). The I❤️LA GUI will use it if installed.
 
-## Packaging a release
+## Building the web page and the package
 
-To update the browser-based compiler after changing the compiler, rebuild its wheel, `docs/iheartla-0.0.1-py3-none-any.whl`:
+The web page is the static site in `docs/`, served as is (by GitHub Pages, or `cd docs; python3 -m http.server`). Two of its files are built from the compilers and committed, so rebuild and commit them after changing a compiler:
 
-    uv build --wheel --no-create-gitignore -o docs
+* **The Python compiler**, which the page runs in Pyodide, is the wheel `docs/iheartla-0.0.1-py3-none-any.whl`. After changing `iheartla/`, run:
+
+      sh docs/update_wheel.sh
+
+  It builds the wheel from the files git tracks (a stale `build/` or untracked files would otherwise end up in it), without the Rust compiler.
+
+* **The Rust compiler**, built as WebAssembly, is `docs/rust/iheartla.wasm` for the page and `iheartla/rust/iheartla.wasm` for the `iheartla-rust` command, which is how `uvx` installs from git get it. After changing `rust/` or the bundled modules in `iheartla/mesh/*.hlang`, run (once: `rustup target add wasm32-unknown-unknown`):
+
+      sh docs/update_rust_wasm.sh
+
+  It writes both copies, which git stores once.
+
+The page's third-party files are vendored by `docs/update_vendor.sh` and `docs/update_pyodide.sh`.
+
+## Packaging a desktop release
 
 **macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `python3 -m iheartla --regenerate-grammar` at least once.
