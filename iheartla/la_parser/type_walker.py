@@ -122,7 +122,7 @@ class EquationData(object):
 
     def gen_json_content(self):
         content = ''
-        undesc_list = ['''"{}"'''.format(self.trim(sym)) for sym in self.undescribed_list]
+        undesc_list = ['''"{}"'''.format(self.trim(sym)) for sym in sorted(self.undescribed_list)]
         param_list = []
         for param in self.parameters:
             if param in self.desc_dict:
@@ -382,8 +382,16 @@ class TypeWalker(NodeWalker):
         # generated ret sym is not supposed to be used in glossary
         if self.is_generate_ret and self.ret_symbol in new_lhs_list:
             new_lhs_list.remove(self.ret_symbol)
+        symtable = copy.deepcopy(self.symtable)
+        # optimized variables are only in the scopes of their min/max
+        for opt_key in self.opt_dict:
+            if opt_key in self.func_data_dict:
+                opt_symtable = self.func_data_dict[opt_key].params_data.symtable
+                for opt_var in self.opt_syms:
+                    if opt_var not in symtable and opt_var in opt_symtable:
+                        symtable[opt_var] = copy.deepcopy(opt_symtable[opt_var])
         return EquationData('', copy.deepcopy(self.parameters), new_lhs_list,
-                            copy.deepcopy(self.import_module_list),  copy.deepcopy(self.symtable),
+                            copy.deepcopy(self.import_module_list),  symtable,
                             copy.deepcopy(self.desc_dict), self.la_content,
                             # func_data_dict also holds scopes such as sum_0; only pass local functions
                             copy.deepcopy({k: v for k, v in self.func_data_dict.items() if k in self.local_func_dict}),

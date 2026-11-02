@@ -101,6 +101,8 @@ To use the code output for the various backends, you will need:
 
 ## Packaging a release
 
-To update the browser-based compiler, run `python3 setup.py sdist bdist_wheel` and then copy `dist/iheartla-0.0.1-py3-none-any.whl` to the `docs` directory.
+To update the browser-based compiler after changing the compiler, rebuild its wheel, `docs/iheartla-0.0.1-py3-none-any.whl`:
+
+    uv build --wheel --no-create-gitignore -o docs
 
 **macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `python3 -m iheartla --regenerate-grammar` at least once.
