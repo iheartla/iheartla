@@ -1774,7 +1774,10 @@ impl<'a> Checker<'a> {
             format!("Parameters {} and {} should have the same rows", self.text(op.get("left")), self.text(op.get("right")))
         })?;
         let ty = match &r.ty {
-            Matrix { cols, .. } => Ty::matrix(l.ty.cols(), cols.clone()),
+            // sparse when both are (spsolve returns a sparse result), as in Python
+            Matrix { cols, sparse, .. } => {
+                Matrix { rows: l.ty.cols(), cols: cols.clone(), elem: Elem::Real, sparse: *sparse && l.ty.is_sparse() }
+            }
             Vector { .. } => Ty::vector(l.ty.cols()),
             _ => return self.err(op, format!("Parameter {} must be a matrix or vector", self.text(op.get("right")))),
         };

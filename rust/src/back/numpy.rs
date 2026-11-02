@@ -630,7 +630,10 @@ impl<'p> Gen<'p> {
             Inner(a, b, Some(m)) => format!("({}).T @ ({}) @ ({})", self.expr(b), self.expr(m), self.expr(a)),
             Frobenius(a, b) => format!("np.sum(np.multiply({}, {}))", self.expr(a), self.expr(b)),
             Pow(a, b) => {
-                if a.ty.is_matrix() {
+                // not **, which is elementwise for SciPy's sparse arrays (such as spsolve returns)
+                if a.ty.is_matrix() && a.ty.is_sparse() {
+                    format!("sparse.linalg.matrix_power({}, {})", self.expr(a), self.expr(b))
+                } else if a.ty.is_matrix() {
                     format!("np.linalg.matrix_power({}, {})", self.expr(a), self.expr(b))
                 } else {
                     format!("{}**{}", self.paren(a), self.paren(b))
