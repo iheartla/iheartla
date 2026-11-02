@@ -1,0 +1,1353 @@
+{
+ "id": "x_heartdown_Generic_Generic",
+ "src": " `$x_p$` = (-y, x)\n `$v_p$` = (-v, u)\nM=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2] \n\nwhere\nJ: ℝ^(2×2): The Jacobian matrix\nx: ℝ : point coordinate\ny: ℝ : point coordinate\nu: ℝ : vector field coordinate\nv: ℝ : vector field coordinate\n\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": " `$x_p$` = (-y, x)\n `$v_p$` = (-v, u)\nM=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2] \n\nwhere\nJ: ℝ^(2×2): The Jacobian matrix\nx: ℝ : point coordinate\ny: ℝ : point coordinate\nu: ℝ : vector field coordinate\nv: ℝ : vector field coordinate\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     228
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       1,
+       18
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        1,
+        18
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          1,
+          8
+         ],
+         "id": "$x_p$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          18
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           11,
+           18
+          ],
+          "v": {
+           "_": "Vector",
+           "@": [
+            11,
+            18
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              12,
+              14
+             ],
+             "sign": "-",
+             "value": {
+              "_": "Factor",
+              "@": [
+               13,
+               14
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                13,
+                14
+               ],
+               "id": null,
+               "value": "y"
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              16,
+              17
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               16,
+               17
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                16,
+                17
+               ],
+               "id": null,
+               "value": "x"
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       20,
+       37
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        20,
+        37
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          20,
+          27
+         ],
+         "id": "$v_p$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          30,
+          37
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           30,
+           37
+          ],
+          "v": {
+           "_": "Vector",
+           "@": [
+            30,
+            37
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              31,
+              33
+             ],
+             "sign": "-",
+             "value": {
+              "_": "Factor",
+              "@": [
+               32,
+               33
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                32,
+                33
+               ],
+               "id": null,
+               "value": "v"
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              35,
+              36
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               35,
+               36
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                35,
+                36
+               ],
+               "id": null,
+               "value": "u"
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       38,
+       76
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        38,
+        76
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          38,
+          39
+         ],
+         "id": null,
+         "value": "M"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          40,
+          76
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           40,
+           76
+          ],
+          "m": {
+           "_": "Matrix",
+           "@": [
+            40,
+            76
+           ],
+           "value": {
+            "_": "MatrixRows",
+            "@": [
+             41,
+             75
+            ],
+            "r": {
+             "_": "MatrixRow",
+             "@": [
+              41,
+              75
+             ],
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               72,
+               75
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                72,
+                75
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 72,
+                 75
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  72,
+                  73
+                 ],
+                 "id": null,
+                 "value": "I"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   74,
+                   75
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             "rc": {
+              "_": "MatrixRowCommas",
+              "@": [
+               41,
+               72
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                63,
+                70
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 63,
+                 70
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  63,
+                  70
+                 ],
+                 "id": "$x_p$",
+                 "value": null
+                }
+               }
+              },
+              "value": {
+               "_": "MatrixRowCommas",
+               "@": [
+                41,
+                63
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 60,
+                 61
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  60,
+                  61
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   60,
+                   61
+                  ],
+                  "id": null,
+                  "value": "J"
+                 }
+                }
+               },
+               "value": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 41,
+                 60
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  41,
+                  58
+                 ],
+                 "value": {
+                  "_": "Add",
+                  "@": [
+                   41,
+                   58
+                  ],
+                  "left": {
+                   "_": "ExpInMatrix",
+                   "@": [
+                    41,
+                    50
+                   ],
+                   "sign": "-",
+                   "value": {
+                    "_": "Multiply",
+                    "@": [
+                     42,
+                     50
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      42,
+                      43
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       42,
+                       43
+                      ],
+                      "id": null,
+                      "value": "J"
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      43,
+                      50
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       43,
+                       50
+                      ],
+                      "id": "$x_p$",
+                      "value": null
+                     }
+                    }
+                   }
+                  },
+                  "op": "+",
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    51,
+                    58
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     51,
+                     58
+                    ],
+                    "id": "$v_p$",
+                    "value": null
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       79,
+       226
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        85,
+        226
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          85,
+          116
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "The Jacobian matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           88,
+           95
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            91,
+            92
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             91,
+             92
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              91,
+              92
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            93,
+            94
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             93,
+             94
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              93,
+              94
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            85,
+            86
+           ],
+           "id": null,
+           "value": "J"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          117,
+          140
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "point coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            117,
+            118
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          141,
+          164
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "point coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            141,
+            142
+           ],
+           "id": null,
+           "value": "y"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          165,
+          195
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "vector field coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            165,
+            166
+           ],
+           "id": null,
+           "value": "u"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          196,
+          226
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "vector field coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            196,
+            197
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": " `$x_p$` = (-y, x)\n `$v_p$` = (-v, u)\nM=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2] \n\nwhere\nJ: ℝ^(2×2): The Jacobian matrix\nx: ℝ : point coordinate\ny: ℝ : point coordinate\nu: ℝ : vector field coordinate\nv: ℝ : vector field coordinate\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     228
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       1,
+       18
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        1,
+        18
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          1,
+          8
+         ],
+         "id": "$x_p$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          18
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           11,
+           18
+          ],
+          "v": {
+           "_": "Vector",
+           "@": [
+            11,
+            18
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              12,
+              14
+             ],
+             "sign": "-",
+             "value": {
+              "_": "Factor",
+              "@": [
+               13,
+               14
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                13,
+                14
+               ],
+               "id": null,
+               "value": "y"
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              16,
+              17
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               16,
+               17
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                16,
+                17
+               ],
+               "id": null,
+               "value": "x"
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       20,
+       37
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        20,
+        37
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          20,
+          27
+         ],
+         "id": "$v_p$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          30,
+          37
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           30,
+           37
+          ],
+          "v": {
+           "_": "Vector",
+           "@": [
+            30,
+            37
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              31,
+              33
+             ],
+             "sign": "-",
+             "value": {
+              "_": "Factor",
+              "@": [
+               32,
+               33
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                32,
+                33
+               ],
+               "id": null,
+               "value": "v"
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              35,
+              36
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               35,
+               36
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                35,
+                36
+               ],
+               "id": null,
+               "value": "u"
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       38,
+       76
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        38,
+        76
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          38,
+          39
+         ],
+         "id": null,
+         "value": "M"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          40,
+          76
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           40,
+           76
+          ],
+          "m": {
+           "_": "Matrix",
+           "@": [
+            40,
+            76
+           ],
+           "value": {
+            "_": "MatrixRows",
+            "@": [
+             41,
+             75
+            ],
+            "r": {
+             "_": "MatrixRow",
+             "@": [
+              41,
+              75
+             ],
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               72,
+               75
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                72,
+                75
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 72,
+                 75
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  72,
+                  73
+                 ],
+                 "id": null,
+                 "value": "I"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   74,
+                   75
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              }
+             },
+             "rc": {
+              "_": "MatrixRowCommas",
+              "@": [
+               41,
+               72
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                63,
+                70
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 63,
+                 70
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  63,
+                  70
+                 ],
+                 "id": "$x_p$",
+                 "value": null
+                }
+               }
+              },
+              "value": {
+               "_": "MatrixRowCommas",
+               "@": [
+                41,
+                63
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 60,
+                 61
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  60,
+                  61
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   60,
+                   61
+                  ],
+                  "id": null,
+                  "value": "J"
+                 }
+                }
+               },
+               "value": {
+                "_": "MatrixRowCommas",
+                "@": [
+                 41,
+                 60
+                ],
+                "exp": {
+                 "_": "ExpInMatrix",
+                 "@": [
+                  41,
+                  58
+                 ],
+                 "value": {
+                  "_": "Add",
+                  "@": [
+                   41,
+                   58
+                  ],
+                  "left": {
+                   "_": "ExpInMatrix",
+                   "@": [
+                    41,
+                    50
+                   ],
+                   "sign": "-",
+                   "value": {
+                    "_": "Multiply",
+                    "@": [
+                     42,
+                     50
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      42,
+                      43
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       42,
+                       43
+                      ],
+                      "id": null,
+                      "value": "J"
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      43,
+                      50
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       43,
+                       50
+                      ],
+                      "id": "$x_p$",
+                      "value": null
+                     }
+                    }
+                   }
+                  },
+                  "op": "+",
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    51,
+                    58
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     51,
+                     58
+                    ],
+                    "id": "$v_p$",
+                    "value": null
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       79,
+       226
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        85,
+        226
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          85,
+          116
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "The Jacobian matrix",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           88,
+           95
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            91,
+            92
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             91,
+             92
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              91,
+              92
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            93,
+            94
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             93,
+             94
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              93,
+              94
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            85,
+            86
+           ],
+           "id": null,
+           "value": "J"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          117,
+          140
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "point coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            117,
+            118
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          141,
+          164
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "point coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            141,
+            142
+           ],
+           "id": null,
+           "value": "y"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          165,
+          195
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "vector field coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            165,
+            166
+           ],
+           "id": null,
+           "value": "u"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          196,
+          226
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "vector field coordinate",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            196,
+            197
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n `$x_p$` = (-y, x)\n `$v_p$` = (-v, u)\nM=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2] \n\nwhere\nJ: ℝ^(2×2): The Jacobian matrix\nx: ℝ : point coordinate\ny: ℝ : point coordinate\nu: ℝ : vector field coordinate\nv: ℝ : vector field coordinate\n\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, J, x, y, u, v):\n        J = np.asarray(J, dtype=np.float64)\n        assert J.shape == (2, 2)\n        assert np.ndim(x) == 0\n        assert np.ndim(y) == 0\n        assert np.ndim(u) == 0\n        assert np.ndim(v) == 0\n        # `$x_p$` = (-y, x)\n        self.x_p = np.hstack((-y, x))\n        # `$v_p$` = (-v, u)\n        self.v_p = np.hstack((-v, u))\n        # M=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2]\n        M_0 = np.hstack(((-J @ self.x_p + self.v_p).reshape(2, 1), J, (self.x_p).reshape(2, 1), np.identity(2)))\n        self.M = M_0\n\n\n\n\n\n",
+  "eigen": "/*\n `$x_p$` = (-y, x)\n `$v_p$` = (-v, u)\nM=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2] \n\nwhere\nJ: ℝ^(2×2): The Jacobian matrix\nx: ℝ : point coordinate\ny: ℝ : point coordinate\nu: ℝ : vector field coordinate\nv: ℝ : vector field coordinate\n\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 2, 1> x_p;\n    Eigen::Matrix<DT, 2, 1> v_p;\n    Eigen::Matrix<DT, 2, 6> M;\n\n    heartlib(\n        const Eigen::Matrix<double, 2, 2> & J,\n        const double & x,\n        const double & y,\n        const double & u,\n        const double & v)\n    {\n    \n        // `$x_p$` = (-y, x)\n        Eigen::Matrix<DT, 2, 1> x_p_0;\n        x_p_0 << -y, x;\n        x_p = x_p_0;\n        // `$v_p$` = (-v, u)\n        Eigen::Matrix<DT, 2, 1> v_p_0;\n        v_p_0 << -v, u;\n        v_p = v_p_0;\n        // M=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2]\n        Eigen::Matrix<DT, 2, 6> M_0;\n        M_0 << -J * x_p + v_p, J, x_p, MatrixD::Identity(2, 2);\n        M = M_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nx_p & = \\begin{pmatrix}\n-y\\\\x\\end{pmatrix} \\\\\nv_p & = \\begin{pmatrix}\n-v\\\\u\\end{pmatrix} \\\\\nM & = \\begin{bmatrix}\n-J x_p + v_p & J & x_p & I_{ 2 }\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nJ & : \\mathbb{R}^{ 2 \\times 2 } \\text{ The Jacobian matrix} \\\\\nx & : \\mathbb{R} \\text{ point coordinate} \\\\\ny & : \\mathbb{R} \\text{ point coordinate} \\\\\nu & : \\mathbb{R} \\text{ vector field coordinate} \\\\\nv & : \\mathbb{R} \\text{ vector field coordinate} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nx_p & = \\begin{pmatrix}\n-y\\\\x\\end{pmatrix} \\\\\nv_p & = \\begin{pmatrix}\n-v\\\\u\\end{pmatrix} \\\\\nM & = \\begin{bmatrix}\n-J x_p + v_p & J & x_p & I_{ 2 }\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nJ & : \\mathbb{R}^{ 2 \\times 2 } \\text{ The Jacobian matrix} \\\\\nx & : \\mathbb{R} \\text{ point coordinate} \\\\\ny & : \\mathbb{R} \\text{ point coordinate} \\\\\nu & : \\mathbb{R} \\text{ vector field coordinate} \\\\\nv & : \\mathbb{R} \\text{ vector field coordinate} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(J, x, y, u, v)\n% output = heartlib(J, x, y, u, v)\n%\n%     `$x_p$` = (-y, x)\n%     `$v_p$` = (-v, u)\n%    M=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2] \n%    \n%    where\n%    J: ℝ^(2×2): The Jacobian matrix\n%    x: ℝ : point coordinate\n%    y: ℝ : point coordinate\n%    u: ℝ : vector field coordinate\n%    v: ℝ : vector field coordinate\n%    \n%    \n    assert( isequal(size(J), [2, 2]) );\n    assert(numel(x) == 1);\n    assert(numel(y) == 1);\n    assert(numel(u) == 1);\n    assert(numel(v) == 1);\n\n    % `$x_p$` = (-y, x)\n\n    x_p = [-y; x];\n    % `$v_p$` = (-v, u)\n\n    v_p = [-v; u];\n    % M=[-J`$x_p$`+`$v_p$`  J  `$x_p$`  I_2]\n\n    M_0 = [[reshape(-J * x_p + v_p, [2, 1]), J, reshape(x_p, [2, 1]), speye(2)]];\n    M = M_0;\n    output.x_p = x_p;\n    output.v_p = v_p;\n    output.M = M;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$x_p$', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-$x_p$\", \"sym\":\"$x_p$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {x_p} } & = \\begin{pmatrix}\n-\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} }\\\\\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }\\end{pmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['x', 'y', '$x_p$'], false, [], [], 'YCR4X3AkYCA9ICgteSwgeCk=');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$v_p$', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-$v_p$\", \"sym\":\"$v_p$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {v_p} } & = \\begin{pmatrix}\n-\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'v', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-v\", \"sym\":\"v\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {v} }\\\\\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'u', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-u\", \"sym\":\"u\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {u} }\\end{pmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['u', 'v', '$v_p$'], false, [], [], 'YCR2X3AkYCA9ICgtdiwgdSk=');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-M\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {M} } & = \\begin{bmatrix}\n-\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'J', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-J\", \"sym\":\"J\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {J} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$x_p$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$x_p$\", \"sym\":\"$x_p$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x_p} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$v_p$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$v_p$\", \"sym\":\"$v_p$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {v_p} } & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'J', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-J\", \"sym\":\"J\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {J} } & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$x_p$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$x_p$\", \"sym\":\"$x_p$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x_p} } & I_{ 2 }\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$v_p$', '$x_p$', 'J', 'M'], false, [], [], 'TT1bLUpgJHhfcCRgK2Akdl9wJGAgIEogIGAkeF9wJGAgIElfMl0=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'J', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-J\", \"sym\":\"J\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {J} } & : \\mathbb{R}^{ 2 \\times 2 } \\text{ The Jacobian matrix} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & : \\mathbb{R} \\text{ point coordinate} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } & : \\mathbb{R} \\text{ point coordinate} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'u', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-u\", \"sym\":\"u\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {u} } & : \\mathbb{R} \\text{ vector field coordinate} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'v', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-v\", \"sym\":\"v\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {v} } & : \\mathbb{R} \\text{ vector field coordinate} \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Generic"
+}

@@ -101,7 +101,9 @@ fn check_config(dir: &str) {
             continue;
         };
         let Ok(tree) = grammar::parse_init(src) else { continue };
-        let loader = iheartla::modules::Loader::new(vec![]);
+        // modules are found in the case's directory (relative to the repository root)
+        let dirs = golden["path"].as_str().map(|p| vec![std::path::Path::new(dir).join("../../..").join(p)]).unwrap_or_default();
+        let loader = iheartla::modules::Loader::new(dirs);
         total += 1;
         let cfg = iheartla::decls::second_parse_config_with(&tree, &|n| iheartla::node_text(src, n).to_string(), &|m| loader.function_names(m));
         let e = &expected["config"];

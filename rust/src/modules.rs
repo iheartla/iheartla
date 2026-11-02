@@ -2,7 +2,8 @@
 //!
 //! A module is found, as in the Python compiler, first among the modules
 //! that come with I❤️LA (`iheartla/mesh/*.hlang`, embedded in the binary),
-//! then in the search directories (the importing file's directory). Each
+//! then in the search directories (the importing file's directory): `.hlang`
+//! files, then `.ihla` files (which H❤️rtDown writes for each context). Each
 //! module is compiled once per compilation and shared by all its importers.
 
 use crate::ast::Program;
@@ -42,7 +43,11 @@ impl Loader {
         if let Some((_, src)) = BUILTIN.iter().find(|(n, _)| *n == name) {
             return Some(src.to_string());
         }
-        self.dirs.iter().map(|d| d.join(format!("{name}.hlang"))).find(|p| p.is_file()).and_then(|p| std::fs::read_to_string(p).ok())
+        ["hlang", "ihla"]
+            .iter()
+            .flat_map(|ext| self.dirs.iter().map(move |d| d.join(format!("{name}.{ext}"))))
+            .find(|p| p.is_file())
+            .and_then(|p| std::fs::read_to_string(p).ok())
     }
 
     pub fn exists(&self, name: &str) -> bool {

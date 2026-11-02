@@ -23,8 +23,8 @@ const OCTAHEDRON: &str = "[[0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1], [5, 2, 1]
 
 /// How a dimension symbol gets its value.
 enum DimVal {
-    /// random
-    Draw,
+    /// random, at least the given size
+    Draw(i64),
     /// the length shared by sequences
     Seq,
     /// fixed by an equality with a number
@@ -66,7 +66,7 @@ fn dims(prog: &Program) -> Vec<(String, DimVal)> {
         } else if seq {
             DimVal::Seq
         } else {
-            DimVal::Draw
+            DimVal::Draw(prog.min_dims.iter().find(|(n, _)| *n == name).map_or(1, |(_, k)| (*k).max(1)))
         };
         out.push((name, v));
     }
@@ -206,7 +206,7 @@ pub fn numpy(prog: &Program, class_name: &str) -> String {
     let mut have_seq = false;
     for (name, v) in dims(prog) {
         let value = match v {
-            DimVal::Draw => "np.random.randint(1, 10)".to_string(),
+            DimVal::Draw(k) => format!("np.random.randint({k}, {})", k + 9),
             DimVal::Int(i) => i.to_string(),
             DimVal::Alias(o) => py_ident(&o),
             DimVal::Seq => {
@@ -314,7 +314,7 @@ pub fn eigen(prog: &Program, struct_name: &str) -> String {
     let mut have_seq = false;
     for (name, v) in dims(prog) {
         let value = match v {
-            DimVal::Draw => "1 + rand() % 9".to_string(),
+            DimVal::Draw(k) => format!("{k} + rand() % 9"),
             DimVal::Int(i) => i.to_string(),
             DimVal::Alias(o) => cpp_ident(&o),
             DimVal::Seq => {
@@ -467,7 +467,7 @@ pub fn matlab(prog: &Program) -> String {
     let mut have_seq = false;
     for (name, v) in dims(prog) {
         let value = match v {
-            DimVal::Draw => "randi(9)".to_string(),
+            DimVal::Draw(k) => if k == 1 { "randi(9)".to_string() } else { format!("{} + randi(9)", k - 1) },
             DimVal::Int(i) => i.to_string(),
             DimVal::Alias(o) => m_ident(&o),
             DimVal::Seq => {

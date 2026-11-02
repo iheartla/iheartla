@@ -1,0 +1,28 @@
+ElementSets from MeshConnectivity
+VertexOneRing, Faces, NeighborVerticesInFace from Neighborhoods(M)
+M : FaceMesh
+x_i ∈ ℝ^3  
+V, E, F = ElementSets( M )
+
+UpdateStep(i, j, k, d) = { p if s_1,1 < 0 and s_2,1 < 0 
+			               min(d_j+‖x_j - x_i‖, d_k+‖x_k - x_i‖) otherwise 
+where i,j,k ∈ V, d_i ∈ ℝ,
+X = [x_j-x_i x_k-x_i],
+t = [d_j d_k]ᵀ,
+Q = (XᵀX)⁻¹,
+`1` = [1 ; 1],
+p = (`1`ᵀQt + sqrt((`1`ᵀQt)² - `1`ᵀQ`1` ⋅ (tᵀQt - 1)))/ (`1`ᵀQ`1`),
+n = XQ(t- p ⋅`1`),
+s = QXᵀn
+
+GetNextLevel(U) = v - s where U_i ⊂ V,
+s = ∪_i U_i,
+v = VertexOneRing(s)
+
+GetRangeLevel(U, a, b) = ∪_(i=a)^b U_i where U_j ⊂ V, a,b ∈ ℤ index
+
+
+GetLevelSequence(U) = { sequence(U, next) if |next| ≠ 0
+                        U otherwise where U_i ⊂ V,
+next = GetNextLevel(U)
+

@@ -1,0 +1,43 @@
+ElementSets from MeshConnectivity
+NeighborVerticesInFace, Faces, VertexOneRing from Neighborhoods(M)
+M : FaceMesh
+x_i ∈ ℝ^3 
+
+V, E, F = ElementSets( M )
+VertexNormal(i) = w/||w|| where i ∈ V,
+w = (∑_(f ∈ Faces(i)) (x_j- x_i)×(x_k-x_i)
+where j, k = NeighborVerticesInFace(f, i) )
+
+CalcNorm(i, v, n, `σ_c`, `σ_s`) = `w_c`⋅`w_s` where i,v ∈ ℤ vertices,`σ_c`, `σ_s` ∈ ℝ, n ∈ ℝ³,
+t = ||x_i - x_v||,
+h = <n, x_v - x_i>, 
+`w_c` = exp(-t²/(2`σ_c`²)),
+`w_s` = exp(-h²/(2`σ_s`²))
+
+CalcS(i, v, n, `σ_c`, `σ_s`) = CalcNorm(i, v, n, `σ_c`,`σ_s`)⋅h where i,v ∈ ℤ vertices,`σ_c`, `σ_s` ∈ ℝ, n ∈ ℝ³,
+h = <n, x_v - x_i>
+
+
+DenoisePoint(i) = x_i + n⋅(s/norm)  where i ∈ V,
+n = VertexNormal(i),
+`σ_c` = CalcSigmaC(i),
+neighbors = AdaptiveVertexNeighbor(i, {i}, `σ_c`),
+`σ_s` = CalcSigmaS(i, neighbors),
+s = (∑_(v ∈ neighbors) CalcS(i, v, n, `σ_c`, `σ_s`)),
+norm = (∑_(v ∈ neighbors) CalcNorm(i, v, n, `σ_c`, `σ_s`))
+ 
+
+CalcSigmaC(i) = min({||x_i - x_v|| for v ∈ VertexOneRing(i)}) where i ∈ V
+
+CalcSigmaS(i, N) = {sqrt(offset) + 10^(-12) if sqrt(offset) < 10^(-12)
+	sqrt(offset) otherwise where i ∈ V, N ⊂ V,
+n = VertexNormal(i),
+avg = (∑_(v ∈ N) t/|N| where t = sqrt(((x_v - x_i)⋅n)²)),
+sqs = (∑_(v ∈ N) (t-avg)² where t = sqrt(((x_v - x_i)⋅n)²)),
+offset = sqs / |N|
+
+
+AdaptiveVertexNeighbor(i, n, σ) = { n  if |n|=|target| 
+                                           AdaptiveVertexNeighbor(i, target, σ) otherwise where i ∈ V, σ ∈ ℝ, n ⊂ V,
+target = {v for v ∈ VertexOneRing(n) if ||x_i-x_v||< 2σ} ∪ n
+

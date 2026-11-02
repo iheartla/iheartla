@@ -1,0 +1,2627 @@
+{
+ "id": "x_heartdown_Stable_Stable",
+ "src": "α = 1 + μ/λ - μ/(4λ)\nJ =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n`$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n\nwhere \nF: ℝ^(3×3): the deformation gradient\nμ: ℝ : the Lamé constant\n`$I_C$`: ℝ : the first right Cauchy-Green invariant\nλ: ℝ : the Lamé constant\n\n`$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n\nwhere \n`$f_0$`: ℝ^3: the first column of matrix F \n`$f_1$`: ℝ^3: the second column of matrix F\n`$f_2$`: ℝ^3: the third column of matrix F\n\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "α = 1 + μ/λ - μ/(4λ)\nJ =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n`$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n\nwhere \nF: ℝ^(3×3): the deformation gradient\nμ: ℝ : the Lamé constant\n`$I_C$`: ℝ : the first right Cauchy-Green invariant\nλ: ℝ : the Lamé constant\n\n`$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n\nwhere \n`$f_0$`: ℝ^3: the first column of matrix F \n`$f_1$`: ℝ^3: the second column of matrix F\n`$f_2$`: ℝ^3: the third column of matrix F\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     498
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       20
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        20
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "α"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          20
+         ],
+         "value": {
+          "_": "Subtract",
+          "@": [
+           4,
+           20
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            4,
+            11
+           ],
+           "value": {
+            "_": "Add",
+            "@": [
+             4,
+             11
+            ],
+            "left": {
+             "_": "Expression",
+             "@": [
+              4,
+              5
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               4,
+               5
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                4,
+                5
+               ],
+               "value": [
+                "1"
+               ]
+              }
+             }
+            },
+            "op": "+",
+            "right": {
+             "_": "Divide",
+             "@": [
+              8,
+              11
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               8,
+               9
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                8,
+                9
+               ],
+               "id": null,
+               "value": "μ"
+              }
+             },
+             "op": "/",
+             "right": {
+              "_": "Factor",
+              "@": [
+               10,
+               11
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                10,
+                11
+               ],
+               "id": null,
+               "value": "λ"
+              }
+             }
+            }
+           }
+          },
+          "op": "-",
+          "right": {
+           "_": "Divide",
+           "@": [
+            14,
+            20
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             14,
+             15
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              14,
+              15
+             ],
+             "id": null,
+             "value": "μ"
+            }
+           },
+           "op": "/",
+           "right": {
+            "_": "Factor",
+            "@": [
+             16,
+             20
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              16,
+              20
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               17,
+               19
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                17,
+                19
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 17,
+                 18
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "value": [
+                  "4"
+                 ]
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 18,
+                 19
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  18,
+                  19
+                 ],
+                 "id": null,
+                 "value": "λ"
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       21,
+       49
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        21,
+        49
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          21,
+          22
+         ],
+         "id": null,
+         "value": "J"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          24,
+          49
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           24,
+           49
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            24,
+            31
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             24,
+             31
+            ],
+            "id": "$f_0$",
+            "value": null
+           }
+          },
+          "op": "⋅",
+          "right": {
+           "_": "Factor",
+           "@": [
+            32,
+            49
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             32,
+             49
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              33,
+              48
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               33,
+               48
+              ],
+              "op": {
+               "_": "CrossProduct",
+               "@": [
+                33,
+                48
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 33,
+                 40
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  33,
+                  40
+                 ],
+                 "id": "$f_1$",
+                 "value": null
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 41,
+                 48
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  41,
+                  48
+                 ],
+                 "id": "$f_2$",
+                 "value": null
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       50,
+       123
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        50,
+        123
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          50,
+          58
+         ],
+         "id": "$P(F)$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          61,
+          123
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           61,
+           123
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            61,
+            80
+           ],
+           "sign": null,
+           "value": {
+            "_": "Multiply",
+            "@": [
+             61,
+             80
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              61,
+              79
+             ],
+             "op": {
+              "_": "Function",
+              "@": [
+               61,
+               79
+              ],
+              "name": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 61,
+                 62
+                ],
+                "id": null,
+                "value": "μ"
+               },
+               []
+              ],
+              "p": "(",
+              "params": [
+               {
+                "_": "Expression",
+                "@": [
+                 63,
+                 78
+                ],
+                "value": {
+                 "_": "Subtract",
+                 "@": [
+                  63,
+                  78
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   63,
+                   64
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    63,
+                    64
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     63,
+                     64
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  }
+                 },
+                 "op": "-",
+                 "right": {
+                  "_": "Divide",
+                  "@": [
+                   65,
+                   78
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    65,
+                    66
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     65,
+                     66
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  },
+                  "op": "/",
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    67,
+                    78
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     67,
+                     78
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      68,
+                      77
+                     ],
+                     "value": {
+                      "_": "Add",
+                      "@": [
+                       68,
+                       77
+                      ],
+                      "left": {
+                       "_": "Expression",
+                       "@": [
+                        68,
+                        75
+                       ],
+                       "sign": null,
+                       "value": {
+                        "_": "Factor",
+                        "@": [
+                         68,
+                         75
+                        ],
+                        "id0": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          68,
+                          75
+                         ],
+                         "id": "$I_C$",
+                         "value": null
+                        }
+                       }
+                      },
+                      "op": "+",
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        76,
+                        77
+                       ],
+                       "num": {
+                        "_": "Integer",
+                        "@": [
+                         76,
+                         77
+                        ],
+                        "value": [
+                         "1"
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              ],
+              "separators": []
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              79,
+              80
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               79,
+               80
+              ],
+              "id": null,
+              "value": "F"
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Multiply",
+           "@": [
+            83,
+            123
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             83,
+             90
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              83,
+              90
+             ],
+             "name": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                83,
+                84
+               ],
+               "id": null,
+               "value": "λ"
+              },
+              []
+             ],
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                85,
+                89
+               ],
+               "value": {
+                "_": "Subtract",
+                "@": [
+                 85,
+                 89
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  85,
+                  86
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   85,
+                   86
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    85,
+                    86
+                   ],
+                   "id": null,
+                   "value": "J"
+                  }
+                 }
+                },
+                "op": "-",
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  88,
+                  89
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   88,
+                   89
+                  ],
+                  "id": null,
+                  "value": "α"
+                 }
+                }
+               }
+              }
+             ],
+             "separators": []
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             90,
+             123
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              90,
+              123
+             ],
+             "id": "$\\frac{\\partial J}{\\partial F}$",
+             "value": null
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       125,
+       270
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        132,
+        270
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          132,
+          168
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the deformation gradient",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           135,
+           142
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            138,
+            139
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             138,
+             139
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              138,
+              139
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            140,
+            141
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             140,
+             141
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              140,
+              141
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            132,
+            133
+           ],
+           "id": null,
+           "value": "F"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          169,
+          193
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the Lamé constant",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            169,
+            170
+           ],
+           "id": null,
+           "value": "μ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          194,
+          245
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the first right Cauchy-Green invariant",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            194,
+            201
+           ],
+           "id": "$I_C$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          246,
+          270
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the Lamé constant",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            246,
+            247
+           ],
+           "id": null,
+           "value": "λ"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       272,
+       357
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        272,
+        357
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          272,
+          305
+         ],
+         "id": "$\\frac{\\partial J}{\\partial F}$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          308,
+          357
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           308,
+           357
+          ],
+          "m": {
+           "_": "Matrix",
+           "@": [
+            308,
+            357
+           ],
+           "value": {
+            "_": "MatrixRows",
+            "@": [
+             309,
+             356
+            ],
+            "r": {
+             "_": "MatrixRow",
+             "@": [
+              309,
+              356
+             ],
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               341,
+               356
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                341,
+                356
+               ],
+               "op": {
+                "_": "CrossProduct",
+                "@": [
+                 341,
+                 356
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  341,
+                  348
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   341,
+                   348
+                  ],
+                  "id": "$f_0$",
+                  "value": null
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  349,
+                  356
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   349,
+                   356
+                  ],
+                  "id": "$f_1$",
+                  "value": null
+                 }
+                }
+               }
+              }
+             },
+             "rc": {
+              "_": "MatrixRowCommas",
+              "@": [
+               309,
+               341
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                325,
+                340
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 325,
+                 340
+                ],
+                "op": {
+                 "_": "CrossProduct",
+                 "@": [
+                  325,
+                  340
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   325,
+                   332
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    325,
+                    332
+                   ],
+                   "id": "$f_2$",
+                   "value": null
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   333,
+                   340
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    333,
+                    340
+                   ],
+                   "id": "$f_0$",
+                   "value": null
+                  }
+                 }
+                }
+               }
+              },
+              "value": {
+               "_": "MatrixRowCommas",
+               "@": [
+                309,
+                325
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 309,
+                 324
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  309,
+                  324
+                 ],
+                 "op": {
+                  "_": "CrossProduct",
+                  "@": [
+                   309,
+                   324
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    309,
+                    316
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     309,
+                     316
+                    ],
+                    "id": "$f_1$",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    317,
+                    324
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     317,
+                     324
+                    ],
+                    "id": "$f_2$",
+                    "value": null
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       359,
+       496
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        366,
+        496
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          366,
+          409
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the first column of matrix F ",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           375,
+           378
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            377,
+            378
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             377,
+             378
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              377,
+              378
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            366,
+            373
+           ],
+           "id": "$f_0$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          410,
+          453
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the second column of matrix F",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           419,
+           422
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            421,
+            422
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             421,
+             422
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              421,
+              422
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            410,
+            417
+           ],
+           "id": "$f_1$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          454,
+          496
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the third column of matrix F",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           463,
+           466
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            465,
+            466
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             465,
+             466
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              465,
+              466
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            454,
+            461
+           ],
+           "id": "$f_2$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "α = 1 + μ/λ - μ/(4λ)\nJ =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n`$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n\nwhere \nF: ℝ^(3×3): the deformation gradient\nμ: ℝ : the Lamé constant\n`$I_C$`: ℝ : the first right Cauchy-Green invariant\nλ: ℝ : the Lamé constant\n\n`$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n\nwhere \n`$f_0$`: ℝ^3: the first column of matrix F \n`$f_1$`: ℝ^3: the second column of matrix F\n`$f_2$`: ℝ^3: the third column of matrix F\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     498
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       20
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        20
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "α"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          20
+         ],
+         "value": {
+          "_": "Subtract",
+          "@": [
+           4,
+           20
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            4,
+            11
+           ],
+           "value": {
+            "_": "Add",
+            "@": [
+             4,
+             11
+            ],
+            "left": {
+             "_": "Expression",
+             "@": [
+              4,
+              5
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               4,
+               5
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                4,
+                5
+               ],
+               "value": [
+                "1"
+               ]
+              }
+             }
+            },
+            "op": "+",
+            "right": {
+             "_": "Divide",
+             "@": [
+              8,
+              11
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               8,
+               9
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                8,
+                9
+               ],
+               "id": null,
+               "value": "μ"
+              }
+             },
+             "op": "/",
+             "right": {
+              "_": "Factor",
+              "@": [
+               10,
+               11
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                10,
+                11
+               ],
+               "id": null,
+               "value": "λ"
+              }
+             }
+            }
+           }
+          },
+          "op": "-",
+          "right": {
+           "_": "Divide",
+           "@": [
+            14,
+            20
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             14,
+             15
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              14,
+              15
+             ],
+             "id": null,
+             "value": "μ"
+            }
+           },
+           "op": "/",
+           "right": {
+            "_": "Factor",
+            "@": [
+             16,
+             20
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              16,
+              20
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               17,
+               19
+              ],
+              "sign": null,
+              "value": {
+               "_": "Multiply",
+               "@": [
+                17,
+                19
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 17,
+                 18
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "value": [
+                  "4"
+                 ]
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 18,
+                 19
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  18,
+                  19
+                 ],
+                 "id": null,
+                 "value": "λ"
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       21,
+       49
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        21,
+        49
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          21,
+          22
+         ],
+         "id": null,
+         "value": "J"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          24,
+          49
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           24,
+           49
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            24,
+            31
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             24,
+             31
+            ],
+            "id": "$f_0$",
+            "value": null
+           }
+          },
+          "op": "⋅",
+          "right": {
+           "_": "Factor",
+           "@": [
+            32,
+            49
+           ],
+           "sub": {
+            "_": "Subexpression",
+            "@": [
+             32,
+             49
+            ],
+            "value": {
+             "_": "Expression",
+             "@": [
+              33,
+              48
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               33,
+               48
+              ],
+              "op": {
+               "_": "CrossProduct",
+               "@": [
+                33,
+                48
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 33,
+                 40
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  33,
+                  40
+                 ],
+                 "id": "$f_1$",
+                 "value": null
+                }
+               },
+               "right": {
+                "_": "Factor",
+                "@": [
+                 41,
+                 48
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  41,
+                  48
+                 ],
+                 "id": "$f_2$",
+                 "value": null
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       50,
+       123
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        50,
+        123
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          50,
+          58
+         ],
+         "id": "$P(F)$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          61,
+          123
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           61,
+           123
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            61,
+            80
+           ],
+           "sign": null,
+           "value": {
+            "_": "Multiply",
+            "@": [
+             61,
+             80
+            ],
+            "left": {
+             "_": "Multiply",
+             "@": [
+              61,
+              79
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               61,
+               62
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                61,
+                62
+               ],
+               "id": null,
+               "value": "μ"
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               62,
+               79
+              ],
+              "sub": {
+               "_": "Subexpression",
+               "@": [
+                62,
+                79
+               ],
+               "value": {
+                "_": "Expression",
+                "@": [
+                 63,
+                 78
+                ],
+                "value": {
+                 "_": "Subtract",
+                 "@": [
+                  63,
+                  78
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   63,
+                   64
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    63,
+                    64
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     63,
+                     64
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  }
+                 },
+                 "op": "-",
+                 "right": {
+                  "_": "Divide",
+                  "@": [
+                   65,
+                   78
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    65,
+                    66
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     65,
+                     66
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  },
+                  "op": "/",
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    67,
+                    78
+                   ],
+                   "sub": {
+                    "_": "Subexpression",
+                    "@": [
+                     67,
+                     78
+                    ],
+                    "value": {
+                     "_": "Expression",
+                     "@": [
+                      68,
+                      77
+                     ],
+                     "value": {
+                      "_": "Add",
+                      "@": [
+                       68,
+                       77
+                      ],
+                      "left": {
+                       "_": "Expression",
+                       "@": [
+                        68,
+                        75
+                       ],
+                       "sign": null,
+                       "value": {
+                        "_": "Factor",
+                        "@": [
+                         68,
+                         75
+                        ],
+                        "id0": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          68,
+                          75
+                         ],
+                         "id": "$I_C$",
+                         "value": null
+                        }
+                       }
+                      },
+                      "op": "+",
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        76,
+                        77
+                       ],
+                       "num": {
+                        "_": "Integer",
+                        "@": [
+                         76,
+                         77
+                        ],
+                        "value": [
+                         "1"
+                        ]
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              79,
+              80
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               79,
+               80
+              ],
+              "id": null,
+              "value": "F"
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Multiply",
+           "@": [
+            83,
+            123
+           ],
+           "left": {
+            "_": "Multiply",
+            "@": [
+             83,
+             90
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              83,
+              84
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               83,
+               84
+              ],
+              "id": null,
+              "value": "λ"
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              84,
+              90
+             ],
+             "sub": {
+              "_": "Subexpression",
+              "@": [
+               84,
+               90
+              ],
+              "value": {
+               "_": "Expression",
+               "@": [
+                85,
+                89
+               ],
+               "value": {
+                "_": "Subtract",
+                "@": [
+                 85,
+                 89
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  85,
+                  86
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   85,
+                   86
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    85,
+                    86
+                   ],
+                   "id": null,
+                   "value": "J"
+                  }
+                 }
+                },
+                "op": "-",
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  88,
+                  89
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   88,
+                   89
+                  ],
+                  "id": null,
+                  "value": "α"
+                 }
+                }
+               }
+              }
+             }
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             90,
+             123
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              90,
+              123
+             ],
+             "id": "$\\frac{\\partial J}{\\partial F}$",
+             "value": null
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       125,
+       270
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        132,
+        270
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          132,
+          168
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the deformation gradient",
+         "subset": null,
+         "type": {
+          "_": "MatrixType",
+          "@": [
+           135,
+           142
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            138,
+            139
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             138,
+             139
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              138,
+              139
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "id2": {
+           "_": "ArithExpression",
+           "@": [
+            140,
+            141
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             140,
+             141
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              140,
+              141
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            132,
+            133
+           ],
+           "id": null,
+           "value": "F"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          169,
+          193
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the Lamé constant",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            169,
+            170
+           ],
+           "id": null,
+           "value": "μ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          194,
+          245
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the first right Cauchy-Green invariant",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            194,
+            201
+           ],
+           "id": "$I_C$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          246,
+          270
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the Lamé constant",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            246,
+            247
+           ],
+           "id": null,
+           "value": "λ"
+          }
+         ]
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       272,
+       357
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        272,
+        357
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          272,
+          305
+         ],
+         "id": "$\\frac{\\partial J}{\\partial F}$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          308,
+          357
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           308,
+           357
+          ],
+          "m": {
+           "_": "Matrix",
+           "@": [
+            308,
+            357
+           ],
+           "value": {
+            "_": "MatrixRows",
+            "@": [
+             309,
+             356
+            ],
+            "r": {
+             "_": "MatrixRow",
+             "@": [
+              309,
+              356
+             ],
+             "exp": {
+              "_": "ExpInMatrix",
+              "@": [
+               341,
+               356
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                341,
+                356
+               ],
+               "op": {
+                "_": "CrossProduct",
+                "@": [
+                 341,
+                 356
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  341,
+                  348
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   341,
+                   348
+                  ],
+                  "id": "$f_0$",
+                  "value": null
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  349,
+                  356
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   349,
+                   356
+                  ],
+                  "id": "$f_1$",
+                  "value": null
+                 }
+                }
+               }
+              }
+             },
+             "rc": {
+              "_": "MatrixRowCommas",
+              "@": [
+               309,
+               341
+              ],
+              "exp": {
+               "_": "ExpInMatrix",
+               "@": [
+                325,
+                340
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 325,
+                 340
+                ],
+                "op": {
+                 "_": "CrossProduct",
+                 "@": [
+                  325,
+                  340
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   325,
+                   332
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    325,
+                    332
+                   ],
+                   "id": "$f_2$",
+                   "value": null
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   333,
+                   340
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    333,
+                    340
+                   ],
+                   "id": "$f_0$",
+                   "value": null
+                  }
+                 }
+                }
+               }
+              },
+              "value": {
+               "_": "MatrixRowCommas",
+               "@": [
+                309,
+                325
+               ],
+               "exp": {
+                "_": "ExpInMatrix",
+                "@": [
+                 309,
+                 324
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Factor",
+                 "@": [
+                  309,
+                  324
+                 ],
+                 "op": {
+                  "_": "CrossProduct",
+                  "@": [
+                   309,
+                   324
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    309,
+                    316
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     309,
+                     316
+                    ],
+                    "id": "$f_1$",
+                    "value": null
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    317,
+                    324
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     317,
+                     324
+                    ],
+                    "id": "$f_2$",
+                    "value": null
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       359,
+       496
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        366,
+        496
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          366,
+          409
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the first column of matrix F ",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           375,
+           378
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            377,
+            378
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             377,
+             378
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              377,
+              378
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            366,
+            373
+           ],
+           "id": "$f_0$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          410,
+          453
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the second column of matrix F",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           419,
+           422
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            421,
+            422
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             421,
+             422
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              421,
+              422
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            410,
+            417
+           ],
+           "id": "$f_1$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          454,
+          496
+         ],
+         "attrib": null,
+         "belong": ":",
+         "desc": "the third column of matrix F",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           463,
+           466
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            465,
+            466
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             465,
+             466
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              465,
+              466
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            454,
+            461
+           ],
+           "id": "$f_2$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nα = 1 + μ/λ - μ/(4λ)\nJ =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n`$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n\nwhere \nF: ℝ^(3×3): the deformation gradient\nμ: ℝ : the Lamé constant\n`$I_C$`: ℝ : the first right Cauchy-Green invariant\nλ: ℝ : the Lamé constant\n\n`$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n\nwhere \n`$f_0$`: ℝ^3: the first column of matrix F \n`$f_1$`: ℝ^3: the second column of matrix F\n`$f_2$`: ℝ^3: the third column of matrix F\n\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, F, μ, I_C, λ, f_0, f_1, f_2):\n        F = np.asarray(F, dtype=np.float64)\n        f_0 = np.asarray(f_0, dtype=np.float64)\n        f_1 = np.asarray(f_1, dtype=np.float64)\n        f_2 = np.asarray(f_2, dtype=np.float64)\n        assert F.shape == (3, 3)\n        assert np.ndim(μ) == 0\n        assert np.ndim(I_C) == 0\n        assert np.ndim(λ) == 0\n        assert f_0.shape == (3,)\n        assert f_1.shape == (3,)\n        assert f_2.shape == (3,)\n        # α = 1 + μ/λ - μ/(4λ)\n        self.α = 1 + (μ) / (λ) - (μ) / ((4 * λ))\n        # J =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n        self.J = np.dot((f_0).ravel(), ((np.cross(f_1, f_2))).ravel())\n        # `$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n        fracpartialJpartialF_0 = np.hstack(((np.cross(f_1, f_2)).reshape(3, 1), (np.cross(f_2, f_0)).reshape(3, 1), (np.cross(f_0, f_1)).reshape(3, 1)))\n        self.fracpartialJpartialF = fracpartialJpartialF_0\n        # `$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n        self.PF = μ * (1 - (1) / ((I_C + 1))) * F + λ * (self.J - self.α) * self.fracpartialJpartialF\n\n\n\n\n\n",
+  "eigen": "/*\nα = 1 + μ/λ - μ/(4λ)\nJ =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n`$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n\nwhere \nF: ℝ^(3×3): the deformation gradient\nμ: ℝ : the Lamé constant\n`$I_C$`: ℝ : the first right Cauchy-Green invariant\nλ: ℝ : the Lamé constant\n\n`$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n\nwhere \n`$f_0$`: ℝ^3: the first column of matrix F \n`$f_1$`: ℝ^3: the second column of matrix F\n`$f_2$`: ℝ^3: the third column of matrix F\n\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT α;\n    DT J;\n    Eigen::Matrix<DT, 3, 3> PF;\n    Eigen::Matrix<DT, 3, 3> fracpartialJpartialF;\n\n    heartlib(\n        const Eigen::Matrix<double, 3, 3> & F,\n        const double & μ,\n        const double & I_C,\n        const double & λ,\n        const Eigen::Matrix<double, 3, 1> & f_0,\n        const Eigen::Matrix<double, 3, 1> & f_1,\n        const Eigen::Matrix<double, 3, 1> & f_2)\n    {\n    \n        // α = 1 + μ/λ - μ/(4λ)\n        α = 1 + μ / DT(λ) - μ / DT((4 * λ));\n        // J =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n        J = (f_0).dot(((f_1).cross(f_2)));\n        // `$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n        Eigen::Matrix<DT, 3, 3> fracpartialJpartialF_0;\n        fracpartialJpartialF_0 << (f_1).cross(f_2), (f_2).cross(f_0), (f_0).cross(f_1);\n        fracpartialJpartialF = fracpartialJpartialF_0;\n        // `$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n        PF = μ * (1 - 1 / DT((I_C + 1))) * F + λ * (J - α) * fracpartialJpartialF;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nα & = 1 + \\frac{μ}{λ} - \\frac{μ}{4 λ} \\\\\nJ & = f_0 \\cdot \\left( f_1 × f_2 \\right) \\\\\nP(F) & = μ \\left( 1 - \\frac{1}{I_C + 1} \\right) F + λ \\left( J - α \\right) \\frac{\\partial J}{\\partial F} \\\\\n\\intertext{where} \nF & : \\mathbb{R}^{ 3 \\times 3 } \\text{ the deformation gradient} \\\\\nμ & : \\mathbb{R} \\text{ the Lamé constant} \\\\\nI_C & : \\mathbb{R} \\text{ the first right Cauchy-Green invariant} \\\\\nλ & : \\mathbb{R} \\text{ the Lamé constant} \\\\\n\\\\\n\\frac{\\partial J}{\\partial F} & = \\begin{bmatrix}\nf_1 × f_2 & f_2 × f_0 & f_0 × f_1\\\\\n\\end{bmatrix} \\\\\n\\intertext{where} \nf_0 & : \\mathbb{R}^{ 3} \\text{ the first column of matrix F } \\\\\nf_1 & : \\mathbb{R}^{ 3} \\text{ the second column of matrix F} \\\\\nf_2 & : \\mathbb{R}^{ 3} \\text{ the third column of matrix F} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nα & = 1 + \\frac{μ}{λ} - \\frac{μ}{4 λ} \\\\\nJ & = f_0 \\cdot \\left( f_1 × f_2 \\right) \\\\\nP(F) & = μ \\left( 1 - \\frac{1}{I_C + 1} \\right) F + λ \\left( J - α \\right) \\frac{\\partial J}{\\partial F} \\\\\nwhere \\\\\nF & : \\mathbb{R}^{ 3 \\times 3 } \\text{ the deformation gradient} \\\\\nμ & : \\mathbb{R} \\text{ the Lamé constant} \\\\\nI_C & : \\mathbb{R} \\text{ the first right Cauchy-Green invariant} \\\\\nλ & : \\mathbb{R} \\text{ the Lamé constant} \\\\\n\\\\\n\\frac{\\partial J}{\\partial F} & = \\begin{bmatrix}\nf_1 × f_2 & f_2 × f_0 & f_0 × f_1\\\\\n\\end{bmatrix} \\\\\nwhere \\\\\nf_0 & : \\mathbb{R}^{ 3} \\text{ the first column of matrix F } \\\\\nf_1 & : \\mathbb{R}^{ 3} \\text{ the second column of matrix F} \\\\\nf_2 & : \\mathbb{R}^{ 3} \\text{ the third column of matrix F} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(F, mu, I_C, lambda_, f_0, f_1, f_2)\n% output = heartlib(F, μ, `$I_C$`, λ, `$f_0$`, `$f_1$`, `$f_2$`)\n%\n%    α = 1 + μ/λ - μ/(4λ)\n%    J =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n%    `$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n%    \n%    where \n%    F: ℝ^(3×3): the deformation gradient\n%    μ: ℝ : the Lamé constant\n%    `$I_C$`: ℝ : the first right Cauchy-Green invariant\n%    λ: ℝ : the Lamé constant\n%    \n%    `$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n%    \n%    where \n%    `$f_0$`: ℝ^3: the first column of matrix F \n%    `$f_1$`: ℝ^3: the second column of matrix F\n%    `$f_2$`: ℝ^3: the third column of matrix F\n%    \n%    \n    f_0 = reshape(f_0,[],1);\n    f_1 = reshape(f_1,[],1);\n    f_2 = reshape(f_2,[],1);\n\n    assert( isequal(size(F), [3, 3]) );\n    assert(numel(mu) == 1);\n    assert(numel(I_C) == 1);\n    assert(numel(lambda_) == 1);\n    assert( numel(f_0) == 3 );\n    assert( numel(f_1) == 3 );\n    assert( numel(f_2) == 3 );\n\n    % α = 1 + μ/λ - μ/(4λ)\n\n    alpha = 1 + mu / lambda_ - mu / (4 * lambda_);\n    % J =`$f_0$`⋅(`$f_1$`×`$f_2$`)\n\n    J = dot(f_0,(cross(f_1, f_2)));\n    % `$\\frac{\\partial J}{\\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]\n\n    fracpartialJpartialF_0 = [[reshape(cross(f_1, f_2), [3, 1]), reshape(cross(f_2, f_0), [3, 1]), reshape(cross(f_0, f_1), [3, 1])]];\n    fracpartialJpartialF = fracpartialJpartialF_0;\n    % `$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\\frac{\\partial J}{\\partial F}$`\n\n    PF = mu * (1 - 1 / (I_C + 1)) * F + lambda_ * (J - alpha) * fracpartialJpartialF;\n    output.alpha = alpha;\n    output.J = J;\n    output.PF = PF;\n    output.fracpartialJpartialF = fracpartialJpartialF;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'α', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-α\", \"sym\":\"α\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {α} } & = 1 + \\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} }}{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'λ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-λ\", \"sym\":\"λ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ} }} - \\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} }}{4 \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'λ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-λ\", \"sym\":\"λ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ} }}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['λ', 'μ', 'α'], false, [], [], 'zrEgPSAxICsgzrwvzrsgLSDOvC8oNM67KQ==');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'J', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-J\", \"sym\":\"J\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {J} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_0$\", \"sym\":\"$f_0$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_0} } \\cdot \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_1$\", \"sym\":\"$f_1$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_1} } × \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_2$\", \"sym\":\"$f_2$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_2} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$f_0$', '$f_1$', '$f_2$', 'J'], false, [], [], 'SiA9YCRmXzAkYOKLhShgJGZfMSRgw5dgJGZfMiRgKQ==');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$P(F)$', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-$P(F)$\", \"sym\":\"$P(F)$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {P(F)} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} } \\left( 1 - \\frac{1}{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$I_C$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$I_C$\", \"sym\":\"$I_C$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I_C} } + 1} \\right) \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'F', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-F\", \"sym\":\"F\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'λ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-λ\", \"sym\":\"λ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ} } \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'J', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-J\", \"sym\":\"J\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {J} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'α', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-α\", \"sym\":\"α\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {α} } \\right) \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$\", \"sym\":\"$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\frac{\\partial J}{\\partial F}} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$I_C$', '$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$', 'F', 'J', 'α', 'λ', 'μ', '$P(F)$'], false, [], [], 'YCRQKEYpJGAgPSDOvCgxLTEvKGAkSV9DJGArMSkpRiArIM67KEotIM6xKWAkXGZyYWN7XHBhcnRpYWwgSn17XHBhcnRpYWwgRn0kYA==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'F', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-F\", \"sym\":\"F\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F} } & : \\mathbb{R}^{ 3 \\times 3 } \\text{ the deformation gradient} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} } & : \\mathbb{R} \\text{ the Lamé constant} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$I_C$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$I_C$\", \"sym\":\"$I_C$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {I_C} } & : \\mathbb{R} \\text{ the first right Cauchy-Green invariant} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'λ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-λ\", \"sym\":\"λ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ} } & : \\mathbb{R} \\text{ the Lamé constant} \\\\\n\\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$\", \"sym\":\"$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {\\frac{\\partial J}{\\partial F}} } & = \\begin{bmatrix}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_1$\", \"sym\":\"$f_1$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_1} } × \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_2$\", \"sym\":\"$f_2$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_2} } & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_2$\", \"sym\":\"$f_2$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_2} } × \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_0$\", \"sym\":\"$f_0$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_0} } & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_0$\", \"sym\":\"$f_0$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_0} } × \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_1$\", \"sym\":\"$f_1$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_1} }\\\\\n\\end{bmatrix}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$f_0$', '$f_1$', '$f_2$', '$\\\\\\\\frac{\\\\\\\\partial J}{\\\\\\\\partial F}$'], false, [], [], 'YCRcZnJhY3tccGFydGlhbCBKfXtccGFydGlhbCBGfSRgID0gW2AkZl8xJGDDl2AkZl8yJGAgYCRmXzIkYMOXYCRmXzAkYCBgJGZfMCRgw5dgJGZfMSRgXQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_0$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_0$\", \"sym\":\"$f_0$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_0} } & : \\mathbb{R}^{ 3} \\text{ the first column of matrix F } \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_1$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_1$\", \"sym\":\"$f_1$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_1} } & : \\mathbb{R}^{ 3} \\text{ the second column of matrix F} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$f_2$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$f_2$\", \"sym\":\"$f_2$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {f_2} } & : \\mathbb{R}^{ 3} \\text{ the third column of matrix F} \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Stable"
+}

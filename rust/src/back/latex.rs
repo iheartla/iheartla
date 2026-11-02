@@ -127,6 +127,10 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
         for x in f.get("params").items().iter().chain(f.get("subs").items()) {
             local_params.insert(ident_name(x));
         }
+        // (and the dimensions of their types, x ∈ ℝ^n)
+        for d in f.get("defs").items() {
+            type_dim_names(d.get("type"), &mut local_params);
+        }
         // (and its local definitions)
         for e in f.get("extra").items() {
             for l in e.get("left").items() {
@@ -367,13 +371,25 @@ impl<'p> Printer<'p> {
             _ => None,
         };
         if let Some(name) = name {
-            let known = self.defined(&name) || self.prog.funcs.iter().any(|(f, _)| *f == name) || self.mesh_funcs.contains(&name);
+            let known = self.defined(&name)
+                || self.prog.funcs.iter().any(|(f, _)| *f == name)
+                || self.mesh_funcs.contains(&name)
+                || self.prog.modules.iter().any(|m| m.syms.iter().any(|(_, r)| *r == name));
             if known && !out.contains(&name) {
                 out.push(name);
             }
         }
         if n.class() == "IdentifierSubscript" {
             return;
+        }
+        if n.class() == "Function" {
+            // a call's subscripts, p_i(x), are arguments: D(i, x)
+            for s in n.get("subs").items().iter().filter(|s| s.class() == "IdentifierAlone") {
+                let s = ident_name(s);
+                if !out.contains(&s) {
+                    out.push(s);
+                }
+            }
         }
         for (k, v) in &node.fields {
             let skip = matches!((n.class(), *k), ("Summation", "cond") | ("Summation", "range") | ("Optimize", "cond") | ("Optimize", "defs") | ("Norm", "sub") | ("InnerProduct", "sub"));
@@ -1079,7 +1095,7 @@ impl<'p> Printer<'p> {
             }
             "Transpose" => format!("{{{}}}^T", self.expr(op.get("f"))),
             "PseudoInverse" => format!("{{{}}}^+", self.expr(op.get("f"))),
-            "Squareroot" => format!("\\sqrt{{{}}}", self.strip_factor_parens(op.get("value"))),
+            "Squareroot" => format!("\\sqrt{{{}}}", self.strip_factor_parens(op.get("f"))),
             "Solver" => {
                 let (l, r) = (self.expr(op.get("left")), self.expr(op.get("right")));
                 if self.ty(op.get("left")).is_some_and(|t| t.is_set()) {
@@ -1294,6 +1310,11 @@ impl<'p> Printer<'p> {
             "OrthFunc" => f(" \\mathop{\\text{orth}}"),
             "InvFunc" => f(" \\mathop{\\text{inv}}"),
             "SvdFunc" => f(" \\mathop{\\text{svd}}"),
+            "MinmaxFunc" => {
+                let params: Vec<String> = op.get("params").items().iter().map(|p| self.expr(p)).collect();
+                let m = if op.get("min").truthy() { "min" } else { "max" };
+                format!(" \\mathop{{\\text{{{m}}}}}\\left( {} \\right)", params.join(", "))
+            }
             _ => f(&special_marks(&name)),
         };
         if op.get("power").truthy() {
@@ -1393,5 +1414,22 @@ fn is_norm(e: &Val) -> bool {
         "Factor" => e.get("op").class() == "Norm",
         "Expression" => !e.get("sign").truthy() && is_norm(e.get("value")),
         _ => false,
+    }
+}
+
+/// The identifiers in a type (its dimensions; not the set of `f ∈ F`).
+fn type_dim_names(n: &Val, out: &mut std::collections::HashSet<String>) {
+    match n {
+        Val::Node(p) if p.class == Some("MappingType") && n.get("s").truthy() => {}
+        Val::Node(p) => {
+            if p.class == Some("IdentifierAlone") {
+                out.insert(ident_name(n));
+            }
+            for (_, v) in &p.fields {
+                type_dim_names(v, out);
+            }
+        }
+        Val::List(v) | Val::Closure(v) | Val::Tuple(v) => v.iter().for_each(|x| type_dim_names(x, out)),
+        _ => {}
     }
 }

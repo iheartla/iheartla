@@ -1,0 +1,1118 @@
+{
+ "id": "x_heartdown_Judder_third",
+ "src": "\n`$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\na ∈ ℝ\nb ∈ ℝ\n`$F_b$` ∈ ℝ\n`$F_a$` ∈ ℝ\n`$L_a$` ∈ ℝ\n\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "\n`$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\na ∈ ℝ\nb ∈ ℝ\n`$F_b$` ∈ ℝ\n`$F_a$` ∈ ℝ\n`$L_a$` ∈ ℝ\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     121
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       1,
+       71
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        1,
+        71
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          1,
+          8
+         ],
+         "id": "$L_b$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          71
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           11,
+           71
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            11,
+            71
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             11,
+             13
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              11,
+              13
+             ],
+             "value": [
+              "1",
+              "0"
+             ]
+            }
+           },
+           "power": {
+            "_": "Factor",
+            "@": [
+             14,
+             71
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              14,
+              71
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               15,
+               70
+              ],
+              "sign": null,
+              "value": {
+               "_": "Divide",
+               "@": [
+                15,
+                70
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 15,
+                 59
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  15,
+                  59
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   16,
+                   58
+                  ],
+                  "value": {
+                   "_": "Add",
+                   "@": [
+                    16,
+                    58
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     16,
+                     39
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Multiply",
+                     "@": [
+                      16,
+                      39
+                     ],
+                     "left": {
+                      "_": "Multiply",
+                      "@": [
+                       16,
+                       25
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        16,
+                        17
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         16,
+                         17
+                        ],
+                        "id": null,
+                        "value": "a"
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        18,
+                        25
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         18,
+                         25
+                        ],
+                        "id": "$F_b$",
+                        "value": null
+                       }
+                      }
+                     },
+                     "right": {
+                      "_": "Factor",
+                      "@": [
+                       25,
+                       39
+                      ],
+                      "op": {
+                       "_": "LogFunc",
+                       "@": [
+                        25,
+                        39
+                       ],
+                       "f": null,
+                       "param": {
+                        "_": "Expression",
+                        "@": [
+                         29,
+                         38
+                        ],
+                        "sign": null,
+                        "value": {
+                         "_": "Factor",
+                         "@": [
+                          29,
+                          38
+                         ],
+                         "sub": {
+                          "_": "Subexpression",
+                          "@": [
+                           29,
+                           38
+                          ],
+                          "value": {
+                           "_": "Expression",
+                           "@": [
+                            30,
+                            37
+                           ],
+                           "sign": null,
+                           "value": {
+                            "_": "Factor",
+                            "@": [
+                             30,
+                             37
+                            ],
+                            "id0": {
+                             "_": "IdentifierAlone",
+                             "@": [
+                              30,
+                              37
+                             ],
+                             "id": "$L_a$",
+                             "value": null
+                            }
+                           }
+                          }
+                         }
+                        }
+                       },
+                       "s": null
+                      }
+                     }
+                    }
+                   },
+                   "op": "+",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     40,
+                     58
+                    ],
+                    "op": {
+                     "_": "Function",
+                     "@": [
+                      40,
+                      58
+                     ],
+                     "name": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        40,
+                        41
+                       ],
+                       "id": null,
+                       "value": "b"
+                      },
+                      []
+                     ],
+                     "p": "(",
+                     "params": [
+                      {
+                       "_": "Expression",
+                       "@": [
+                        42,
+                        57
+                       ],
+                       "value": {
+                        "_": "Subtract",
+                        "@": [
+                         42,
+                         57
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          42,
+                          49
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           42,
+                           49
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            42,
+                            49
+                           ],
+                           "id": "$F_b$",
+                           "value": null
+                          }
+                         }
+                        },
+                        "op": "-",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          50,
+                          57
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           50,
+                           57
+                          ],
+                          "id": "$F_a$",
+                          "value": null
+                         }
+                        }
+                       }
+                      }
+                     ],
+                     "separators": []
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "op": "/",
+               "right": {
+                "_": "Factor",
+                "@": [
+                 60,
+                 70
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  60,
+                  70
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   61,
+                   69
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Multiply",
+                   "@": [
+                    61,
+                    69
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     61,
+                     62
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      61,
+                      62
+                     ],
+                     "id": null,
+                     "value": "a"
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     62,
+                     69
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      62,
+                      69
+                     ],
+                     "id": "$F_a$",
+                     "value": null
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       72,
+       119
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        72,
+        119
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          72,
+          77
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            72,
+            73
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          78,
+          83
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            78,
+            79
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          84,
+          95
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            84,
+            91
+           ],
+           "id": "$F_b$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          96,
+          107
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            96,
+            103
+           ],
+           "id": "$F_a$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          108,
+          119
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            108,
+            115
+           ],
+           "id": "$L_a$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "\n`$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\na ∈ ℝ\nb ∈ ℝ\n`$F_b$` ∈ ℝ\n`$F_a$` ∈ ℝ\n`$L_a$` ∈ ℝ\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     121
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       1,
+       71
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        1,
+        71
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          1,
+          8
+         ],
+         "id": "$L_b$",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          11,
+          71
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           11,
+           71
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            11,
+            71
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             11,
+             13
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              11,
+              13
+             ],
+             "value": [
+              "1",
+              "0"
+             ]
+            }
+           },
+           "power": {
+            "_": "Factor",
+            "@": [
+             14,
+             71
+            ],
+            "sub": {
+             "_": "Subexpression",
+             "@": [
+              14,
+              71
+             ],
+             "value": {
+              "_": "Expression",
+              "@": [
+               15,
+               70
+              ],
+              "sign": null,
+              "value": {
+               "_": "Divide",
+               "@": [
+                15,
+                70
+               ],
+               "left": {
+                "_": "Factor",
+                "@": [
+                 15,
+                 59
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  15,
+                  59
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   16,
+                   58
+                  ],
+                  "value": {
+                   "_": "Add",
+                   "@": [
+                    16,
+                    58
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     16,
+                     39
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Multiply",
+                     "@": [
+                      16,
+                      39
+                     ],
+                     "left": {
+                      "_": "Multiply",
+                      "@": [
+                       16,
+                       25
+                      ],
+                      "left": {
+                       "_": "Factor",
+                       "@": [
+                        16,
+                        17
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         16,
+                         17
+                        ],
+                        "id": null,
+                        "value": "a"
+                       }
+                      },
+                      "right": {
+                       "_": "Factor",
+                       "@": [
+                        18,
+                        25
+                       ],
+                       "id0": {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         18,
+                         25
+                        ],
+                        "id": "$F_b$",
+                        "value": null
+                       }
+                      }
+                     },
+                     "right": {
+                      "_": "Factor",
+                      "@": [
+                       25,
+                       39
+                      ],
+                      "op": {
+                       "_": "LogFunc",
+                       "@": [
+                        25,
+                        39
+                       ],
+                       "f": null,
+                       "param": {
+                        "_": "Expression",
+                        "@": [
+                         29,
+                         38
+                        ],
+                        "sign": null,
+                        "value": {
+                         "_": "Factor",
+                         "@": [
+                          29,
+                          38
+                         ],
+                         "sub": {
+                          "_": "Subexpression",
+                          "@": [
+                           29,
+                           38
+                          ],
+                          "value": {
+                           "_": "Expression",
+                           "@": [
+                            30,
+                            37
+                           ],
+                           "sign": null,
+                           "value": {
+                            "_": "Factor",
+                            "@": [
+                             30,
+                             37
+                            ],
+                            "id0": {
+                             "_": "IdentifierAlone",
+                             "@": [
+                              30,
+                              37
+                             ],
+                             "id": "$L_a$",
+                             "value": null
+                            }
+                           }
+                          }
+                         }
+                        }
+                       },
+                       "s": null
+                      }
+                     }
+                    }
+                   },
+                   "op": "+",
+                   "right": {
+                    "_": "Multiply",
+                    "@": [
+                     40,
+                     58
+                    ],
+                    "left": {
+                     "_": "Factor",
+                     "@": [
+                      40,
+                      41
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       40,
+                       41
+                      ],
+                      "id": null,
+                      "value": "b"
+                     }
+                    },
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      41,
+                      58
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       41,
+                       58
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        42,
+                        57
+                       ],
+                       "value": {
+                        "_": "Subtract",
+                        "@": [
+                         42,
+                         57
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          42,
+                          49
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           42,
+                           49
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            42,
+                            49
+                           ],
+                           "id": "$F_b$",
+                           "value": null
+                          }
+                         }
+                        },
+                        "op": "-",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          50,
+                          57
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           50,
+                           57
+                          ],
+                          "id": "$F_a$",
+                          "value": null
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  }
+                 }
+                }
+               },
+               "op": "/",
+               "right": {
+                "_": "Factor",
+                "@": [
+                 60,
+                 70
+                ],
+                "sub": {
+                 "_": "Subexpression",
+                 "@": [
+                  60,
+                  70
+                 ],
+                 "value": {
+                  "_": "Expression",
+                  "@": [
+                   61,
+                   69
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Multiply",
+                   "@": [
+                    61,
+                    69
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     61,
+                     62
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      61,
+                      62
+                     ],
+                     "id": null,
+                     "value": "a"
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     62,
+                     69
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      62,
+                      69
+                     ],
+                     "id": "$F_a$",
+                     "value": null
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       72,
+       119
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        72,
+        119
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          72,
+          77
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            72,
+            73
+           ],
+           "id": null,
+           "value": "a"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          78,
+          83
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            78,
+            79
+           ],
+           "id": null,
+           "value": "b"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          84,
+          95
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            84,
+            91
+           ],
+           "id": "$F_b$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          96,
+          107
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            96,
+            103
+           ],
+           "id": "$F_a$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          108,
+          119
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            108,
+            115
+           ],
+           "id": "$L_a$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n\n`$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\na ∈ ℝ\nb ∈ ℝ\n`$F_b$` ∈ ℝ\n`$F_a$` ∈ ℝ\n`$L_a$` ∈ ℝ\n\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a, b, F_b, F_a, L_a):\n        assert np.ndim(a) == 0\n        assert np.ndim(b) == 0\n        assert np.ndim(F_b) == 0\n        assert np.ndim(F_a) == 0\n        assert np.ndim(L_a) == 0\n        # `$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\n        self.L_b = np.power(np.asarray(10, dtype=np.float64), (((a * F_b * np.log((L_a)) + b * (F_b - F_a))) / ((a * F_a))))\n\n\n\n\n\n",
+  "eigen": "/*\n\n`$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\na ∈ ℝ\nb ∈ ℝ\n`$F_b$` ∈ ℝ\n`$F_a$` ∈ ℝ\n`$L_a$` ∈ ℝ\n\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT L_b;\n\n    heartlib(\n        const double & a,\n        const double & b,\n        const double & F_b,\n        const double & F_a,\n        const double & L_a)\n    {\n    \n        // `$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\n        L_b = pow(10, ((a * F_b * log((L_a)) + b * (F_b - F_a)) / DT((a * F_a))));\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nL_b & = {10}^{\\frac{a F_b  \\log{ \\left( L_a \\right) } + b \\left( F_b - F_a \\right)}{a F_a}} \\\\\n\\\\\na & ∈ \\mathbb{R} \\\\\nb & ∈ \\mathbb{R} \\\\\nF_b & ∈ \\mathbb{R} \\\\\nF_a & ∈ \\mathbb{R} \\\\\nL_a & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nL_b & = {10}^{\\frac{a F_b  \\log{ \\left( L_a \\right) } + b \\left( F_b - F_a \\right)}{a F_a}} \\\\\n\\\\\na & ∈ \\mathbb{R} \\\\\nb & ∈ \\mathbb{R} \\\\\nF_b & ∈ \\mathbb{R} \\\\\nF_a & ∈ \\mathbb{R} \\\\\nL_a & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a, b, F_b, F_a, L_a)\n% output = heartlib(a, b, `$F_b$`, `$F_a$`, `$L_a$`)\n%\n%    \n%    `$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\n%    a ∈ ℝ\n%    b ∈ ℝ\n%    `$F_b$` ∈ ℝ\n%    `$F_a$` ∈ ℝ\n%    `$L_a$` ∈ ℝ\n%    \n%    \n    assert(numel(a) == 1);\n    assert(numel(b) == 1);\n    assert(numel(F_b) == 1);\n    assert(numel(F_a) == 1);\n    assert(numel(L_a) == 1);\n\n    % `$L_b$` = 10^((a `$F_b$`log((`$L_a$`))+b(`$F_b$`-`$F_a$`))/(a`$F_a$`))\n\n    L_b = 10.^((a * F_b * log((L_a)) + b * (F_b - F_a)) / (a * F_a));\n    output.L_b = L_b;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$L_b$', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-$L_b$\", \"sym\":\"$L_b$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {L_b} } & = {10}^{\\frac{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$F_b$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$F_b$\", \"sym\":\"$F_b$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F_b} }  \\log{ \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$L_a$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$L_a$\", \"sym\":\"$L_a$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {L_a} } \\right) } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$F_b$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$F_b$\", \"sym\":\"$F_b$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F_b} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$F_a$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$F_a$\", \"sym\":\"$F_a$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F_a} } \\right)}{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$F_a$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$F_a$\", \"sym\":\"$F_a$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F_a} }}}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$F_a$', '$F_b$', '$L_a$', 'a', 'b', '$L_b$'], false, [], [], 'YCRMX2IkYCA9IDEwXigoYSBgJEZfYiRgbG9nKChgJExfYSRgKSkrYihgJEZfYiRgLWAkRl9hJGApKS8oYWAkRl9hJGApKQ==');\"} }{}\n \\\\\n\\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {b} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$F_b$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$F_b$\", \"sym\":\"$F_b$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F_b} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$F_a$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$F_a$\", \"sym\":\"$F_a$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {F_a} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$L_a$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$L_a$\", \"sym\":\"$L_a$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {L_a} } & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Judder"
+}

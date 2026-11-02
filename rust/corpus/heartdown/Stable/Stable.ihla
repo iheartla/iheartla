@@ -1,0 +1,17 @@
+α = 1 + μ/λ - μ/(4λ)
+J =`$f_0$`⋅(`$f_1$`×`$f_2$`)
+`$P(F)$` = μ(1-1/(`$I_C$`+1))F + λ(J- α)`$\frac{\partial J}{\partial F}$`
+
+where 
+F: ℝ^(3×3): the deformation gradient
+μ: ℝ : the Lamé constant
+`$I_C$`: ℝ : the first right Cauchy-Green invariant
+λ: ℝ : the Lamé constant
+
+`$\frac{\partial J}{\partial F}$` = [`$f_1$`×`$f_2$` `$f_2$`×`$f_0$` `$f_0$`×`$f_1$`]
+
+where 
+`$f_0$`: ℝ^3: the first column of matrix F 
+`$f_1$`: ℝ^3: the second column of matrix F
+`$f_2$`: ℝ^3: the third column of matrix F
+

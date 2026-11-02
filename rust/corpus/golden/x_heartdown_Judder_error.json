@@ -1,0 +1,885 @@
+{
+ "id": "x_heartdown_Judder_error",
+ "src": "E = sum_i |log(O_i) - log(M_i)|/log(O_i) \n\nO ∈ ℝ^N\nM ∈ ℝ^N\n\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "E = sum_i |log(O_i) - log(M_i)|/log(O_i) \n\nO ∈ ℝ^N\nM ∈ ℝ^N\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     60
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       40
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        40
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "E"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          40
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           40
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            40
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Divide",
+            "@": [
+             10,
+             40
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              10,
+              31
+             ],
+             "op": {
+              "_": "Norm",
+              "@": [
+               10,
+               31
+              ],
+              "double": null,
+              "power": null,
+              "single": "|",
+              "sub": null,
+              "value": {
+               "_": "Expression",
+               "@": [
+                11,
+                30
+               ],
+               "value": {
+                "_": "Subtract",
+                "@": [
+                 11,
+                 30
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  11,
+                  19
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   11,
+                   19
+                  ],
+                  "op": {
+                   "_": "LogFunc",
+                   "@": [
+                    11,
+                    19
+                   ],
+                   "f": null,
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     15,
+                     18
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      15,
+                      18
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       15,
+                       18
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        15,
+                        16
+                       ],
+                       "id": null,
+                       "value": "O"
+                      },
+                      "right": [
+                       {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         17,
+                         18
+                        ],
+                        "id": null,
+                        "value": "i"
+                       }
+                      ]
+                     }
+                    }
+                   },
+                   "s": null
+                  }
+                 }
+                },
+                "op": "-",
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  22,
+                  30
+                 ],
+                 "op": {
+                  "_": "LogFunc",
+                  "@": [
+                   22,
+                   30
+                  ],
+                  "f": null,
+                  "param": {
+                   "_": "Expression",
+                   "@": [
+                    26,
+                    29
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     26,
+                     29
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      26,
+                      29
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       26,
+                       27
+                      ],
+                      "id": null,
+                      "value": "M"
+                     },
+                     "right": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        28,
+                        29
+                       ],
+                       "id": null,
+                       "value": "i"
+                      }
+                     ]
+                    }
+                   }
+                  },
+                  "s": null
+                 }
+                }
+               }
+              }
+             }
+            },
+            "op": "/",
+            "right": {
+             "_": "Factor",
+             "@": [
+              32,
+              40
+             ],
+             "op": {
+              "_": "LogFunc",
+              "@": [
+               32,
+               40
+              ],
+              "f": null,
+              "param": {
+               "_": "Expression",
+               "@": [
+                36,
+                39
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 36,
+                 39
+                ],
+                "id0": {
+                 "_": "IdentifierSubscript",
+                 "@": [
+                  36,
+                  39
+                 ],
+                 "left": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   36,
+                   37
+                  ],
+                  "id": null,
+                  "value": "O"
+                 },
+                 "right": [
+                  {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    38,
+                    39
+                   ],
+                   "id": null,
+                   "value": "i"
+                  }
+                 ]
+                }
+               }
+              },
+              "s": null
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       43,
+       58
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        43,
+        58
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          43,
+          50
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           47,
+           50
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            49,
+            50
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             49,
+             50
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              49,
+              50
+             ],
+             "id": null,
+             "value": "N"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            43,
+            44
+           ],
+           "id": null,
+           "value": "O"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          51,
+          58
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           55,
+           58
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            57,
+            58
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             57,
+             58
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              57,
+              58
+             ],
+             "id": null,
+             "value": "N"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            51,
+            52
+           ],
+           "id": null,
+           "value": "M"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "E = sum_i |log(O_i) - log(M_i)|/log(O_i) \n\nO ∈ ℝ^N\nM ∈ ℝ^N\n\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     60
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       40
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        40
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "E"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          40
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           40
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            40
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Divide",
+            "@": [
+             10,
+             40
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              10,
+              31
+             ],
+             "op": {
+              "_": "Norm",
+              "@": [
+               10,
+               31
+              ],
+              "double": null,
+              "power": null,
+              "single": "|",
+              "sub": null,
+              "value": {
+               "_": "Expression",
+               "@": [
+                11,
+                30
+               ],
+               "value": {
+                "_": "Subtract",
+                "@": [
+                 11,
+                 30
+                ],
+                "left": {
+                 "_": "Expression",
+                 "@": [
+                  11,
+                  19
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Factor",
+                  "@": [
+                   11,
+                   19
+                  ],
+                  "op": {
+                   "_": "LogFunc",
+                   "@": [
+                    11,
+                    19
+                   ],
+                   "f": null,
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     15,
+                     18
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      15,
+                      18
+                     ],
+                     "id0": {
+                      "_": "IdentifierSubscript",
+                      "@": [
+                       15,
+                       18
+                      ],
+                      "left": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        15,
+                        16
+                       ],
+                       "id": null,
+                       "value": "O"
+                      },
+                      "right": [
+                       {
+                        "_": "IdentifierAlone",
+                        "@": [
+                         17,
+                         18
+                        ],
+                        "id": null,
+                        "value": "i"
+                       }
+                      ]
+                     }
+                    }
+                   },
+                   "s": null
+                  }
+                 }
+                },
+                "op": "-",
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  22,
+                  30
+                 ],
+                 "op": {
+                  "_": "LogFunc",
+                  "@": [
+                   22,
+                   30
+                  ],
+                  "f": null,
+                  "param": {
+                   "_": "Expression",
+                   "@": [
+                    26,
+                    29
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     26,
+                     29
+                    ],
+                    "id0": {
+                     "_": "IdentifierSubscript",
+                     "@": [
+                      26,
+                      29
+                     ],
+                     "left": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       26,
+                       27
+                      ],
+                      "id": null,
+                      "value": "M"
+                     },
+                     "right": [
+                      {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        28,
+                        29
+                       ],
+                       "id": null,
+                       "value": "i"
+                      }
+                     ]
+                    }
+                   }
+                  },
+                  "s": null
+                 }
+                }
+               }
+              }
+             }
+            },
+            "op": "/",
+            "right": {
+             "_": "Factor",
+             "@": [
+              32,
+              40
+             ],
+             "op": {
+              "_": "LogFunc",
+              "@": [
+               32,
+               40
+              ],
+              "f": null,
+              "param": {
+               "_": "Expression",
+               "@": [
+                36,
+                39
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 36,
+                 39
+                ],
+                "id0": {
+                 "_": "IdentifierSubscript",
+                 "@": [
+                  36,
+                  39
+                 ],
+                 "left": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   36,
+                   37
+                  ],
+                  "id": null,
+                  "value": "O"
+                 },
+                 "right": [
+                  {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    38,
+                    39
+                   ],
+                   "id": null,
+                   "value": "i"
+                  }
+                 ]
+                }
+               }
+              },
+              "s": null
+             }
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       43,
+       58
+      ],
+      "annotation": null,
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        43,
+        58
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          43,
+          50
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           47,
+           50
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            49,
+            50
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             49,
+             50
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              49,
+              50
+             ],
+             "id": null,
+             "value": "N"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            43,
+            44
+           ],
+           "id": null,
+           "value": "O"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          51,
+          58
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           55,
+           58
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            57,
+            58
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             57,
+             58
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              57,
+              58
+             ],
+             "id": null,
+             "value": "N"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            51,
+            52
+           ],
+           "id": null,
+           "value": "M"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nE = sum_i |log(O_i) - log(M_i)|/log(O_i) \n\nO ∈ ℝ^N\nM ∈ ℝ^N\n\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, O, M):\n        O = np.asarray(O, dtype=np.float64)\n        M = np.asarray(M, dtype=np.float64)\n        N = O.shape[0]\n        assert O.shape == (N,)\n        assert M.shape == (N,)\n        # E = sum_i |log(O_i) - log(M_i)|/log(O_i)\n        sum_0 = 0\n        for i in range(1, len(M)+1):\n            sum_0 += (np.absolute(np.log(O[i-1]) - np.log(M[i-1]))) / (np.log(O[i-1]))\n        self.E = sum_0\n\n\n\n\n\n",
+  "eigen": "/*\nE = sum_i |log(O_i) - log(M_i)|/log(O_i) \n\nO ∈ ℝ^N\nM ∈ ℝ^N\n\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT E;\n\n    heartlib(\n        const Eigen::VectorXd & O,\n        const Eigen::VectorXd & M)\n    {\n        const long N = O.size();\n        assert( M.size() == N );\n        // E = sum_i |log(O_i) - log(M_i)|/log(O_i)\n        DT sum_0 = 0;\n        for(int i=1; i<=M.size(); i++){\n            sum_0 += abs(log(O[i-1]) - log(M[i-1])) / DT(log(O[i-1]));\n        }\n        E = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nE & = \\sum_{i} \\frac{\\left| \\log{ O_{ i } } -  \\log{ M_{ i } }\\right|}{ \\log{ O_{ i } }} \\\\\n\\\\\nO & ∈ \\mathbb{R}^{ N} \\\\\nM & ∈ \\mathbb{R}^{ N} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nE & = \\sum_{i} \\frac{\\left| \\log{ O_{ i } } -  \\log{ M_{ i } }\\right|}{ \\log{ O_{ i } }} \\\\\n\\\\\nO & ∈ \\mathbb{R}^{ N} \\\\\nM & ∈ \\mathbb{R}^{ N} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(O, M)\n% output = heartlib(O, M)\n%\n%    E = sum_i |log(O_i) - log(M_i)|/log(O_i) \n%    \n%    O ∈ ℝ^N\n%    M ∈ ℝ^N\n%    \n%    \n    O = reshape(O,[],1);\n    M = reshape(M,[],1);\n\n    N = size(O, 1);\n    assert( numel(O) == N );\n    assert( numel(M) == N );\n\n    % E = sum_i |log(O_i) - log(M_i)|/log(O_i)\n\n    sum_0 = 0;\n    for i = 1:size(M,1)\n        sum_0 = sum_0 + abs(log(O(i)) - log(M(i))) / log(O(i));\n    end\n    E = sum_0;\n    output.E = E;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'E', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-E\", \"sym\":\"E\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {E} } & = \\sum_{i} \\frac{\\left| \\log{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'O', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-O\", \"sym\":\"O\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {O} }_{ i } } -  \\log{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-M\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {M} }_{ i } }\\right|}{ \\log{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'O', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-O\", \"sym\":\"O\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {O} }_{ i } }}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['M', 'O', 'E'], false, [], [], 'RSA9IHN1bV9pIHxsb2coT19pKSAtIGxvZyhNX2kpfC9sb2coT19pKQ==');\"} }{}\n \\\\\n\\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'O', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-O\", \"sym\":\"O\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {O} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'N', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-N\", \"sym\":\"N\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {N} }} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'M', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-M\", \"sym\":\"M\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {M} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'N', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-N\", \"sym\":\"N\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {N} }} \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Judder"
+}

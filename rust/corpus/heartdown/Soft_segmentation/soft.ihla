@@ -1,0 +1,8 @@
+`$F_S$` = sum_i α_i D_i(`$\boldsymbol{u}$`_i) + σ((sum_i α_i)/(sum_i α_i^2) - 1)
+
+where
+
+D_i: ℝ^3 -> ℝ
+`$\boldsymbol{u}$`_i: ℝ^3
+σ: ℝ
+α_i: ℝ 

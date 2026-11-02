@@ -1,0 +1,5 @@
+E = sum_i |log(O_i) - log(M_i)|/log(O_i) 
+
+O ∈ ℝ^N
+M ∈ ℝ^N
+

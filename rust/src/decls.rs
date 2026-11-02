@@ -95,8 +95,7 @@ struct Collector {
     multi: Vec<String>,
     /// function names in the order the Python symbol table would list them
     funcs: IndexMap<String, ()>,
-    /// function-typed parameters of sequences / local functions
-    seq_funcs: Vec<String>,
+    /// function-typed parameters of local functions
     local_func_params: Vec<String>,
     local_funcs: Vec<String>,
     rhs_texts: Vec<String>,
@@ -171,7 +170,7 @@ pub fn second_parse_config_with(
     let mut c = Collector::default();
     let vblocks = start.get("vblock").items();
     // parameters: where/given blocks, functions last (as the walker orders them)
-    let mut func_params: Vec<(String, bool)> = Vec::new();
+    let mut func_params: Vec<String> = Vec::new();
     for block in vblocks.iter().filter(|b| b.class() == "ParamsBlock") {
         for cond in block.get("conds").get("value").items() {
             let ty = cond.get("type");
@@ -180,19 +179,16 @@ pub fn second_parse_config_with(
                 let name = main_name(id);
                 let is_func = ty.class() == "FunctionType";
                 if is_func {
-                    func_params.push((name, id.class() == "IdentifierSubscript"));
+                    func_params.push(name);
                 } else if !is_single_letter(&name) && len(&name) > 1 && !name.contains('_') && !name.contains('`') {
                     c.multi.push(name);
                 }
             }
         }
     }
-    for (name, seq) in &func_params {
-        if *seq {
-            c.seq_funcs.push(name.clone());
-        } else {
-            c.funcs.insert(name.clone(), ());
-        }
+    // (a subscripted one, D_i, is the function D of its subscripts too)
+    for name in &func_params {
+        c.funcs.insert(name.clone(), ());
     }
     // imports
     let mut package_names_dict: IndexMap<String, Vec<String>> = IndexMap::new();
@@ -225,7 +221,8 @@ pub fn second_parse_config_with(
                 e.extend(names);
                 e.sort();
                 e.dedup();
-                package_rdict.entry(pkg).or_insert(r_dict);
+                // (every import from the package adds its renamings)
+                package_rdict.entry(pkg).or_default().extend(r_dict);
             }
             None => {
                 // functions imported from a module are called like local functions
@@ -334,13 +331,11 @@ pub fn second_parse_config_with(
         }
     }
 
-    // function names: symbol-table functions, calls of function sequences,
-    // local functions, function parameters of local functions
+    // function names: symbol-table functions, calls f_i(…) of local functions'
+    // function parameters, local functions, function parameters of local functions
     let mut func_dict: IndexMap<String, ()> = c.funcs.clone();
     let rhs = c.rhs_texts.join("\n");
-    let mut seq_list = c.seq_funcs.clone();
-    seq_list.extend(c.local_func_params.iter().cloned());
-    for seq in &seq_list {
+    for seq in &c.local_func_params {
         for m in find_seq_calls(seq, &rhs) {
             func_dict.insert(m, ());
         }

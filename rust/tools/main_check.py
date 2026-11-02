@@ -24,9 +24,9 @@ TMP = tempfile.mkdtemp()
 backends = sys.argv[1:] or ['numpy', 'eigen', 'matlab']
 
 
-def run(backend, src, k):
+def run(backend, src, k, cwd):
     r = subprocess.run([BINARY, 'compile', '--backend', backend, '--main'] + (['--name', 'prog{}'.format(k)] if backend == 'matlab' else []),
-                       input=src.encode(), capture_output=True)
+                       input=src.encode(), capture_output=True, cwd=cwd)
     if r.returncode:
         return None  # rejected by the compiler: not this tool's business
     code = r.stdout.decode()
@@ -59,13 +59,13 @@ progs = []
 for p in sorted(glob.glob(os.path.join(ROOT, 'rust', 'corpus', 'golden', '*.json'))):
     d = json.load(open(p))
     if not d['id'].startswith('m_'):
-        progs.append((d['id'], d['src']))
+        progs.append((d['id'], d['src'], os.path.join(ROOT, d['path']) if d.get('path') else None))
 for b in backends:
     ok = fail = skipped = 0
     failures = []
-    for k, (name, src) in enumerate(progs):
+    for k, (name, src, cwd) in enumerate(progs):
         try:
-            res = run(b, src, k)
+            res = run(b, src, k, cwd)
         except subprocess.TimeoutExpired:
             res = 'timeout'
         if res is None:

@@ -1583,7 +1583,37 @@ fn r_NOT_PREFIX_KEYWORD(p: &mut Parser) -> PResult {
         }) {
             return Ok(());
         }
-        Err(p.error("expecting one of: # <DELTA> <DERIVATIVE> <IN> <NABLA><POUND> [Δ] ∇ ∈ 𝕕"))
+        if p.option(|p| {
+            p.call(R_PI_U)?;
+            Ok(())
+        }) {
+            return Ok(());
+        }
+        if p.option(|p| {
+            p.pattern(92)?;
+            Ok(())
+        }) {
+            return Ok(());
+        }
+        if p.option(|p| {
+            p.pattern(93)?;
+            Ok(())
+        }) {
+            return Ok(());
+        }
+        if p.option(|p| {
+            p.pattern(17)?;
+            Ok(())
+        }) {
+            return Ok(());
+        }
+        if p.option(|p| {
+            p.call(R_SUBSET_U)?;
+            Ok(())
+        }) {
+            return Ok(());
+        }
+        Err(p.error("expecting one of: # <DELTA> <DERIVATIVE> <IN> <NABLA><PI> <POUND> <SUBSET> [Δ] π ℝ ℤ ∑ ⊂ ∇ ∈ 𝕕"))
     })?;
     Ok(())
 }

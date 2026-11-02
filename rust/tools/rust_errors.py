@@ -15,7 +15,8 @@ for line in open(os.path.join(ROOT, 'rust', 'corpus', 'cases.jsonl')):
     if 'error' in g['outputs'] or isinstance(g['outputs'].get('numpy'), dict):
         continue
     n += 1
-    r = subprocess.run([BIN, 'compile'], input=c['src'].encode(), capture_output=True)
+    r = subprocess.run([BIN, 'compile'], input=c['src'].encode(), capture_output=True,
+                       cwd=os.path.join(ROOT, c['path']) if c.get('path') else None)
     if r.returncode:
         bad += 1
         msg = r.stderr.decode().strip().splitlines()

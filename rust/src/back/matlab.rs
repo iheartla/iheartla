@@ -10,7 +10,7 @@
 //! definitions). Subscripts are 1-based as in I❤LA, and so are `index`
 //! values in MATLAB (the Python compiler's MATLAB convention and its tests).
 
-use super::names::{convert_unicode, has_special_symbol, Kind};
+use super::names::{convert_unicode, Kind};
 use crate::ast::*;
 use crate::dims::Dim;
 use crate::ty::*;
@@ -59,11 +59,8 @@ pub fn m_ident(name: &str) -> String {
 /// A valid MATLAB name (a struct field) for an I❤LA name: ASCII letters,
 /// digits and `_`, starting with a letter, at most 63 characters.
 pub fn m_field(name: &str) -> String {
-    let n = if name.contains('`') || has_special_symbol(name) {
-        convert_unicode(Kind::Matlab, name).replace('-', "_")
-    } else {
-        name.to_string()
-    };
+    // (as in the Python compiler, every name: μ becomes mu)
+    let n = convert_unicode(Kind::Matlab, name).replace('-', "_");
     let mut out = String::new();
     for c in n.chars() {
         if c.is_ascii_alphanumeric() || c == '_' {
@@ -293,6 +290,10 @@ impl<'p> Gen<'p> {
                 let n = m_ident(n);
                 self.line(format!("{n} = reshape({n}, [], 1);"));
             }
+            // (a sequence parameter's length, `U_n` for U_i ∈ ...)
+            if let Seq { size: Dim::Str(s), .. } = t {
+                self.line(format!("{} = size({}, 1);", m_ident(s), m_ident(n)));
+            }
         }
         for s in &f.body {
             self.stmt(s);
@@ -445,7 +446,7 @@ impl<'p> Gen<'p> {
                 format!("unique([{}], 'rows')", rows.join("; "))
             }
             Size(x) => format!("numel({})", self.expr(x)),
-            Union { vars, range, body, .. } => {
+            Union { vars, range: SumRange::Set(range), body, .. } => {
                 // (index values are 1-based in MATLAB: no offset)
                 let acc = self.fresh("union");
                 let set = self.expr(range);
@@ -456,6 +457,22 @@ impl<'p> Gen<'p> {
                 for (c, v) in vars.iter().enumerate() {
                     self.line(format!("{} = {set}({k}, {});", m_ident(v), c + 1));
                 }
+                let b = self.expr(body);
+                self.line(format!("{acc} = union({acc}, reshape({b}, [], 1));"));
+                self.indent -= 1;
+                self.line("end");
+                acc
+            }
+            Union { vars, range, body, .. } => {
+                let acc = self.fresh("union");
+                let r = match range {
+                    SumRange::Implicit(d) => format!("1:{}", self.dim(d)),
+                    SumRange::Explicit(lo, hi) => format!("{}:{}", self.expr(lo), self.expr(hi)),
+                    _ => unreachable!("the checker rejects conditional unions"),
+                };
+                self.line(format!("{acc} = zeros(0, 1);"));
+                self.line(format!("for {} = {r}", m_ident(&vars[0])));
+                self.indent += 1;
                 let b = self.expr(body);
                 self.line(format!("{acc} = union({acc}, reshape({b}, [], 1));"));
                 self.indent -= 1;
@@ -491,10 +508,6 @@ impl<'p> Gen<'p> {
                 other => format!("{other}({})", a.join(", ")),
             },
             Callee::Named(n) => format!("{}({})", m_ident(n), a.join(", ")),
-            Callee::SeqItem(n, i) => {
-                let idx = self.index(&Idx::At(i.clone()));
-                format!("{}{{{idx}}}({})", m_ident(n), a.join(", "))
-            }
         }
     }
 

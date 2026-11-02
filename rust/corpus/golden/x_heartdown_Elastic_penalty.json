@@ -1,0 +1,1075 @@
+{
+ "id": "x_heartdown_Elastic_penalty",
+ "src": "`E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\nwhere\nμ ∈ ℝ : a weighting parameter\nε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge\n`$β_q$` ∈ ℝ :  barycentric coordinates \n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\nwhere\nμ ∈ ℝ : a weighting parameter\nε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge\n`$β_q$` ∈ ℝ :  barycentric coordinates \n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     213
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       63
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        63
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": "E_p",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          63
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           63
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            32
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             32
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              8,
+              32
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               8,
+               30
+              ],
+              "sub": {
+               "_": "Subexpression",
+               "@": [
+                8,
+                30
+               ],
+               "value": {
+                "_": "Expression",
+                "@": [
+                 9,
+                 29
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  9,
+                  29
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   9,
+                   10
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    9,
+                    10
+                   ],
+                   "id": null,
+                   "value": "μ"
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   11,
+                   29
+                  ],
+                  "op": {
+                   "_": "LogFunc",
+                   "@": [
+                    11,
+                    29
+                   ],
+                   "f": null,
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     15,
+                     28
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      15,
+                      28
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       15,
+                       28
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        16,
+                        27
+                       ],
+                       "value": {
+                        "_": "Add",
+                        "@": [
+                         16,
+                         27
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          16,
+                          17
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           16,
+                           17
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            16,
+                            17
+                           ],
+                           "id": null,
+                           "value": "ε"
+                          }
+                         }
+                        },
+                        "op": "+",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          20,
+                          27
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           20,
+                           27
+                          ],
+                          "id": "$β_q$",
+                          "value": null
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "s": null
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               31,
+               32
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                31,
+                32
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            35,
+            63
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             35,
+             63
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              35,
+              61
+             ],
+             "sub": {
+              "_": "Subexpression",
+              "@": [
+               35,
+               61
+              ],
+              "value": {
+               "_": "Expression",
+               "@": [
+                36,
+                60
+               ],
+               "sign": null,
+               "value": {
+                "_": "Multiply",
+                "@": [
+                 36,
+                 60
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  36,
+                  37
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   36,
+                   37
+                  ],
+                  "id": null,
+                  "value": "μ"
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  38,
+                  60
+                 ],
+                 "op": {
+                  "_": "LogFunc",
+                  "@": [
+                   38,
+                   60
+                  ],
+                  "f": null,
+                  "param": {
+                   "_": "Expression",
+                   "@": [
+                    42,
+                    59
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     42,
+                     59
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      42,
+                      59
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       43,
+                       58
+                      ],
+                      "value": {
+                       "_": "Subtract",
+                       "@": [
+                        43,
+                        58
+                       ],
+                       "left": {
+                        "_": "Expression",
+                        "@": [
+                         43,
+                         48
+                        ],
+                        "value": {
+                         "_": "Add",
+                         "@": [
+                          43,
+                          48
+                         ],
+                         "left": {
+                          "_": "Expression",
+                          "@": [
+                           43,
+                           44
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            43,
+                            44
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             43,
+                             44
+                            ],
+                            "id": null,
+                            "value": "ε"
+                           }
+                          }
+                         },
+                         "op": "+",
+                         "right": {
+                          "_": "Factor",
+                          "@": [
+                           47,
+                           48
+                          ],
+                          "num": {
+                           "_": "Integer",
+                           "@": [
+                            47,
+                            48
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          }
+                         }
+                        }
+                       },
+                       "op": "-",
+                       "right": {
+                        "_": "Factor",
+                        "@": [
+                         51,
+                         58
+                        ],
+                        "id0": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          51,
+                          58
+                         ],
+                         "id": "$β_q$",
+                         "value": null
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "s": null
+                 }
+                }
+               }
+              }
+             }
+            },
+            "power": {
+             "_": "Factor",
+             "@": [
+              62,
+              63
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               62,
+               63
+              ],
+              "value": [
+               "2"
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       64,
+       212
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        70,
+        212
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          70,
+          99
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "a weighting parameter",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            70,
+            71
+           ],
+           "id": null,
+           "value": "μ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          100,
+          172
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "denoting how far $q$ is allowed to move past the end of the edge",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            100,
+            101
+           ],
+           "id": null,
+           "value": "ε"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          173,
+          212
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "barycentric coordinates ",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            173,
+            180
+           ],
+           "id": "$β_q$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\nwhere\nμ ∈ ℝ : a weighting parameter\nε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge\n`$β_q$` ∈ ℝ :  barycentric coordinates \n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     213
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       63
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        63
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": "E_p",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          63
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           63
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            32
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             32
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              8,
+              32
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               8,
+               30
+              ],
+              "sub": {
+               "_": "Subexpression",
+               "@": [
+                8,
+                30
+               ],
+               "value": {
+                "_": "Expression",
+                "@": [
+                 9,
+                 29
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  9,
+                  29
+                 ],
+                 "left": {
+                  "_": "Factor",
+                  "@": [
+                   9,
+                   10
+                  ],
+                  "id0": {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    9,
+                    10
+                   ],
+                   "id": null,
+                   "value": "μ"
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   11,
+                   29
+                  ],
+                  "op": {
+                   "_": "LogFunc",
+                   "@": [
+                    11,
+                    29
+                   ],
+                   "f": null,
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     15,
+                     28
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      15,
+                      28
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       15,
+                       28
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        16,
+                        27
+                       ],
+                       "value": {
+                        "_": "Add",
+                        "@": [
+                         16,
+                         27
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          16,
+                          17
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           16,
+                           17
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            16,
+                            17
+                           ],
+                           "id": null,
+                           "value": "ε"
+                          }
+                         }
+                        },
+                        "op": "+",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          20,
+                          27
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           20,
+                           27
+                          ],
+                          "id": "$β_q$",
+                          "value": null
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "s": null
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               31,
+               32
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                31,
+                32
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            35,
+            63
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             35,
+             63
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              35,
+              61
+             ],
+             "sub": {
+              "_": "Subexpression",
+              "@": [
+               35,
+               61
+              ],
+              "value": {
+               "_": "Expression",
+               "@": [
+                36,
+                60
+               ],
+               "sign": null,
+               "value": {
+                "_": "Multiply",
+                "@": [
+                 36,
+                 60
+                ],
+                "left": {
+                 "_": "Factor",
+                 "@": [
+                  36,
+                  37
+                 ],
+                 "id0": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   36,
+                   37
+                  ],
+                  "id": null,
+                  "value": "μ"
+                 }
+                },
+                "right": {
+                 "_": "Factor",
+                 "@": [
+                  38,
+                  60
+                 ],
+                 "op": {
+                  "_": "LogFunc",
+                  "@": [
+                   38,
+                   60
+                  ],
+                  "f": null,
+                  "param": {
+                   "_": "Expression",
+                   "@": [
+                    42,
+                    59
+                   ],
+                   "sign": null,
+                   "value": {
+                    "_": "Factor",
+                    "@": [
+                     42,
+                     59
+                    ],
+                    "sub": {
+                     "_": "Subexpression",
+                     "@": [
+                      42,
+                      59
+                     ],
+                     "value": {
+                      "_": "Expression",
+                      "@": [
+                       43,
+                       58
+                      ],
+                      "value": {
+                       "_": "Subtract",
+                       "@": [
+                        43,
+                        58
+                       ],
+                       "left": {
+                        "_": "Expression",
+                        "@": [
+                         43,
+                         48
+                        ],
+                        "value": {
+                         "_": "Add",
+                         "@": [
+                          43,
+                          48
+                         ],
+                         "left": {
+                          "_": "Expression",
+                          "@": [
+                           43,
+                           44
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            43,
+                            44
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             43,
+                             44
+                            ],
+                            "id": null,
+                            "value": "ε"
+                           }
+                          }
+                         },
+                         "op": "+",
+                         "right": {
+                          "_": "Factor",
+                          "@": [
+                           47,
+                           48
+                          ],
+                          "num": {
+                           "_": "Integer",
+                           "@": [
+                            47,
+                            48
+                           ],
+                           "value": [
+                            "1"
+                           ]
+                          }
+                         }
+                        }
+                       },
+                       "op": "-",
+                       "right": {
+                        "_": "Factor",
+                        "@": [
+                         51,
+                         58
+                        ],
+                        "id0": {
+                         "_": "IdentifierAlone",
+                         "@": [
+                          51,
+                          58
+                         ],
+                         "id": "$β_q$",
+                         "value": null
+                        }
+                       }
+                      }
+                     }
+                    }
+                   }
+                  },
+                  "s": null
+                 }
+                }
+               }
+              }
+             }
+            },
+            "power": {
+             "_": "Factor",
+             "@": [
+              62,
+              63
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               62,
+               63
+              ],
+              "value": [
+               "2"
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       64,
+       212
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        70,
+        212
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          70,
+          99
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "a weighting parameter",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            70,
+            71
+           ],
+           "id": null,
+           "value": "μ"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          100,
+          172
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "denoting how far $q$ is allowed to move past the end of the edge",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            100,
+            101
+           ],
+           "id": null,
+           "value": "ε"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          173,
+          212
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "barycentric coordinates ",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            173,
+            180
+           ],
+           "id": "$β_q$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\nwhere\nμ ∈ ℝ : a weighting parameter\nε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge\n`$β_q$` ∈ ℝ :  barycentric coordinates \n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, μ, ε, β_q):\n        assert np.ndim(μ) == 0\n        assert np.ndim(ε) == 0\n        assert np.ndim(β_q) == 0\n        # `E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\n        self.E_p = np.power(np.asarray((μ * np.log((ε + β_q))), dtype=np.float64), 2) + np.power(np.asarray((μ * np.log((ε + 1 - β_q))), dtype=np.float64), 2)\n\n\n\n\n\n",
+  "eigen": "/*\n`E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\nwhere\nμ ∈ ℝ : a weighting parameter\nε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge\n`$β_q$` ∈ ℝ :  barycentric coordinates \n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT E_p;\n\n    heartlib(\n        const double & μ,\n        const double & ε,\n        const double & β_q)\n    {\n    \n        // `E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\n        E_p = pow((μ * log((ε + β_q))), 2) + pow((μ * log((ε + 1 - β_q))), 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nE_p & = {\\left( μ  \\log{ \\left( ε + β_q \\right) } \\right)}^{2} + {\\left( μ  \\log{ \\left( ε + 1 - β_q \\right) } \\right)}^{2} \\\\\n\\intertext{where} \nμ & ∈ \\mathbb{R} \\text{ a weighting parameter} \\\\\nε & ∈ \\mathbb{R} \\text{ denoting how far \\$q\\$ is allowed to move past the end of the edge} \\\\\nβ_q & ∈ \\mathbb{R} \\text{ barycentric coordinates } \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nE_p & = {\\left( μ  \\log{ \\left( ε + β_q \\right) } \\right)}^{2} + {\\left( μ  \\log{ \\left( ε + 1 - β_q \\right) } \\right)}^{2} \\\\\nwhere \\\\\nμ & ∈ \\mathbb{R} \\text{ a weighting parameter} \\\\\nε & ∈ \\mathbb{R} \\text{ denoting how far \\$q\\$ is allowed to move past the end of the edge} \\\\\nβ_q & ∈ \\mathbb{R} \\text{ barycentric coordinates } \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(mu, epsilon, beta_q)\n% output = heartlib(μ, ε, `$β_q$`)\n%\n%    `E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\n%    where\n%    μ ∈ ℝ : a weighting parameter\n%    ε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge\n%    `$β_q$` ∈ ℝ :  barycentric coordinates \n%    \n    assert(numel(mu) == 1);\n    assert(numel(epsilon) == 1);\n    assert(numel(beta_q) == 1);\n\n    % `E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2\n\n    E_p = (mu * log((epsilon + beta_q))).^2 + (mu * log((epsilon + 1 - beta_q))).^2;\n    output.E_p = E_p;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'E_p', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-E_p\", \"sym\":\"E_p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {E_p} } & = {\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} }  \\log{ \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ε', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ε\", \"sym\":\"ε\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ε} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β_q$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β_q$\", \"sym\":\"$β_q$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β_q} } \\right) } \\right)}^{2} + {\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} }  \\log{ \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ε', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ε\", \"sym\":\"ε\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ε} } + 1 - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β_q$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β_q$\", \"sym\":\"$β_q$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β_q} } \\right) } \\right)}^{2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$β_q$', 'ε', 'μ', 'E_p'], false, [], [], 'YEVfcGAgPSAozrwgbG9nKCjOtSArIGAkzrJfcSRgKSkpXjIgKyAozrwgbG9nKCjOtSArIDEgLSBgJM6yX3EkYCkpKV4y');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'μ', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-μ\", \"sym\":\"μ\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {μ} } & ∈ \\mathbb{R} \\text{ a weighting parameter} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'ε', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-ε\", \"sym\":\"ε\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {ε} } & ∈ \\mathbb{R} \\text{ denoting how far \\$q\\$ is allowed to move past the end of the edge} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β_q$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β_q$\", \"sym\":\"$β_q$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β_q} } & ∈ \\mathbb{R} \\text{ barycentric coordinates } \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Elastic"
+}

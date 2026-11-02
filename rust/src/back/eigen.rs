@@ -429,7 +429,18 @@ impl<'p> Gen<'p> {
                 _ => {}
             }
         }
+        // (a sequence parameter's length, `U_n` for U_i ∈ ...)
+        for (_, t) in &f.params {
+            if let Seq { size: Dim::Str(s), .. } = t {
+                scope.insert(s.clone());
+            }
+        }
         self.locals.push(scope);
+        for (n, t) in &f.params {
+            if let Seq { size: Dim::Str(s), .. } = t {
+                self.line(format!("const int {} = {}.size();", cpp_ident(s), cpp_ident(n)));
+            }
+        }
         for (p, set) in &f.checks {
             let set = self.name(set);
             self.line(format!("assert( std::binary_search({set}.begin(), {set}.end(), {}) );", cpp_ident(p)));
@@ -709,7 +720,13 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                 }
             }
             Union { vars, range, body, one_based } => {
-                let r = self.expr(range);
+                let (r, x) = match range {
+                    SumRange::Set(r) => (self.expr(r), "const auto & x : range".to_string()),
+                    // (the range is unused: an index loop)
+                    SumRange::Implicit(d) => ("0".into(), format!("int x = 1; x <= {}; x++", self.dim(d))),
+                    SumRange::Explicit(lo, hi) => ("0".into(), format!("int x = {}; x <= {}; x++", self.expr(lo), self.expr(hi))),
+                    SumRange::Cond(..) => unreachable!("the checker rejects conditional unions"),
+                };
                 self.locals.push(vars.iter().cloned().collect());
                 let b = self.expr(body);
                 self.locals.pop();
@@ -725,7 +742,7 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                 let t = cpp_type(&e.ty);
                 // (each term is bound once and sorted: it may be a call's new temporary)
                 format!(
-                    "[&](){{ const auto range = {r}; {t} acc; for(const auto & x : range){{ {bind} const {t} s = sorted_set({t}({b})); {t} u; \
+                    "[&](){{ const auto range = {r}; (void)range; {t} acc; for({x}){{ {bind} const {t} s = sorted_set({t}({b})); {t} u; \
 std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)); acc = u; }} return acc; }}()"
                 )
             }
@@ -830,7 +847,8 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
                         if a.len() > 1 {
                             format!("std::{f}({{{}}})", a.iter().map(|x| format!("double({x})")).collect::<Vec<_>>().join(", "))
                         } else if t0.is_set() || t0.is_seq() {
-                            format!("*std::{f}_element(({a0}).begin(), ({a0}).end())")
+                            // (the set is bound once: begin() and end() of one object)
+                            format!("[&](){{ const auto s = {a0}; return *std::{f}_element(s.begin(), s.end()); }}()")
                         } else {
                             format!("({a0}).{f}Coeff()")
                         }
@@ -846,10 +864,6 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
                     _ => a,
                 };
                 format!("{}({})", self.name(n), a.join(", "))
-            }
-            Callee::SeqItem(n, i) => {
-                let idx = self.index(&Idx::At(i.clone()));
-                format!("{}.at({idx})({})", self.name(n), a.join(", "))
             }
         }
     }
@@ -902,6 +916,14 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
         f(self);
         let body = std::mem::replace(&mut self.lines, saved.0);
         self.indent = saved.1;
+        // (on one line, so comments are /* */)
+        let body: Vec<String> = body
+            .iter()
+            .map(|l| match l.trim_start().strip_prefix("// ") {
+                Some(c) => format!("/* {} */", c.replace("*/", "* /")),
+                None => l.clone(),
+            })
+            .collect();
         format!("[&](){{ {} }}()", body.join(" "))
     }
 
@@ -914,8 +936,13 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
             g.line(format!("{t} sum = {zero};"));
             let mut scope: HashSet<String> = var.iter().cloned().collect();
             for s in extras {
-                if let Stmt::Assign(a) = s {
-                    scope.insert(a.lhs.clone());
+                match s {
+                    Stmt::Assign(a) => {
+                        scope.insert(a.lhs.clone());
+                    }
+                    // (j, k = ...: a destructuring in the sum)
+                    Stmt::Multi { lhs, .. } => scope.extend(lhs.iter().map(|(n, _)| n.clone())),
+                    _ => {}
                 }
             }
             g.locals.push(scope);

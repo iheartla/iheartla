@@ -1,0 +1,14 @@
+`$\lambda_{0,1}$`=2||a||_2^2
+tr from linearalgebra
+`$\frac{∂²I₅}{∂f²}$` = 2[A₁,₁I_2  A₁,₂I_2
+               A₂,₁I_2  A₂,₂I_2] 
+
+where
+
+a ∈ ℝ^2
+A ∈ ℝ^(2×2)
+
+`$\mathbf{Q}_{0}$` = [a^T
+               0] 
+`$\mathbf{Q}_{1}$` = [0
+                    a^T] 

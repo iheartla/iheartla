@@ -1,0 +1,31 @@
+ A = a a^T 
+`$\lambda_{0,1,2}$`=2||a||_2^2
+tr from linearalgebra
+`$I_5$` = tr(CA)
+
+where
+
+a ∈ ℝ^3
+C ∈ ℝ^(3×3)
+
+`$\frac{∂I₅}{∂F}$` = 2FA
+F ∈ ℝ^(3×3): scaling and rotation matrix
+
+
+`$\frac{∂²I₅}{∂f²}$` = 2[A₁,₁I₃  A₁,₂I₃  A₁,₃I₃
+               A₂,₁I₃  A₂,₂I₃  A₂,₃I₃
+               A₃,₁I₃  A₃,₂I₃  A₃,₃I₃] 
+
+
+
+`$\mathbf{Q}_{0}$` = [a^T
+               0
+               0] 
+`$\mathbf{Q}_{1}$` = [0
+                    a^T
+               0] 
+`$\mathbf{Q}_{2}$` = [ 0
+               0
+               a^T] 
+
+

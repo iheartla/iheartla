@@ -1,0 +1,32 @@
+`E_q` from connection(`$q_g$`,`$q_h$`,`$m_g$`,`$m_h$`,`$\angle$`,`$λ_{q,1}$`,`$λ_{q,2}$`,t)
+`E_a` from anchor(`$λ_{a,1}$`,`$λ_{a,2}$`,q,`$q_a$`,m,`$m_a$`, `$\angle$`)
+`E_n` from notchlimit(`$δ^{(−)}$`,`$δ^{(+)}$`,`$β_q$`,`$β^{(−)}$`,`$β^{(+)}$`)
+`E_p` from penalty(μ, ε, `$β_q$`)
+E = `E_r` + `E_q` + `E_a` + `E_n` + `E_p`
+where
+`E_r` ∈ ℝ:the internal energy of the rods
+where
+`$q_g$` ∈ ℝ^n: point
+`$q_h$` ∈ ℝ^n: point
+`$m_g$` ∈ ℝ^n : the material vectors of $g$
+`$m_h$` ∈ ℝ^n : the material vectors at $h$
+`$\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n
+`$λ_{q,1}$` ∈ ℝ: the constraint weights for the position
+`$λ_{q,2}$` ∈ ℝ: the constraint weights for the direction
+t ∈ ℝ : offset
+where
+`$λ_{a,1}$` ∈ ℝ: weight
+`$λ_{a,2}$` ∈ ℝ: weight
+q ∈ ℝ^n 
+`$q_a$` ∈ ℝ^n 
+m ∈ ℝ^n 
+`$m_a$` ∈ ℝ^n 
+where
+`$δ^{(−)}$` ∈ ℝ
+`$δ^{(+)}$` ∈ ℝ
+`$β_q$` ∈ ℝ :  barycentric coordinates 
+`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges
+`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges
+where
+μ ∈ ℝ: a weighting parameter
+ε ∈ ℝ: denoting how far $q$ is allowed to move past the end of the edge

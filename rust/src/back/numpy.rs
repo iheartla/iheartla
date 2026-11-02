@@ -345,7 +345,18 @@ impl<'p> Gen<'p> {
                 _ => {}
             }
         }
+        // (a sequence parameter's length, `U_n` for U_i ∈ ...)
+        let lens: Vec<String> = f.params.iter().filter_map(|(_, t)| match t {
+            Seq { size: Dim::Str(s), .. } => Some(s.clone()),
+            _ => None,
+        }).collect();
+        scope.extend(lens.iter().cloned());
         self.locals.push(scope);
+        for (n, t) in &f.params {
+            if let Seq { size: Dim::Str(s), .. } = t {
+                self.line(format!("{} = len({})", py_ident(s), py_ident(n)));
+            }
+        }
         for (n, t) in &f.params {
             let n = py_ident(n);
             if t.is_vector() || t.is_matrix() && !t.is_sparse() {
@@ -452,10 +463,15 @@ impl<'p> Gen<'p> {
             }
             Union { vars, range, body, one_based } => {
                 let acc = self.fresh("union");
-                let r = self.expr(range);
-                self.line(format!("{acc} = frozenset()"));
                 let items: Vec<String> = vars.iter().map(|v| py_ident(v)).collect();
                 let target = if items.len() == 1 { items[0].clone() } else { format!("({})", items.join(", ")) };
+                let r = match range {
+                    SumRange::Set(r) => self.expr(r),
+                    SumRange::Implicit(d) => format!("range(1, {}+1)", self.dim(d)),
+                    SumRange::Explicit(lo, hi) => format!("range({}, {}+1)", self.expr(lo), self.expr(hi)),
+                    SumRange::Cond(..) => unreachable!("the checker rejects conditional unions"),
+                };
+                self.line(format!("{acc} = frozenset()"));
                 self.line(format!("for {target} in {r}:"));
                 self.indent += 1;
                 for (v, plus1) in items.iter().zip(one_based) {
@@ -654,10 +670,6 @@ impl<'p> Gen<'p> {
                 other => format!("{other}({})", a.join(", ")),
             },
             Callee::Named(n) => format!("{}({})", self.name(n), a.join(", ")),
-            Callee::SeqItem(n, i) => {
-                let idx = self.index(&Idx::At(i.clone()));
-                format!("{}[{idx}]({})", self.name(n), a.join(", "))
-            }
         }
     }
 
@@ -708,8 +720,13 @@ impl<'p> Gen<'p> {
         let vars: Vec<String> = var.iter().map(|v| py_ident(v)).collect();
         let mut scope: HashSet<String> = var.iter().cloned().collect();
         for s in extras {
-            if let Stmt::Assign(a) = s {
-                scope.insert(a.lhs.clone());
+            match s {
+                Stmt::Assign(a) => {
+                    scope.insert(a.lhs.clone());
+                }
+                // (j, k = ...: a destructuring in the sum)
+                Stmt::Multi { lhs, .. } => scope.extend(lhs.iter().map(|(n, _)| n.clone())),
+                _ => {}
             }
         }
         self.locals.push(scope);

@@ -1,0 +1,30 @@
+ElementSets from MeshConnectivity
+VertexOneRing from TetrahderonNeighborhoods(M)
+M : CellMesh
+x_i ∈ ℝ^3: original positions
+m ∈ ℝ: mass
+damping ∈ ℝ: damping
+K ∈ ℝ: stiffness
+`Δt` ∈ ℝ: step size
+bottom ∈ ℝ: ground height
+V, E, F, T = ElementSets( M )
+
+
+e(i, j) = ||x_i - x_j|| where i,j ∈ V
+
+ComputeInternalForces(i, v, p) = tuple(ṽ, f+(0.0, -98.0, 0.0))  where i ∈ V, v_i ∈ ℝ^3, p_i ∈ ℝ^3,
+f = (∑_(j ∈ VertexOneRing(i)) (-K) (||d|| - e(i, j)) d̄ 
+where d = p_i - p_j,
+d̄ = d/||d||),
+ṽ = v_i exp(-`Δt` damping) + `Δt` f
+
+
+ApplyForces(i, v, f, p) = tuple(ṽ, x̃) where i ∈ V, v_i ∈ ℝ^3, f_i ∈ ℝ^3, p_i ∈ ℝ^3,
+a = f_i / m,
+v̄ = v_i + a `Δt`,
+ṽ = { (0, -v̄_2, 0) if p_i,2 < bottom
+      v̄ otherwise,
+p̃ = { (p_i,1, bottom, p_i,3) if p_i,2 < bottom
+     p_i otherwise,
+x̃ = p̃ + ṽ `Δt`
+

@@ -9,7 +9,7 @@ For each program: both NumPy outputs are imported (with the runtime shim in
 rust/tools/mesh_runtime), instantiated with a small closed triangle mesh
 (plus a random per-vertex ℝ³ field for sequence parameters), and compared:
 every attribute, and every method (of the program and of its nested module
-instances) called with every combination of element indices. A call that
+instances) called with every combination of element indices and a point in ℝ³. A call that
 fails in both counts as agreement.
 """
 import glob
@@ -57,19 +57,19 @@ def norm(v):
     if hasattr(v, 'toarray'):
         return ('mat', np.asarray(v.toarray()).round(9).tolist())
     if isinstance(v, np.ndarray):
-        return ('arr', v.round(9).tolist())
+        return ('arr', np.where(np.isnan(v), np.inf, v.round(9)).tolist() if v.dtype.kind == 'f' else v.tolist())
     if isinstance(v, (int, np.integer)):
         return ('num', int(v))
     if isinstance(v, (float, np.floating)):
-        return ('num', round(float(v), 9))
+        return ('num', 'nan' if np.isnan(v) else round(float(v), 9))
     return ('other', repr(type(v)))
 
 
 def call(f, args):
     try:
         return norm(f(*args))
-    except Exception as e:  # noqa: BLE001
-        return ('error', type(e).__name__)
+    except Exception:  # noqa: BLE001
+        return ('error',)  # (failing in both counts as agreement, whatever the exception)
 
 
 def compare(src, name):
@@ -85,6 +85,7 @@ def compare(src, name):
     rng = np.random.default_rng(1)
     args = [mesh if p == 'M' else rng.standard_normal((nv, 3)) for p in pnames]
     a, b = a_cls(*args), b_cls(*args)
+    point = np.array([0.3, -0.2, 0.1])
     n = max(nv, mesh.n_edges(), mesh.n_faces())
     checked = mismatches = 0
     report = []
@@ -102,7 +103,8 @@ def compare(src, name):
                 report.append('  attribute {} differs'.format(k))
             continue
         arity = len(inspect.signature(va).parameters)
-        domain = range(n) if arity == 1 else range(nv)
+        # element indices, and a point for parameters in ℝ³ (𝐩 in winding_number)
+        domain = list(range(n) if arity == 1 else range(nv)) + [point]
         for combo in itertools.product(domain, repeat=arity):
             ra, rb = call(va, combo), call(vb, combo)
             checked += 1

@@ -1,0 +1,10 @@
+`E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\angle$`(`$m_g$`,`$m_h$`)||^2 
+where
+`$q_g$` ∈ ℝ^n : point
+`$q_h$` ∈ ℝ^n : point
+`$m_g$` ∈ ℝ^n : the material vectors of $g$
+`$m_h$` ∈ ℝ^n : the material vectors at $h$
+`$\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n
+`$λ_{q,1}$` ∈ ℝ : the constraint weights for the position
+`$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction
+t ∈ ℝ

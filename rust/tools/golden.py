@@ -106,6 +106,8 @@ def run_case(case):
             seen.add(key)
             unique.append(p)
     result = {'id': case['id'], 'src': case['src'], 'parses': unique, 'outputs': outputs}
+    if case.get('path'):
+        result['path'] = case['path']
     with open(os.path.join(CORPUS, 'golden', case['id'] + '.json'), 'w', encoding='utf-8') as f:
         json.dump(result, f, ensure_ascii=False, indent=1)
     return case['id'], ' '.join(b for b, v in outputs.items() if isinstance(v, dict) or b == 'error') or 'ok'

@@ -1,0 +1,7 @@
+`E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2
+where
+`$δ^{(−)}$` ∈ ℝ 
+`$δ^{(+)}$` ∈ ℝ
+`$β_q$` ∈ ℝ :  barycentric coordinates 
+`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges
+`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges

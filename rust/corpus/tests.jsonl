@@ -97,6 +97,7 @@
 {"module": "test.test_python_func", "src": "a = g(x)\n                    where\n                    x: ℤ ^ 3\n                    g: ℝ ^ 3 -> ℝ"}
 {"module": "test.test_python_func", "src": "A = Pf(g()P)P\n                    where\n                    P: ℝ ^ (2 × 2): a matrix\n                    f: ℝ^(2 × 2) -> ℝ^(2 × 2): a function\n                    g: {} -> ℝ^(2 × 2): a function "}
 {"module": "test.test_python_func", "src": "A = Pf(P+f(f(P⋅P))P)\n                    where\n                    P: ℝ ^ (2 × 2): a matrix\n                    f: ℝ^(2 × 2) -> ℝ^(2 × 2): a function"}
+{"module": "test.test_python_func", "src": "c = sum_i p_i(A_i)\n                    where\n                    p_i ∈ ℝ -> ℝ\n                    A_i ∈ ℝ"}
 {"module": "test.test_python_gallery", "src": "sin, cos from trigonometry\n        `x(θ, ϕ)` = [Rcos(θ)cos(ϕ)\n                     Rsin(θ)cos(ϕ)\n                     Rsin(ϕ)]\n        where\n        ϕ: ℝ : angle between 0 and 2π\n        θ: ℝ : angle between -π/2 and π/2\n        R: ℝ : the radius of the sphere"}
 {"module": "test.test_python_gallery", "src": "min_(x ∈ ℝ^n) ∑_i ||A_i x + b_i ||_2 +(1/2)||x-`x₀`||^2_2\n        where\n        A_i: ℝ^(m × n)\n        `x₀`: ℝ^n\n        b_i: ℝ^m  "}
 {"module": "test.test_python_gallery", "src": "`T₁` = 1/sqrt(2)U[0 0 0\n                  0 0 -1\n                  0 1 0]Vᵀ\n        where\n        U: ℝ^(3×3)\n        V: ℝ^(3×3)"}

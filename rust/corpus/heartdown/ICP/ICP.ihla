@@ -1,0 +1,34 @@
+ã = a tan(θ)
+n_i = `$n_q$`_i + `$n_p$`_i
+t̃ = t/cos(θ)
+ p̃_i = p_i - `$\bar{p}$` 
+ q̃_i = q_i - `$\bar{q}$` 
+`$\varepsilon_{point}$` = ∑_i ||R p_i + t - q_i||
+R ∈ ℝ^(3 × 3): the rigid-body rotation matrix
+
+`$\varepsilon_{plane}$` = ∑_i ((R p_i + t - q_i) ⋅ `$n_q$`_i)^2
+
+`$\varepsilon_{symm-RN}$` = ∑_i ((R p_i + R⁻¹ q_i + t) ⋅ (R`$n_p$`_i + R⁻¹`$n_q$`_i))^2
+
+tan, cos from trigonometry
+
+`$\varepsilon_{symm}$` = ∑_i cos²(θ)((p_i - q_i)⋅n_i +((p_i+q_i)×n_i)⋅ã+n_i⋅t̃)² 
+
+where
+a ∈ ℝ³ : axis of rotation
+θ ∈ ℝ  : angle of rotation
+p_i ∈ ℝ³: a sequence of points
+q_i ∈ ℝ³: a sequence of points
+`$n_q$`_i ∈ ℝ³: the surface normals
+`$n_p$`_i ∈ ℝ³: the surface normals
+t ∈ ℝ³: the translation vector
+
+S = trans(`$\bar{q}$`) ⋅ rot(θ, ã/||ã||) ⋅trans(t̃ cos(θ)) ⋅rot(θ, ã/||ã||)⋅ trans(-`$\bar{p}$`)
+
+where 
+`$\bar{q}$` ∈ ℝ³: the averaged coordinate of points
+`$\bar{p}$` ∈ ℝ³: the averaged coordinate of points
+trans ∈ ℝ³ -> ℝ^(4 × 4) : the translation function
+rot ∈ ℝ, ℝ³ -> ℝ^(4 × 4): the rotation function
+
+`$\varepsilon_{two-plane}$` = ∑_i(((R p_i + R⁻¹ q_i + t) ⋅ (R `$n_p$`_i))^2 + ((R p_i + R⁻¹ q_i + t) ⋅ (R⁻¹`$n_q$`_i))^2)

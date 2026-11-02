@@ -15,6 +15,9 @@ pub struct Program {
     pub dims: Vec<DimSym>,
     /// equalities between dimensions (e.g. the extents a subscript ranges over)
     pub dim_checks: Vec<(Dim, Dim)>,
+    /// the largest constant subscript into each dimension (`x₁₀` of `x ∈ ℝ^n`:
+    /// n ≥ 10), for drawing random data that fits
+    pub min_dims: Vec<(String, i64)>,
     /// statements in evaluation (def-use) order
     pub stmts: Vec<Stmt>,
     /// the symbol holding the result: the last statement's symbol
@@ -189,8 +192,6 @@ pub enum Callee {
     Builtin(String),
     /// a local function, or a function-typed parameter
     Named(String),
-    /// an item of a sequence of functions `f_i(x)`
-    SeqItem(String, Expr),
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -263,7 +264,8 @@ pub enum ExprKind {
     /// `∪_(i ∈ S) e`: the union of the sets `e` over the elements of `S`
     /// (each variable is the element's value, plus 1 for `index` values in
     /// 0-based backends: `one_based`)
-    Union { vars: Vec<String>, range: Expr, body: Expr, one_based: Vec<bool> },
+    /// `∪_(x ∈ S) e` (`range` is `SumRange::Set`), `∪_i U_i` or `∪_(i=a)^b U_i`
+    Union { vars: Vec<String>, range: SumRange, body: Expr, one_based: Vec<bool> },
     /// `{ e for x ∈ S if cond }`
     SetComp { vars: Vec<String>, range: Expr, cond: Option<Cond>, item: Expr },
 }

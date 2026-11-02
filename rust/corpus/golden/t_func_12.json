@@ -1,0 +1,584 @@
+{
+ "id": "t_func_12",
+ "src": "c = sum_i p_i(A_i)\n                    where\n                    p_i ∈ ℝ -> ℝ\n                    A_i ∈ ℝ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "c = sum_i p_i(A_i)\n                    where\n                    p_i ∈ ℝ -> ℝ\n                    A_i ∈ ℝ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     105
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       18
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        18
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          18
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           18
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            18
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Factor",
+            "@": [
+             10,
+             18
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              10,
+              18
+             ],
+             "name": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                10,
+                11
+               ],
+               "id": null,
+               "value": "p"
+              },
+              [
+               [
+                "_",
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  12,
+                  13
+                 ],
+                 "id": null,
+                 "value": "i"
+                }
+               ]
+              ]
+             ],
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                14,
+                17
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 14,
+                 17
+                ],
+                "id0": {
+                 "_": "IdentifierSubscript",
+                 "@": [
+                  14,
+                  17
+                 ],
+                 "left": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   14,
+                   15
+                  ],
+                  "id": null,
+                  "value": "A"
+                 },
+                 "right": [
+                  {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    16,
+                    17
+                   ],
+                   "id": null,
+                   "value": "i"
+                  }
+                 ]
+                }
+               }
+              }
+             ],
+             "separators": []
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       39,
+       105
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        65,
+        105
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          65,
+          77
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           71,
+           77
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            65,
+            68
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             65,
+             66
+            ],
+            "id": null,
+            "value": "p"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              67,
+              68
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          98,
+          105
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            98,
+            101
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             98,
+             99
+            ],
+            "id": null,
+            "value": "A"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              100,
+              101
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`p`",
+     "p"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "c = sum_i p_i(A_i)\n                    where\n                    p_i ∈ ℝ -> ℝ\n                    A_i ∈ ℝ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     105
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       18
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        18
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "c"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          18
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           18
+          ],
+          "op": {
+           "_": "Summation",
+           "@": [
+            4,
+            18
+           ],
+           "cond": null,
+           "exp": {
+            "_": "Factor",
+            "@": [
+             10,
+             18
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              10,
+              18
+             ],
+             "name": "p",
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                14,
+                17
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 14,
+                 17
+                ],
+                "id0": {
+                 "_": "IdentifierSubscript",
+                 "@": [
+                  14,
+                  17
+                 ],
+                 "left": {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   14,
+                   15
+                  ],
+                  "id": null,
+                  "value": "A"
+                 },
+                 "right": [
+                  {
+                   "_": "IdentifierAlone",
+                   "@": [
+                    16,
+                    17
+                   ],
+                   "id": null,
+                   "value": "i"
+                  }
+                 ]
+                }
+               }
+              }
+             ],
+             "separators": [],
+             "subs": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                12,
+                13
+               ],
+               "id": null,
+               "value": "i"
+              }
+             ]
+            }
+           },
+           "id": null,
+           "lower": null,
+           "range": null,
+           "sign": null,
+           "sub": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "i"
+           },
+           "u": null,
+           "upper": null,
+           "enum": [],
+           "extra": []
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       39,
+       105
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        65,
+        105
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          65,
+          77
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           71,
+           77
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret": [
+           {
+            "_": "ScalarType"
+           }
+          ],
+          "ret_separators": [],
+          "separators": []
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            65,
+            68
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             65,
+             66
+            ],
+            "id": null,
+            "value": "p"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              67,
+              68
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          98,
+          105
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierSubscript",
+           "@": [
+            98,
+            101
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             98,
+             99
+            ],
+            "id": null,
+            "value": "A"
+           },
+           "right": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              100,
+              101
+             ],
+             "id": null,
+             "value": "i"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nc = sum_i p_i(A_i)\n                    where\n                    p_i ∈ ℝ -> ℝ\n                    A_i ∈ ℝ\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, p, A):\n        A = np.asarray(A, dtype=np.float64)\n        dim_0 = A.shape[0]\n        assert A.shape == (dim_0,)\n        # c = sum_i p_i(A_i)\n        sum_0 = 0\n        for i in range(1, len(A)+1):\n            sum_0 += p(i, A[i-1])\n        self.c = sum_0\n\n\n\n\n\n",
+  "eigen": "/*\nc = sum_i p_i(A_i)\n                    where\n                    p_i ∈ ℝ -> ℝ\n                    A_i ∈ ℝ\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT c;\n\n    heartlib(\n        const std::function<double(int, double)> & p,\n        const std::vector<double> & A)\n    {\n        const long dim_0 = A.size();\n        // c = sum_i p_i(A_i)\n        DT sum_0 = 0;\n        for(int i=1; i<=A.size(); i++){\n            sum_0 += p(i, A.at(i-1));\n        }\n        c = sum_0;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nc & = \\sum_{i} p_{i}\\left( A_{ i } \\right) \\\\\n\\intertext{where} \np_{i} & ∈ \\mathbb{R}\\rightarrow \\mathbb{R} \\\\\nA_{i} & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nc & = \\sum_{i} p_{i}\\left( A_{ i } \\right) \\\\\nwhere \\\\\np_{i} & ∈ \\mathbb{R}\\rightarrow \\mathbb{R} \\\\\nA_{i} & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(p, A)\n% output = heartlib(p, A)\n%\n%    c = sum_i p_i(A_i)\n%                        where\n%                        p_i ∈ ℝ -> ℝ\n%                        A_i ∈ ℝ\n    A = reshape(A,[],1);\n\n    dim_0 = size(A, 1);\n    assert( size(A,1) == dim_0 );\n\n    % c = sum_i p_i(A_i)\n\n    sum_0 = 0;\n    for i = 1:size(A, 1)\n        sum_0 = sum_0 + p(i, A(i));\n    end\n    c = sum_0;\n    output.c = c;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {c} } & = \\sum_{i} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} }_{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} }}\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{ i } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'i', 'p', 'c'], false, [], [], 'YyA9IHN1bV9pIHBfaShBX2kp');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'p', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-p_i\", \"sym\":\"p\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {p} }_{i} & ∈ \\mathbb{R}\\rightarrow \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A_i\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }_{i} & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

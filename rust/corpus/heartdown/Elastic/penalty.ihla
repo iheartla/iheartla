@@ -1,0 +1,5 @@
+`E_p` = (μ log((ε + `$β_q$`)))^2 + (μ log((ε + 1 - `$β_q$`)))^2
+where
+μ ∈ ℝ : a weighting parameter
+ε ∈ ℝ : denoting how far $q$ is allowed to move past the end of the edge
+`$β_q$` ∈ ℝ :  barycentric coordinates 

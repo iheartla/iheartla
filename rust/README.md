@@ -17,15 +17,16 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 
 | Part | State |
 |---|---|
-| Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus (557 parses) |
-| Declarations pass (second-parse configuration) | 269/269 corpus programs |
-| Type checker → typed AST | Covers every program in the Python test suite |
-| NumPy backend | All 224 Python tests on `mesh` (as of the 2026-11-01 merge) |
-| Eigen (C++) backend | All 224 Python tests, via cppyy and, for optimization, the system C++ compiler |
-| LaTeX and MathJax backends | 261/261 corpus programs (including modules) give output identical to Python's |
-| MacroMathJax backend (H❤️rtDown click handlers) | 253/253 corpus programs match Python's output: 251 byte-identical, and 2 equal once equation symbol lists are sorted |
-| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 222 of 224 tests pass; the 2 failures are test issues (below) |
+| Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus (673 parses) |
+| Declarations pass (second-parse configuration) | 303/303 corpus programs |
+| Type checker → typed AST | Covers every program in the Python test suite, all 23 H❤️rtDown gallery programs, and 6 of the 10 I❤️MESH paper examples (see the I❤️MESH row) |
+| NumPy backend | All 225 Python tests on `mesh` (as of the 2026-11-02 merge). On the 23 gallery programs, `tools/value_check.py` finds every attribute and local function value equal to the Python compiler's |
+| Eigen (C++) backend | All 225 Python tests, via cppyy and, for optimization, the system C++ compiler |
+| LaTeX and MathJax backends | 291/291 corpus programs that both compilers accept (including modules and the gallery) give output identical to Python's |
+| MacroMathJax backend (H❤️rtDown click handlers) | Of 282 corpus programs, 278 are byte-identical to Python's output and 2 equal once equation symbol lists are sorted. In the other 2 (I❤️MESH `vertex_normal` and `polygon_mesh`), Python's output is malformed: a `where j, k = …` inside a sum becomes an aligned row of its own, and the sum's `\right)` is lost. Rust prints it as Python's plain MathJax does |
+| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 223 of 225 tests pass; the 2 failures are test issues (below). Names are converted as Python converts them (`μ` is `mu`, `λ` is `lambda_`). Meshes and modules aren't supported |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples and `FundamentalMeshAccessors`. `Neighborhoods` differs only on degenerate calls such as `EdgeIndex(i, i)`, which take "the first element" of a set with several elements: Rust takes the smallest, Python takes whatever its hash order gives. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 611 values equal to the NumPy output |
+| I❤️MESH paper examples (`corpus/iheartmesh/`) | 6 of 10 compile. On an octahedron, `mesh_check.py` finds `winding_number` equal to Python's NumPy and `discrete_curvature` different only on degenerate calls, as for `Neighborhoods` above. Python's NumPy for `vertex_normal`, `bilateral_denoising` and `polygon_mesh` doesn't load (an IndentationError where a sum has its own `where`); for all five, `mesh_check_cpp.py` finds Rust's C++ equal to Rust's NumPy (1,066 values). `mass_spring` needs a tetrahedral mesh, which the checks don't build. Not supported: derivatives `∂e/∂x` (`mesh_deformation`, `mesh_parameterization`), `sequence(U, next)` (`geodesic_distance`), rows taken from a set of vectors, `m_i,* = d_i` (`point_cloud`). Python accepts these four, but its NumPy output for these features doesn't work |
 | Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp v0.4.0. Bounds by expressions without the variables, and equalities, become box constraints; other constraints throw, naming the constraint. When the line search fails (near a non-smooth or exactly-zero minimum), the best point evaluated is used. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy, on random inputs and on the test suite's own |
 
 To run the Python test suite with code from the Rust compiler:
@@ -61,16 +62,21 @@ The random arguments are drawn so that they fit together:
   `Program::dim_checks`);
 - all sequences share one length, 4–9, or the mesh's vertex count when there is a mesh;
 - random functions return values sized as their arguments imply;
-- integers and `index` values stay below the smallest size.
+- integers and `index` values stay below the smallest size;
+- a dimension is at least the largest constant subscript into it (`n ≥ 10` for `x₁₀`
+  of `x ∈ ℝ^n`; `Program::min_dims`).
 
 A mesh parameter is an octahedron (NumPy and Eigen).
 
-`tools/main_check.py` runs every corpus program's `main`: NumPy 224/224, Eigen 223/224,
-MATLAB 219/224. The failures fall into two groups:
+`tools/main_check.py` runs every corpus program's `main`: NumPy 279/281, Eigen 277/280,
+MATLAB 255/269. The failures fall into these groups:
 - programs that can't run on arbitrary random values (`f(2)` where 2 must be in a random
   set; subscripts like `a_(b+1)` or `a_(b-c)` with random `b` and `c`), so whether they
   fail depends on the draw;
-- the 3 mesh programs in MATLAB, which doesn't support meshes.
+- `mass_spring`, whose mesh must be tetrahedral (the random mesh is an octahedron);
+- optimization constraints that Eigen and MATLAB don't support (`t_others_11`, `t_others_12`);
+- the 10 mesh programs, and 1 gallery program with modules, in MATLAB, which supports
+  neither meshes nor modules.
 
 ## On the web
 
@@ -156,12 +162,20 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
 ## Tools (`tools/`)
 
 - `golden.py`, `record_all.sh`, `make_cases.py`, `record_inputs.py`: build the corpus
-  (`corpus/`) of test-suite programs and their Python-compiler outputs.
+  (`corpus/`) of programs and their Python-compiler outputs. Besides the test suite's
+  programs, it has the H❤️rtDown gallery's (`corpus/heartdown/`, from
+  `extract_heartdown.py`) and the I❤️MESH paper's examples (`corpus/iheartmesh/`); see
+  the README in each. A program in a file is compiled in its directory, where its
+  imports are found (`path` in its golden file).
+- `value_check.py [id-prefix ...]`: run both compilers' NumPy output on the same random
+  arguments (from `--main`) and compare every attribute and local function value
+  (default: the gallery programs).
 - `cmp_backend.py BACKEND 'source text'`: show the Python output for a corpus program
   next to the Rust output.
 - `run_tests_rust.py`: run the Python test suite on Rust output (see above).
-- `cmp_all.py BACKEND [-v N]`: compare one backend's output with the goldens over the whole
-  corpus (identical / equal up to whitespace / different / error).
+- `cmp_all.py BACKEND [-v N] [-p PREFIX]`: compare one backend's output with the goldens over
+  the whole corpus, or the cases whose id starts with PREFIX (identical / equal up to
+  whitespace / different / error).
 - `bench.py`, `bench_mesh.py`: the timing tables above.
 - `opt_check_cpp.py`: run the NumPy and Eigen outputs of the corpus's optimization programs
   and compare results. It needs LBFGSpp, which `test/fetch_deps.sh` fetches, and Eigen 3.4.
@@ -169,7 +183,7 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
   (`iheartla/mesh/Cpp`, built with clang++), run it on the same octahedron, and compare
   every value with the Rust NumPy output.
 - `mesh_check.py`: compile I❤️MESH programs with both compilers, run both on an octahedron,
-  and compare every attribute and every function value over all element arguments.
+  and compare every attribute and every function value over all element arguments (and a point in ℝ³).
   `mesh_runtime/triangle_mesh.py` adds `ElementSets` and `indicator` to the I❤️MESH
   Python runtime. Generated code (from either compiler) calls them, but
   `iheartla/mesh/Python/triangle_mesh.py` doesn't define them.

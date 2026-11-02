@@ -2849,6 +2849,7 @@
  ],
  "outputs": {
   "error": "Error on line 11 at column 1. Parameter β can't have constant subscript.\nβ₁ ∈ ℝ\n^\n",
-  "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/type_walker.py\", line 1327, in walk_WhereCondition\n    self.handle_identifier(id0, id0_info.ir, type_node)\n  File \"iheartla/la_parser/type_walker.py\", line 5513, in handle_identifier\n    self.assert_expr(not val.isnumeric(), get_err_msg_info(id_node.parse_info, \"Parameter {} can't have constant subscript\".format(arr[0])))\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 11 at column 1. Parameter β can't have constant subscript.\nβ₁ ∈ ℝ\n^\n\n"
- }
+  "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/type_walker.py\", line 1337, in walk_WhereCondition\n    self.handle_identifier(id0, id0_info.ir, id_type_node)\n  File \"iheartla/la_parser/type_walker.py\", line 5525, in handle_identifier\n    self.assert_expr(not val.isnumeric(), get_err_msg_info(id_node.parse_info, \"Parameter {} can't have constant subscript\".format(arr[0])))\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 11 at column 1. Parameter β can't have constant subscript.\nβ₁ ∈ ℝ\n^\n\n"
+ },
+ "path": "rust/corpus/examples/adam/attempts"
 }

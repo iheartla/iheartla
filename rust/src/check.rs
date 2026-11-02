@@ -56,6 +56,7 @@ pub struct Checker<'a> {
     params: Vec<Param>,
     dims: Vec<DimSym>,
     dim_checks: Vec<(Dim, Dim)>,
+    min_dims: IndexMap<String, i64>,
     /// renamed builtins: new name -> builtin name
     builtin_names: IndexMap<String, String>,
     const_e: bool,
@@ -86,6 +87,7 @@ impl<'a> Checker<'a> {
             params: Vec::new(),
             dims: Vec::new(),
             dim_checks: Vec::new(),
+            min_dims: IndexMap::new(),
             builtin_names: IndexMap::new(),
             const_e: false,
             extents: Vec::new(),
@@ -260,6 +262,7 @@ impl<'a> Checker<'a> {
             params: self.params,
             dims: self.dims,
             dim_checks: self.dim_checks,
+            min_dims: self.min_dims.into_iter().collect(),
             stmts: out,
             ret,
             defs: self.defs,
@@ -418,6 +421,20 @@ impl<'a> Checker<'a> {
         let desc = cond.get("desc").as_str().map(|s| s.trim().to_string()).filter(|s| !s.is_empty());
         let mut out = Vec::new();
         for id in cond.get("id").items() {
+            if let (Func { params, rets }, "IdentifierSubscript") = (&ty, id.class()) {
+                // D_i ∈ ℝ^3 -> ℝ: a function of its subscripts too, D: ℤ × ℝ^3 -> ℝ, as for
+                // local functions (f_i(x) = ...): D_i(u_i) calls D(i, u_i)
+                let name = ident_name(id.get("left"));
+                let mut ps = vec![Ty::int(); id.get("right").items().len()];
+                ps.extend(params.iter().cloned());
+                let pty = Func { params: ps, rets: rets.clone() };
+                if global {
+                    let impl_name = self.add_func(&name, pty.clone(), id)?;
+                    self.params.push(Param { name: impl_name, ty: pty.clone(), desc: desc.clone() });
+                }
+                out.push((name, pty));
+                continue;
+            }
             let (name, seq) = match id.class() {
                 "IdentifierSubscript" => {
                     let main = ident_name(id.get("left"));
@@ -856,7 +873,6 @@ impl<'a> Checker<'a> {
                 None => return self.err(p, format!("Parameter {pn} hasn't been defined")),
             }
         }
-        // provisional type for recursion is not supported (like Python)
         self.scopes.push(scope);
         let mut body = Vec::new();
         let extras: Vec<Val> = s.get("extra").items().to_vec();
@@ -875,6 +891,26 @@ impl<'a> Checker<'a> {
             }
         }
         let exprs = s.get("expr").items().to_vec();
+        // a recursive function, f(n) = { ... f(m) otherwise }, gets a provisional
+        // type, its parameters to the type of its first branch that checks
+        let mut names = IndexSet::new();
+        exprs.iter().for_each(|e| collect_names(e, &mut names));
+        let recursive = names.contains(&name) && !self.globals.contains_key(&name) && exprs.len() == 1;
+        if recursive {
+            let mut branches = Vec::new();
+            piecewise_branches(&exprs[0], &mut branches);
+            let ret = branches.iter().find_map(|b| self.expr(b).ok()).map(|x| x.ty);
+            match ret {
+                Some(t) => {
+                    let ty = Func { params: params.iter().map(|(_, t)| t.clone()).collect(), rets: vec![t] };
+                    self.globals.insert(name.clone(), Sym::Func(ty));
+                }
+                None => {
+                    self.scopes.pop();
+                    return self.err(s, format!("Can't find the return type of the recursive function {name}"));
+                }
+            }
+        }
         let mut rets = Vec::new();
         let mut expr = None;
         for e in &exprs {
@@ -885,11 +921,17 @@ impl<'a> Checker<'a> {
                 }
                 Err(err) => {
                     self.scopes.pop();
+                    if recursive {
+                        self.globals.shift_remove(&name);
+                    }
                     return Err(err);
                 }
             }
         }
         self.scopes.pop();
+        if recursive {
+            self.globals.shift_remove(&name);
+        }
         let ty = Func { params: params.iter().map(|(_, t)| t.clone()).collect(), rets };
         let impl_name = self.add_func(&name, ty.clone(), s)?;
         // parameters declared as elements of a set (`v ∈ V`) are checked
@@ -1150,6 +1192,14 @@ impl<'a> Checker<'a> {
             }
             idx.push(Idx::At(e));
         }
+        for (axis, i) in idx.iter().enumerate() {
+            if let (Idx::At(e), Some(Dim::Str(d))) = (i, axis_extent(&bty, axis)) {
+                if let ExprKind::Int(k) = &*e.kind {
+                    let m = self.min_dims.entry(d).or_insert(*k);
+                    *m = (*m).max(*k);
+                }
+            }
+        }
         let ty = self.index_type(&bty, &idx, id)?;
         Ok(Expr::new(ExprKind::Index { base, base_ty: bty, idx }, ty))
     }
@@ -1236,7 +1286,7 @@ impl<'a> Checker<'a> {
     /// `index` values is the 1-based index (the element plus 1).
     fn union(&mut self, op: &Val) -> R<Expr> {
         if !op.get("enum").truthy() {
-            return self.err(op, "Unions are supported over a set (∪_(i ∈ S) ...)");
+            return self.union_indexed(op);
         }
         let range = self.set_expr(op.get("range"))?;
         let elems = match &range.ty {
@@ -1258,7 +1308,56 @@ impl<'a> Checker<'a> {
         let body = body?;
         self.ensure(body.ty.is_set(), op, || "A union's terms must be sets".into())?;
         let ty = set_of(&body.ty);
-        Ok(Expr::new(ExprKind::Union { vars, range, body, one_based }, ty))
+        Ok(Expr::new(ExprKind::Union { vars, range: SumRange::Set(range), body, one_based }, ty))
+    }
+
+    /// `∪_i U_i` (over the extent of what i subscripts) or `∪_(i=a)^b U_i`.
+    /// Bounds that are `index` values (0-based) are shifted to the 1-based
+    /// subscripts used everywhere else.
+    fn union_indexed(&mut self, op: &Val) -> R<Expr> {
+        let id = if op.get("id").truthy() { op.get("id") } else { op.get("sub") };
+        let v = ident_name(id);
+        if self.is_defined(&v) {
+            return self.err(id, "Subscript has been defined");
+        }
+        let mut bounds = None;
+        if op.get("lower").truthy() {
+            let mut b = Vec::new();
+            for n in [op.get("lower"), op.get("upper")] {
+                // (the upper bound is a factor: a number, a name or an expression)
+                let e = match self.int_literal(n) {
+                    Some(i) => Expr::new(ExprKind::Int(i), Ty::int()),
+                    None if n.class() == "IdentifierAlone" => self.identifier(n)?,
+                    None => self.expr(n)?,
+                };
+                self.ensure(e.ty.is_scalar() && e.ty.is_int(), n, || "The bounds of a union must be integers".into())?;
+                b.push(if matches!(e.ty, Scalar(Elem::Index)) {
+                    Expr::new(ExprKind::Add(e, Expr::new(ExprKind::Int(1), Ty::int())), Ty::int())
+                } else {
+                    e
+                });
+            }
+            bounds = Some((b.remove(0), b.remove(0)));
+        } else if op.get("cond").truthy() {
+            return self.err(op, "Unions with a condition aren't supported");
+        }
+        self.scopes.push(IndexMap::from([(v.clone(), Sym::Local(Ty::int()))]));
+        self.extents.push(IndexMap::from([(v.clone(), Vec::new())]));
+        let body = self.expr(op.get("exp"));
+        self.scopes.pop();
+        let frame = self.extents.pop().unwrap();
+        self.note_equal_extents(&frame);
+        let body = body?;
+        self.ensure(body.ty.is_set(), op, || "A union's terms must be sets".into())?;
+        let range = match bounds {
+            Some((lo, hi)) => SumRange::Explicit(lo, hi),
+            None => match frame[&v].first() {
+                Some(d) => SumRange::Implicit(d.clone()),
+                None => return self.err(op, "Subscript hasn't been used in union"),
+            },
+        };
+        let ty = set_of(&body.ty);
+        Ok(Expr::new(ExprKind::Union { vars: vec![v], range, body, one_based: vec![false] }, ty))
     }
 
     /// A set: an expression, or a bare name or call (as in `x ∈ S`, `x ∈ f(y)`).
@@ -1893,24 +1992,8 @@ impl<'a> Checker<'a> {
                 }
                 _ => (Callee::Named(name.clone()), sym.ty()),
             },
-            _ => {
-                // f_i(x): an item of a sequence of functions
-                let parts: Vec<&str> = name.splitn(2, '_').collect();
-                match (parts.len(), parts.first().and_then(|b| self.lookup(b))) {
-                    (2, Some(sym)) => match sym.ty() {
-                        Seq { elem, .. } if elem.is_func() => {
-                            let idx = parts[1].to_string();
-                            let i = match idx.parse::<i64>() {
-                                Ok(v) => Expr::new(ExprKind::Int(v), Ty::int()),
-                                Err(_) => Expr::new(ExprKind::Var(idx.clone()), self.lookup(&idx).map(|s| s.ty()).unwrap_or(Ty::int())),
-                            };
-                            (Callee::SeqItem(parts[0].to_string(), i), (*elem).clone())
-                        }
-                        _ => return self.err(op, format!("{name} is not a function")),
-                    },
-                    _ => return self.err(op, format!("Symbol {name} is not defined")),
-                }
-            }
+            Some(_) => return self.err(op, format!("{name} is not a function")),
+            None => return self.err(op, format!("Symbol {name} is not defined")),
         };
         let Func { params, rets } = fty else { unreachable!() };
         self.ensure(params.len() == args.len(), op, || "Function error. Parameters count mismatch".into())?;
@@ -2326,6 +2409,27 @@ fn flatten_ifs(ifs: &Val, out: &mut Vec<Val>) {
     }
     if ifs.get("value").truthy() {
         out.push(ifs.get("value").clone());
+    }
+}
+
+/// The branches of the piecewise expression an expression is (or nothing).
+fn piecewise_branches(n: &Val, out: &mut Vec<Val>) {
+    match n.class() {
+        "Expression" | "Factor" => {
+            let inner = if n.get("value").truthy() { n.get("value") } else { n.get("op") };
+            if inner.node().is_some() {
+                piecewise_branches(inner, out);
+            }
+        }
+        "MultiCondExpr" => {
+            let mut singles = Vec::new();
+            flatten_ifs(n.get("ifs"), &mut singles);
+            out.extend(singles.iter().map(|s| s.get("stat").clone()));
+            if n.get("other").truthy() {
+                out.push(n.get("other").clone());
+            }
+        }
+        _ => {}
     }
 }
 

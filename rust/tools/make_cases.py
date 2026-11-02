@@ -1,7 +1,10 @@
 """Collect I❤LA programs into rust/corpus/cases.jsonl.
 
 Sources: programs recorded from the Python test suite (tests.jsonl), the
-built-in I❤MESH modules, and *.ila files under rust/corpus/ (examples, mesh).
+built-in I❤MESH modules, and *.ila, *.ihla and *.hlang files under rust/corpus/
+(examples, mesh, the H❤️rtDown gallery's contexts in heartdown/, from
+tools/extract_heartdown.py, and the I❤️MESH paper's examples in iheartmesh/).
+Those are compiled in their own directory, where their imports are found.
 """
 import glob
 import json
@@ -36,11 +39,11 @@ for p in sorted(glob.glob(os.path.join(ROOT, 'iheartla', 'mesh', '*.hlang'))):
     with open(p, encoding='utf-8') as f:
         add('m_' + os.path.splitext(os.path.basename(p))[0], f.read(), 'iheartla/mesh')
 
-for p in sorted(glob.glob(os.path.join(CORPUS, '**', '*.ila'), recursive=True) + glob.glob(os.path.join(CORPUS, '**', '*.ihla'), recursive=True)):
+for p in sorted(f for ext in ('ila', 'ihla', 'hlang') for f in glob.glob(os.path.join(CORPUS, '**', '*.' + ext), recursive=True)):
     rel = os.path.relpath(p, CORPUS)
     cid = 'x_' + os.path.splitext(rel)[0].replace(os.sep, '_').replace('-', '_')
     with open(p, encoding='utf-8') as f:
-        add(cid, f.read())
+        add(cid, f.read(), os.path.relpath(os.path.dirname(p), ROOT))
 
 with open(os.path.join(CORPUS, 'cases.jsonl'), 'w', encoding='utf-8') as f:
     for c in cases:

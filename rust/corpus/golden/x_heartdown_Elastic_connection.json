@@ -1,0 +1,2024 @@
+{
+ "id": "x_heartdown_Elastic_connection",
+ "src": "`E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2 \nwhere\n`$q_g$` ∈ ℝ^n : point\n`$q_h$` ∈ ℝ^n : point\n`$m_g$` ∈ ℝ^n : the material vectors of $g$\n`$m_h$` ∈ ℝ^n : the material vectors at $h$\n`$\\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n\n`$λ_{q,1}$` ∈ ℝ : the constraint weights for the position\n`$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction\nt ∈ ℝ\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2 \nwhere\n`$q_g$` ∈ ℝ^n : point\n`$q_h$` ∈ ℝ^n : point\n`$m_g$` ∈ ℝ^n : the material vectors of $g$\n`$m_h$` ∈ ℝ^n : the material vectors at $h$\n`$\\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n\n`$λ_{q,1}$` ∈ ℝ : the constraint weights for the position\n`$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction\nt ∈ ℝ\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     432
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       140
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        140
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": "E_q",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          140
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           140
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            93
+           ],
+           "value": {
+            "_": "Add",
+            "@": [
+             8,
+             93
+            ],
+            "left": {
+             "_": "Expression",
+             "@": [
+              8,
+              49
+             ],
+             "sign": null,
+             "value": {
+              "_": "Multiply",
+              "@": [
+               8,
+               49
+              ],
+              "left": {
+               "_": "Factor",
+               "@": [
+                8,
+                19
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 8,
+                 19
+                ],
+                "id": "$λ_{q,1}$",
+                "value": null
+               }
+              },
+              "right": {
+               "_": "Factor",
+               "@": [
+                19,
+                49
+               ],
+               "op": {
+                "_": "Norm",
+                "@": [
+                 19,
+                 49
+                ],
+                "double": "||",
+                "power": {
+                 "_": "Factor",
+                 "@": [
+                  48,
+                  49
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   48,
+                   49
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                },
+                "single": null,
+                "sub": null,
+                "value": {
+                 "_": "Expression",
+                 "@": [
+                  21,
+                  45
+                 ],
+                 "value": {
+                  "_": "Add",
+                  "@": [
+                   21,
+                   45
+                  ],
+                  "left": {
+                   "_": "Expression",
+                   "@": [
+                    21,
+                    36
+                   ],
+                   "value": {
+                    "_": "Subtract",
+                    "@": [
+                     21,
+                     36
+                    ],
+                    "left": {
+                     "_": "Expression",
+                     "@": [
+                      21,
+                      28
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       21,
+                       28
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        21,
+                        28
+                       ],
+                       "id": "$q_g$",
+                       "value": null
+                      }
+                     }
+                    },
+                    "op": "-",
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      29,
+                      36
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       29,
+                       36
+                      ],
+                      "id": "$q_h$",
+                      "value": null
+                     }
+                    }
+                   }
+                  },
+                  "op": "+",
+                  "right": {
+                   "_": "Multiply",
+                   "@": [
+                    37,
+                    45
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     37,
+                     38
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      37,
+                      38
+                     ],
+                     "id": null,
+                     "value": "t"
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     38,
+                     45
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      38,
+                      45
+                     ],
+                     "id": "$m_g$",
+                     "value": null
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            },
+            "op": "+",
+            "right": {
+             "_": "Multiply",
+             "@": [
+              52,
+              93
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               52,
+               63
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                52,
+                63
+               ],
+               "id": "$λ_{q,1}$",
+               "value": null
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               63,
+               93
+              ],
+              "op": {
+               "_": "Norm",
+               "@": [
+                63,
+                93
+               ],
+               "double": "||",
+               "power": {
+                "_": "Factor",
+                "@": [
+                 92,
+                 93
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  92,
+                  93
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               },
+               "single": null,
+               "sub": null,
+               "value": {
+                "_": "Expression",
+                "@": [
+                 65,
+                 89
+                ],
+                "value": {
+                 "_": "Add",
+                 "@": [
+                  65,
+                  89
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   65,
+                   80
+                  ],
+                  "value": {
+                   "_": "Subtract",
+                   "@": [
+                    65,
+                    80
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     65,
+                     72
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      65,
+                      72
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       65,
+                       72
+                      ],
+                      "id": "$q_h$",
+                      "value": null
+                     }
+                    }
+                   },
+                   "op": "-",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     73,
+                     80
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      73,
+                      80
+                     ],
+                     "id": "$q_g$",
+                     "value": null
+                    }
+                   }
+                  }
+                 },
+                 "op": "+",
+                 "right": {
+                  "_": "Multiply",
+                  "@": [
+                   81,
+                   89
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    81,
+                    82
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     81,
+                     82
+                    ],
+                    "id": null,
+                    "value": "t"
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    82,
+                    89
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     82,
+                     89
+                    ],
+                    "id": "$m_h$",
+                    "value": null
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Multiply",
+           "@": [
+            96,
+            140
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             96,
+             107
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              96,
+              107
+             ],
+             "id": "$λ_{q,2}$",
+             "value": null
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             107,
+             140
+            ],
+            "op": {
+             "_": "Norm",
+             "@": [
+              107,
+              140
+             ],
+             "double": "||",
+             "power": {
+              "_": "Factor",
+              "@": [
+               139,
+               140
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                139,
+                140
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             },
+             "single": null,
+             "sub": null,
+             "value": {
+              "_": "Expression",
+              "@": [
+               109,
+               136
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                109,
+                136
+               ],
+               "op": {
+                "_": "Function",
+                "@": [
+                 109,
+                 136
+                ],
+                "name": [
+                 {
+                  "_": "IdentifierAlone",
+                  "@": [
+                   109,
+                   119
+                  ],
+                  "id": "$\\angle$",
+                  "value": null
+                 },
+                 []
+                ],
+                "p": "(",
+                "params": [
+                 {
+                  "_": "Expression",
+                  "@": [
+                   120,
+                   127
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    120,
+                    127
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     120,
+                     127
+                    ],
+                    "id": "$m_g$",
+                    "value": null
+                   }
+                  }
+                 },
+                 {
+                  "_": "Expression",
+                  "@": [
+                   128,
+                   135
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    128,
+                    135
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     128,
+                     135
+                    ],
+                    "id": "$m_h$",
+                    "value": null
+                   }
+                  }
+                 }
+                ],
+                "separators": [
+                 ","
+                ]
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       142,
+       431
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        148,
+        431
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          148,
+          169
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "point",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           158,
+           161
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            160,
+            161
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             160,
+             161
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              160,
+              161
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            148,
+            155
+           ],
+           "id": "$q_g$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          170,
+          191
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "point",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           180,
+           183
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            182,
+            183
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             182,
+             183
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              182,
+              183
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            170,
+            177
+           ],
+           "id": "$q_h$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          192,
+          235
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the material vectors of $g$",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           202,
+           205
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            204,
+            205
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             204,
+             205
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              204,
+              205
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            192,
+            199
+           ],
+           "id": "$m_g$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          236,
+          279
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the material vectors at $h$",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           246,
+           249
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            248,
+            249
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             248,
+             249
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              248,
+              249
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            236,
+            243
+           ],
+           "id": "$m_h$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          280,
+          308
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           293,
+           308
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "VectorType",
+            "@": [
+             293,
+             296
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              295,
+              296
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               295,
+               296
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                295,
+                296
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           },
+           {
+            "_": "VectorType",
+            "@": [
+             298,
+             301
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              300,
+              301
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               300,
+               301
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                300,
+                301
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "VectorType",
+            "@": [
+             305,
+             308
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              307,
+              308
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               307,
+               308
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                307,
+                308
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret_separators": [],
+          "separators": [
+           ","
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            280,
+            290
+           ],
+           "id": "$\\angle$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          309,
+          366
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the constraint weights for the position",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            309,
+            320
+           ],
+           "id": "$λ_{q,1}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          367,
+          425
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the constraint weights for the direction",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            367,
+            378
+           ],
+           "id": "$λ_{q,2}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          426,
+          431
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            426,
+            427
+           ],
+           "id": null,
+           "value": "t"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`\\$\\\\angle\\$`"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2 \nwhere\n`$q_g$` ∈ ℝ^n : point\n`$q_h$` ∈ ℝ^n : point\n`$m_g$` ∈ ℝ^n : the material vectors of $g$\n`$m_h$` ∈ ℝ^n : the material vectors at $h$\n`$\\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n\n`$λ_{q,1}$` ∈ ℝ : the constraint weights for the position\n`$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction\nt ∈ ℝ\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     432
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       140
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        140
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": "E_q",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          140
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           140
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            93
+           ],
+           "value": {
+            "_": "Add",
+            "@": [
+             8,
+             93
+            ],
+            "left": {
+             "_": "Expression",
+             "@": [
+              8,
+              49
+             ],
+             "sign": null,
+             "value": {
+              "_": "Multiply",
+              "@": [
+               8,
+               49
+              ],
+              "left": {
+               "_": "Factor",
+               "@": [
+                8,
+                19
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 8,
+                 19
+                ],
+                "id": "$λ_{q,1}$",
+                "value": null
+               }
+              },
+              "right": {
+               "_": "Factor",
+               "@": [
+                19,
+                49
+               ],
+               "op": {
+                "_": "Norm",
+                "@": [
+                 19,
+                 49
+                ],
+                "double": "||",
+                "power": {
+                 "_": "Factor",
+                 "@": [
+                  48,
+                  49
+                 ],
+                 "num": {
+                  "_": "Integer",
+                  "@": [
+                   48,
+                   49
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                },
+                "single": null,
+                "sub": null,
+                "value": {
+                 "_": "Expression",
+                 "@": [
+                  21,
+                  45
+                 ],
+                 "value": {
+                  "_": "Add",
+                  "@": [
+                   21,
+                   45
+                  ],
+                  "left": {
+                   "_": "Expression",
+                   "@": [
+                    21,
+                    36
+                   ],
+                   "value": {
+                    "_": "Subtract",
+                    "@": [
+                     21,
+                     36
+                    ],
+                    "left": {
+                     "_": "Expression",
+                     "@": [
+                      21,
+                      28
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       21,
+                       28
+                      ],
+                      "id0": {
+                       "_": "IdentifierAlone",
+                       "@": [
+                        21,
+                        28
+                       ],
+                       "id": "$q_g$",
+                       "value": null
+                      }
+                     }
+                    },
+                    "op": "-",
+                    "right": {
+                     "_": "Factor",
+                     "@": [
+                      29,
+                      36
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       29,
+                       36
+                      ],
+                      "id": "$q_h$",
+                      "value": null
+                     }
+                    }
+                   }
+                  },
+                  "op": "+",
+                  "right": {
+                   "_": "Multiply",
+                   "@": [
+                    37,
+                    45
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     37,
+                     38
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      37,
+                      38
+                     ],
+                     "id": null,
+                     "value": "t"
+                    }
+                   },
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     38,
+                     45
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      38,
+                      45
+                     ],
+                     "id": "$m_g$",
+                     "value": null
+                    }
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            },
+            "op": "+",
+            "right": {
+             "_": "Multiply",
+             "@": [
+              52,
+              93
+             ],
+             "left": {
+              "_": "Factor",
+              "@": [
+               52,
+               63
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                52,
+                63
+               ],
+               "id": "$λ_{q,1}$",
+               "value": null
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               63,
+               93
+              ],
+              "op": {
+               "_": "Norm",
+               "@": [
+                63,
+                93
+               ],
+               "double": "||",
+               "power": {
+                "_": "Factor",
+                "@": [
+                 92,
+                 93
+                ],
+                "num": {
+                 "_": "Integer",
+                 "@": [
+                  92,
+                  93
+                 ],
+                 "value": [
+                  "2"
+                 ]
+                }
+               },
+               "single": null,
+               "sub": null,
+               "value": {
+                "_": "Expression",
+                "@": [
+                 65,
+                 89
+                ],
+                "value": {
+                 "_": "Add",
+                 "@": [
+                  65,
+                  89
+                 ],
+                 "left": {
+                  "_": "Expression",
+                  "@": [
+                   65,
+                   80
+                  ],
+                  "value": {
+                   "_": "Subtract",
+                   "@": [
+                    65,
+                    80
+                   ],
+                   "left": {
+                    "_": "Expression",
+                    "@": [
+                     65,
+                     72
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      65,
+                      72
+                     ],
+                     "id0": {
+                      "_": "IdentifierAlone",
+                      "@": [
+                       65,
+                       72
+                      ],
+                      "id": "$q_h$",
+                      "value": null
+                     }
+                    }
+                   },
+                   "op": "-",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     73,
+                     80
+                    ],
+                    "id0": {
+                     "_": "IdentifierAlone",
+                     "@": [
+                      73,
+                      80
+                     ],
+                     "id": "$q_g$",
+                     "value": null
+                    }
+                   }
+                  }
+                 },
+                 "op": "+",
+                 "right": {
+                  "_": "Multiply",
+                  "@": [
+                   81,
+                   89
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    81,
+                    82
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     81,
+                     82
+                    ],
+                    "id": null,
+                    "value": "t"
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    82,
+                    89
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     82,
+                     89
+                    ],
+                    "id": "$m_h$",
+                    "value": null
+                   }
+                  }
+                 }
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Multiply",
+           "@": [
+            96,
+            140
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             96,
+             107
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              96,
+              107
+             ],
+             "id": "$λ_{q,2}$",
+             "value": null
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             107,
+             140
+            ],
+            "op": {
+             "_": "Norm",
+             "@": [
+              107,
+              140
+             ],
+             "double": "||",
+             "power": {
+              "_": "Factor",
+              "@": [
+               139,
+               140
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                139,
+                140
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             },
+             "single": null,
+             "sub": null,
+             "value": {
+              "_": "Expression",
+              "@": [
+               109,
+               136
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                109,
+                136
+               ],
+               "op": {
+                "_": "Function",
+                "@": [
+                 109,
+                 136
+                ],
+                "name": "`$\\angle$`",
+                "p": "(",
+                "params": [
+                 {
+                  "_": "Expression",
+                  "@": [
+                   120,
+                   127
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    120,
+                    127
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     120,
+                     127
+                    ],
+                    "id": "$m_g$",
+                    "value": null
+                   }
+                  }
+                 },
+                 {
+                  "_": "Expression",
+                  "@": [
+                   128,
+                   135
+                  ],
+                  "sign": null,
+                  "value": {
+                   "_": "Factor",
+                   "@": [
+                    128,
+                    135
+                   ],
+                   "id0": {
+                    "_": "IdentifierAlone",
+                    "@": [
+                     128,
+                     135
+                    ],
+                    "id": "$m_h$",
+                    "value": null
+                   }
+                  }
+                 }
+                ],
+                "separators": [
+                 ","
+                ]
+               }
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       142,
+       431
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        148,
+        431
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          148,
+          169
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "point",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           158,
+           161
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            160,
+            161
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             160,
+             161
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              160,
+              161
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            148,
+            155
+           ],
+           "id": "$q_g$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          170,
+          191
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "point",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           180,
+           183
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            182,
+            183
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             182,
+             183
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              182,
+              183
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            170,
+            177
+           ],
+           "id": "$q_h$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          192,
+          235
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the material vectors of $g$",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           202,
+           205
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            204,
+            205
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             204,
+             205
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              204,
+              205
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            192,
+            199
+           ],
+           "id": "$m_g$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          236,
+          279
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the material vectors at $h$",
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           246,
+           249
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            248,
+            249
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             248,
+             249
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              248,
+              249
+             ],
+             "id": null,
+             "value": "n"
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            236,
+            243
+           ],
+           "id": "$m_h$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          280,
+          308
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "FunctionType",
+          "@": [
+           293,
+           308
+          ],
+          "empty": null,
+          "params": [
+           {
+            "_": "VectorType",
+            "@": [
+             293,
+             296
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              295,
+              296
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               295,
+               296
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                295,
+                296
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           },
+           {
+            "_": "VectorType",
+            "@": [
+             298,
+             301
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              300,
+              301
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               300,
+               301
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                300,
+                301
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret": [
+           {
+            "_": "VectorType",
+            "@": [
+             305,
+             308
+            ],
+            "id1": {
+             "_": "ArithExpression",
+             "@": [
+              307,
+              308
+             ],
+             "sign": null,
+             "value": {
+              "_": "ArithFactor",
+              "@": [
+               307,
+               308
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                307,
+                308
+               ],
+               "id": null,
+               "value": "n"
+              }
+             }
+            },
+            "type": "ℝ",
+            "attr": []
+           }
+          ],
+          "ret_separators": [],
+          "separators": [
+           ","
+          ]
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            280,
+            290
+           ],
+           "id": "$\\angle$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          309,
+          366
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the constraint weights for the position",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            309,
+            320
+           ],
+           "id": "$λ_{q,1}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          367,
+          425
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the constraint weights for the direction",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            367,
+            378
+           ],
+           "id": "$λ_{q,2}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          426,
+          431
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            426,
+            427
+           ],
+           "id": null,
+           "value": "t"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2 \nwhere\n`$q_g$` ∈ ℝ^n : point\n`$q_h$` ∈ ℝ^n : point\n`$m_g$` ∈ ℝ^n : the material vectors of $g$\n`$m_h$` ∈ ℝ^n : the material vectors at $h$\n`$\\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n\n`$λ_{q,1}$` ∈ ℝ : the constraint weights for the position\n`$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction\nt ∈ ℝ\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, q_g, q_h, m_g, m_h, angle, λ_q_comma_1, λ_q_comma_2, t):\n        q_g = np.asarray(q_g, dtype=np.float64)\n        q_h = np.asarray(q_h, dtype=np.float64)\n        m_g = np.asarray(m_g, dtype=np.float64)\n        m_h = np.asarray(m_h, dtype=np.float64)\n        n = q_g.shape[0]\n        assert q_g.shape == (n,)\n        assert q_h.shape == (n,)\n        assert m_g.shape == (n,)\n        assert m_h.shape == (n,)\n        assert np.ndim(λ_q_comma_1) == 0\n        assert np.ndim(λ_q_comma_2) == 0\n        assert np.ndim(t) == 0\n        # `E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2\n        self.E_q = λ_q_comma_1 * np.power(np.asarray(np.linalg.norm(q_g - q_h + t * m_g, 2), dtype=np.float64), 2) + λ_q_comma_1 * np.power(np.asarray(np.linalg.norm(q_h - q_g + t * m_h, 2), dtype=np.float64), 2) + λ_q_comma_2 * np.power(np.asarray(np.linalg.norm(angle(m_g, m_h), 2), dtype=np.float64), 2)\n\n\n\n\n\n",
+  "eigen": "/*\n`E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2 \nwhere\n`$q_g$` ∈ ℝ^n : point\n`$q_h$` ∈ ℝ^n : point\n`$m_g$` ∈ ℝ^n : the material vectors of $g$\n`$m_h$` ∈ ℝ^n : the material vectors at $h$\n`$\\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n\n`$λ_{q,1}$` ∈ ℝ : the constraint weights for the position\n`$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction\nt ∈ ℝ\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT E_q;\n\n    heartlib(\n        const Eigen::VectorXd & q_g,\n        const Eigen::VectorXd & q_h,\n        const Eigen::VectorXd & m_g,\n        const Eigen::VectorXd & m_h,\n        const std::function<Eigen::VectorXd(Eigen::VectorXd, Eigen::VectorXd)> & angle,\n        const double & λ_q_comma_1,\n        const double & λ_q_comma_2,\n        const double & t)\n    {\n        const long n = q_g.size();\n        assert( q_h.size() == n );\n        assert( m_g.size() == n );\n        assert( m_h.size() == n );\n        // `E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2\n        E_q = λ_q_comma_1 * pow((q_g - q_h + t * m_g).template lpNorm<2>(), 2) + λ_q_comma_1 * pow((q_h - q_g + t * m_h).template lpNorm<2>(), 2) + λ_q_comma_2 * pow((angle((m_g).eval(), (m_h).eval())).template lpNorm<2>(), 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nE_q & = λ_{q,1} \\left\\|q_g - q_h + t m_g\\right\\|^{2} + λ_{q,1} \\left\\|q_h - q_g + t m_h\\right\\|^{2} + λ_{q,2} \\left\\|\\angle\\left( m_g,m_h \\right)\\right\\|^{2} \\\\\n\\intertext{where} \nq_g & ∈ \\mathbb{R}^{ n} \\text{ point} \\\\\nq_h & ∈ \\mathbb{R}^{ n} \\text{ point} \\\\\nm_g & ∈ \\mathbb{R}^{ n} \\text{ the material vectors of \\$g\\$} \\\\\nm_h & ∈ \\mathbb{R}^{ n} \\text{ the material vectors at \\$h\\$} \\\\\n\\angle & ∈ \\mathbb{R}^{ n},\\mathbb{R}^{ n}\\rightarrow \\mathbb{R}^{ n} \\\\\nλ_{q,1} & ∈ \\mathbb{R} \\text{ the constraint weights for the position} \\\\\nλ_{q,2} & ∈ \\mathbb{R} \\text{ the constraint weights for the direction} \\\\\nt & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nE_q & = λ_{q,1} \\left\\|q_g - q_h + t m_g\\right\\|^{2} + λ_{q,1} \\left\\|q_h - q_g + t m_h\\right\\|^{2} + λ_{q,2} \\left\\|\\angle\\left( m_g,m_h \\right)\\right\\|^{2} \\\\\nwhere \\\\\nq_g & ∈ \\mathbb{R}^{ n} \\text{ point} \\\\\nq_h & ∈ \\mathbb{R}^{ n} \\text{ point} \\\\\nm_g & ∈ \\mathbb{R}^{ n} \\text{ the material vectors of \\$g\\$} \\\\\nm_h & ∈ \\mathbb{R}^{ n} \\text{ the material vectors at \\$h\\$} \\\\\n\\angle & ∈ \\mathbb{R}^{ n},\\mathbb{R}^{ n}\\rightarrow \\mathbb{R}^{ n} \\\\\nλ_{q,1} & ∈ \\mathbb{R} \\text{ the constraint weights for the position} \\\\\nλ_{q,2} & ∈ \\mathbb{R} \\text{ the constraint weights for the direction} \\\\\nt & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(q_g, q_h, m_g, m_h, angle, lambda_q_1, lambda_q_2, t)\n% output = heartlib(`$q_g$`, `$q_h$`, `$m_g$`, `$m_h$`, `$\\angle$`, `$λ_{q,1}$`, `$λ_{q,2}$`, t)\n%\n%    `E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2 \n%    where\n%    `$q_g$` ∈ ℝ^n : point\n%    `$q_h$` ∈ ℝ^n : point\n%    `$m_g$` ∈ ℝ^n : the material vectors of $g$\n%    `$m_h$` ∈ ℝ^n : the material vectors at $h$\n%    `$\\angle$` ∈ ℝ^n, ℝ^n -> ℝ^n\n%    `$λ_{q,1}$` ∈ ℝ : the constraint weights for the position\n%    `$λ_{q,2}$` ∈ ℝ : the constraint weights for the direction\n%    t ∈ ℝ\n%    \n    q_g = reshape(q_g,[],1);\n    q_h = reshape(q_h,[],1);\n    m_g = reshape(m_g,[],1);\n    m_h = reshape(m_h,[],1);\n\n    n = size(q_g, 1);\n    assert( numel(q_g) == n );\n    assert( numel(q_h) == n );\n    assert( numel(m_g) == n );\n    assert( numel(m_h) == n );\n    assert(numel(lambda_q_1) == 1);\n    assert(numel(lambda_q_2) == 1);\n    assert(numel(t) == 1);\n\n    % `E_q` = `$λ_{q,1}$`||`$q_g$`-`$q_h$`+t`$m_g$`||^2 + `$λ_{q,1}$`||`$q_h$`-`$q_g$`+t`$m_h$`||^2 + `$λ_{q,2}$`||`$\\angle$`(`$m_g$`,`$m_h$`)||^2\n\n    E_q = lambda_q_1 * norm(q_g - q_h + t * m_g, 2).^2 + lambda_q_1 * norm(q_h - q_g + t * m_h, 2).^2 + lambda_q_2 * norm(angle(m_g, m_h), 2).^2;\n    output.E_q = E_q;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'E_q', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-E_q\", \"sym\":\"E_q\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {E_q} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$λ_{q,1}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$λ_{q,1}$\", \"sym\":\"$λ_{q,1}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ_{q,1}} } \\left\\|\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$q_g$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$q_g$\", \"sym\":\"$q_g$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {q_g} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$q_h$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$q_h$\", \"sym\":\"$q_h$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {q_h} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$m_g$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$m_g$\", \"sym\":\"$m_g$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {m_g} }\\right\\|^{2} + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$λ_{q,1}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$λ_{q,1}$\", \"sym\":\"$λ_{q,1}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ_{q,1}} } \\left\\|\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$q_h$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$q_h$\", \"sym\":\"$q_h$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {q_h} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$q_g$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$q_g$\", \"sym\":\"$q_g$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {q_g} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$m_h$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$m_h$\", \"sym\":\"$m_h$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {m_h} }\\right\\|^{2} + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$λ_{q,2}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$λ_{q,2}$\", \"sym\":\"$λ_{q,2}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ_{q,2}} } \\left\\|\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$\\\\\\\\angle$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$\\\\\\\\angle$\", \"sym\":\"$\\\\\\\\angle$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\angle} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$m_g$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$m_g$\", \"sym\":\"$m_g$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {m_g} },\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$m_h$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$m_h$\", \"sym\":\"$m_h$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {m_h} } \\right)\\right\\|^{2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$\\\\\\\\angle$', '$m_g$', '$m_h$', '$q_g$', '$q_h$', '$λ_{q,1}$', '$λ_{q,2}$', 't', 'E_q'], false, [], [], 'YEVfcWAgPSBgJM67X3txLDF9JGB8fGAkcV9nJGAtYCRxX2gkYCt0YCRtX2ckYHx8XjIgKyBgJM67X3txLDF9JGB8fGAkcV9oJGAtYCRxX2ckYCt0YCRtX2gkYHx8XjIgKyBgJM67X3txLDJ9JGB8fGAkXGFuZ2xlJGAoYCRtX2ckYCxgJG1faCRgKXx8XjI=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$q_g$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$q_g$\", \"sym\":\"$q_g$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {q_g} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\text{ point} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$q_h$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$q_h$\", \"sym\":\"$q_h$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {q_h} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\text{ point} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$m_g$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$m_g$\", \"sym\":\"$m_g$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {m_g} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\text{ the material vectors of \\$g\\$} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$m_h$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$m_h$\", \"sym\":\"$m_h$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {m_h} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\text{ the material vectors at \\$h\\$} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$\\\\\\\\angle$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$\\\\\\\\angle$\", \"sym\":\"$\\\\\\\\angle$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {\\angle} } & ∈ \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }},\\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }}\\rightarrow \\mathbb{R}^{ \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'n', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-n\", \"sym\":\"n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {n} }} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$λ_{q,1}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$λ_{q,1}$\", \"sym\":\"$λ_{q,1}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ_{q,1}} } & ∈ \\mathbb{R} \\text{ the constraint weights for the position} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$λ_{q,2}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$λ_{q,2}$\", \"sym\":\"$λ_{q,2}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {λ_{q,2}} } & ∈ \\mathbb{R} \\text{ the constraint weights for the direction} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Elastic"
+}

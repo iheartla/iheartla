@@ -1,0 +1,2 @@
+f(x) = { 1-|x| if |x| < 1
+         0 otherwise where x ∈ ℝ

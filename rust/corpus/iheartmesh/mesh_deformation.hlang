@@ -1,0 +1,51 @@
+vec, inversevec, diag, svd from linearalgebra
+ElementSets from MeshConnectivity
+NeighborVerticesInFace, Faces, Vertices, VertexOneRing, OrientedVertices from TetrahderonNeighborhoods(M)
+M : CellMesh
+x̄_i ∈ ℝ³ : rest pos
+x_i ∈ ℝ³ : current pos
+bx_j ∈ ℤ index: boundary indices
+bp_j ∈ ℝ³ : boundary positions
+w ∈ ℝ : penalty
+ε ∈ ℝ : eps
+psd : ℝ^(p×p) -> ℝ^(p×p) sparse
+
+V, E, F, C = ElementSets(M)
+
+vol_i,j,k,l = ⅙ |[x̄_j-x̄_i x̄_k-x̄_i x̄_l-x̄_i]| where i,j,k,l ∈ V
+
+`m_r`(s) = [x̄_b-x̄_a x̄_c-x̄_a x̄_d-x̄_a] where s ∈ C,
+a, b, c, d = OrientedVertices(s)
+
+S(s, x) = { ∞ if |m| ≤ 0
+            vol_abcd (‖J‖² + ‖J⁻¹‖²) otherwise 
+where s ∈ C, x_i ∈ ℝ³,
+a, b, c, d = OrientedVertices(s),
+m = [x_b-x_a x_c-x_a x_d-x_a],
+J = m `m_r`(s)⁻¹
+
+EXPS(s, x) = { ∞ if |m| ≤ 0
+               vol_abcd exp(‖J‖² + ‖J⁻¹‖²) otherwise 
+where s ∈ C, x_i ∈ ℝ³,
+a, b, c, d = OrientedVertices(s),
+m = [x_b-x_a x_c-x_a x_d-x_a],
+J = m `m_r`(s)⁻¹
+
+AMIPS(s, x) = { ∞ if |m| ≤ 0
+                vol_abcd exp(½(‖J‖²/|J| + ½(|J|+|J⁻¹|))) otherwise 
+where s ∈ C, x_i ∈ ℝ³,
+a, b, c, d = OrientedVertices(s),
+m = [x_b-x_a x_c-x_a x_d-x_a],
+J = m `m_r`(s)⁻¹
+
+CAMIPS(s, x) = { ∞ if |m| ≤ 0
+                 vol_abcd (‖J‖²/|J|^⅔) otherwise 
+where s ∈ C, x_i ∈ ℝ³,
+a, b, c, d = OrientedVertices(s),
+m = [x_b-x_a x_c-x_a x_d-x_a],
+J = m `m_r`(s)⁻¹
+
+E2 = w ∑_j ‖bp_j - x_(bx_j)‖²
+e = ∑_(i ∈ C) S_i(x) + E2
+G = ∂e/∂x
+H = ∑_(i ∈ C) psd(∂²S_i(x)/∂x²) + psd(∂²E2/∂x²)

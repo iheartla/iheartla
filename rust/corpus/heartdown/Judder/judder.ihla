@@ -1,0 +1,25 @@
+J = P(α(F), β(L), S)
+F ∈ ℝ
+L ∈ ℝ
+S ∈ ℝ
+P ∈ ℝ, ℝ, ℝ -> ℝ
+
+
+CFF(L) = a ⋅ log(L) + b where L ∈ ℝ
+
+a ∈ ℝ
+b ∈ ℝ
+
+
+`$F_a$` = M⋅ CFF(`$L_a$`)
+
+M ∈ ℝ
+`$L_a$` ∈ ℝ
+
+`$F_b$` = M⋅ CFF(`$L_b$`)
+
+`$L_b$` ∈ ℝ
+
+α(F) = 1/F where F ∈ ℝ
+
+β(L) = log_10(L) where L ∈ ℝ

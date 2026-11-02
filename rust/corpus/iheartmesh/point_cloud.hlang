@@ -1,0 +1,14 @@
+svd from linearalgebra
+ElementSets from MeshConnectivity
+VertexOneRing from PointCloudNeighborhoods(M)
+M : EdgeMesh 
+x_i ∈ ℝ^3 
+
+V, E = ElementSets( M )
+
+Normal(v) = vv_*,3 where v ∈ V,
+N = VertexOneRing(v),
+p̄ = (∑_(n ∈ N) x_n)/|N|,
+d = {x_v-p̄ for v ∈ N},
+m_i,* = d_i,
+u, `∑`, vv = svd(m)

@@ -1,0 +1,34 @@
+`$\boldsymbol{u}$`(`$\boldsymbol{r}$`) = ((a-b)/rI_3 + b/r³ `$\boldsymbol{r}$` `$\boldsymbol{r}$`^T) `$\boldsymbol{f}$` where `$\boldsymbol{r}$` ∈ ℝ^3
+
+where
+r ∈ ℝ: the norm of $\boldsymbol{r}$
+
+`${\rho}_ε$`(`$\boldsymbol{r}$`) = (15`$r_ε$`^4/(8π) + 1/`$r_ε$`^7 )  where `$\boldsymbol{r}$` ∈ ℝ^3
+
+
+`$\boldsymbol{u}_ε$`(`$\boldsymbol{r}$`) = ((a-b)/`$r_ε$`I_3 + b/`$r_ε$`³ `$\boldsymbol{r}$` `$\boldsymbol{r}$`^T + aε²/(2`$r_ε$`³) I_3 ) `$\boldsymbol{f}$` where `$\boldsymbol{r}$` ∈ ℝ^3
+
+where
+
+`$\boldsymbol{f}$` ∈ ℝ^3: force vector
+
+tr from linearalgebra
+`$\tilde{\boldsymbol{u}}_ε$`(`$\boldsymbol{r}$`) = -a(1/`$r_ε$`³ + 3ε²/(2`$r_ε$`⁵) ) `$\boldsymbol{F}$``$\boldsymbol{r}$` + b(1/`$r_ε$`³(`$\boldsymbol{F}$`+`$\boldsymbol{F}$`^T+tr(`$\boldsymbol{F}$`)I_3) - 3/`$r_ε$`⁵(`$\boldsymbol{r}$`^T`$\boldsymbol{F}$``$\boldsymbol{r}$`)I_3)`$\boldsymbol{r}$` where `$\boldsymbol{r}$` ∈ ℝ^3
+
+`$\boldsymbol{t}_ε$`(`$\boldsymbol{r}$`) = -a(1/`$r_ε$`³ + 3ε²/(2`$r_ε$`⁵) ) `$\boldsymbol{F}$``$\boldsymbol{r}$` where `$\boldsymbol{r}$` ∈ ℝ^3
+
+`$\boldsymbol{s}_ε$`(`$\boldsymbol{r}$`) = (2b-a)(1/`$r_ε$`³ + 3ε²/(2`$r_ε$`⁵))(s`$\boldsymbol{r}$`) where `$\boldsymbol{r}$` ∈ ℝ^3
+
+where
+
+s ∈ ℝ
+
+`$\boldsymbol{p}_ε$`(`$\boldsymbol{r}$`) = (2b-a)/`$r_ε$`³ `$\boldsymbol{F}$``$\boldsymbol{r}$` - 3/(2`$r_ε$`⁵)(2b(`$\boldsymbol{r}$`ᵀ`$\boldsymbol{F}$``$\boldsymbol{r}$`)I_3+aε²`$\boldsymbol{F}$`)`$\boldsymbol{r}$` where `$\boldsymbol{r}$` ∈ ℝ^3
+
+where
+
+`$\boldsymbol{F}$` ∈ ℝ^(3×3): force matrix 
+`$r_ε$` ∈ ℝ
+a ∈ ℝ : coefficient
+b ∈ ℝ : coefficient
+ε ∈ ℝ : the radial scale

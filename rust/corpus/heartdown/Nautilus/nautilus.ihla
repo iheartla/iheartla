@@ -1,0 +1,16 @@
+H = PSP⁻¹
+
+P = [1 x₁ 0
+     0 x₂ 0
+     x₃ x₄ 1]
+S = [x₅ x₆ x₇
+     x₈ x₉ x₁₀
+     0 0 1]
+where
+x ∈ ℝ^n
+
+E(x) = λ||(x₅, x₈) - (x₉, x₆)||^2 + sum_i ||H v_i - PSP⁻¹ v_i||^2 where x ∈ ℝ^n
+
+where
+λ ∈ ℝ
+v_i ∈ ℝ^(3 × 3)

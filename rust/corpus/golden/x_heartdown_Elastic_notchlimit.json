@@ -1,0 +1,1297 @@
+{
+ "id": "x_heartdown_Elastic_notchlimit",
+ "src": "`E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\nwhere\n`$δ^{(−)}$` ∈ ℝ \n`$δ^{(+)}$` ∈ ℝ\n`$β_q$` ∈ ℝ :  barycentric coordinates \n`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "`E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\nwhere\n`$δ^{(−)}$` ∈ ℝ \n`$δ^{(+)}$` ∈ ℝ\n`$β_q$` ∈ ℝ :  barycentric coordinates \n`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     373
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       103
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        103
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": "E_n",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          103
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           103
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            54
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             8,
+             54
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              8,
+              54
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               8,
+               52
+              ],
+              "op": {
+               "_": "Function",
+               "@": [
+                8,
+                52
+               ],
+               "name": [
+                {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  8,
+                  19
+                 ],
+                 "id": "$δ^{(−)}$",
+                 "value": null
+                },
+                []
+               ],
+               "p": "(",
+               "params": [
+                {
+                 "_": "Expression",
+                 "@": [
+                  20,
+                  51
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   20,
+                   51
+                  ],
+                  "left": {
+                   "_": "Divide",
+                   "@": [
+                    20,
+                    24
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     20,
+                     21
+                    ],
+                    "num": {
+                     "_": "Integer",
+                     "@": [
+                      20,
+                      21
+                     ],
+                     "value": [
+                      "1"
+                     ]
+                    }
+                   },
+                   "op": "/",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     22,
+                     24
+                    ],
+                    "num": {
+                     "_": "Integer",
+                     "@": [
+                      22,
+                      24
+                     ],
+                     "value": [
+                      "1",
+                      "0"
+                     ]
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    25,
+                    51
+                   ],
+                   "op": {
+                    "_": "LogFunc",
+                    "@": [
+                     25,
+                     51
+                    ],
+                    "f": null,
+                    "param": {
+                     "_": "Expression",
+                     "@": [
+                      29,
+                      50
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       29,
+                       50
+                      ],
+                      "sub": {
+                       "_": "Subexpression",
+                       "@": [
+                        29,
+                        50
+                       ],
+                       "value": {
+                        "_": "Expression",
+                        "@": [
+                         30,
+                         49
+                        ],
+                        "value": {
+                         "_": "Subtract",
+                         "@": [
+                          30,
+                          49
+                         ],
+                         "left": {
+                          "_": "Expression",
+                          "@": [
+                           30,
+                           37
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            30,
+                            37
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             30,
+                             37
+                            ],
+                            "id": "$β_q$",
+                            "value": null
+                           }
+                          }
+                         },
+                         "op": "-",
+                         "right": {
+                          "_": "Factor",
+                          "@": [
+                           38,
+                           49
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            38,
+                            49
+                           ],
+                           "id": "$β^{(−)}$",
+                           "value": null
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "s": null
+                   }
+                  }
+                 }
+                }
+               ],
+               "separators": []
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               53,
+               54
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                53,
+                54
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            57,
+            103
+           ],
+           "op": {
+            "_": "Power",
+            "@": [
+             57,
+             103
+            ],
+            "base": {
+             "_": "Factor",
+             "@": [
+              57,
+              101
+             ],
+             "op": {
+              "_": "Function",
+              "@": [
+               57,
+               101
+              ],
+              "name": [
+               {
+                "_": "IdentifierAlone",
+                "@": [
+                 57,
+                 68
+                ],
+                "id": "$δ^{(+)}$",
+                "value": null
+               },
+               []
+              ],
+              "p": "(",
+              "params": [
+               {
+                "_": "Expression",
+                "@": [
+                 69,
+                 100
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  69,
+                  100
+                 ],
+                 "left": {
+                  "_": "Divide",
+                  "@": [
+                   69,
+                   73
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    69,
+                    70
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     69,
+                     70
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  },
+                  "op": "/",
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    71,
+                    73
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     71,
+                     73
+                    ],
+                    "value": [
+                     "1",
+                     "0"
+                    ]
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   74,
+                   100
+                  ],
+                  "op": {
+                   "_": "LogFunc",
+                   "@": [
+                    74,
+                    100
+                   ],
+                   "f": null,
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     78,
+                     99
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      78,
+                      99
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       78,
+                       99
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        79,
+                        98
+                       ],
+                       "value": {
+                        "_": "Subtract",
+                        "@": [
+                         79,
+                         98
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          79,
+                          90
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           79,
+                           90
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            79,
+                            90
+                           ],
+                           "id": "$β^{(+)}$",
+                           "value": null
+                          }
+                         }
+                        },
+                        "op": "-",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          91,
+                          98
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           91,
+                           98
+                          ],
+                          "id": "$β_q$",
+                          "value": null
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "s": null
+                  }
+                 }
+                }
+               }
+              ],
+              "separators": []
+             }
+            },
+            "power": {
+             "_": "Factor",
+             "@": [
+              102,
+              103
+             ],
+             "num": {
+              "_": "Integer",
+              "@": [
+               102,
+               103
+              ],
+              "value": [
+               "2"
+              ]
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       104,
+       372
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        110,
+        372
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          110,
+          125
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            110,
+            121
+           ],
+           "id": "$δ^{(−)}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          127,
+          142
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            127,
+            138
+           ],
+           "id": "$δ^{(+)}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          143,
+          182
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "barycentric coordinates ",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            143,
+            150
+           ],
+           "id": "$β_q$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          183,
+          277
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the barycentric coordinates of the notch bounds on their corresponding edges",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            183,
+            194
+           ],
+           "id": "$β^{(−)}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          278,
+          372
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the barycentric coordinates of the notch bounds on their corresponding edges",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            278,
+            289
+           ],
+           "id": "$β^{(+)}$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "`E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\nwhere\n`$δ^{(−)}$` ∈ ℝ \n`$δ^{(+)}$` ∈ ℝ\n`$β_q$` ∈ ℝ :  barycentric coordinates \n`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     373
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       103
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        103
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          5
+         ],
+         "id": "E_n",
+         "value": null
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          8,
+          103
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           8,
+           103
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            8,
+            54
+           ],
+           "sign": null,
+           "value": {
+            "_": "Multiply",
+            "@": [
+             8,
+             54
+            ],
+            "left": {
+             "_": "Factor",
+             "@": [
+              8,
+              19
+             ],
+             "id0": {
+              "_": "IdentifierAlone",
+              "@": [
+               8,
+               19
+              ],
+              "id": "$δ^{(−)}$",
+              "value": null
+             }
+            },
+            "right": {
+             "_": "Factor",
+             "@": [
+              19,
+              54
+             ],
+             "op": {
+              "_": "Power",
+              "@": [
+               19,
+               54
+              ],
+              "base": {
+               "_": "Factor",
+               "@": [
+                19,
+                52
+               ],
+               "sub": {
+                "_": "Subexpression",
+                "@": [
+                 19,
+                 52
+                ],
+                "value": {
+                 "_": "Expression",
+                 "@": [
+                  20,
+                  51
+                 ],
+                 "sign": null,
+                 "value": {
+                  "_": "Multiply",
+                  "@": [
+                   20,
+                   51
+                  ],
+                  "left": {
+                   "_": "Divide",
+                   "@": [
+                    20,
+                    24
+                   ],
+                   "left": {
+                    "_": "Factor",
+                    "@": [
+                     20,
+                     21
+                    ],
+                    "num": {
+                     "_": "Integer",
+                     "@": [
+                      20,
+                      21
+                     ],
+                     "value": [
+                      "1"
+                     ]
+                    }
+                   },
+                   "op": "/",
+                   "right": {
+                    "_": "Factor",
+                    "@": [
+                     22,
+                     24
+                    ],
+                    "num": {
+                     "_": "Integer",
+                     "@": [
+                      22,
+                      24
+                     ],
+                     "value": [
+                      "1",
+                      "0"
+                     ]
+                    }
+                   }
+                  },
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    25,
+                    51
+                   ],
+                   "op": {
+                    "_": "LogFunc",
+                    "@": [
+                     25,
+                     51
+                    ],
+                    "f": null,
+                    "param": {
+                     "_": "Expression",
+                     "@": [
+                      29,
+                      50
+                     ],
+                     "sign": null,
+                     "value": {
+                      "_": "Factor",
+                      "@": [
+                       29,
+                       50
+                      ],
+                      "sub": {
+                       "_": "Subexpression",
+                       "@": [
+                        29,
+                        50
+                       ],
+                       "value": {
+                        "_": "Expression",
+                        "@": [
+                         30,
+                         49
+                        ],
+                        "value": {
+                         "_": "Subtract",
+                         "@": [
+                          30,
+                          49
+                         ],
+                         "left": {
+                          "_": "Expression",
+                          "@": [
+                           30,
+                           37
+                          ],
+                          "sign": null,
+                          "value": {
+                           "_": "Factor",
+                           "@": [
+                            30,
+                            37
+                           ],
+                           "id0": {
+                            "_": "IdentifierAlone",
+                            "@": [
+                             30,
+                             37
+                            ],
+                            "id": "$β_q$",
+                            "value": null
+                           }
+                          }
+                         },
+                         "op": "-",
+                         "right": {
+                          "_": "Factor",
+                          "@": [
+                           38,
+                           49
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            38,
+                            49
+                           ],
+                           "id": "$β^{(−)}$",
+                           "value": null
+                          }
+                         }
+                        }
+                       }
+                      }
+                     }
+                    },
+                    "s": null
+                   }
+                  }
+                 }
+                }
+               }
+              },
+              "power": {
+               "_": "Factor",
+               "@": [
+                53,
+                54
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 53,
+                 54
+                ],
+                "value": [
+                 "2"
+                ]
+               }
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Multiply",
+           "@": [
+            57,
+            103
+           ],
+           "left": {
+            "_": "Factor",
+            "@": [
+             57,
+             68
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              57,
+              68
+             ],
+             "id": "$δ^{(+)}$",
+             "value": null
+            }
+           },
+           "right": {
+            "_": "Factor",
+            "@": [
+             68,
+             103
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              68,
+              103
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               68,
+               101
+              ],
+              "sub": {
+               "_": "Subexpression",
+               "@": [
+                68,
+                101
+               ],
+               "value": {
+                "_": "Expression",
+                "@": [
+                 69,
+                 100
+                ],
+                "sign": null,
+                "value": {
+                 "_": "Multiply",
+                 "@": [
+                  69,
+                  100
+                 ],
+                 "left": {
+                  "_": "Divide",
+                  "@": [
+                   69,
+                   73
+                  ],
+                  "left": {
+                   "_": "Factor",
+                   "@": [
+                    69,
+                    70
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     69,
+                     70
+                    ],
+                    "value": [
+                     "1"
+                    ]
+                   }
+                  },
+                  "op": "/",
+                  "right": {
+                   "_": "Factor",
+                   "@": [
+                    71,
+                    73
+                   ],
+                   "num": {
+                    "_": "Integer",
+                    "@": [
+                     71,
+                     73
+                    ],
+                    "value": [
+                     "1",
+                     "0"
+                    ]
+                   }
+                  }
+                 },
+                 "right": {
+                  "_": "Factor",
+                  "@": [
+                   74,
+                   100
+                  ],
+                  "op": {
+                   "_": "LogFunc",
+                   "@": [
+                    74,
+                    100
+                   ],
+                   "f": null,
+                   "param": {
+                    "_": "Expression",
+                    "@": [
+                     78,
+                     99
+                    ],
+                    "sign": null,
+                    "value": {
+                     "_": "Factor",
+                     "@": [
+                      78,
+                      99
+                     ],
+                     "sub": {
+                      "_": "Subexpression",
+                      "@": [
+                       78,
+                       99
+                      ],
+                      "value": {
+                       "_": "Expression",
+                       "@": [
+                        79,
+                        98
+                       ],
+                       "value": {
+                        "_": "Subtract",
+                        "@": [
+                         79,
+                         98
+                        ],
+                        "left": {
+                         "_": "Expression",
+                         "@": [
+                          79,
+                          90
+                         ],
+                         "sign": null,
+                         "value": {
+                          "_": "Factor",
+                          "@": [
+                           79,
+                           90
+                          ],
+                          "id0": {
+                           "_": "IdentifierAlone",
+                           "@": [
+                            79,
+                            90
+                           ],
+                           "id": "$β^{(+)}$",
+                           "value": null
+                          }
+                         }
+                        },
+                        "op": "-",
+                        "right": {
+                         "_": "Factor",
+                         "@": [
+                          91,
+                          98
+                         ],
+                         "id0": {
+                          "_": "IdentifierAlone",
+                          "@": [
+                           91,
+                           98
+                          ],
+                          "id": "$β_q$",
+                          "value": null
+                         }
+                        }
+                       }
+                      }
+                     }
+                    }
+                   },
+                   "s": null
+                  }
+                 }
+                }
+               }
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               102,
+               103
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                102,
+                103
+               ],
+               "value": [
+                "2"
+               ]
+              }
+             }
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       104,
+       372
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        110,
+        372
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          110,
+          125
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            110,
+            121
+           ],
+           "id": "$δ^{(−)}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          127,
+          142
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            127,
+            138
+           ],
+           "id": "$δ^{(+)}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          143,
+          182
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "barycentric coordinates ",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            143,
+            150
+           ],
+           "id": "$β_q$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          183,
+          277
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the barycentric coordinates of the notch bounds on their corresponding edges",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            183,
+            194
+           ],
+           "id": "$β^{(−)}$",
+           "value": null
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          278,
+          372
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": "the barycentric coordinates of the notch bounds on their corresponding edges",
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            278,
+            289
+           ],
+           "id": "$β^{(+)}$",
+           "value": null
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\n`E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\nwhere\n`$δ^{(−)}$` ∈ ℝ \n`$δ^{(+)}$` ∈ ℝ\n`$β_q$` ∈ ℝ :  barycentric coordinates \n`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, δ_circumflex_accent_minus_sign, δ_circumflex_accent_plus_sign, β_q, β_circumflex_accent_minus_sign, β_circumflex_accent_plus_sign):\n        assert np.ndim(δ_circumflex_accent_minus_sign) == 0\n        assert np.ndim(δ_circumflex_accent_plus_sign) == 0\n        assert np.ndim(β_q) == 0\n        assert np.ndim(β_circumflex_accent_minus_sign) == 0\n        assert np.ndim(β_circumflex_accent_plus_sign) == 0\n        # `E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\n        self.E_n = δ_circumflex_accent_minus_sign * np.power(np.asarray(((1) / (10) * np.log((β_q - β_circumflex_accent_minus_sign))), dtype=np.float64), 2) + δ_circumflex_accent_plus_sign * np.power(np.asarray(((1) / (10) * np.log((β_circumflex_accent_plus_sign - β_q))), dtype=np.float64), 2)\n\n\n\n\n\n",
+  "eigen": "/*\n`E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\nwhere\n`$δ^{(−)}$` ∈ ℝ \n`$δ^{(+)}$` ∈ ℝ\n`$β_q$` ∈ ℝ :  barycentric coordinates \n`$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n`$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT E_n;\n\n    heartlib(\n        const double & δ_circumflex_accent_minus_sign,\n        const double & δ_circumflex_accent_plus_sign,\n        const double & β_q,\n        const double & β_circumflex_accent_minus_sign,\n        const double & β_circumflex_accent_plus_sign)\n    {\n    \n        // `E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\n        E_n = δ_circumflex_accent_minus_sign * pow((1 / DT(10) * log((β_q - β_circumflex_accent_minus_sign))), 2) + δ_circumflex_accent_plus_sign * pow((1 / DT(10) * log((β_circumflex_accent_plus_sign - β_q))), 2);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nE_n & = δ^{(−)} {\\left( \\frac{1}{10}  \\log{ \\left( β_q - β^{(−)} \\right) } \\right)}^{2} + δ^{(+)} {\\left( \\frac{1}{10}  \\log{ \\left( β^{(+)} - β_q \\right) } \\right)}^{2} \\\\\n\\intertext{where} \nδ^{(−)} & ∈ \\mathbb{R} \\\\\nδ^{(+)} & ∈ \\mathbb{R} \\\\\nβ_q & ∈ \\mathbb{R} \\text{ barycentric coordinates } \\\\\nβ^{(−)} & ∈ \\mathbb{R} \\text{ the barycentric coordinates of the notch bounds on their corresponding edges} \\\\\nβ^{(+)} & ∈ \\mathbb{R} \\text{ the barycentric coordinates of the notch bounds on their corresponding edges} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nE_n & = δ^{(−)} {\\left( \\frac{1}{10}  \\log{ \\left( β_q - β^{(−)} \\right) } \\right)}^{2} + δ^{(+)} {\\left( \\frac{1}{10}  \\log{ \\left( β^{(+)} - β_q \\right) } \\right)}^{2} \\\\\nwhere \\\\\nδ^{(−)} & ∈ \\mathbb{R} \\\\\nδ^{(+)} & ∈ \\mathbb{R} \\\\\nβ_q & ∈ \\mathbb{R} \\text{ barycentric coordinates } \\\\\nβ^{(−)} & ∈ \\mathbb{R} \\text{ the barycentric coordinates of the notch bounds on their corresponding edges} \\\\\nβ^{(+)} & ∈ \\mathbb{R} \\text{ the barycentric coordinates of the notch bounds on their corresponding edges} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(delta_minus_sign, delta_plus_sign, beta_q, beta_minus_sign, beta_plus_sign)\n% output = heartlib(`$δ^{(−)}$`, `$δ^{(+)}$`, `$β_q$`, `$β^{(−)}$`, `$β^{(+)}$`)\n%\n%    `E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\n%    where\n%    `$δ^{(−)}$` ∈ ℝ \n%    `$δ^{(+)}$` ∈ ℝ\n%    `$β_q$` ∈ ℝ :  barycentric coordinates \n%    `$β^{(−)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n%    `$β^{(+)}$` ∈ ℝ : the barycentric coordinates of the notch bounds on their corresponding edges\n%    \n    assert(numel(delta_minus_sign) == 1);\n    assert(numel(delta_plus_sign) == 1);\n    assert(numel(beta_q) == 1);\n    assert(numel(beta_minus_sign) == 1);\n    assert(numel(beta_plus_sign) == 1);\n\n    % `E_n` = `$δ^{(−)}$`(1/10 log((`$β_q$`-`$β^{(−)}$`)))^2 + `$δ^{(+)}$`(1/10 log((`$β^{(+)}$`-`$β_q$`)))^2\n\n    E_n = delta_minus_sign * (1 / 10 * log((beta_q - beta_minus_sign))).^2 + delta_plus_sign * (1 / 10 * log((beta_plus_sign - beta_q))).^2;\n    output.E_n = E_n;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'E_n', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-E_n\", \"sym\":\"E_n\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {E_n} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$δ^{(−)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$δ^{(−)}$\", \"sym\":\"$δ^{(−)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {δ^{(−)}} } {\\left( \\frac{1}{10}  \\log{ \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β_q$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β_q$\", \"sym\":\"$β_q$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β_q} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β^{(−)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β^{(−)}$\", \"sym\":\"$β^{(−)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β^{(−)}} } \\right) } \\right)}^{2} + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$δ^{(+)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$δ^{(+)}$\", \"sym\":\"$δ^{(+)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {δ^{(+)}} } {\\left( \\frac{1}{10}  \\log{ \\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β^{(+)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β^{(+)}$\", \"sym\":\"$β^{(+)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β^{(+)}} } - \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β_q$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β_q$\", \"sym\":\"$β_q$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β_q} } \\right) } \\right)}^{2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['$β^{(+)}$', '$β^{(−)}$', '$β_q$', '$δ^{(+)}$', '$δ^{(−)}$', 'E_n'], false, [], [], 'YEVfbmAgPSBgJM60Xnso4oiSKX0kYCgxLzEwIGxvZygoYCTOsl9xJGAtYCTOsl57KOKIkil9JGApKSleMiArIGAkzrReeygrKX0kYCgxLzEwIGxvZygoYCTOsl57KCspfSRgLWAkzrJfcSRgKSkpXjI=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$δ^{(−)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$δ^{(−)}$\", \"sym\":\"$δ^{(−)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {δ^{(−)}} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$δ^{(+)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$δ^{(+)}$\", \"sym\":\"$δ^{(+)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {δ^{(+)}} } & ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β_q$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β_q$\", \"sym\":\"$β_q$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β_q} } & ∈ \\mathbb{R} \\text{ barycentric coordinates } \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β^{(−)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β^{(−)}$\", \"sym\":\"$β^{(−)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β^{(−)}} } & ∈ \\mathbb{R} \\text{ the barycentric coordinates of the notch bounds on their corresponding edges} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, '$β^{(+)}$', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-$β^{(+)}$\", \"sym\":\"$β^{(+)}$\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {β^{(+)}} } & ∈ \\mathbb{R} \\text{ the barycentric coordinates of the notch bounds on their corresponding edges} \\\\\n\\\\\n\\end{align*}\n"
+ },
+ "path": "rust/corpus/heartdown/Elastic"
+}

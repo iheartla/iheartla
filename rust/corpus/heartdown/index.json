@@ -1,0 +1,100 @@
+[
+ {
+  "paper": "Anisotropic/Anisotropic.txt",
+  "contexts": [
+   "Anisotropic",
+   "Anisotropic2D"
+  ]
+ },
+ {
+  "paper": "Computational_Design/computation.txt",
+  "contexts": [
+   "computation"
+  ]
+ },
+ {
+  "paper": "Eccentricity/eccentricity.txt",
+  "contexts": [
+   "eccentricity"
+  ]
+ },
+ {
+  "paper": "Elastic/elastic.txt",
+  "contexts": [
+   "elastic",
+   "connection",
+   "anchor",
+   "notchlimit",
+   "penalty"
+  ]
+ },
+ {
+  "paper": "Generic/Generic.txt",
+  "contexts": [
+   "Generic"
+  ]
+ },
+ {
+  "paper": "ICP/icp.txt",
+  "contexts": [
+   "ICP"
+  ]
+ },
+ {
+  "paper": "Judder/judder.txt",
+  "contexts": [
+   "judder",
+   "error",
+   "third"
+  ]
+ },
+ {
+  "paper": "Nautilus/nautilus.txt",
+  "contexts": [
+   "nautilus"
+  ]
+ },
+ {
+  "paper": "Pipeline/pipeline.txt",
+  "contexts": [
+   "pipeline"
+  ]
+ },
+ {
+  "paper": "Regularized/Regularized.txt",
+  "contexts": [
+   "Regularized"
+  ]
+ },
+ {
+  "paper": "SIERE/siere.txt",
+  "contexts": [
+   "siere",
+   "second"
+  ]
+ },
+ {
+  "paper": "Soft_segmentation/Soft.txt",
+  "contexts": [
+   "soft"
+  ]
+ },
+ {
+  "paper": "Stable/Stable.txt",
+  "contexts": [
+   "Stable"
+  ]
+ },
+ {
+  "paper": "a_perceptual_model/perceptual.txt",
+  "contexts": [
+   "perceptual"
+  ]
+ },
+ {
+  "paper": "starter/starter.md",
+  "contexts": [
+   "example"
+  ]
+ }
+]

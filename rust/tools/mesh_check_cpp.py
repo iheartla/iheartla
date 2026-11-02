@@ -16,6 +16,7 @@ import importlib.util
 import inspect
 import itertools
 import json
+import re
 import os
 import subprocess
 import sys
@@ -68,14 +69,14 @@ def norm(v):
     if isinstance(v, (int, np.integer)):
         return ['num', float(v)]
     if isinstance(v, (float, np.floating)):
-        return ['num', round(float(v), 6)]
+        return ['num', 'nan' if np.isnan(v) else round(float(v), 6)]
     return ['other', repr(type(v))]
 
 
 def renorm(x):
     """Round C++ values like norm() does."""
     if isinstance(x, list) and len(x) == 2 and x[0] in ('num',):
-        return ['num', round(float(x[1]), 6)]
+        return ['num', 'nan' if np.isnan(float(x[1])) else round(float(x[1]), 6)]
     if isinstance(x, list) and len(x) == 2 and x[0] in ('arr', 'mat'):
         return [x[0], np.round(np.asarray(x[1], dtype=float), 6).tolist()]
     if isinstance(x, list) and len(x) == 2 and x[0] == 'seq':
@@ -112,13 +113,17 @@ def check(path):
     x = np.random.default_rng(1).standard_normal((nv, 3))
     obj = cls(*[mesh if p == 'M' else x for p in pnames])
     n = max(nv, mesh.n_edges(), mesh.n_faces())
+    # Python NFKC-normalizes identifiers (ϕ becomes φ): use the C++ spelling
+
+    import unicodedata
+    cpp_names = {unicodedata.normalize('NFKC', w): w for w in re.findall(r'\w+', outs['eigen'])}
     expected, calls = [], []
     for k in sorted(set(k for k in vars(obj) if not k.startswith('_')) | set(k for k in dir(cls) if not k.startswith('_'))):
         v = getattr(obj, k)
         if not callable(v):
             if k not in pnames:
                 expected.append(norm(v))
-                calls.append('obj.{}'.format(k))
+                calls.append('obj.{}'.format(cpp_names.get(k, k)))
             continue
         arity = len(inspect.signature(v).parameters)
         for combo in itertools.product(range(n) if arity == 1 else range(nv), repeat=arity):
@@ -127,7 +132,7 @@ def check(path):
             except Exception:  # noqa: BLE001
                 continue
             expected.append(norm(res))
-            calls.append('obj.{}({})'.format(k, ', '.join(map(str, combo))))
+            calls.append('obj.{}({})'.format(cpp_names.get(k, k), ', '.join(map(str, combo))))
     bm1, bm2 = mesh.BoundaryMatrices()
     main = ['#include "gen.h"', SHOW, 'int main() {', '    ' + cpp_matrix('bm1', bm1), '    ' + cpp_matrix('bm2', bm2), '    FaceMesh M(bm1, bm2);']
     args = []
@@ -153,8 +158,9 @@ def check(path):
         return 'C++ compile error:\n  ' + '\n  '.join(errs)
     r = subprocess.run([exe], capture_output=True, text=True)
     if r.returncode:
-        return 'C++ run error: ' + r.stderr[-300:]
-    got = [renorm(json.loads(l)) for l in r.stdout.splitlines()]
+        return 'C++ run error (exit {}): {}'.format(r.returncode, r.stderr[-300:])
+    # (C++ prints NaN as nan or -nan)
+    got = [renorm(json.loads(re.sub(r'-?\bnan\b', 'NaN', l))) for l in r.stdout.splitlines()]
     bad = [(c, e, g) for c, e, g in zip(calls, expected, got) if e != g]
     if len(got) != len(expected):
         return 'output count differs: {} vs {}'.format(len(got), len(expected))
