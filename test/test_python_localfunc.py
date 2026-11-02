@@ -195,3 +195,43 @@ class TestLocalFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_where_before_piecewise(self):
+        # a piecewise result uses the function's where definitions: they come first
+        la_str = """f(x) = { y if x > 0
+                             -y otherwise where x ∈ ℝ,
+                    y = 2x
+                    c = f(3) + f(-1)
+                    where
+                    z ∈ ℝ"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(0).c, 8)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    return {}(0).c == 8;".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_sum_where_destructuring(self):
+        # a destructuring in a sum's where, in a local function (NumPy indented its first line twice)
+        la_str = """g(c) = (∑_(j ∈ S) (a + b c) where a, b = v_j) where c ∈ ℝ
+                    z = g(2)
+                    where
+                    S ∈ {ℤ}
+                    v_i ∈ ℝ^2"""
+        func_info = self.gen_func_info(la_str)
+        v = np.array([[1., 10.], [2., 20.]])
+        self.assertEqual(func_info.numpy_func({1, 2}, v).z, 63)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<int> S = {1, 2};",
+                     "    std::vector<Eigen::Matrix<double, 2, 1>> v(2);",
+                     "    v[0] << 1, 10;",
+                     "    v[1] << 2, 20;",
+                     "    return {}(S, v).z == 63;".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

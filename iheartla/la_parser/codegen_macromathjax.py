@@ -21,6 +21,21 @@ class CodeGenMacroMathjax(CodeGenMathjax):
         return symbol.replace('\\', "\\\\\\\\").replace('`', '').replace('"', '\\\\"').replace("'", "\\\\'")
 
     def visit_assignment(self, node, **kwargs):
+        if self.visiting_sum:
+            # in a sum's where (… where j, k = …): inline, not an equation of its own; the
+            # left-hand side's symbols are definitions, as in an equation
+            self.visiting_lhs = True
+            lhs_list = [self.visit(left, **kwargs) for left in node.left]
+            self.visiting_lhs = False
+            rhs_list = []
+            for right in node.right:
+                if right.is_node(IRNodeType.Expression) and right.value.is_node(IRNodeType.Factor) and right.value.sub:
+                    right = right.value.sub.value  # (no parentheses around a subexpression)
+                rhs_list.append(self.visit(right, **kwargs))
+            content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+            self.code_frame.expr += content + '\n'
+            self.code_frame.expr_dict[node.raw_text] = content
+            return content
         sym_list = []
         for sym in node.symbols:
             sym_list.append("'{}'".format(self.convert_content(filter_subscript(sym))))

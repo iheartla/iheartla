@@ -18,7 +18,8 @@ dependencies = [
 [project.optional-dependencies]
 gui = ["wxpython", "PyMuPDF"]
 viz = ["graphviz"]
-test = ["numpy", "scipy", "cppyy"]
+# (autograd: generated NumPy code with derivatives, ∂f/∂x, uses it)
+test = ["numpy", "scipy", "cppyy", "autograd"]
 
 [project.urls]
 Homepage = "https://github.com/iheartla/iheartla"

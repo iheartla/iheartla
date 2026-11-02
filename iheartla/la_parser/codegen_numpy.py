@@ -9,8 +9,10 @@ class CodeGenNumpy(CodeGen):
 
     def init_type(self, type_walker, func_name):
         super().init_type(type_walker, func_name)
+        self.visited_derivative = False  # (whether the statement being visited has a derivative)
         if self.has_derivative:
-            self.pre_str = "import jax.numpy as np\n"
+            # autograd differentiates through Python control flow (piecewise functions), unlike jax
+            self.pre_str = "import autograd.numpy as np\nimport autograd\n"
         else:
             self.pre_str = "import numpy as np\n"
         self.pre_str += '''import scipy\nimport scipy.linalg\nfrom scipy import sparse\n'''
@@ -253,18 +255,36 @@ class CodeGenNumpy(CodeGen):
                     class_name = key
                     if key == MESH_HELPER:
                         self.code_frame.include += 'from triangle_mesh import *\n'
+                        if self.has_derivative:
+                            # (again: the star import brings NumPy's np)
+                            self.code_frame.include += 'import autograd.numpy as np\n'
                         class_name = "TriangleMesh"
                     # init_var += "        self.{} = {}({})\n".format(module_data.instance_name, class_name, ','.join(module_data.params_list))
-        content = ["class {}:".format(self.get_result_type()),
-                   "    def __init__(self,{}".format(def_str[3:]),
-                   self.get_used_params_content(),
-                   ]
+        content = ["class {}:".format(self.get_result_type())]
+        if self.has_derivative:
+            content.append("    _differentiating = 0  # (> 0 while the program is recomputed for a derivative)\n")
+        content += ["    def __init__(self,{}".format(def_str[3:]),
+                    self.get_used_params_content(),
+                    ]
         if '' in content:
             content.remove('')
         end_str = self.local_func_def + def_struct
+        if self.has_derivative:
+            end_str += '''    def _without_derivatives(self, make):
+        """make(), skipping the derivatives of every instance it constructs"""
+        type(self)._differentiating += 1
+        try:
+            return make()
+        finally:
+            type(self)._differentiating -= 1
+'''
         if end_str != '':
             end_str = '\n' + end_str
-        return "\n".join(content) + init_struct + init_var + stat_str + self.get_opt_syms_content() + end_str
+        code = "\n".join(content) + init_struct + init_var + stat_str + self.get_opt_syms_content() + end_str
+        if self.has_derivative:
+            # autograd differentiates np.array, not np.asarray
+            code = code.replace("np.asarray(", "np.array(")
+        return code
 
     def copy_func_impl(self, sym, r_syms, module_name, func_type):
         """implement function from other modules"""
@@ -412,7 +432,8 @@ class CodeGenNumpy(CodeGen):
                         type_checks.append('    assert {}.shape == ({},)'.format(parameter, self.get_sym_type(parameter).size))
                         size_str = '{}'.format(self.get_sym_type(parameter).size)
                     if isinstance(data_type, LaVarType):
-                        if data_type.is_scalar() and data_type.is_int:
+                        # (a set's element type is an integer too: sets first)
+                        if data_type.is_scalar() and data_type.is_int and not ele_type.is_set():
                             if ele_type.is_dynamic():
                                 type_declare.append('    {} = np.fromiter((np.asarray(x) for x in {}), dtype=object, count=len({}))'.format(parameter, parameter, parameter))
                             else:
@@ -420,6 +441,8 @@ class CodeGenNumpy(CodeGen):
                             if parameter not in test_generated_sym_set and not ele_type.is_dynamic():
                                 test_content.append('    {} = np.random.randint({}, size=({}))'.format(parameter, rand_int_max, size_str))
                         elif ele_type.is_set():
+                            # a sequence of sets (U_i ⊂ V): an array of frozensets
+                            type_declare.append('    {} = np.fromiter((frozenset(x) for x in {}), dtype=object, count=len({}))'.format(parameter, parameter, parameter))
                             test_content.append('    {} = []'.format(parameter))
                             test_content.append('    for i in range({}):'.format(self.get_sym_type(parameter).size))
                             set_content = self.get_set_test_list("{}_tmp".format(parameter),
@@ -618,10 +641,14 @@ class CodeGenNumpy(CodeGen):
                     elif node.stmts[index].is_node(IRNodeType.OdeFirstOrder):
                         self.visit(node.stmts[index], **kwargs)
                     continue
+            self.visited_derivative = False
             stat_info = self.visit(node.stmts[index], **kwargs)
             if stat_info.pre_list:
                 cur_stats_content += "".join(stat_info.pre_list)
             cur_stats_content += ret_str + stat_info.content + '\n'
+            if self.visited_derivative:
+                # (not when recomputing the program to differentiate it)
+                cur_stats_content = "    if not type(self)._differentiating:\n" + self.update_prelist_str([cur_stats_content], '    ')
             if index in node.meshset_list:
                 mesh_content += cur_stats_content
             else:
@@ -666,6 +693,37 @@ class CodeGenNumpy(CodeGen):
             if c_var not in self.main_param.parameters and not c_var.startswith("self."):
                 content = "self.{}".format(c_var)
         return content
+
+    def get_assign_dim_str(self, node, cur_sub):
+        """The extent of a subscript in an element-wise definition (a_ij = b_ij), from what it subscripts"""
+        for cur_node in node.lhs_sub_dict.get(cur_sub, []):
+            name = cur_node.get_main_id()
+            target = 'self.' + name if self.check_prefix(name) else name
+            main_la_type = self.get_sym_type(name)
+            if main_la_type.is_vector() or main_la_type.is_set():
+                return "len({})".format(target)
+            elif main_la_type.is_sequence():
+                if cur_node.same_as_size_sym(cur_sub):
+                    return "len({})".format(target)
+                elif cur_node.same_as_row_sym(cur_sub):
+                    return "np.shape({}[0])[0]".format(target)
+                elif cur_node.same_as_col_sym(cur_sub):
+                    return "np.shape({}[0])[1]".format(target)
+            elif main_la_type.is_matrix():
+                return "{}.shape[{}]".format(target, 1 if cur_node.same_as_col_sym(cur_sub) else 0)
+            break
+        return ''
+
+    def indented_lines(self, code):
+        """code's lines, indented one level, each a separate item: a sum's content
+        list is joined with an indent, which indents only an item's first line."""
+        lines = [line for line in code.split('\n') if line.strip() != '']
+        # the code's own indent, from its statements (a statement's comment may be unindented)
+        code_lines = [line for line in lines if not line.lstrip().startswith(('#', 'iheartlacomment'))] or lines
+        indent = min(len(line) - len(line.lstrip(' ')) for line in code_lines) if code_lines else 0
+        # (a comment placeholder expands to an indented comment already)
+        return ['{}{}\n'.format('' if line.lstrip().startswith('iheartlacomment') else '    ',
+                                 line[min(indent, len(line) - len(line.lstrip(' '))):]) for line in lines]
 
     def visit_summation(self, node, **kwargs):
         target_var = []
@@ -749,12 +807,10 @@ class CodeGenNumpy(CodeGen):
                 for index in range(len(list_content)):
                     if index != len(list_content) - 1:
                         exp_pre_list.append(list_content[index] + '\n')
+            # exp_str: the where statements (one line each: content is joined with an indent), then the body
+            for et in node.extra_list:
+                content += self.indented_lines(self.visit(et, **kwargs).content)
             content += exp_pre_list
-            # exp_str
-            if len(node.extra_list) > 0:
-                for et in node.extra_list:
-                    extra_info = self.visit(et, **kwargs)
-                content += [self.update_prelist_str([extra_info.content], '    ')]
             content.append(str("    " + assign_id + " += " + expr_sign + exp_str + '\n'))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
@@ -803,10 +859,9 @@ class CodeGenNumpy(CodeGen):
                 if index != len(list_content)-1:
                     exp_pre_list.append(list_content[index] + '\n')
         # exp_str
-        if len(node.extra_list) > 0:
-            for et in node.extra_list:
-                extra_info = self.visit(et, **kwargs)
-                content += [self.update_prelist_str([extra_info.content], '    ')]
+        # (one line each: content is joined with an indent)
+        for et in node.extra_list:
+            content += self.indented_lines(self.visit(et, **kwargs).content)
         # only one sub for now
         if node.cond:
             content += ["    " + pre for pre in cond_info.pre_list]
@@ -896,12 +951,10 @@ class CodeGenNumpy(CodeGen):
                 for index in range(len(list_content)):
                     if index != len(list_content) - 1:
                         exp_pre_list.append(list_content[index] + '\n')
+            # exp_str: the where statements (one line each: content is joined with an indent), then the body
+            for et in node.extra_list:
+                content += self.indented_lines(self.visit(et, **kwargs).content)
             content += exp_pre_list
-            # exp_str
-            if len(node.extra_list) > 0:
-                for et in node.extra_list:
-                    extra_info = self.visit(et, **kwargs)
-                content += [self.update_prelist_str([extra_info.content], '    ')]
             content.append("    {} = frozenset.union({}, {})\n".format(assign_id, assign_id, exp_str))
             content[0] = "    " + content[0]
             self.del_name_conventions(name_convention)
@@ -928,10 +981,9 @@ class CodeGenNumpy(CodeGen):
                 if index != len(list_content)-1:
                     exp_pre_list.append(list_content[index] + '\n')
         # exp_str
-        if len(node.extra_list) > 0:
-            for et in node.extra_list:
-                extra_info = self.visit(et, **kwargs)
-                content += [self.update_prelist_str([extra_info.content], '    ')]
+        # (one line each: content is joined with an indent)
+        for et in node.extra_list:
+            content += self.indented_lines(self.visit(et, **kwargs).content)
         # only one sub for now
         if node.cond:
             content += ["    " + pre for pre in cond_info.pre_list]
@@ -1007,6 +1059,8 @@ class CodeGenNumpy(CodeGen):
                 extra_info = self.visit(et, **kwargs)
                 extra_list += [self.update_prelist_str([extra_info.content], '    ')]
             extra_expr += '\n'.join(extra_list)
+        # the where definitions come first: a piecewise result's pre_list (its if/else) may use them
+        content += extra_expr
         ret_list = []
         for cur_index in range(len(node.expr)):
             expr_info = self.visit(node.expr[cur_index], **kwargs)
@@ -1016,7 +1070,7 @@ class CodeGenNumpy(CodeGen):
                 ret_list.append('{}_ret'.format(name_info.content))
             else:
                 ret_list.append(expr_info.content)
-        content += extra_expr + '        return {}\n'.format(', '.join(ret_list))
+        content += '        return {}\n'.format(', '.join(ret_list))
         if self.local_func_def != '':
             self.local_func_def += '\n'
         self.local_func_def += content
@@ -1034,7 +1088,7 @@ class CodeGenNumpy(CodeGen):
             content = "np.absolute({})".format(value)
         elif type_info.la_type.is_vector():
             if node.norm_type == NormType.NormDet:
-                content = "scipy.linalg.det({})".format(value)
+                content = "{}({})".format(self.det_func(), value)
             elif node.norm_type == NormType.NormInteger:
                 if node.sub is None:
                     content = "np.linalg.norm({}, {})".format(value, 2)
@@ -1051,7 +1105,7 @@ class CodeGenNumpy(CodeGen):
                     content = "np.sqrt(({}).T @ {} @ ({}))".format(value, sub_info.content, value)
         elif type_info.la_type.is_matrix():
             if node.norm_type == NormType.NormDet:
-                content = "scipy.linalg.det({})".format(value)
+                content = "{}({})".format(self.det_func(), value)
             elif node.norm_type == NormType.NormFrobenius:
                 content = "np.linalg.norm({}, 'fro')".format(value)
             elif node.norm_type == NormType.NormNuclear:
@@ -1099,8 +1153,9 @@ class CodeGenNumpy(CodeGen):
                 seq_n = self.generate_var_name("seq")
                 if node.params[0].la_type.is_sequence():
                     # append new
-                    pre_list.append("    {} = {}\n".format(seq_n, params[0]))
-                    pre_list += ["    {}.add({})".format(seq_n, p) for p in params[1:]]
+                    # (a copy: U itself is unchanged)
+                    pre_list.append("    {} = list({})\n".format(seq_n, params[0]))
+                    pre_list += ["    {}.append({})\n".format(seq_n, p) for p in params[1:]]
                 else:
                     pre_list.append("    {} = [{}]\n".format(seq_n, ",".join(params)))
                 content = seq_n
@@ -1310,7 +1365,7 @@ class CodeGenNumpy(CodeGen):
             pre_list.append('    {} = set()\n'.format(cur_m_id))
             #
             range_info = self.visit(node.range, **kwargs)
-            range_name = self.generate_var_name('range')
+            range_name = self.generate_var_name('set_range')  # (not 'range': that shadows the builtin)
             pre_list.append('    {} = {}\n'.format(range_name, range_info.content))
             if len(node.enum_list) == 1:
                 pre_list.append('    for {} in {}:\n'.format(node.enum_list[0], range_name))
@@ -1335,13 +1390,16 @@ class CodeGenNumpy(CodeGen):
                     if index != len(list_content) - 1:
                         exp_pre_list.append(list_content[index] + '\n')
             pre_list += exp_pre_list
+            item = exp_info.content
+            if node.items[0].la_type.is_vector():
+                item = "tuple(np.ravel({}))".format(item)  # (arrays aren't hashable)
             if node.cond:
                 cond_info = self.visit(node.cond, **kwargs)
                 cond_content = "        if(" + cond_info.content + "):\n"
                 pre_list += cond_content
-                pre_list.append("            {}.add({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("            {}.add({})\n".format(cur_m_id, item))
             else:
-                pre_list.append("        {}.add({})\n".format(cur_m_id, exp_info.content))
+                pre_list.append("        {}.add({})\n".format(cur_m_id, item))
             content = cur_m_id
         else:
             for item in node.items:
@@ -1504,10 +1562,11 @@ class CodeGenNumpy(CodeGen):
     def visit_set_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
         index_info = self.visit(node.row_index, **kwargs)
+        # (in sorted order, as C++ stores sets, rather than Python's iteration order)
         if node.row_index.la_type.index_type:
-            return CodeNodeInfo("list({})[{}]".format(main_info.content, index_info.content))
+            return CodeNodeInfo("sorted({})[{}]".format(main_info.content, index_info.content))
         else:
-            return CodeNodeInfo("list({})[{}-1]".format(main_info.content, index_info.content))
+            return CodeNodeInfo("sorted({})[{}-1]".format(main_info.content, index_info.content))
 
     def visit_tuple_index(self, node, **kwargs):
         main_info = self.visit(node.main, **kwargs)
@@ -1635,7 +1694,8 @@ class CodeGenNumpy(CodeGen):
             elif node.cur_type == DestructuringType.DestructuringTuple or node.cur_type == DestructuringType.DestructuringList:
                 expr = '{}[{}]'.format(rhs, cur_index)
             content += "    {} = {}\n".format(id0_info.content, expr)
-        return CodeNodeInfo(content, right_info.pre_list)
+        # (the right side's pre_list in the content: where blocks use only the content)
+        return CodeNodeInfo("".join(right_info.pre_list) + content)
 
     def visit_assignment(self, node, **kwargs):
         if node.cur_type == AssignType.AssignTypeSolver:
@@ -1729,32 +1789,39 @@ class CodeGenNumpy(CodeGen):
                                 if sub_strs in right_var:
                                     var_ids = self.get_all_ids(right_var)
                                     right_info.content = right_info.content.replace(right_var, "{}[{}][{}]".format(var_ids[0], var_ids[1][0], var_ids[1][1]))
+                            # (a field of the program; a local in a local function)
+                            target = "self." + self.get_main_id(left_id) if self.is_main_scope() else self.get_main_id(left_id)
                             if left_subs[0] == '*':
-                                right_exp += "    self.{}[:, {}-1] = {}".format(self.get_main_id(left_id), left_subs[1], right_info.content)
+                                right_exp += "    {}[:, {}-1] = {}".format(target, left_subs[1], right_info.content)
                             elif left_subs[1] == '*':
-                                right_exp += "    self.{}[{}-1, :] = {}".format(self.get_main_id(left_id), left_subs[0], right_info.content)
+                                right_exp += "    {}[{}-1, :] = {}".format(target, left_subs[0], right_info.content)
                             else:
-                                right_exp += "    self.{}[{}-1][{}-1] = {}".format(self.get_main_id(left_id), left_subs[0], left_subs[1], right_info.content)
+                                right_exp += "    {}[{}-1][{}-1] = {}".format(target, left_subs[0], left_subs[1], right_info.content)
+                            # sizes: from what the subscript ranges over when the type has none (m_i,* = d_i)
+                            row_size = self.get_sym_type(sequence).rows
+                            if self.get_sym_type(sequence).is_dynamic_row() and left_subs[0] != '*':
+                                row_size = self.get_assign_dim_str(node, left_subs[0]) or row_size
+                            col_size = self.get_sym_type(sequence).cols
+                            if self.get_sym_type(sequence).is_dynamic_col() and left_subs[1] != '*':
+                                col_size = self.get_assign_dim_str(node, left_subs[1]) or col_size
                             if self.get_sym_type(sequence).is_matrix():
                                 if node.op == '=':
                                     # declare
                                     if sequence not in self.declared_symbols:
-                                        content += "    self.{} = np.zeros(({}, {}))\n".format(sequence,
-                                                                                          self.get_sym_type(sequence).rows,
-                                                                                          self.get_sym_type(sequence).cols)
+                                        content += "    {} = np.zeros(({}, {}))\n".format(target, row_size, col_size)
                             if left_subs[0] == '*':
-                                content += "    for {} in range(1, {}+1):\n".format(left_subs[1], self.get_sym_type(sequence).cols)
+                                content += "    for {} in range(1, {}+1):\n".format(left_subs[1], col_size)
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "    ")
                                 content += "    " + right_exp
                             elif left_subs[1] == '*':
-                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], row_size)
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "    ")
                                 content += "    " + right_exp
                             else:
-                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
-                                content += "        for {} in range(1, {}+1):\n".format(left_subs[1], self.get_sym_type(sequence).cols)
+                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], row_size)
+                                content += "        for {} in range(1, {}+1):\n".format(left_subs[1], col_size)
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "        ")
                                 content += "        " + right_exp
@@ -1934,13 +2001,39 @@ class CodeGenNumpy(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def det_func(self):
+        return 'np.linalg.det' if self.has_derivative else 'scipy.linalg.det'
+
     def visit_partial(self, node, **kwargs):
-        content = ""
-        if node.order_type == PartialOrderType.PartialHessian:
-            upper_info = self.visit(node.upper, **kwargs)
-            lower_info = self.visit(node.lower_list[0], **kwargs)
-            content = "jax.hessian({})({})".format(upper_info.content, lower_info.content)
-        return CodeNodeInfo(content)
+        """∂f/∂x (gradient) and ∂²f/∂x² (Hessian) with autograd, with respect to x flattened (as in C++).
+        f is a function of x: the upper expression with x replaced or, for a definition of the
+        program (∂e/∂x), the program recomputed with x replaced."""
+        self.visited_derivative = True
+        lower = node.lower_list[0]
+        var = lower.get_main_id()
+        var_content = self.visit(lower, **kwargs).content
+        flat = not lower.la_type.is_scalar()
+        arg = self.generate_var_name("dx")
+        value = "np.reshape({}, np.shape({}))".format(arg, var_content) if flat else arg
+        upper = node.upper
+        if upper.is_node(IRNodeType.Factor) and upper.id is not None:
+            upper = upper.id
+        if upper.is_node(IRNodeType.Id) and upper.get_main_id() in self.lhs_list and var in self.parameters:
+            params = [value if p == var else p for p in self.parameters]
+            body = "self._without_derivatives(lambda: type(self)({})).{}".format(', '.join(params), self.filter_symbol(upper.get_main_id()))
+        else:
+            saved = self.name_convention_dict.get(var)
+            self.name_convention_dict[var] = value
+            upper_info = self.visit(upper, **kwargs)
+            if saved is None:
+                del self.name_convention_dict[var]
+            else:
+                self.name_convention_dict[var] = saved
+            assert not upper_info.pre_list, "Derivatives of expressions that need statements (sums) aren't supported in NumPy"
+            body = upper_info.content
+        at = "np.ravel({})".format(var_content) if flat else var_content
+        f = "autograd.hessian" if node.order_type == PartialOrderType.PartialHessian else "autograd.grad"
+        return CodeNodeInfo("{}(lambda {}: {})({})".format(f, arg, body, at))
 
     def visit_first_order_ode(self, node, **kwargs):
         self.visiting_diff_eq = True
@@ -2213,7 +2306,7 @@ class CodeGenNumpy(CodeGen):
                 return CodeNodeInfo("list({})".format(params_content))  # column-major
             return CodeNodeInfo("np.matrix.flatten({}, order='F')".format(params_content))  # column-major
         elif node.func_type == MathFuncType.MathFuncDet:
-            content = 'scipy.linalg.det'
+            content = self.det_func()
         elif node.func_type == MathFuncType.MathFuncRank:
             content = 'np.linalg.matrix_rank'
         elif node.func_type == MathFuncType.MathFuncNull:
@@ -2221,7 +2314,12 @@ class CodeGenNumpy(CodeGen):
         elif node.func_type == MathFuncType.MathFuncOrth:
             content = 'scipy.linalg.orth'
         elif node.func_type == MathFuncType.MathFuncInv:
-            content = 'scipy.linalg.inv'
+            content = 'np.linalg.inv' if self.has_derivative else 'scipy.linalg.inv'
+        elif node.func_type == MathFuncType.MathFuncSVD:
+            # U, the singular values and V (as in Eigen), where NumPy returns Vᵀ
+            svd_name = self.generate_var_name("svd")
+            pre_list.append("    {} = np.linalg.svd({})\n".format(svd_name, params_content))
+            return CodeNodeInfo("({0}[0], {0}[1], {0}[2].T)".format(svd_name), pre_list=pre_list)
         elif node.func_type == MathFuncType.MathFuncMin or node.func_type == MathFuncType.MathFuncMax:
             if node.remain_params and len(node.remain_params) > 0:
                 f_name = 'max'
