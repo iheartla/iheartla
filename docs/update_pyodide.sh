@@ -1,6 +1,6 @@
 # Vendor the Pyodide runtime and the Python packages the in-browser compiler
 # needs into docs/js/pyodide/, so the page doesn't depend on a CDN or PyPI.
-# Usage: sh docs/update_pyodide.sh   (then rebuild the wheel: uv build --wheel --no-create-gitignore -o docs)
+# Usage: sh docs/update_pyodide.sh   (then rebuild the wheel: uv build --no-create-gitignore -o docs && rm docs/iheartla-0.0.1.tar.gz)
 set -e
 PYODIDE=314.0.7
 # pure-Python wheels from PyPI; keep TATSU within the range in pyproject.toml

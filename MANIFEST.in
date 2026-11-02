@@ -1,0 +1,2 @@
+# bytecode left by running the mesh runtime, which package-data mesh/**/* would match
+global-exclude *.py[cod]
