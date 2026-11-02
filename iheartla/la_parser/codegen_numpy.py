@@ -160,7 +160,8 @@ class CodeGenNumpy(CodeGen):
         exist = False
         if len(self.module_list) > 0:
             for module in self.module_list:
-                if len(module.syms) > 0 and sym in module.syms:
+                # imported symbols are referred to by their (possibly renamed) local names
+                if len(module.r_syms) > 0 and sym in module.r_syms:
                     exist = True
                     break
         return exist
