@@ -4682,9 +4682,9 @@
      "ElementSets",
      "NonZeros",
      "Vertices",
+     "Edges",
      "Faces",
-     "Cells",
-     "Edges"
+     "Cells"
     ],
     "funcs": [
      "`UnsignedBoundaryMatrices`",

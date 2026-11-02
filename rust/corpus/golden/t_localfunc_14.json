@@ -1,0 +1,516 @@
+{
+ "id": "t_localfunc_14",
+ "src": "z = x_(v_1)\n                                       where\n                                       x ∈ ℝ^3\n                                       v ∈ ℤ^2",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "z = x_(v_1)\n                                       where\n                                       x ∈ ℝ^3\n                                       v ∈ ℤ^2",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     150
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       11
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        11
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "z"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           11
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            4,
+            11
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             4,
+             5
+            ],
+            "id": null,
+            "value": "x"
+           },
+           "p": "_(",
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              7,
+              10
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               7,
+               10
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                7,
+                10
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 7,
+                 8
+                ],
+                "id": null,
+                "value": "v"
+               },
+               "right": [
+                {
+                 "_": "Integer",
+                 "@": [
+                  9,
+                  10
+                 ],
+                 "value": [
+                  "1"
+                 ]
+                }
+               ]
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       51,
+       150
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        96,
+        150
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          96,
+          103
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           100,
+           103
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            102,
+            103
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             102,
+             103
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              102,
+              103
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            96,
+            97
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          143,
+          150
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           147,
+           150
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            149,
+            150
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             149,
+             150
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              149,
+              150
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℤ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            143,
+            144
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "z = x_(v_1)\n                                       where\n                                       x ∈ ℝ^3\n                                       v ∈ ℤ^2",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     150
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       11
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        11
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "z"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          11
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           4,
+           11
+          ],
+          "id0": {
+           "_": "IdentifierSubscript",
+           "@": [
+            4,
+            11
+           ],
+           "left": {
+            "_": "IdentifierAlone",
+            "@": [
+             4,
+             5
+            ],
+            "id": null,
+            "value": "x"
+           },
+           "p": "_(",
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              7,
+              10
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               7,
+               10
+              ],
+              "id0": {
+               "_": "IdentifierSubscript",
+               "@": [
+                7,
+                10
+               ],
+               "left": {
+                "_": "IdentifierAlone",
+                "@": [
+                 7,
+                 8
+                ],
+                "id": null,
+                "value": "v"
+               },
+               "right": [
+                {
+                 "_": "Integer",
+                 "@": [
+                  9,
+                  10
+                 ],
+                 "value": [
+                  "1"
+                 ]
+                }
+               ]
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       51,
+       150
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        96,
+        150
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          96,
+          103
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           100,
+           103
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            102,
+            103
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             102,
+             103
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              102,
+              103
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            96,
+            97
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          143,
+          150
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           147,
+           150
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            149,
+            150
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             149,
+             150
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              149,
+              150
+             ],
+             "value": [
+              "2"
+             ]
+            }
+           }
+          },
+          "type": "ℤ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            143,
+            144
+           ],
+           "id": null,
+           "value": "v"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nz = x_(v_1)\n                                       where\n                                       x ∈ ℝ^3\n                                       v ∈ ℤ^2\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, x, v):\n        x = np.asarray(x, dtype=np.float64)\n        v = np.asarray(v, dtype=np.int64)\n        assert x.shape == (3,)\n        assert v.shape == (2,)\n        # z = x_(v_1)\n        self.z = x[v[1-1]-1]\n\n\n\n\n\n",
+  "eigen": "/*\nz = x_(v_1)\n                                       where\n                                       x ∈ ℝ^3\n                                       v ∈ ℤ^2\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT z;\n\n    heartlib(\n        const Eigen::Matrix<double, 3, 1> & x,\n        const Eigen::Matrix<int, 2, 1> & v)\n    {\n    \n        // z = x_(v_1)\n        z = x[v[1-1]-1];\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nz & = x_{ v_{ 1 } } \\\\\n\\intertext{where} \nx & ∈ \\mathbb{R}^{ 3} \\\\\nv & ∈ \\mathbb{Z}^{ 2} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\nz & = x_{ v_{ 1 } } \\\\\nwhere \\\\\nx & ∈ \\mathbb{R}^{ 3} \\\\\nv & ∈ \\mathbb{Z}^{ 2} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(x, v)\n% output = heartlib(x, v)\n%\n%    z = x_(v_1)\n%                                           where\n%                                           x ∈ ℝ^3\n%                                           v ∈ ℤ^2\n    x = reshape(x,[],1);\n    v = reshape(v,[],1);\n\n    assert( numel(x) == 3 );\n    assert( numel(v) == 2 );\n\n    % z = x_(v_1)\n\n    z = x(v(1));\n    output.z = z;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'z', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-z\", \"sym\":\"z\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {z} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }_{ v_{ 1 } }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['x', 'z'], false, [], [], 'eiA9IHhfKHZfMSk=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & ∈ \\mathbb{R}^{ 3} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'v', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-v\", \"sym\":\"v\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {v} } & ∈ \\mathbb{Z}^{ 2} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

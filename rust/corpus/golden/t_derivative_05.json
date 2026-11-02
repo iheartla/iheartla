@@ -1,0 +1,702 @@
+{
+ "id": "t_derivative_05",
+ "src": "A = x ⋅ y\n                          H = ∂²A/∂x∂y\n                          where\n                          x ∈ ℝ^3\n                          y ∈ ℝ^3",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "A = x ⋅ y\n                          H = ∂²A/∂x∂y\n                          where\n                          x ∈ ℝ^3\n                          y ∈ ℝ^3",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     148
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       9
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        9
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          9
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           9
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            4,
+            5
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             4,
+             5
+            ],
+            "id": null,
+            "value": "x"
+           }
+          },
+          "op": "⋅",
+          "right": {
+           "_": "Factor",
+           "@": [
+            8,
+            9
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "y"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       36,
+       48
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        36,
+        48
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          36,
+          37
+         ],
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          40,
+          48
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           40,
+           48
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            40,
+            48
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               45,
+               46
+              ],
+              "id": null,
+              "value": "x"
+             }
+            ],
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               47,
+               48
+              ],
+              "id": null,
+              "value": "y"
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             41,
+             42
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             42,
+             43
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              42,
+              43
+             ],
+             "id": null,
+             "value": "A"
+            }
+           },
+           "lorder": [],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              45,
+              46
+             ],
+             "id": null,
+             "value": "x"
+            },
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              47,
+              48
+             ],
+             "id": null,
+             "value": "y"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       75,
+       148
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        107,
+        148
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          107,
+          114
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           111,
+           114
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            113,
+            114
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             113,
+             114
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              113,
+              114
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            107,
+            108
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          141,
+          148
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           145,
+           148
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            147,
+            148
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             147,
+             148
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              147,
+              148
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            141,
+            142
+           ],
+           "id": null,
+           "value": "y"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "A = x ⋅ y\n                          H = ∂²A/∂x∂y\n                          where\n                          x ∈ ℝ^3\n                          y ∈ ℝ^3",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     148
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       9
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        0,
+        9
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          1
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          4,
+          9
+         ],
+         "sign": null,
+         "value": {
+          "_": "Multiply",
+          "@": [
+           4,
+           9
+          ],
+          "left": {
+           "_": "Factor",
+           "@": [
+            4,
+            5
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             4,
+             5
+            ],
+            "id": null,
+            "value": "x"
+           }
+          },
+          "op": "⋅",
+          "right": {
+           "_": "Factor",
+           "@": [
+            8,
+            9
+           ],
+           "id0": {
+            "_": "IdentifierAlone",
+            "@": [
+             8,
+             9
+            ],
+            "id": null,
+            "value": "y"
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       36,
+       48
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        36,
+        48
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          36,
+          37
+         ],
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          40,
+          48
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           40,
+           48
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            40,
+            48
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               45,
+               46
+              ],
+              "id": null,
+              "value": "x"
+             }
+            ],
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               47,
+               48
+              ],
+              "id": null,
+              "value": "y"
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             41,
+             42
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             42,
+             43
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              42,
+              43
+             ],
+             "id": null,
+             "value": "A"
+            }
+           },
+           "lorder": [],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              45,
+              46
+             ],
+             "id": null,
+             "value": "x"
+            },
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              47,
+              48
+             ],
+             "id": null,
+             "value": "y"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       75,
+       148
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        107,
+        148
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          107,
+          114
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           111,
+           114
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            113,
+            114
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             113,
+             114
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              113,
+              114
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            107,
+            108
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        },
+        {
+         "_": "WhereCondition",
+         "@": [
+          141,
+          148
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           145,
+           148
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            147,
+            148
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             147,
+             148
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              147,
+              148
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            141,
+            142
+           ],
+           "id": null,
+           "value": "y"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "error": "Error on line 2 at column 31. Mixed second derivatives (∂²f/∂x∂y) aren't supported.\n                          H = ∂²A/∂x∂y\n                              ^\n",
+  "traceback": "Traceback (most recent call last):\n  File \".venv/lib/python3.12/site-packages/tatsu/walkers.py\", line 39, in walk\n    return walker(self, node, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/type_walker.py\", line 2948, in walk_Partial\n    self.assert_expr(len(lorder_list) == 1, get_err_msg_info(node.parseinfo,\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 2 at column 31. Mixed second derivatives (∂²f/∂x∂y) aren't supported.\n                          H = ∂²A/∂x∂y\n                              ^\n\n"
+ }
+}

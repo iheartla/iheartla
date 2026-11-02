@@ -1,0 +1,1328 @@
+{
+ "id": "t_derivative_03",
+ "src": "sin from trigonometry\n                    A = t^3 + sin(t)\n                    H = ∂²A/∂t²\n                    f(s) = s^4 where s ∈ ℝ\n                    K = ∂²f(t)/∂t²\n                    where\n                    t ∈ ℝ",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "sin from trigonometry\n                    A = t^3 + sin(t)\n                    H = ∂²A/∂t²\n                    f(s) = s^4 where s ∈ ℝ\n                    K = ∂²f(t)/∂t²\n                    where\n                    t ∈ ℝ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     220
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       21
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        9,
+        21
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       42,
+       58
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        42,
+        58
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          42,
+          43
+         ],
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          46,
+          58
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           46,
+           58
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            46,
+            49
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             46,
+             49
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              46,
+              49
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               46,
+               47
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                46,
+                47
+               ],
+               "id": null,
+               "value": "t"
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               48,
+               49
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                48,
+                49
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            52,
+            58
+           ],
+           "op": {
+            "_": "Function",
+            "@": [
+             52,
+             58
+            ],
+            "name": [
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               52,
+               55
+              ],
+              "id": null,
+              "value": "sin"
+             },
+             []
+            ],
+            "p": "(",
+            "params": [
+             {
+              "_": "Expression",
+              "@": [
+               56,
+               57
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                56,
+                57
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 56,
+                 57
+                ],
+                "id": null,
+                "value": "t"
+               }
+              }
+             }
+            ],
+            "separators": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       79,
+       90
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        79,
+        90
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          79,
+          80
+         ],
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          83,
+          90
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           83,
+           90
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            83,
+            90
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               88,
+               89
+              ],
+              "id": null,
+              "value": "t"
+             },
+             {
+              "_": "SupInteger",
+              "@": [
+               89,
+               90
+              ],
+              "value": [
+               "²"
+              ]
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             84,
+             85
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             85,
+             86
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              85,
+              86
+             ],
+             "id": null,
+             "value": "A"
+            }
+           },
+           "lorder": [
+            {
+             "_": "SupInteger",
+             "@": [
+              89,
+              90
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           ],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              88,
+              89
+             ],
+             "id": null,
+             "value": "t"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       111,
+       133
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        111,
+        133
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         111,
+         112
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          128,
+          133
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            128,
+            129
+           ],
+           "id": null,
+           "value": "s"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          118,
+          121
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           118,
+           121
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            118,
+            121
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             118,
+             119
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              118,
+              119
+             ],
+             "id": null,
+             "value": "s"
+            }
+           },
+           "power": {
+            "_": "Factor",
+            "@": [
+             120,
+             121
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              120,
+              121
+             ],
+             "value": [
+              "4"
+             ]
+            }
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          113,
+          114
+         ],
+         "id": null,
+         "value": "s"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       154,
+       168
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        154,
+        168
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          154,
+          155
+         ],
+         "id": null,
+         "value": "K"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          158,
+          168
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           158,
+           168
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            158,
+            168
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               166,
+               167
+              ],
+              "id": null,
+              "value": "t"
+             },
+             {
+              "_": "SupInteger",
+              "@": [
+               167,
+               168
+              ],
+              "value": [
+               "²"
+              ]
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             159,
+             160
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             160,
+             164
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              160,
+              164
+             ],
+             "name": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                160,
+                161
+               ],
+               "id": null,
+               "value": "f"
+              },
+              []
+             ],
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                162,
+                163
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 162,
+                 163
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  162,
+                  163
+                 ],
+                 "id": null,
+                 "value": "t"
+                }
+               }
+              }
+             ],
+             "separators": []
+            }
+           },
+           "lorder": [
+            {
+             "_": "SupInteger",
+             "@": [
+              167,
+              168
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           ],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              166,
+              167
+             ],
+             "id": null,
+             "value": "t"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       189,
+       220
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        215,
+        220
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          215,
+          220
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            215,
+            216
+           ],
+           "id": null,
+           "value": "t"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "sin"
+    ],
+    "funcs": [
+     "`f`",
+     "f"
+    ],
+    "builtins": [
+     "sin_func"
+    ],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "sin from trigonometry\n                    A = t^3 + sin(t)\n                    H = ∂²A/∂t²\n                    f(s) = s^4 where s ∈ ℝ\n                    K = ∂²f(t)/∂t²\n                    where\n                    t ∈ ℝ",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     220
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       21
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        9,
+        21
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       42,
+       58
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        42,
+        58
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          42,
+          43
+         ],
+         "const": null,
+         "id": null,
+         "value": "A"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          46,
+          58
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           46,
+           58
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            46,
+            49
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             46,
+             49
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              46,
+              49
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               46,
+               47
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                46,
+                47
+               ],
+               "const": null,
+               "id": null,
+               "value": "t"
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               48,
+               49
+              ],
+              "num": {
+               "_": "Integer",
+               "@": [
+                48,
+                49
+               ],
+               "value": [
+                "3"
+               ]
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            52,
+            58
+           ],
+           "op": {
+            "_": "SinFunc",
+            "@": [
+             52,
+             58
+            ],
+            "param": {
+             "_": "Expression",
+             "@": [
+              56,
+              57
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               56,
+               57
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                56,
+                57
+               ],
+               "const": null,
+               "id": null,
+               "value": "t"
+              }
+             }
+            },
+            "power": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       79,
+       90
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        79,
+        90
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          79,
+          80
+         ],
+         "const": null,
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          83,
+          90
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           83,
+           90
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            83,
+            90
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               88,
+               89
+              ],
+              "const": null,
+              "id": null,
+              "value": "t"
+             },
+             {
+              "_": "SupInteger",
+              "@": [
+               89,
+               90
+              ],
+              "value": [
+               "²"
+              ]
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             84,
+             85
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             85,
+             86
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              85,
+              86
+             ],
+             "const": null,
+             "id": null,
+             "value": "A"
+            }
+           },
+           "lorder": [
+            {
+             "_": "SupInteger",
+             "@": [
+              89,
+              90
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           ],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              88,
+              89
+             ],
+             "const": null,
+             "id": null,
+             "value": "t"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       111,
+       133
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        111,
+        133
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         111,
+         112
+        ],
+        "const": null,
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          128,
+          133
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            128,
+            129
+           ],
+           "const": null,
+           "id": null,
+           "value": "s"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          118,
+          121
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           118,
+           121
+          ],
+          "op": {
+           "_": "Power",
+           "@": [
+            118,
+            121
+           ],
+           "base": {
+            "_": "Factor",
+            "@": [
+             118,
+             119
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
+             "@": [
+              118,
+              119
+             ],
+             "const": null,
+             "id": null,
+             "value": "s"
+            }
+           },
+           "power": {
+            "_": "Factor",
+            "@": [
+             120,
+             121
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              120,
+              121
+             ],
+             "value": [
+              "4"
+             ]
+            }
+           }
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          113,
+          114
+         ],
+         "const": null,
+         "id": null,
+         "value": "s"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       154,
+       168
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        154,
+        168
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          154,
+          155
+         ],
+         "const": null,
+         "id": null,
+         "value": "K"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          158,
+          168
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           158,
+           168
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            158,
+            168
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               166,
+               167
+              ],
+              "const": null,
+              "id": null,
+              "value": "t"
+             },
+             {
+              "_": "SupInteger",
+              "@": [
+               167,
+               168
+              ],
+              "value": [
+               "²"
+              ]
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             159,
+             160
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             160,
+             164
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              160,
+              164
+             ],
+             "name": "f",
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                162,
+                163
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 162,
+                 163
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  162,
+                  163
+                 ],
+                 "const": null,
+                 "id": null,
+                 "value": "t"
+                }
+               }
+              }
+             ],
+             "separators": []
+            }
+           },
+           "lorder": [
+            {
+             "_": "SupInteger",
+             "@": [
+              167,
+              168
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           ],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              166,
+              167
+             ],
+             "const": null,
+             "id": null,
+             "value": "t"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       189,
+       220
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        215,
+        220
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          215,
+          220
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            215,
+            216
+           ],
+           "const": null,
+           "id": null,
+           "value": "t"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nsin from trigonometry\n                    A = t^3 + sin(t)\n                    H = ∂²A/∂t²\n                    f(s) = s^4 where s ∈ ℝ\n                    K = ∂²f(t)/∂t²\n                    where\n                    t ∈ ℝ\n\"\"\"\nimport autograd.numpy as np\nimport autograd\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    _differentiating = 0  # (> 0 while the program is recomputed for a derivative)\n\n    def __init__(self, t):\n        assert np.ndim(t) == 0\n\n        self.t = t\n        # A = t^3 + sin(t)\n        self.A = np.power(np.array(t, dtype=np.float64), 3) + np.sin(t)\n        if not type(self)._differentiating:\n            # H = ∂²A/∂t²\n            self.H = autograd.hessian(lambda dx: self._without_derivatives(lambda: type(self)(dx)).A)(t)\n        if not type(self)._differentiating:\n            # K = ∂²f(t)/∂t²\n            self.K = autograd.hessian(lambda dx_1: self.f(dx_1))(t)\n\n    def f(self, s):\n        assert np.ndim(s) == 0\n\n        return np.power(np.array(s, dtype=np.float64), 4)\n    def _without_derivatives(self, make):\n        \"\"\"make(), skipping the derivatives of every instance it constructs\"\"\"\n        type(self)._differentiating += 1\n        try:\n            return make()\n        finally:\n            type(self)._differentiating -= 1\n\n\n\n\n\n",
+  "eigen": "/*\nsin from trigonometry\n                    A = t^3 + sin(t)\n                    H = ∂²A/∂t²\n                    f(s) = s^4 where s ∈ ℝ\n                    K = ∂²f(t)/∂t²\n                    where\n                    t ∈ ℝ\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include <autodiff/reverse/var.hpp>\n#include <autodiff/reverse/var/eigen.hpp>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = autodiff::var;\n    using MatrixD = Eigen::Matrix<autodiff::var, Eigen::Dynamic, Eigen::Dynamic>;\n    using VectorD = Eigen::Matrix<autodiff::var, Eigen::Dynamic, 1>;\n    DT A;\n    double H;\n    double K;\n    DT t;\n    template<typename REAL>\n    REAL f(\n        const REAL & s)\n    {\n        return pow(s, 4);    \n    }\n    heartlib(const double & t)\n    {\n    \n        this->t = t;\n        // A = t^3 + sin(t)\n        A = pow(this->t, 3) + sin(this->t);\n        // H = ∂²A/∂t²\n        H = [&](){ auto d = derivativesx(A, wrt(this->t)); return double(derivatives(d[0], wrt(this->t))[0]); }();\n        // K = ∂²f(t)/∂t²\n        K = [&](){ auto d = derivativesx(f(this->t), wrt(this->t)); return double(derivatives(d[0], wrt(this->t))[0]); }();\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ sin from trigonometry }\\\\\n \\\\\nA & = {t}^{3} + sin\\left( t \\right) \\\\\nH & = \\frac{\\partial^2A}{\\partial {t}^2} \\\\\nf\\left( s \\right) & = {s}^{4} \\text{{ where }}  s ∈ \\mathbb{R} \\\\\nK & = \\frac{\\partial^2f\\left( t \\right)}{\\partial {t}^2} \\\\\n\\intertext{where} \nt & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin from trigonometry }\\\\\n \\\\\nA & = {t}^{3} + sin\\left( t \\right) \\\\\nH & = \\frac{\\partial^2A}{\\partial {t}^2} \\\\\n & f\\left( s \\right) & = {s}^{4} \\text{{ where }}  s ∈ \\mathbb{R} \\\\\nK & = \\frac{\\partial^2f\\left( t \\right)}{\\partial {t}^2} \\\\\nwhere \\\\\nt & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(t)\n% output = heartlib(t)\n%\n%    sin from trigonometry\n%                        A = t^3 + sin(t)\n%                        H = ∂²A/∂t²\n%                        f(s) = s^4 where s ∈ ℝ\n%                        K = ∂²f(t)/∂t²\n%                        where\n%                        t ∈ ℝ\n    assert(numel(t) == 1);\n\n    % A = t^3 + sin(t)\n\n    A = t.^3 + sin(t);\n    % H = ∂²A/∂t²\n\n    H = ;\n    % K = ∂²f(t)/∂t²\n\n    K = ;\n    function [ret] = f(s)\n        assert(numel(s) == 1);\n\n        ret = s.^4;\n    end\n\n    output.A = A;\n    output.H = H;\n    output.K = K;\n    output.f = @f;\n    output.t = t;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin from trigonometry }\\\\\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {A} } & = {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} }}^{3} + sin\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['t', 'A'], false, [], [], 'QSA9IHReMyArIHNpbih0KQ==');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'H', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-H\", \"sym\":\"H\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {H} } & = \\frac{\\partial^2\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} }}{\\partial {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} }}^2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['H'], false, [], [], 'SCA9IOKIgsKyQS_iiIJ0wrI=');\"} }{}\n \\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} } \\right) & = {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} }}^{4} \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {s} } ∈ \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'K', 'heartlib', 'def', false, 'f')\", \"id\":\"heartlib-K\", \"sym\":\"K\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"def\", \"case\":\"equation\"} }{ {K} } & = \\frac{\\partial^2\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } \\right)}{\\partial {\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} }}^2}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['K'], false, [], [], 'SyA9IOKIgsKyZih0KS_iiIJ0wrI=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 't', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-t\", \"sym\":\"t\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {t} } ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

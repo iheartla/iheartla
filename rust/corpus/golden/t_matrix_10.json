@@ -293,6 +293,6 @@
  ],
  "outputs": {
   "error": "Error on line 1 at column 9. Block matrix error. Can't infer the size of I; write I_n.\nB = [ 0 I ]\n        ^\n",
-  "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/type_walker.py\", line 4337, in walk_Matrix\n    self.check_bmat_validity(copy.deepcopy(type_array), None, node_info.content)\n  File \"iheartla/la_parser/type_walker.py\", line 5152, in check_bmat_validity\n    self.assert_expr(sized, get_err_msg_info(item_irs[i][j].parse_info,\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 1 at column 9. Block matrix error. Can't infer the size of I; write I_n.\nB = [ 0 I ]\n        ^\n\n"
+  "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/type_walker.py\", line 4350, in walk_Matrix\n    self.check_bmat_validity(copy.deepcopy(type_array), None, node_info.content)\n  File \"iheartla/la_parser/type_walker.py\", line 5165, in check_bmat_validity\n    self.assert_expr(sized, get_err_msg_info(item_irs[i][j].parse_info,\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 1 at column 9. Block matrix error. Can't infer the size of I; write I_n.\nB = [ 0 I ]\n        ^\n\n"
  }
 }

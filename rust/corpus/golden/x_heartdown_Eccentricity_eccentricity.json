@@ -5204,8 +5204,8 @@
    "kind": "default",
    "config": {
     "ids": [
-     "sin",
-     "cos"
+     "cos",
+     "sin"
     ],
     "funcs": [
      "`\\$\\\\hat\\{Ψ\\}\\$`",

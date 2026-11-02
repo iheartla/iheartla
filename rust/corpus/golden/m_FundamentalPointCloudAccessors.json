@@ -1546,8 +1546,8 @@
      "BoundaryMatrices",
      "IndicatorVector",
      "ElementSets",
-     "Vertices",
      "NonZeros",
+     "Vertices",
      "Edges"
     ],
     "funcs": [

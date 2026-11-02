@@ -4809,7 +4809,7 @@
  ],
  "outputs": {
   "error": "Error on line 1 at column 7. Symbol a is not defined.\nx_f = acos((q_f²+r_f²-p_f²)/(2 q_f r_f))\n      ^\n",
-  "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/type_walker.py\", line 3915, in walk_Factor\n    self.check_sym_existence(new_symbol, get_err_msg_info(id0_info.ir.parse_info,\n  File \"iheartla/la_parser/type_walker.py\", line 661, in check_sym_existence\n    self.assert_expr(existed == resolved, msg)\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 1 at column 7. Symbol a is not defined.\nx_f = acos((q_f²+r_f²-p_f²)/(2 q_f r_f))\n      ^\n\n"
+  "traceback": "Traceback (most recent call last):\n  File \"iheartla/la_parser/type_walker.py\", line 3928, in walk_Factor\n    self.check_sym_existence(new_symbol, get_err_msg_info(id0_info.ir.parse_info,\n  File \"iheartla/la_parser/type_walker.py\", line 661, in check_sym_existence\n    self.assert_expr(existed == resolved, msg)\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 1 at column 7. Symbol a is not defined.\nx_f = acos((q_f²+r_f²-p_f²)/(2 q_f r_f))\n      ^\n\n"
  },
  "path": "rust/corpus/examples/cotangent/attempts"
 }

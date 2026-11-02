@@ -435,12 +435,12 @@
    "kind": "default",
    "config": {
     "ids": [
-     "bb",
-     "cc",
+     "ee",
      "aa",
      "ff",
-     "ee",
-     "dd"
+     "dd",
+     "cc",
+     "bb"
     ],
     "funcs": [],
     "builtins": [],

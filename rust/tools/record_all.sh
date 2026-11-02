@@ -1,7 +1,7 @@
 #!/bin/sh
 # Record the I❤LA programs used by every test module (one process per module).
 cd "$(dirname "$0")/../.."
-: "${SDKROOT:=/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk}"
+: "${SDKROOT:=$(xcrun --show-sdk-path 2>/dev/null || echo /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk)}"
 export SDKROOT
 out=rust/corpus/tests.jsonl
 mkdir -p rust/corpus

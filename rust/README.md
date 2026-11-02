@@ -17,14 +17,14 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 
 | Part | State |
 |---|---|
-| Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus (687 parses) |
-| Declarations pass (second-parse configuration) | 310/310 corpus programs |
+| Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus (697 parses) |
+| Declarations pass (second-parse configuration) | 315/315 corpus programs |
 | Type checker → typed AST | Covers every program in the Python test suite, all 23 H❤️rtDown gallery programs and all 10 I❤️MESH paper examples |
-| NumPy backend | All 232 Python tests on `mesh` (as of the 2026-11-02 merge). On the 23 gallery programs, `tools/value_check.py` finds every attribute and local function value equal to the Python compiler's. Derivatives (`∂f/∂x`, `∂²f/∂x²`) use autograd |
-| Eigen (C++) backend | All 232 Python tests, via cppyy and, for optimization, the system C++ compiler. In a program with derivatives, the struct is a template over its real type (`heartlib` is `heartlib_t<double>`); a derivative recomputes the program as `heartlib_t<autodiff::var>` ([autodiff](https://github.com/autodiff/autodiff), reverse mode) |
-| LaTeX and MathJax backends | 302/302 corpus programs (including modules, the gallery and the I❤️MESH examples) give output identical to Python's |
-| MacroMathJax backend (H❤️rtDown click handlers) | Of 302 corpus programs, 298 are byte-identical to Python's output and 2 equal once equation symbol lists are sorted. The other 2 differ in Python quirks: in I❤️MESH `winding_number`, Python marks a local function's `where` definitions (`𝐚 = x_i - 𝐩`) as not local, where it marks them local elsewhere; in `mesh_deformation`, it lists `x_(bx_j)` among an equation's symbols, where Rust lists `x` |
-| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 230 of 232 tests pass; the 2 failures are test issues (below). Names are converted as Python converts them (`μ` is `mu`, `λ` is `lambda_`). Meshes, modules, derivatives, `svd` and sets of vectors aren't supported |
+| NumPy backend | All 235 Python tests on `mesh` (as of the 2026-11-02 merge). On the 23 gallery programs, `tools/value_check.py` finds every attribute and local function value equal to the Python compiler's. Derivatives (`∂f/∂x`, and `∂²f/∂x²` of a scalar `f` with respect to a scalar, vector or sequence; other second derivatives are errors, as in Python) use autograd |
+| Eigen (C++) backend | All 235 Python tests, via cppyy and, for optimization, the system C++ compiler. In a program with derivatives, the struct is a template over its real type (`heartlib` is `heartlib_t<double>`); a derivative recomputes the program as `heartlib_t<autodiff::var>` ([autodiff](https://github.com/autodiff/autodiff), reverse mode), differentiated twice for a second derivative with respect to a scalar |
+| LaTeX and MathJax backends | 305/305 corpus programs (including modules, the gallery and the I❤️MESH examples) give output identical to Python's |
+| MacroMathJax backend (H❤️rtDown click handlers) | All 305 corpus programs match Python's output: 303 byte-identical, and 2 equal once equation symbol lists are sorted |
+| MATLAB backend | The test suite's MATLAB checks run in GNU Octave: with NumPy, Eigen and MATLAB all from Rust, all 235 tests pass. Names are converted as Python converts them (`μ` is `mu`, `λ` is `lambda_`). Meshes, modules, derivatives, `svd` and sets of vectors aren't supported |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples, `FundamentalMeshAccessors` and `Neighborhoods`. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 615 values equal to the NumPy output |
 | I❤️MESH paper examples (`corpus/iheartmesh/`) | All 10 compile. On an octahedron, `mesh_check.py` finds `vertex_normal`, `bilateral_denoising`, `discrete_curvature` and `winding_number` equal to Python's NumPy (35,525 values), and `mesh_check_cpp.py` finds Rust's C++ equal to Rust's NumPy for those and `polygon_mesh` (1,066 values). `tools/paper_check.py` checks the four that use derivatives, `sequence()`, sets of vectors and `svd` against the paper's own C++: all 549 values agree, in C++ and NumPy. `mass_spring` needs a tetrahedral mesh, which the checks don't build |
 | Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp v0.4.0. Bounds by expressions without the variables, and equalities, become box constraints; other constraints throw, naming the constraint. When the line search fails (near a non-smooth or exactly-zero minimum), the best point evaluated is used. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy, on random inputs and on the test suite's own |
@@ -44,11 +44,7 @@ With `matlab` in that list, the test suite's MATLAB checks run in GNU Octave:
 - a stand-in replaces the `matlab` engine module;
 - `IHEARTLA_OCTAVE=1` runs the same checks on the Python compiler's MATLAB output.
 
-The 2 failing tests are test issues:
-- `test_set_init` compares an array to a list with `assertEqual`, which raises an error for
-  any array.
-- `test_nested_integral` expects a quadrature result to equal 9 exactly; Octave's
-  `integral` gives 9 + 1.8e-15. Each test module runs in its own
+Each test module runs in its own
 process, because a C++ compile error can crash cling and end the whole run.
 
 ## `--main`: random data and a main

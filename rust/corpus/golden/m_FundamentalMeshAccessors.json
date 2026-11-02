@@ -3200,8 +3200,8 @@
      "BoundaryMatrices",
      "IndicatorVector",
      "ElementSets",
-     "NonZeros",
      "Vertices",
+     "NonZeros",
      "Edges",
      "Faces"
     ],

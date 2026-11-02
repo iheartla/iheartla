@@ -1,29 +1,29 @@
 {
  "id": "t_others_11",
- "src": "b = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        i = 2\n        where\n        a: scalar",
+ "src": "b = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar ",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "b = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        i = 2\n        where\n        a: scalar",
+   "text": "b = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     87
+     96
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       55
+       62
       ],
       "stat": {
        "_": "Assignment",
        "@": [
         0,
-        55
+        62
        ],
        "op": "=",
        "left": [
@@ -42,75 +42,146 @@
          "_": "Optimize",
          "@": [
           4,
-          55
+          62
          ],
          "amax": null,
-         "amin": "argmin",
+         "amin": null,
          "cond": {
           "_": "MultiCond",
           "@": [
-           50,
-           55
+           42,
+           62
           ],
           "cond": {
            "_": "AtomCondition",
            "@": [
-            50,
-            55
+            56,
+            61
            ],
            "cond": {
-            "_": "EqCondition",
+            "_": "LessCondition",
             "@": [
-             50,
-             55
+             56,
+             61
             ],
             "left": {
              "_": "Expression",
              "@": [
-              50,
-              51
+              56,
+              57
              ],
              "sign": null,
              "value": {
               "_": "Factor",
               "@": [
-               50,
-               51
+               56,
+               57
               ],
               "id0": {
                "_": "IdentifierAlone",
                "@": [
-                50,
-                51
+                56,
+                57
                ],
                "id": null,
                "value": "i"
               }
              }
             },
-            "op": "=",
+            "op": "<",
             "right": {
              "_": "Expression",
              "@": [
-              54,
-              55
+              60,
+              61
              ],
              "sign": null,
              "value": {
               "_": "Factor",
               "@": [
-               54,
-               55
+               60,
+               61
               ],
               "num": {
                "_": "Integer",
                "@": [
-                54,
-                55
+                60,
+                61
                ],
                "value": [
-                "2"
+                "9"
                ]
+              }
+             }
+            }
+           }
+          },
+          "m_cond": {
+           "_": "MultiCond",
+           "@": [
+            42,
+            47
+           ],
+           "cond": {
+            "_": "AtomCondition",
+            "@": [
+             42,
+             47
+            ],
+            "cond": {
+             "_": "GreaterCondition",
+             "@": [
+              42,
+              47
+             ],
+             "left": {
+              "_": "Expression",
+              "@": [
+               42,
+               43
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                42,
+                43
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 42,
+                 43
+                ],
+                "id": null,
+                "value": "i"
+               }
+              }
+             },
+             "op": ">",
+             "right": {
+              "_": "Expression",
+              "@": [
+               46,
+               47
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                46,
+                47
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 46,
+                 47
+                ],
+                "value": [
+                 "4"
+                ]
+               }
               }
              }
             }
@@ -120,120 +191,90 @@
          "exp": {
           "_": "Expression",
           "@": [
-           19,
-           28
+           16,
+           20
           ],
-          "sign": null,
           "value": {
-           "_": "Factor",
+           "_": "Add",
            "@": [
-            19,
-            28
+            16,
+            20
            ],
-           "op": {
-            "_": "Power",
+           "left": {
+            "_": "Expression",
             "@": [
-             19,
-             28
+             16,
+             18
             ],
-            "base": {
-             "_": "Factor",
+            "sign": null,
+            "value": {
+             "_": "Multiply",
              "@": [
-              19,
-              26
+              16,
+              18
              ],
-             "sub": {
-              "_": "Subexpression",
+             "left": {
+              "_": "Factor",
               "@": [
-               19,
-               26
+               16,
+               17
               ],
-              "value": {
-               "_": "Expression",
+              "num": {
+               "_": "Integer",
                "@": [
-                20,
-                25
+                16,
+                17
                ],
-               "value": {
-                "_": "Subtract",
-                "@": [
-                 20,
-                 25
-                ],
-                "left": {
-                 "_": "Expression",
-                 "@": [
-                  20,
-                  21
-                 ],
-                 "sign": null,
-                 "value": {
-                  "_": "Factor",
-                  "@": [
-                   20,
-                   21
-                  ],
-                  "id0": {
-                   "_": "IdentifierAlone",
-                   "@": [
-                    20,
-                    21
-                   ],
-                   "id": null,
-                   "value": "i"
-                  }
-                 }
-                },
-                "op": "-",
-                "right": {
-                 "_": "Factor",
-                 "@": [
-                  24,
-                  25
-                 ],
-                 "num": {
-                  "_": "Integer",
-                  "@": [
-                   24,
-                   25
-                  ],
-                  "value": [
-                   "1"
-                  ]
-                 }
-                }
-               }
+               "value": [
+                "3"
+               ]
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               17,
+               18
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                17,
+                18
+               ],
+               "id": null,
+               "value": "i"
               }
              }
-            },
-            "power": {
-             "_": "Factor",
+            }
+           },
+           "op": "+",
+           "right": {
+            "_": "Factor",
+            "@": [
+             19,
+             20
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
              "@": [
-              27,
-              28
+              19,
+              20
              ],
-             "num": {
-              "_": "Integer",
-              "@": [
-               27,
-               28
-              ],
-              "value": [
-               "2"
-              ]
-             }
+             "id": null,
+             "value": "a"
             }
            }
           }
          },
-         "max": null,
+         "max": "max",
          "min": null,
          "defs": [
           {
            "_": "WhereCondition",
            "@": [
-            12,
-            17
+            9,
+            14
            ],
            "attrib": null,
            "subset": null,
@@ -244,8 +285,8 @@
             {
              "_": "IdentifierAlone",
              "@": [
-              12,
-              13
+              9,
+              10
              ],
              "id": null,
              "value": "i"
@@ -261,22 +302,22 @@
      {
       "_": "ParamsBlock",
       "@": [
-       64,
-       87
+       71,
+       95
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        78,
-        87
+        86,
+        95
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          78,
-          87
+          86,
+          95
          ],
          "attrib": null,
          "belong": ":",
@@ -289,8 +330,8 @@
           {
            "_": "IdentifierAlone",
            "@": [
-            78,
-            79
+            86,
+            87
            ],
            "id": null,
            "value": "a"
@@ -312,25 +353,25 @@
     "rename": {},
     "const_e": false
    },
-   "text": "b = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        i = 2\n        where\n        a: scalar",
+   "text": "b = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar ",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     87
+     96
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       55
+       62
       ],
       "stat": {
        "_": "Assignment",
        "@": [
         0,
-        55
+        62
        ],
        "op": "=",
        "left": [
@@ -349,75 +390,146 @@
          "_": "Optimize",
          "@": [
           4,
-          55
+          62
          ],
          "amax": null,
-         "amin": "argmin",
+         "amin": null,
          "cond": {
           "_": "MultiCond",
           "@": [
-           50,
-           55
+           42,
+           62
           ],
           "cond": {
            "_": "AtomCondition",
            "@": [
-            50,
-            55
+            56,
+            61
            ],
            "cond": {
-            "_": "EqCondition",
+            "_": "LessCondition",
             "@": [
-             50,
-             55
+             56,
+             61
             ],
             "left": {
              "_": "Expression",
              "@": [
-              50,
-              51
+              56,
+              57
              ],
              "sign": null,
              "value": {
               "_": "Factor",
               "@": [
-               50,
-               51
+               56,
+               57
               ],
               "id0": {
                "_": "IdentifierAlone",
                "@": [
-                50,
-                51
+                56,
+                57
                ],
                "id": null,
                "value": "i"
               }
              }
             },
-            "op": "=",
+            "op": "<",
             "right": {
              "_": "Expression",
              "@": [
-              54,
-              55
+              60,
+              61
              ],
              "sign": null,
              "value": {
               "_": "Factor",
               "@": [
-               54,
-               55
+               60,
+               61
               ],
               "num": {
                "_": "Integer",
                "@": [
-                54,
-                55
+                60,
+                61
                ],
                "value": [
-                "2"
+                "9"
                ]
+              }
+             }
+            }
+           }
+          },
+          "m_cond": {
+           "_": "MultiCond",
+           "@": [
+            42,
+            47
+           ],
+           "cond": {
+            "_": "AtomCondition",
+            "@": [
+             42,
+             47
+            ],
+            "cond": {
+             "_": "GreaterCondition",
+             "@": [
+              42,
+              47
+             ],
+             "left": {
+              "_": "Expression",
+              "@": [
+               42,
+               43
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                42,
+                43
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 42,
+                 43
+                ],
+                "id": null,
+                "value": "i"
+               }
+              }
+             },
+             "op": ">",
+             "right": {
+              "_": "Expression",
+              "@": [
+               46,
+               47
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                46,
+                47
+               ],
+               "num": {
+                "_": "Integer",
+                "@": [
+                 46,
+                 47
+                ],
+                "value": [
+                 "4"
+                ]
+               }
               }
              }
             }
@@ -427,120 +539,90 @@
          "exp": {
           "_": "Expression",
           "@": [
-           19,
-           28
+           16,
+           20
           ],
-          "sign": null,
           "value": {
-           "_": "Factor",
+           "_": "Add",
            "@": [
-            19,
-            28
+            16,
+            20
            ],
-           "op": {
-            "_": "Power",
+           "left": {
+            "_": "Expression",
             "@": [
-             19,
-             28
+             16,
+             18
             ],
-            "base": {
-             "_": "Factor",
+            "sign": null,
+            "value": {
+             "_": "Multiply",
              "@": [
-              19,
-              26
+              16,
+              18
              ],
-             "sub": {
-              "_": "Subexpression",
+             "left": {
+              "_": "Factor",
               "@": [
-               19,
-               26
+               16,
+               17
               ],
-              "value": {
-               "_": "Expression",
+              "num": {
+               "_": "Integer",
                "@": [
-                20,
-                25
+                16,
+                17
                ],
-               "value": {
-                "_": "Subtract",
-                "@": [
-                 20,
-                 25
-                ],
-                "left": {
-                 "_": "Expression",
-                 "@": [
-                  20,
-                  21
-                 ],
-                 "sign": null,
-                 "value": {
-                  "_": "Factor",
-                  "@": [
-                   20,
-                   21
-                  ],
-                  "id0": {
-                   "_": "IdentifierAlone",
-                   "@": [
-                    20,
-                    21
-                   ],
-                   "id": null,
-                   "value": "i"
-                  }
-                 }
-                },
-                "op": "-",
-                "right": {
-                 "_": "Factor",
-                 "@": [
-                  24,
-                  25
-                 ],
-                 "num": {
-                  "_": "Integer",
-                  "@": [
-                   24,
-                   25
-                  ],
-                  "value": [
-                   "1"
-                  ]
-                 }
-                }
-               }
+               "value": [
+                "3"
+               ]
+              }
+             },
+             "right": {
+              "_": "Factor",
+              "@": [
+               17,
+               18
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                17,
+                18
+               ],
+               "id": null,
+               "value": "i"
               }
              }
-            },
-            "power": {
-             "_": "Factor",
+            }
+           },
+           "op": "+",
+           "right": {
+            "_": "Factor",
+            "@": [
+             19,
+             20
+            ],
+            "id0": {
+             "_": "IdentifierAlone",
              "@": [
-              27,
-              28
+              19,
+              20
              ],
-             "num": {
-              "_": "Integer",
-              "@": [
-               27,
-               28
-              ],
-              "value": [
-               "2"
-              ]
-             }
+             "id": null,
+             "value": "a"
             }
            }
           }
          },
-         "max": null,
+         "max": "max",
          "min": null,
          "defs": [
           {
            "_": "WhereCondition",
            "@": [
-            12,
-            17
+            9,
+            14
            ],
            "attrib": null,
            "subset": null,
@@ -551,8 +633,8 @@
             {
              "_": "IdentifierAlone",
              "@": [
-              12,
-              13
+              9,
+              10
              ],
              "id": null,
              "value": "i"
@@ -568,22 +650,22 @@
      {
       "_": "ParamsBlock",
       "@": [
-       64,
-       87
+       71,
+       95
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        78,
-        87
+        86,
+        95
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          78,
-          87
+          86,
+          95
          ],
          "attrib": null,
          "belong": ":",
@@ -596,8 +678,8 @@
           {
            "_": "IdentifierAlone",
            "@": [
-            78,
-            79
+            86,
+            87
            ],
            "id": null,
            "value": "a"
@@ -612,11 +694,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nb = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        i = 2\n        where\n        a: scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n        def pack(i):\n            return np.concatenate([[i]])\n        def unpack(X):\n            return X[0:1][0]\n        def cons(X):\n            i = unpack(X)\n            return i - 2\n        cons_1 = ({'type': 'eq', 'fun': cons})\n        def target(X):\n            i = unpack(X)\n            return np.power(np.asarray((i - 1), dtype=np.float64), 2)\n        opt = minimize(target, np.zeros(1), constraints=cons_1)\n        i = unpack(opt.x)\n        self.b = unpack(opt.x)\n        self.i = i\n\n\n\n\n\n",
-  "eigen": "/*\nb = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        i = 2\n        where\n        a: scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include <LBFGS.h>\n#include <LBFGSB.h>\n#include <limits>\n#include <stdexcept>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n\n    heartlib(const double & a)\n    {\n    \n        // b = argmin_(i ∈ ℝ) (i - 1)^2\n        //         s.t.\n        //         i = 2\n            auto unpack = [&](const VectorD & X, DT & i)\n            {\n                i = X(0);\n            };\n            auto target = [&](const VectorD & X)\n            {\n                DT i;\n                unpack(X, i);\n                return DT(pow((i - 1), 2));\n            };\n            VectorD best_X;\n            DT best_f = std::numeric_limits<DT>::infinity();\n            auto helper = [&](const VectorD & X, VectorD & grad)\n            {\n                VectorD Xh = X;\n                for(int k = 0; k < X.size(); ++k)\n                {\n                    const DT h = 1e-6 * std::max(DT(1), std::abs(X(k)));\n                    Xh(k) = X(k) + h;\n                    const DT f_plus = target(Xh);\n                    Xh(k) = X(k) - h;\n                    const DT f_minus = target(Xh);\n                    Xh(k) = X(k);\n                    grad(k) = (f_plus - f_minus) / (2 * h);\n                }\n                const DT f = target(X);\n                if(f < best_f){ best_f = f; best_X = X; }  // the best point evaluated, kept if the line search gives up\n                return f;\n            };\n            VectorD lower = VectorD::Constant(1, -std::numeric_limits<DT>::infinity());\n            VectorD upper = VectorD::Constant(1, std::numeric_limits<DT>::infinity());\n            lower(0) = std::max(lower(0), DT(2));\n            upper(0) = std::min(upper(0), DT(2));\n            VectorD init = VectorD::Zero(1);\n            init = init.cwiseMax(lower).cwiseMin(upper);\n            DT fx;\n            LBFGSpp::LBFGSBParam<DT> param;\n            param.epsilon = 1e-8;\n            param.max_iterations = 1000;\n            LBFGSpp::LBFGSBSolver<DT> solver(param);\n            try\n            {\n                solver.minimize(helper, init, fx, lower, upper);\n            }\n            catch(const std::runtime_error &)\n            {\n                // LBFGSpp's line search could not decrease the objective further (e.g. near a\n                // nonsmooth or exactly zero minimum): use the best point evaluated\n                if(!(best_f < std::numeric_limits<DT>::infinity())) throw;\n            }\n            init = best_X;\n            fx = best_f;\n            DT i;\n            unpack(init, i);\n        b = i;\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\begin{aligned} b = \\argmin_{i  \\in \\mathbb{R}} \\quad & {\\left( i - 1 \\right)}^{2} \\\\\n\\textrm{s.t.} \\quad &i = 2\n\\end{aligned} \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} b = \\argmin_{i  \\in \\mathbb{R}} \\quad & {\\left( i - 1 \\right)}^{2} \\\\\n\\textrm{s.t.} \\quad &i = 2\n\\end{aligned} \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    b = argmin_(i ∈ ℝ) (i - 1)^2\n%            s.t.\n%            i = 2\n%            where\n%            a: scalar\n    assert(numel(a) == 1);\n\n    i = optimvar('i');\n    prob = optimproblem;\n    prob.Objective = (i - 1).^2;\n    [optimize, ~] = solve(prob);\n    b = optimize.i;\n    output.b = b;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } = \\argmin_{i  \\in \\mathbb{R}} \\quad & {\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} } - 1 \\right)}^{2} \\\\\n\\textrm{s.t.} \\quad &\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} } = 2\n\\end{aligned}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['i', 'b'], false, [], [], 'YiA9IGFyZ21pbl8oaSDiiIgg4oSdKSAoaSAtIDEpXjIKICAgICAgICBzLnQuCiAgICAgICAgaSA9IDI=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nb = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar \n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, a):\n        assert np.ndim(a) == 0\n\n        self.a = a\n        # b = max_(i ∈ ℝ) 3i+a\n        #         s.t.\n        #         i > 4\n        #         i < 9 \n        def pack(i):\n            return np.concatenate([[i]])\n        def unpack(X):\n            return X[0:1][0]\n        def cons(X):\n            i = unpack(X)\n            return i - 4\n        def cons_1(X):\n            i = unpack(X)\n            return 9 - i\n        cons_2 = ({'type': 'ineq', 'fun': cons}, {'type': 'ineq', 'fun': cons_1})\n        def target(X):\n            i = unpack(X)\n            return -(3 * i + a)\n        opt = minimize(target, np.zeros(1), constraints=cons_2)\n        i = unpack(opt.x)\n        self.b = -opt.fun\n        self.i = i\n\n\n\n\n\n",
+  "eigen": "/*\nb = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar \n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include <LBFGS.h>\n#include <LBFGSB.h>\n#include <limits>\n#include <stdexcept>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT b;\n    double a;\n    heartlib(const double & a)\n    {\n    \n        this->a = a;\n        // b = max_(i ∈ ℝ) 3i+a\n        //         s.t.\n        //         i > 4\n        //         i < 9 \n        auto unpack = [&](const VectorD & X, DT & i)\n        {\n            i = X(0);\n        };\n        auto target = [&](const VectorD & X)\n        {\n            DT i;\n            unpack(X, i);\n            return DT(-(3 * i + a));\n        };\n        VectorD best_X;\n        DT best_f = std::numeric_limits<DT>::infinity();\n        auto helper = [&](const VectorD & X, VectorD & grad)\n        {\n            VectorD Xh = X;\n            for(int k = 0; k < X.size(); ++k)\n            {\n                const DT h = 1e-6 * std::max(DT(1), std::abs(X(k)));\n                Xh(k) = X(k) + h;\n                const DT f_plus = target(Xh);\n                Xh(k) = X(k) - h;\n                const DT f_minus = target(Xh);\n                Xh(k) = X(k);\n                grad(k) = (f_plus - f_minus) / (2 * h);\n            }\n            const DT f = target(X);\n            if(f < best_f){ best_f = f; best_X = X; }  // the best point evaluated, kept if the line search gives up\n            return f;\n        };\n        VectorD lower = VectorD::Constant(1, -std::numeric_limits<DT>::infinity());\n        VectorD upper = VectorD::Constant(1, std::numeric_limits<DT>::infinity());\n        lower(0) = std::max(lower(0), DT(4));\n        upper(0) = std::min(upper(0), DT(9));\n        VectorD init = VectorD::Zero(1);\n        init = init.cwiseMax(lower).cwiseMin(upper);\n        DT fx;\n        LBFGSpp::LBFGSBParam<DT> param;\n        param.epsilon = 1e-8;\n        param.max_iterations = 1000;\n        LBFGSpp::LBFGSBSolver<DT> solver(param);\n        try\n        {\n            solver.minimize(helper, init, fx, lower, upper);\n        }\n        catch(const std::runtime_error &)\n        {\n            // LBFGSpp's line search could not decrease the objective further (e.g. near a\n            // nonsmooth or exactly zero minimum): use the best point evaluated\n            if(!(best_f < std::numeric_limits<DT>::infinity())) throw;\n        }\n        init = best_X;\n        fx = best_f;\n        b = (-fx);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n\\begin{aligned} b = \\max_{i  \\in \\mathbb{R}} \\quad & 3 i + a \\\\\n\\textrm{s.t.} \\quad &i > 4\\\\\n & i < 9\n\\end{aligned} \\\\\n\\intertext{where} \na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} b = \\max_{i  \\in \\mathbb{R}} \\quad & 3 i + a \\\\\n\\textrm{s.t.} \\quad &i > 4\\\\\n & i < 9\n\\end{aligned} \\\\\nwhere \\\\\na & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(a)\n% output = heartlib(a)\n%\n%    b = max_(i ∈ ℝ) 3i+a\n%            s.t.\n%            i > 4\n%            i < 9 \n%            where \n%            a: scalar \n    assert(numel(a) == 1);\n\n    % b = max_(i ∈ ℝ) 3i+a\n    %         s.t.\n    %         i > 4\n    %         i < 9 \n\n    i = optimvar('i');\n    prob = optimproblem;\n    prob.Constraints.cons1 = i >= 4;\n    prob.Constraints.cons2 = i <= 9;\n    prob.Objective = -(3 * i + a);\n    [~, optimize] = solve(prob);\n    b = -optimize;\n    output.b = b;\n    output.a = a;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n\\begin{aligned} \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } = \\max_{i  \\in \\mathbb{R}} \\quad & 3 \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } \\\\\n\\textrm{s.t.} \\quad &\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} } > 4\\\\\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'i', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-i\", \"sym\":\"i\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {i} } < 9\n\\end{aligned}\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['a', 'i', 'b'], false, [], [], 'YiA9IG1heF8oaSDiiIgg4oSdKSAzaSthCiAgICAgICAgcy50LgogICAgICAgIGkgPiA0CiAgICAgICAgaSA8IDkg');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {a} } & : \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
  }
 }

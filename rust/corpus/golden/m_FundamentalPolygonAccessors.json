@@ -3202,8 +3202,8 @@
      "ElementSets",
      "NonZeros",
      "Vertices",
-     "Faces",
-     "Edges"
+     "Edges",
+     "Faces"
     ],
     "funcs": [
      "`UnsignedBoundaryMatrices`",

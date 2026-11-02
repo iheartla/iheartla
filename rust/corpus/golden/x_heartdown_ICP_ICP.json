@@ -4463,8 +4463,8 @@
    "config": {
     "ids": [
      "trans",
-     "rot",
      "cos",
+     "rot",
      "tan"
     ],
     "funcs": [

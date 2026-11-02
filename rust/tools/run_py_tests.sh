@@ -2,7 +2,7 @@
 # Run each Python test module in its own process; summarize OK/FAILED per module.
 # usage: rust/tools/run_py_tests.sh <log-dir> [module...]
 cd "$(dirname "$0")/../.."
-: "${SDKROOT:=/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk}"
+: "${SDKROOT:=$(xcrun --show-sdk-path 2>/dev/null || echo /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk)}"
 export SDKROOT
 out=$1; shift
 mkdir -p "$out"

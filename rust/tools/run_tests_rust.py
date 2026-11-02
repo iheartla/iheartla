@@ -17,7 +17,10 @@ import unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT)
 os.chdir(ROOT)
-os.environ.setdefault('SDKROOT', '/Library/Developer/CommandLineTools/SDKs/MacOSX15.4.sdk')
+if sys.platform == 'darwin' and 'SDKROOT' not in os.environ:
+    # (cppyy's C++ compiler needs the macOS SDK: the current one, as xcrun reports it)
+    _sdk = subprocess.run(['xcrun', '--show-sdk-path'], capture_output=True, text=True).stdout.strip()
+    os.environ['SDKROOT'] = _sdk or '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
 BACKENDS = os.environ.get('IHEARTLA_RUST_BACKENDS', 'numpy').split(',')
 

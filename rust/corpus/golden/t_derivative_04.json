@@ -1,0 +1,1093 @@
+{
+ "id": "t_derivative_04",
+ "src": "f(y) = (y_1 y_2, y_2 y_3) where y ∈ ℝ^3\n                          H = ∂²f(x)/∂x²\n                          where\n                          x ∈ ℝ^3",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "f(y) = (y_1 y_2, y_2 y_3) where y ∈ ℝ^3\n                          H = ∂²f(x)/∂x²\n                          where\n                          x ∈ ℝ^3",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     146
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       39
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        39
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         0,
+         1
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          32,
+          39
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           36,
+           39
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            38,
+            39
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             38,
+             39
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              38,
+              39
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            32,
+            33
+           ],
+           "id": null,
+           "value": "y"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          7,
+          25
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           7,
+           25
+          ],
+          "v": {
+           "_": "Vector",
+           "@": [
+            7,
+            25
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              8,
+              15
+             ],
+             "sign": null,
+             "value": {
+              "_": "Multiply",
+              "@": [
+               8,
+               15
+              ],
+              "left": {
+               "_": "Factor",
+               "@": [
+                8,
+                11
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 8,
+                 11
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  8,
+                  9
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   10,
+                   11
+                  ],
+                  "value": [
+                   "1"
+                  ]
+                 }
+                ]
+               }
+              },
+              "right": {
+               "_": "Factor",
+               "@": [
+                12,
+                15
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 12,
+                 15
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  12,
+                  13
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   14,
+                   15
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              17,
+              24
+             ],
+             "sign": null,
+             "value": {
+              "_": "Multiply",
+              "@": [
+               17,
+               24
+              ],
+              "left": {
+               "_": "Factor",
+               "@": [
+                17,
+                20
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 17,
+                 20
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   19,
+                   20
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              },
+              "right": {
+               "_": "Factor",
+               "@": [
+                21,
+                24
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 21,
+                 24
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  21,
+                  22
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   23,
+                   24
+                  ],
+                  "value": [
+                   "3"
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          2,
+          3
+         ],
+         "id": null,
+         "value": "y"
+        }
+       ],
+       "separators": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       66,
+       80
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        66,
+        80
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          66,
+          67
+         ],
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          70,
+          80
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           70,
+           80
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            70,
+            80
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               78,
+               79
+              ],
+              "id": null,
+              "value": "x"
+             },
+             {
+              "_": "SupInteger",
+              "@": [
+               79,
+               80
+              ],
+              "value": [
+               "²"
+              ]
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             71,
+             72
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             72,
+             76
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              72,
+              76
+             ],
+             "name": [
+              {
+               "_": "IdentifierAlone",
+               "@": [
+                72,
+                73
+               ],
+               "id": null,
+               "value": "f"
+              },
+              []
+             ],
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                74,
+                75
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 74,
+                 75
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  74,
+                  75
+                 ],
+                 "id": null,
+                 "value": "x"
+                }
+               }
+              }
+             ],
+             "separators": []
+            }
+           },
+           "lorder": [
+            {
+             "_": "SupInteger",
+             "@": [
+              79,
+              80
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           ],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              78,
+              79
+             ],
+             "id": null,
+             "value": "x"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       107,
+       146
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        139,
+        146
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          139,
+          146
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           143,
+           146
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            145,
+            146
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             145,
+             146
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              145,
+              146
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            139,
+            140
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [],
+    "funcs": [
+     "`f`",
+     "f"
+    ],
+    "builtins": [],
+    "rename": {},
+    "const_e": false
+   },
+   "text": "f(y) = (y_1 y_2, y_2 y_3) where y ∈ ℝ^3\n                          H = ∂²f(x)/∂x²\n                          where\n                          x ∈ ℝ^3",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     146
+    ],
+    "vblock": [
+     {
+      "_": "Statements",
+      "@": [
+       0,
+       39
+      ],
+      "stat": {
+       "_": "LocalFunc",
+       "@": [
+        0,
+        39
+       ],
+       "def_p": "(",
+       "def_s": null,
+       "name": {
+        "_": "IdentifierAlone",
+        "@": [
+         0,
+         1
+        ],
+        "id": null,
+        "value": "f"
+       },
+       "op": "=",
+       "defs": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          32,
+          39
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           36,
+           39
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            38,
+            39
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             38,
+             39
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              38,
+              39
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            32,
+            33
+           ],
+           "id": null,
+           "value": "y"
+          }
+         ]
+        }
+       ],
+       "expr": [
+        {
+         "_": "Expression",
+         "@": [
+          7,
+          25
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           7,
+           25
+          ],
+          "v": {
+           "_": "Vector",
+           "@": [
+            7,
+            25
+           ],
+           "exp": [
+            {
+             "_": "Expression",
+             "@": [
+              8,
+              15
+             ],
+             "sign": null,
+             "value": {
+              "_": "Multiply",
+              "@": [
+               8,
+               15
+              ],
+              "left": {
+               "_": "Factor",
+               "@": [
+                8,
+                11
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 8,
+                 11
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  8,
+                  9
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   10,
+                   11
+                  ],
+                  "value": [
+                   "1"
+                  ]
+                 }
+                ]
+               }
+              },
+              "right": {
+               "_": "Factor",
+               "@": [
+                12,
+                15
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 12,
+                 15
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  12,
+                  13
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   14,
+                   15
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            },
+            {
+             "_": "Expression",
+             "@": [
+              17,
+              24
+             ],
+             "sign": null,
+             "value": {
+              "_": "Multiply",
+              "@": [
+               17,
+               24
+              ],
+              "left": {
+               "_": "Factor",
+               "@": [
+                17,
+                20
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 17,
+                 20
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  17,
+                  18
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   19,
+                   20
+                  ],
+                  "value": [
+                   "2"
+                  ]
+                 }
+                ]
+               }
+              },
+              "right": {
+               "_": "Factor",
+               "@": [
+                21,
+                24
+               ],
+               "id0": {
+                "_": "IdentifierSubscript",
+                "@": [
+                 21,
+                 24
+                ],
+                "left": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  21,
+                  22
+                 ],
+                 "id": null,
+                 "value": "y"
+                },
+                "right": [
+                 {
+                  "_": "Integer",
+                  "@": [
+                   23,
+                   24
+                  ],
+                  "value": [
+                   "3"
+                  ]
+                 }
+                ]
+               }
+              }
+             }
+            }
+           ]
+          }
+         }
+        }
+       ],
+       "extra": [],
+       "params": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          2,
+          3
+         ],
+         "id": null,
+         "value": "y"
+        }
+       ],
+       "separators": [],
+       "subs": []
+      }
+     },
+     {
+      "_": "Statements",
+      "@": [
+       66,
+       80
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        66,
+        80
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          66,
+          67
+         ],
+         "id": null,
+         "value": "H"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          70,
+          80
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           70,
+           80
+          ],
+          "op": {
+           "_": "Partial",
+           "@": [
+            70,
+            80
+           ],
+           "f": "/",
+           "l": [
+            [
+             "∂",
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               78,
+               79
+              ],
+              "id": null,
+              "value": "x"
+             },
+             {
+              "_": "SupInteger",
+              "@": [
+               79,
+               80
+              ],
+              "value": [
+               "²"
+              ]
+             }
+            ]
+           ],
+           "uorder": {
+            "_": "SupInteger",
+            "@": [
+             71,
+             72
+            ],
+            "value": [
+             "²"
+            ]
+           },
+           "upper": {
+            "_": "Factor",
+            "@": [
+             72,
+             76
+            ],
+            "op": {
+             "_": "Function",
+             "@": [
+              72,
+              76
+             ],
+             "name": "f",
+             "p": "(",
+             "params": [
+              {
+               "_": "Expression",
+               "@": [
+                74,
+                75
+               ],
+               "sign": null,
+               "value": {
+                "_": "Factor",
+                "@": [
+                 74,
+                 75
+                ],
+                "id0": {
+                 "_": "IdentifierAlone",
+                 "@": [
+                  74,
+                  75
+                 ],
+                 "id": null,
+                 "value": "x"
+                }
+               }
+              }
+             ],
+             "separators": []
+            }
+           },
+           "lorder": [
+            {
+             "_": "SupInteger",
+             "@": [
+              79,
+              80
+             ],
+             "value": [
+              "²"
+             ]
+            }
+           ],
+           "lower": [
+            {
+             "_": "IdentifierAlone",
+             "@": [
+              78,
+              79
+             ],
+             "id": null,
+             "value": "x"
+            }
+           ]
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       107,
+       146
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        139,
+        146
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          139,
+          146
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "VectorType",
+          "@": [
+           143,
+           146
+          ],
+          "id1": {
+           "_": "ArithExpression",
+           "@": [
+            145,
+            146
+           ],
+           "sign": null,
+           "value": {
+            "_": "ArithFactor",
+            "@": [
+             145,
+             146
+            ],
+            "num": {
+             "_": "Integer",
+             "@": [
+              145,
+              146
+             ],
+             "value": [
+              "3"
+             ]
+            }
+           }
+          },
+          "type": "ℝ",
+          "attr": []
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            139,
+            140
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "error": "Error on line 2 at column 31. Second derivatives are supported for scalars only.\n                          H = ∂²f(x)/∂x²\n                              ^\n",
+  "traceback": "Traceback (most recent call last):\n  File \".venv/lib/python3.12/site-packages/tatsu/walkers.py\", line 39, in walk\n    return walker(self, node, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"iheartla/la_parser/type_walker.py\", line 2950, in walk_Partial\n    self.assert_expr(upper_info.la_type.is_scalar(), get_err_msg_info(node.parseinfo,\n  File \"iheartla/la_parser/type_walker.py\", line 320, in assert_expr\n    assert cond, msg\n           ^^^^\nAssertionError: Error on line 2 at column 31. Second derivatives are supported for scalars only.\n                          H = ∂²f(x)/∂x²\n                              ^\n\n"
+ }
+}

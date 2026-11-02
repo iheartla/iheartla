@@ -3768,10 +3768,10 @@
      "BoundaryMatrices",
      "IndicatorVector",
      "ElementSets",
-     "Vertices",
      "NonZeros",
-     "Edges",
-     "Faces"
+     "Vertices",
+     "Faces",
+     "Edges"
     ],
     "funcs": [
      "`UnsignedBoundaryMatrices`",

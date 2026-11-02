@@ -60,6 +60,9 @@
 {"id": "t_defuse_02", "src": "D = B + f(A) \n        B = A+C \n        f(x) = x  where x ∈ ℝ \n        where \n        A ∈ ℝ\n        C ∈ ℝ"}
 {"id": "t_derivative_01", "src": "S(x) = { ∞ if x_1 ⋅ x_2 ≤ 0\n                             (x_1 ⋅ x_2)² otherwise where x_i ∈ ℝ^2\n                    E = S(x)\n                    G = ∂E/∂x\n                    where\n                    x_i ∈ ℝ^2"}
 {"id": "t_derivative_02", "src": "sin from trigonometry\n                    A = x ⋅ x + sin(x_1)\n                    G = ∂A/∂x\n                    H = ∂²A/∂x²\n                    f(y) = y ⋅ y where y ∈ ℝ^3\n                    K = ∂²f(x)/∂x²\n                    where\n                    x ∈ ℝ^3"}
+{"id": "t_derivative_03", "src": "sin from trigonometry\n                    A = t^3 + sin(t)\n                    H = ∂²A/∂t²\n                    f(s) = s^4 where s ∈ ℝ\n                    K = ∂²f(t)/∂t²\n                    where\n                    t ∈ ℝ"}
+{"id": "t_derivative_04", "src": "f(y) = (y_1 y_2, y_2 y_3) where y ∈ ℝ^3\n                          H = ∂²f(x)/∂x²\n                          where\n                          x ∈ ℝ^3"}
+{"id": "t_derivative_05", "src": "A = x ⋅ y\n                          H = ∂²A/∂x∂y\n                          where\n                          x ∈ ℝ^3\n                          y ∈ ℝ^3"}
 {"id": "t_dims_01", "src": "M+N\n                    where\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m ) "}
 {"id": "t_dims_02", "src": "M+N\n                    where\n                    m: ℤ\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m ) \n                    "}
 {"id": "t_dims_03", "src": "f( M ) \n                    where \n                    M: ℝ^( m×m )\n                    f: ℝ^( k×k ) -> ℝ "}
@@ -140,6 +143,8 @@
 {"id": "t_localfunc_10", "src": "f(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)"}
 {"id": "t_localfunc_11", "src": "f(x) = { y if x > 0\n                             -y otherwise where x ∈ ℝ,\n                    y = 2x\n                    c = f(3) + f(-1)\n                    where\n                    z ∈ ℝ"}
 {"id": "t_localfunc_12", "src": "f(x) = x \n                    where x: ℝ ^ (2 × 2)"}
+{"id": "t_localfunc_13", "src": "g(f, p) = a where f ∈ ℤ, p ∈ ℝ,\n                    a = p + i,\n                    i, j = v_f\n                    z = g(1, 2)\n                    where\n                    v_i ∈ ℝ^2"}
+{"id": "t_localfunc_14", "src": "z = x_(v_1)\n                                       where\n                                       x ∈ ℝ^3\n                                       v ∈ ℤ^2"}
 {"id": "t_matrix_01", "src": "C = [A ; B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
 {"id": "t_matrix_02", "src": "C = [A B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
 {"id": "t_matrix_03", "src": "C = [A+B A-B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
@@ -201,10 +206,8 @@
 {"id": "t_others_08", "src": "b = argmin_(i ∈ ℝ) i^2 \n        s.t.\n        i ∈ s\n        where \n        s: {ℝ} "}
 {"id": "t_others_09", "src": "b = argmin_(i ∈ ℝ) i^2 \n        where \n        a: scalar "}
 {"id": "t_others_10", "src": "b = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        3 < i\n        where\n        a: scalar"}
-{"id": "t_others_11", "src": "b = argmin_(i ∈ ℝ) (i - 1)^2\n        s.t.\n        i = 2\n        where\n        a: scalar"}
-{"id": "t_others_12", "src": "b = argmin_(i ∈ ℝ) (i - 3)^2\n        s.t.\n        i^2 < 4\n        where\n        a: scalar"}
-{"id": "t_others_13", "src": "b = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
-{"id": "t_others_14", "src": "b = min_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
+{"id": "t_others_11", "src": "b = max_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
+{"id": "t_others_12", "src": "b = min_(i ∈ ℝ) 3i+a\n        s.t.\n        i > 4\n        i < 9 \n        where \n        a: scalar "}
 {"id": "t_product_01", "src": "A = T × P\n                    where \n                    T: ℝ ^ 3: a sequence\n                    P: ℝ ^ 3: a sequence "}
 {"id": "t_product_02", "src": "A = T ⋅ P\n                    where \n                    T: ℝ ^ 3: a sequence\n                    P: ℝ ^ 3: a sequence "}
 {"id": "t_product_03", "src": "A = T : P\n                    where \n                    T: ℝ ^ (2×2): a sequence\n                    P: ℝ ^ (2×2): a sequence"}

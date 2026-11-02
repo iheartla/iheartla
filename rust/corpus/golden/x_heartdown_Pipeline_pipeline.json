@@ -4698,8 +4698,8 @@
    "kind": "default",
    "config": {
     "ids": [
-     "arctan",
      "arcsin",
+     "arctan",
      "atan",
      "sin",
      "cos"
