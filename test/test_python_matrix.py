@@ -603,6 +603,24 @@ class TestMatrix(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_sparse_matrix_power(self):
+        # a matrix power, for both of SciPy's sparse classes: ** is elementwise for sparse arrays
+        la_str = """B = A³
+        L = D⁻¹ A
+        M = L²
+        where
+        A ∈ ℝ^(3×3) sparse
+        D ∈ ℝ^(3×3) sparse"""
+        func_info = self.gen_func_info(la_str)
+        dense = np.array([[1., 2, 0], [0, 3, 4], [5, 0, 6]])
+        D = np.diag([2., 4, 5])
+        L = np.linalg.solve(D, dense)
+        for cls in (scipy.sparse.csc_matrix, scipy.sparse.csc_array):
+            result = func_info.numpy_func(cls(dense), cls(D))
+            self.assertDMatrixEqual(result.B.toarray(), dense @ dense @ dense)
+            # spsolve returns a sparse array
+            self.assertDMatrixEqual(result.M.toarray(), L @ L)
+
     def test_sparse_diagonal_matrix(self):
         # sparse matrix: =
         la_str = """D_ii = sum_j A_ij

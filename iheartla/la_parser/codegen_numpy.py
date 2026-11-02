@@ -1186,7 +1186,8 @@ class CodeGenNumpy(CodeGen):
                 base_info.content = "np.power(np.asarray({}, dtype=np.float64), {})".format(base_info.content, power_info.content)
             else:
                 if node.base.la_type.sparse:
-                    base_info.content = "({})**({})".format(base_info.content, power_info.content)
+                    # not **, which is elementwise for SciPy's sparse arrays (such as spsolve returns)
+                    base_info.content = "sparse.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
                 else:
                     base_info.content = "np.linalg.matrix_power({}, {})".format(base_info.content, power_info.content)
         return base_info
