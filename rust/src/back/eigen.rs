@@ -12,7 +12,7 @@ use super::names::{convert_unicode, has_special_symbol, Kind};
 use crate::ast::*;
 use crate::dims::Dim;
 use crate::ty::*;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 const HEADER: &str = "#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n\
 #include <Eigen/SVD>\n#include <iostream>\n#include <set>\n#include <vector>\n#include <tuple>\n#include <functional>\n\
@@ -21,8 +21,66 @@ const HEADER: &str = "#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eige
 // sets are sorted vectors without duplicates (defined before the last #include:\n\
 // code that wraps the generated code in a namespace starts it after that)\n\
 template<typename T> std::vector<T> sorted_set(std::vector<T> v) { std::sort(v.begin(), v.end()); v.erase(std::unique(v.begin(), v.end()), v.end()); return v; }\n\
+// (vectors in lexicographic order)\n\
+template<typename S, int R, int C, int O, int MR, int MC> std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> sorted_set(std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> v) {\n\
+    using M = Eigen::Matrix<S, R, C, O, MR, MC>;\n\
+    std::sort(v.begin(), v.end(), [](const M & a, const M & b){ return std::lexicographical_compare(a.data(), a.data() + a.size(), b.data(), b.data() + b.size()); });\n\
+    v.erase(std::unique(v.begin(), v.end(), [](const M & a, const M & b){ return a.size() == b.size() && (a.array() == b.array()).all(); }), v.end());\n\
+    return v;\n\
+}\n\
 #endif\n\
 #include <unsupported/Eigen/MatrixFunctions>\n";
+
+/// For derivatives (reverse mode, https://github.com/autodiff/autodiff): a
+/// value as one flat vector, the value from such a vector, and a value's
+/// reals converted to autodiff::var (anything else is kept).
+const DERIVATIVE_HELPERS: &str = "#include <autodiff/reverse/var.hpp>\n#include <autodiff/reverse/var/eigen.hpp>\n\
+#ifndef IHEARTLA_DERIVATIVES\n#define IHEARTLA_DERIVATIVES\n\
+namespace iheartla_diff {\n\
+template<typename T> struct is_vector : std::false_type {};\n\
+template<typename T, typename A> struct is_vector<std::vector<T, A>> : std::true_type {};\n\
+template<typename T> struct is_eigen : std::is_base_of<Eigen::EigenBase<T>, T> {};\n\
+// the length of the flat vector\n\
+template<typename T> long flat_size(const T & x) {\n\
+    if constexpr (is_vector<T>::value) { long n = 0; for (const auto & e : x) n += flat_size(e); return n; }\n\
+    else if constexpr (is_eigen<T>::value) return x.size();\n\
+    else return 1;\n\
+}\n\
+// x into v from offset k, row by row (as NumPy's ravel)\n\
+template<typename V, typename T> void flatten_into(const T & x, V & v, long & k) {\n\
+    if constexpr (is_vector<T>::value) { for (const auto & e : x) flatten_into(e, v, k); }\n\
+    else if constexpr (is_eigen<T>::value) { for (long i = 0; i < x.rows(); i++) for (long j = 0; j < x.cols(); j++) v(k++) = x(i, j); }\n\
+    else v(k++) = x;\n\
+}\n\
+template<typename S, typename T> Eigen::Matrix<S, Eigen::Dynamic, 1> flatten(const T & x) {\n\
+    Eigen::Matrix<S, Eigen::Dynamic, 1> v(flat_size(x)); long k = 0; flatten_into(x, v, k); return v;\n\
+}\n\
+// a value shaped as x, with S reals, from v (from offset k)\n\
+template<typename S, typename T, typename V> auto unflatten(const V & v, const T & x, long & k) {\n\
+    if constexpr (is_vector<T>::value) {\n\
+        std::vector<decltype(unflatten<S>(v, x[0], k))> r;\n\
+        for (const auto & e : x) r.push_back(unflatten<S>(v, e, k));\n\
+        return r;\n\
+    } else if constexpr (is_eigen<T>::value) {\n\
+        Eigen::Matrix<S, T::RowsAtCompileTime, T::ColsAtCompileTime> r(x.rows(), x.cols());\n\
+        for (long i = 0; i < x.rows(); i++) for (long j = 0; j < x.cols(); j++) r(i, j) = v(k++);\n\
+        return r;\n\
+    } else return S(v(k++));\n\
+}\n\
+template<typename S, typename T, typename V> auto unflatten(const V & v, const T & x) { long k = 0; return unflatten<S>(v, x, k); }\n\
+// x with its reals as S (integers, sets, meshes, functions, sparse matrices kept)\n\
+template<typename S, typename T> auto to(const T & x) {\n\
+    if constexpr (std::is_same<T, double>::value) return S(x);\n\
+    else if constexpr (is_vector<T>::value) {\n\
+        if constexpr (std::is_same<decltype(to<S>(x[0])), typename T::value_type>::value) return x;\n\
+        else { std::vector<decltype(to<S>(x[0]))> r; for (const auto & e : x) r.push_back(to<S>(e)); return r; }\n\
+    } else if constexpr (is_eigen<T>::value && !std::is_base_of<Eigen::SparseMatrixBase<T>, T>::value) {\n\
+        if constexpr (std::is_same<typename T::Scalar, double>::value) return Eigen::Matrix<S, T::RowsAtCompileTime, T::ColsAtCompileTime>(x.template cast<S>());\n\
+        else return x;\n\
+    } else return x;\n\
+}\n\
+}\n\
+#endif\n";
 
 pub fn generate(prog: &Program, struct_name: &str) -> String {
     let mut out = String::new();
@@ -37,7 +95,13 @@ pub fn generate(prog: &Program, struct_name: &str) -> String {
         out.push_str("#include \"MeshHelper.h\"\nusing namespace iheartmesh;\n");
     }
     out.push('\n');
+    if prog.derivatives {
+        out.push_str(DERIVATIVE_HELPERS);
+    }
+    // (with derivatives, the struct is a template over its real type: double, or autodiff::var)
+    DT_MODE.with(|m| m.set(prog.derivatives));
     let body = structure(prog, struct_name);
+    DT_MODE.with(|m| m.set(false));
     if body.contains("LBFGSpp::") {
         // (header-only: https://github.com/yixuan/LBFGSpp)
         out.push_str("#include <LBFGS.h>\n#include <LBFGSB.h>\n\n");
@@ -70,9 +134,30 @@ fn mesh_class(k: MeshKind) -> &'static str {
 /// A program as a struct; imported modules are nested structs, held as
 /// members and constructed with the importer's arguments.
 fn structure(prog: &Program, struct_name: &str) -> String {
-    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, locals: Vec::new() };
+    let mut g = Gen {
+        prog,
+        lines: Vec::new(),
+        indent: 2,
+        tmp: 0,
+        locals: Vec::new(),
+        subst: HashMap::new(),
+        this: "this->".into(),
+        saw_partial: false,
+        struct_name: struct_name.to_string(),
+    };
     let mut out = String::new();
-    out.push_str(&format!("struct {struct_name} {{\n    using DT = double;\n"));
+    // with derivatives: a template over the real type DT (heartlib is heartlib_t<double>)
+    let templated = prog.derivatives && DT_MODE.with(|m| m.get());
+    let struct_name_t = if templated { format!("{struct_name}_t") } else { struct_name.to_string() };
+    if templated {
+        out.push_str(&format!("template<typename DT = double>\nstruct {struct_name_t} {{\n"));
+    } else if DT_MODE.with(|m| m.get()) {
+        // (a module inside a templated struct: DT is the template's)
+        out.push_str(&format!("struct {struct_name} {{\n"));
+    } else {
+        out.push_str(&format!("struct {struct_name} {{\n    using DT = double;\n"));
+    }
+    let struct_name = struct_name_t.as_str();
     let mut done = HashSet::new();
     for m in &prog.modules {
         if done.insert(m.name.clone()) {
@@ -132,7 +217,19 @@ fn structure(prog: &Program, struct_name: &str) -> String {
     for s in &prog.stmts {
         match s {
             Stmt::Func(f) => funcs.push(f),
-            s => g.stmt(s),
+            s => {
+                let start = g.lines.len();
+                g.saw_partial = false;
+                g.stmt(s);
+                if g.saw_partial {
+                    // (only in the double instance: not when the program is recomputed to differentiate it)
+                    for l in &mut g.lines[start..] {
+                        l.insert_str(0, "    ");
+                    }
+                    g.lines.insert(start, "        if constexpr (std::is_same<DT, double>::value) {".into());
+                    g.line("}");
+                }
+            }
         }
     }
     out.push_str(&g.lines.join("\n"));
@@ -142,6 +239,9 @@ fn structure(prog: &Program, struct_name: &str) -> String {
         out.push_str(&g.local_func(f));
     }
     out.push_str("};\n");
+    if templated {
+        out.push_str(&format!("using {} = {struct_name}<double>;\n", struct_name.trim_end_matches("_t")));
+    }
     out
 }
 
@@ -158,6 +258,39 @@ pub fn cpp_ident(name: &str) -> String {
     n
 }
 
+thread_local! {
+    /// Whether real values have the struct's template type `DT` (in programs
+    /// with derivatives, which also instantiate the struct with autodiff::var),
+    /// rather than double.
+    static DT_MODE: std::cell::Cell<bool> = const { std::cell::Cell::new(false) };
+}
+
+/// The C++ type of real numbers that may be differentiated.
+fn real() -> &'static str {
+    if DT_MODE.with(|m| m.get()) {
+        "DT"
+    } else {
+        "double"
+    }
+}
+
+/// A dynamic-size real vector type.
+fn vec_xd() -> String {
+    if DT_MODE.with(|m| m.get()) {
+        "Eigen::Matrix<DT, Eigen::Dynamic, 1>".into()
+    } else {
+        "Eigen::VectorXd".into()
+    }
+}
+
+/// `f()` with real values as double (function signatures, sparse matrices).
+fn with_double<T>(f: impl FnOnce() -> T) -> T {
+    let saved = DT_MODE.with(|m| m.replace(false));
+    let r = f();
+    DT_MODE.with(|m| m.set(saved));
+    r
+}
+
 fn fixed(d: &Dim) -> Option<i64> {
     d.as_int()
 }
@@ -166,7 +299,7 @@ fn scalar(int: bool) -> &'static str {
     if int {
         "int"
     } else {
-        "double"
+        real()
     }
 }
 
@@ -174,6 +307,8 @@ fn scalar(int: bool) -> &'static str {
 fn dyn_matrix(int: bool) -> String {
     if int {
         "Eigen::Matrix<int, Eigen::Dynamic, Eigen::Dynamic>".into()
+    } else if DT_MODE.with(|m| m.get()) {
+        "Eigen::Matrix<DT, Eigen::Dynamic, Eigen::Dynamic>".into()
     } else {
         "Eigen::MatrixXd".into()
     }
@@ -182,27 +317,31 @@ fn dyn_matrix(int: bool) -> String {
 /// The C++ type of a value of an I❤LA type.
 pub fn cpp_type(t: &Ty) -> String {
     match t {
-        Scalar(e) => (if e.is_int() { "int" } else { "double" }).into(),
+        Scalar(e) => scalar(e.is_int()).into(),
         Vector { rows, elem } => match (fixed(rows), elem.is_int()) {
             (Some(r), int) => format!("Eigen::Matrix<{}, {r}, 1>", scalar(int)),
-            (None, false) => "Eigen::VectorXd".into(),
+            (None, false) => vec_xd(),
             (None, true) => "Eigen::Matrix<int, Eigen::Dynamic, 1>".into(),
         },
-        Matrix { sparse: true, elem, .. } => format!("Eigen::SparseMatrix<{}>", scalar(elem.is_int())),
+        // (sparse matrices aren't differentiated)
+        Matrix { sparse: true, elem, .. } => format!("Eigen::SparseMatrix<{}>", if elem.is_int() { "int" } else { "double" }),
         Matrix { rows, cols, elem, .. } => match (fixed(rows), fixed(cols)) {
             (Some(r), Some(c)) => format!("Eigen::Matrix<{}, {r}, {c}>", scalar(elem.is_int())),
             _ => dyn_matrix(elem.is_int()),
         },
         Seq { elem, .. } => format!("std::vector<{}>", cpp_type(elem)),
         Set { elems, .. } => {
-            let el: Vec<&str> = elems.iter().map(|e| if e.is_int() { "int" } else { "double" }).collect();
+            let el: Vec<&str> = elems.iter().map(|e| scalar(e.is_int())).collect();
             if el.len() == 1 {
                 format!("std::vector<{}>", el[0])
             } else {
                 format!("std::vector<std::tuple<{}>>", el.join(", "))
             }
         }
+        VecSet { rows, elem } => format!("std::vector<{}>", cpp_type(&Vector { rows: rows.clone(), elem: *elem })),
         Tuple(v) => format!("std::tuple<{}>", v.iter().map(cpp_type).collect::<Vec<_>>().join(", ")),
+        // (functions given as parameters take and return double)
+        Func { .. } if DT_MODE.with(|m| m.get()) => with_double(|| cpp_type(t)),
         Func { params, rets } => {
             let ret = if rets.len() == 1 { cpp_type(&rets[0]) } else { cpp_type(&Tuple(rets.clone())) };
             format!("std::function<{ret}({})>", params.iter().map(cpp_type).collect::<Vec<_>>().join(", "))
@@ -217,6 +356,14 @@ struct Gen<'p> {
     indent: usize,
     tmp: usize,
     locals: Vec<HashSet<String>>,
+    /// names printed as other code (the variable a derivative is taken with respect to)
+    subst: HashMap<String, String>,
+    /// how members are reached: `this->`, or `w.` in an instance recomputed for a derivative
+    this: String,
+    /// whether the statement being generated has a derivative
+    saw_partial: bool,
+    /// the struct's name (its template is `<name>_t`, in programs with derivatives)
+    struct_name: String,
 }
 
 impl<'p> Gen<'p> {
@@ -230,11 +377,14 @@ impl<'p> Gen<'p> {
     }
 
     fn name(&self, n: &str) -> String {
+        if let Some(s) = self.subst.get(n) {
+            return s.clone();
+        }
         let id = cpp_ident(n);
         if self.locals.iter().any(|s| s.contains(n)) {
             return id;
         }
-        format!("this->{id}")
+        format!("{}{id}", self.this)
     }
 
     fn dim(&self, d: &Dim) -> String {
@@ -249,6 +399,7 @@ impl<'p> Gen<'p> {
                 };
                 format!("{}.{f}()", self.name(parts[1]))
             }
+            Dim::Str(s) if s.starts_with("@size:") => format!("int({}.size())", self.name(&s["@size:".len()..])),
             Dim::Str(s) if s.starts_with("@len:") => {
                 let parts: Vec<&str> = s.splitn(4, ':').collect();
                 let item = match parts[2].parse::<i64>() {
@@ -355,10 +506,13 @@ impl<'p> Gen<'p> {
         let ext: Vec<String> = a.extents.iter().map(|d| self.dim(d)).collect();
         let fresh = !a.accumulate && !a.update;
         let mut write_to = target.to_string();
+        // (a local of a function body is declared here; a member already is)
+        let decl = if fresh && self.locals.last().is_some_and(|l| l.contains(&a.lhs)) { format!("{} ", cpp_type(&a.ty)) } else { String::new() };
+        let target_decl = format!("{decl}{target}");
         match &a.ty {
             Vector { .. } => {
                 if fresh {
-                    self.line(format!("{target} = {}::Zero({});", cpp_type(&a.ty), ext[0]));
+                    self.line(format!("{target_decl} = {}::Zero({});", cpp_type(&a.ty), ext[0]));
                 }
             }
             Matrix { sparse, rows, cols, .. } => {
@@ -370,11 +524,15 @@ impl<'p> Gen<'p> {
                         self.line(format!("Eigen::MatrixXd {write_to} = Eigen::MatrixXd({target});"));
                     }
                 } else if fresh {
-                    self.line(format!("{target} = {}::Zero({}, {});", cpp_type(&a.ty), ext[0], ext[1]));
+                    self.line(format!("{target_decl} = {}::Zero({}, {});", cpp_type(&a.ty), ext[0], ext[1]));
                 }
             }
             Seq { .. } if !a.update => {
-                self.line(format!("{target}.clear();"));
+                if decl.is_empty() {
+                    self.line(format!("{target}.clear();"));
+                } else {
+                    self.line(format!("{target_decl};"));
+                }
                 self.line(format!("for(int {} = 1; {} <= {}; {}++){{", subs[0], subs[0], ext[0], subs[0]));
                 self.indent += 1;
                 self.locals.push(HashSet::from([a.subs[0].clone()]));
@@ -390,16 +548,26 @@ impl<'p> Gen<'p> {
         self.locals.push(a.subs.iter().cloned().collect());
         let diag = a.subs.len() == 2 && a.subs[0] == a.subs[1];
         let loops = if diag { 1 } else { a.subs.len() };
+        // (a row or column at a time: m_i,* = v_i)
+        let star = a.subs.iter().position(|s| s == "*");
+        let mut opened = 0;
         for k in 0..loops {
+            if Some(k) == star {
+                continue;
+            }
             self.line(format!("for(int {} = 1; {} <= {}; {}++){{", subs[k], subs[k], ext[k], subs[k]));
             self.indent += 1;
+            opened += 1;
         }
+        let loops = opened;
         let v = self.expr(&a.rhs);
         let op = if a.accumulate { "+=" } else { "=" };
         let index: Vec<String> = subs.iter().map(|s| format!("{s}-1")).collect();
-        let lhs = match &a.ty {
-            Seq { .. } => format!("{write_to}.at({})", index[0]),
-            _ => format!("{write_to}({})", index.join(", ")),
+        let (lhs, v) = match (&a.ty, star) {
+            (_, Some(0)) => (format!("{write_to}.col({})", index[1]), v),
+            (_, Some(_)) => (format!("{write_to}.row({})", index[0]), format!("({v}).transpose()")),
+            (Seq { .. }, None) => (format!("{write_to}.at({})", index[0]), v),
+            _ => (format!("{write_to}({})", index.join(", ")), v),
         };
         self.line(format!("{lhs} {op} {v};"));
         for _ in 0..loops {
@@ -497,7 +665,7 @@ impl<'p> Gen<'p> {
         match &*e.kind {
             Int(v) => v.to_string(),
             Real(s) => s.clone(),
-            Fraction(a, b) => format!("({a}/double({b}))"),
+            Fraction(a, b) => format!("({a}/{}({b}))", real()),
             Const(Constant::Pi) => "M_PI".into(),
             Const(Constant::E) => "M_E".into(),
             Const(Constant::Inf) => "std::numeric_limits<double>::infinity()".into(),
@@ -546,7 +714,7 @@ impl<'p> Gen<'p> {
             }
             Sub(a, b) => {
                 let r = self.conv(b, &e.ty);
-                let r = if matches!(&*b.kind, Add(..) | Sub(..) | Neg(..)) && !r.ends_with(".cast<double>()") { format!("({r})") } else { r };
+                let r = if matches!(&*b.kind, Add(..) | Sub(..) | Neg(..)) && !r.ends_with(&format!(".cast<{}>()", real())) { format!("({r})") } else { r };
                 format!("{} - {r}", self.conv(a, &e.ty))
             }
             Mul(a, b) => {
@@ -559,7 +727,7 @@ impl<'p> Gen<'p> {
             }
             Div(a, b) => {
                 if a.ty.is_int() && b.ty.is_int() && a.ty.is_scalar() && !e.ty.is_int() {
-                    format!("double({}) / {}", self.expr(a), self.paren(b))
+                    format!("{}({}) / {}", real(), self.expr(a), self.paren(b))
                 } else {
                     format!("{} / {}", self.conv_paren(a, &e.ty), self.paren(b))
                 }
@@ -706,6 +874,62 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                     cpp_type(&e.ty)
                 )
             }
+            Partial { upper, var, hessian, def } => {
+                self.saw_partial = true;
+                // the program recomputed with autodiff::var reals, the variable replaced by
+                // a flat vector of vars; the derivative with respect to that vector
+                let x = self.name(var);
+                let s = self.fresh("s");
+                let args: Vec<String> = self
+                    .prog
+                    .params
+                    .iter()
+                    .map(|p| if p.name == *var { format!("iheartla_diff::unflatten<V>(dx, {x})") } else { format!("iheartla_diff::to<V>({})", self.name(&p.name)) })
+                    .collect();
+                let saved = (std::mem::replace(&mut self.this, format!("{s}.")), self.subst.remove(var));
+                // (the variable, as the instance holds it)
+                self.subst.insert(var.clone(), format!("{s}.{}", cpp_ident(var)));
+                let y = match def {
+                    Some(d) => format!("{s}.{}", cpp_ident(d)),
+                    None => self.expr(upper),
+                };
+                self.this = saved.0;
+                match saved.1 {
+                    Some(v) => self.subst.insert(var.clone(), v),
+                    None => self.subst.remove(var),
+                };
+                let structure = format!("{}_t", self.struct_name);
+                let yt = if upper.ty.is_vector() { "Eigen::Matrix<V, Eigen::Dynamic, 1>" } else { "V" };
+                let d = match (*hessian, upper.ty.is_vector()) {
+                    (true, _) => "Eigen::MatrixXd(autodiff::hessian(y, dx))".to_string(),
+                    // (a Jacobian: one gradient per item of the vector)
+                    (false, true) => "[&](){ Eigen::MatrixXd J(y.size(), dx.size()); for (long r = 0; r < y.size(); r++) J.row(r) = autodiff::gradient(y(r), dx).transpose(); return J; }()".to_string(),
+                    (false, false) => "Eigen::VectorXd(autodiff::gradient(y, dx))".to_string(),
+                };
+                let d = if e.ty.is_scalar() { format!("({d})(0)") } else { d };
+                format!(
+                    "[&](){{ using V = autodiff::var; Eigen::Matrix<V, Eigen::Dynamic, 1> dx = iheartla_diff::flatten<V>({x}); \
+{structure}<V> {s}({}); {yt} y = {y}; return {d}; }}()",
+                    args.join(", ")
+                )
+            }
+            Sequence { base, items } => {
+                let t = cpp_type(&e.ty);
+                let item_t = match &e.ty {
+                    Seq { elem, .. } => cpp_type(elem),
+                    _ => unreachable!(),
+                };
+                let a: Vec<String> = items.iter().map(|x| format!("{item_t}({})", self.expr(x))).collect();
+                match base {
+                    // (a copy: the sequence itself is unchanged)
+                    Some(b) => format!(
+                        "[&](){{ {t} s = {}; {} return s; }}()",
+                        self.expr(b),
+                        a.iter().map(|x| format!("s.push_back({x});")).collect::<Vec<_>>().join(" ")
+                    ),
+                    None => format!("{t}{{{}}}", a.join(", ")),
+                }
+            }
             Convert(args) => {
                 let mut a: Vec<String> = args.iter().map(|x| self.expr(x)).collect();
                 match &e.ty {
@@ -774,7 +998,7 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
     fn conv(&mut self, e: &Expr, target: &Ty) -> String {
         let s = self.expr(e);
         if e.ty.is_int() && !target.is_int() && (e.ty.is_vector() || e.ty.is_matrix()) && !e.ty.is_sparse() {
-            return format!("({s}).cast<double>()");
+            return format!("({s}).cast<{}>()", real());
         }
         s
     }
@@ -814,7 +1038,7 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
                         if t0.is_scalar() {
                             format!("{f}({a0})")
                         } else {
-                            format!("({a0}).unaryExpr([](double v){{ return {f}(v); }}).eval()")
+                            format!("({a0}).unaryExpr([]({} v){{ return {f}(v); }}).eval()", real())
                         }
                     }
                     "ln" => elementwise("log", &a0, &t0),
@@ -834,18 +1058,27 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
                     "trace" => format!("({a0}).trace()"),
                     "diag" => {
                         if t0.is_matrix() {
-                            format!("Eigen::VectorXd(({a0}).diagonal())")
+                            format!("{}(({a0}).diagonal())", vec_xd())
                         } else {
-                            format!("Eigen::MatrixXd(({a0}).asDiagonal())")
+                            format!("{}(({a0}).asDiagonal())", dyn_matrix(false))
                         }
                     }
-                    "vec" => format!("[&](){{ Eigen::MatrixXd t = {a0}; return Eigen::VectorXd(Eigen::Map<Eigen::VectorXd>(t.data(), t.size())); }}()"),
+                    "vec" => format!(
+                        "[&](){{ {m} t = {a0}; return {v}(Eigen::Map<{v}>(t.data(), t.size())); }}()",
+                        m = dyn_matrix(false),
+                        v = vec_xd()
+                    ),
                     "det" => format!("({}).determinant()", self.dense(&args[0])),
                     "rank" => format!("double(Eigen::FullPivLU<Eigen::MatrixXd>({}).rank())", self.dense(&args[0])),
                     "inv" => format!("({}).inverse()", self.dense(&args[0])),
+                    "svd" => format!(
+                        "[&](){{ Eigen::BDCSVD<Eigen::MatrixXd> s(Eigen::MatrixXd({}), Eigen::ComputeFullU | Eigen::ComputeFullV); return {}(s.matrixU(), s.singularValues(), s.matrixV()); }}()",
+                        self.dense(&args[0]),
+                        cpp_type(ty)
+                    ),
                     "min" | "max" => {
                         if a.len() > 1 {
-                            format!("std::{f}({{{}}})", a.iter().map(|x| format!("double({x})")).collect::<Vec<_>>().join(", "))
+                            format!("std::{f}({{{}}})", a.iter().map(|x| format!("{}({x})", real())).collect::<Vec<_>>().join(", "))
                         } else if t0.is_set() || t0.is_seq() {
                             // (the set is bound once: begin() and end() of one object)
                             format!("[&](){{ const auto s = {a0}; return *std::{f}_element(s.begin(), s.end()); }}()")
@@ -890,7 +1123,15 @@ std::set_union(acc.begin(), acc.end(), s.begin(), s.end(), std::back_inserter(u)
             }
         }
         let (r, c) = (self.dim(&ty.rows()), self.dim(&ty.cols()));
-        let m = if ty.is_sparse() { "Eigen::MatrixXd".to_string() } else { dyn_matrix(ty.is_int()) };
+        let m = if ty.is_sparse() {
+            "Eigen::MatrixXd".to_string()
+        } else if DT_MODE.with(|m| m.get()) {
+            // (fixed-size where possible: autodiff::var can't go through Eigen's LU, which a
+            // dynamic-size inverse uses; a fixed-size one has a closed form)
+            cpp_type(ty)
+        } else {
+            dyn_matrix(ty.is_int())
+        };
         let body = format!("[&](){{ {m} m({r}, {c}); m << {}; return m; }}()", items.join(", "));
         if ty.is_sparse() {
             format!("Eigen::SparseMatrix<double>(({body}).sparseView())")

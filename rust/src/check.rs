@@ -57,6 +57,7 @@ pub struct Checker<'a> {
     dims: Vec<DimSym>,
     dim_checks: Vec<(Dim, Dim)>,
     min_dims: IndexMap<String, i64>,
+    derivatives: bool,
     /// renamed builtins: new name -> builtin name
     builtin_names: IndexMap<String, String>,
     const_e: bool,
@@ -88,6 +89,7 @@ impl<'a> Checker<'a> {
             dims: Vec::new(),
             dim_checks: Vec::new(),
             min_dims: IndexMap::new(),
+            derivatives: false,
             builtin_names: IndexMap::new(),
             const_e: false,
             extents: Vec::new(),
@@ -263,6 +265,7 @@ impl<'a> Checker<'a> {
             dims: self.dims,
             dim_checks: self.dim_checks,
             min_dims: self.min_dims.into_iter().collect(),
+            derivatives: self.derivatives,
             stmts: out,
             ret,
             defs: self.defs,
@@ -773,8 +776,18 @@ impl<'a> Checker<'a> {
         let rhs = rhs?;
         let mut extents = Vec::new();
         let existing = if update { self.lookup(&name).map(|s| s.ty()) } else { declared.clone() };
+        // a row or column at a time (m_i,* = v_i): the * axis is the vector's length
+        let star = subs.iter().position(|s| s == "*");
+        if let Some(k) = star {
+            self.ensure(subs.len() == 2 && subs[1 - k] != "*", left, || "Only one * is allowed as subscripts".into())?;
+            self.ensure(rhs.ty.is_vector(), right, || format!("A {} is defined by a vector", if k == 1 { "row" } else { "column" }))?;
+        }
         for (k, s) in subs.iter().enumerate() {
             let known = existing.as_ref().and_then(|t| axis_extent(t, k));
+            if Some(k) == star {
+                extents.push(known.unwrap_or_else(|| rhs.ty.rows()));
+                continue;
+            }
             match frame[s].first().cloned().or(known) {
                 Some(d) => extents.push(d),
                 None => return self.err(left, "Subscript hasn't been used on rhs"),
@@ -797,6 +810,7 @@ impl<'a> Checker<'a> {
                     Seq { size: extents[0].clone(), elem: Box::new(rhs.ty.clone()) }
                 }
             }
+            2 if star.is_some() => Matrix { rows: extents[0].clone(), cols: extents[1].clone(), elem: rhs.ty.elem(), sparse: false },
             2 => {
                 self.ensure(rhs.ty.is_scalar(), right, || "RHS has to be scalar".into())?;
                 Matrix {
@@ -1165,6 +1179,9 @@ impl<'a> Checker<'a> {
             // infer the extent of a subscript variable from this axis
             if let ExprKind::Var(v) = &*e.kind {
                 let mut extent = axis_extent(&bty, axis);
+                if let (VecSet { .. }, 0) = (&bty, axis) {
+                    extent = Some(Dim::Str(format!("@size:{base}")));
+                }
                 // a ragged sequence (x_i ∈ ℝ^(n_i)): the extent depends on the item
                 if let (Some(Dim::Str(s)), Some(Idx::At(first))) = (&extent, idx.first()) {
                     if s.ends_with("[i]") && axis >= 1 {
@@ -1242,6 +1259,7 @@ impl<'a> Checker<'a> {
                 _ => return self.err(node, "Only one * is allowed as subscripts"),
             },
             (Set { elems, .. }, 1) => Scalar(elems.first().copied().unwrap_or_default()),
+            (VecSet { rows, elem }, 1) => Vector { rows: rows.clone(), elem: *elem },
             (Tuple(v), 1) => match &idx[0] {
                 Idx::At(e) => match &*e.kind {
                     ExprKind::Int(i) if *i >= 1 && (*i as usize) <= v.len() => v[*i as usize - 1].clone(),
@@ -1391,6 +1409,13 @@ impl<'a> Checker<'a> {
         })();
         self.scopes.pop();
         let (cond, item) = result?;
+        if let Vector { rows, elem } = &item.ty {
+            let ty = VecSet { rows: rows.clone(), elem: *elem };
+            return Ok(Expr::new(ExprKind::SetComp { vars, range, cond, item }, ty));
+        }
+        self.ensure(item.ty.is_scalar() || item.ty.is_tuple(), &v.get("exp").items()[0], || {
+            format!("A set's items are numbers, tuples or vectors, not {}", item.ty.desc())
+        })?;
         let out = match &item.ty {
             Tuple(ts) => ts.iter().map(|t| t.elem()).collect(),
             t => vec![t.elem()],
@@ -1670,6 +1695,7 @@ impl<'a> Checker<'a> {
                 Ok(Expr::new(ExprKind::Size(x), Ty::int()))
             }
             cls if cls.ends_with("Func") => self.builtin(op),
+            "Partial" => self.partial(op),
             other => self.err(op, format!("Unsupported operation {other}")),
         }
     }
@@ -2056,10 +2082,80 @@ impl<'a> Checker<'a> {
             Tuple(kinds.iter().map(|k| Set { elems: vec![*k], length: Dim::None }).collect())
         } else if name == "tuple" {
             Tuple(args.iter().map(|a| a.ty.clone()).collect())
+        } else if name == "sequence" {
+            return self.sequence(op, args);
         } else {
             return self.err(op, format!("Conversion {name} is not supported yet"));
         };
         Ok(Expr::new(ExprKind::Convert(args), ty))
+    }
+
+    /// `∂f/∂x`, `∂²f/∂x²` (types as the Python compiler's get_derivative_type
+    /// and get_hessian_type).
+    fn partial(&mut self, op: &Val) -> R<Expr> {
+        let lowers = op.get("lower").items().to_vec();
+        self.ensure(lowers.len() == 1, op, || "Only derivatives with respect to one variable are supported".into())?;
+        let var = ident_name(&lowers[0]);
+        let vty = match self.globals.get(&var) {
+            Some(Sym::Param(t)) => t.clone(),
+            _ => return self.err(&lowers[0], format!("Symbol {var} isn't a param")),
+        };
+        let order = |n: &Val| if n.truthy() { self.int_literal(n).or_else(|| digits(n, get_unicode_number)).unwrap_or(0) } else { 1 };
+        let uorder = order(op.get("uorder"));
+        let lorder = op.get("lorder").items().first().map(|n| order(n)).unwrap_or(1);
+        self.ensure(uorder == lorder, op, || "Order doesn't match".into())?;
+        self.ensure(uorder == 1 || uorder == 2, op, || "Only first and second derivatives are supported".into())?;
+        let upper_node = op.get("upper");
+        let upper = self.expr(upper_node)?;
+        self.ensure(upper.ty.is_scalar() || upper.ty.is_vector(), upper_node, || "Only support scalar or vector types".into())?;
+        // the length of the flattened variable
+        let n = match &vty {
+            Scalar(_) => Dim::Int(1),
+            Vector { rows, .. } => rows.clone(),
+            Matrix { rows, cols, .. } => mul_dims(rows, cols),
+            Seq { size, elem } if elem.is_scalar() => size.clone(),
+            Seq { size, elem } if elem.is_vector() => mul_dims(size, &elem.rows()),
+            _ => return self.err(&lowers[0], format!("Can't differentiate with respect to {}", vty.desc())),
+        };
+        let ty = match (uorder, &upper.ty) {
+            (1, Scalar(_)) if vty.is_scalar() => Ty::real(),
+            (1, Scalar(_)) => Ty::vector(n),
+            (1, Vector { rows, .. }) if vty.is_scalar() => Ty::vector(rows.clone()),
+            (1, Vector { rows, .. }) => Ty::matrix(rows.clone(), n),
+            (2, Scalar(_)) if !vty.is_scalar() => Ty::matrix(n.clone(), n),
+            _ => return self.err(op, "Second derivatives are supported for a scalar with respect to a vector or sequence"),
+        };
+        // ∂e/∂x of the program's definition e: recomputed, not differentiated as an expression
+        let def = match (&*upper.kind, self.globals.get(&ident_name(upper_node.get("id0")))) {
+            (ExprKind::Var(name), Some(Sym::Def(_))) => Some(name.clone()),
+            _ => None,
+        };
+        self.derivatives = true;
+        Ok(Expr::new(ExprKind::Partial { upper, var, hessian: uorder == 2, def }, ty))
+    }
+
+    /// `sequence(U, x, …)` (U a sequence: x, … appended to a copy) or `sequence(a, b, …)`.
+    fn sequence(&mut self, op: &Val, mut args: Vec<Expr>) -> R<Expr> {
+        self.ensure(!args.is_empty(), op, || "sequence needs items".into())?;
+        let base = match &args[0].ty {
+            Seq { .. } if args.len() > 1 => Some(args.remove(0)),
+            _ => None,
+        };
+        let elem = match &base {
+            Some(b) => match &b.ty {
+                Seq { elem, .. } => (**elem).clone(),
+                _ => unreachable!(),
+            },
+            None => args[0].ty.clone(),
+        };
+        for a in &args {
+            self.ensure(same_kind(&elem, &a.ty) && elem.same(&a.ty), op, || {
+                format!("sequence: items must have one type ({} and {})", elem, a.ty)
+            })?;
+        }
+        // (the length is known only when the sequence is built)
+        let ty = Seq { size: Dim::None, elem: Box::new(elem) };
+        Ok(Expr::new(ExprKind::Sequence { base, items: args }, ty))
     }
 
     /// A MeshConnectivity function.
@@ -2181,6 +2277,11 @@ impl<'a> Checker<'a> {
             "inv" => {
                 self.ensure(a0.is_matrix() && is_same_expr(&a0.rows(), &a0.cols()), op, || "Parameter must be valid matrix type".into())?;
                 Ty::matrix(a0.rows(), a0.cols())
+            }
+            "svd" => {
+                // U (rows × rows), the singular values, and V (cols × cols), as Eigen gives them
+                self.ensure(a0.is_matrix() && !a0.is_sparse(), op, || "Parameter must be a dense matrix".into())?;
+                Tuple(vec![Ty::matrix(a0.rows(), a0.rows()), Ty::vector(Dim::None), Ty::matrix(a0.cols(), a0.cols())])
             }
             "diag" => match &a0 {
                 Matrix { rows, .. } => Ty::vector(rows.clone()),

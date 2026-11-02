@@ -5,17 +5,17 @@ The ten example programs of the I❤️MESH paper's supplemental material
 `examples/<name>/<name>.hlang`), fetched on 2026-11-02. The supplement also has
 the C++ (`heartlib.h`) that the paper's compiler generated for each.
 
-The Python compiler on `mesh` compiles all ten. Its C++ output for the four
-examples below gives the same values as the paper's `heartlib.h` on the same
-meshes (energies, gradients, Hessians, sets and normals), and so does its NumPy
-output (normals up to the sign SVD leaves free).
+Both compilers compile all ten. Four use features checked nowhere else:
 
-The Rust compiler doesn't support these four yet:
-
-- `mesh_deformation`, `mesh_parameterization`: derivatives (`∂e/∂x`,
-  `∂²S_i(x)/∂x²`). C++ uses the autodiff library, and Python's NumPy output
-  uses autograd. Both differentiate with respect to x flattened.
 - `geodesic_distance`: `sequence(U, next)`, which appends to a copy of a
-  sequence of sets.
-- `point_cloud`: `m_i,* = d_i`, the rows of a matrix taken from a set of
-  vectors, in sorted order.
+  sequence of sets, and unions over a subscript (`∪_i U_i`, `∪_(i=a)^b U_i`).
+- `point_cloud`: a set of vectors (`{x_v - p̄ for v ∈ N}`), a matrix defined
+  row by row from it (`m_i,* = d_i`, in sorted order), and `svd`.
+- `mesh_deformation`, `mesh_parameterization`: gradients and Hessians
+  (`∂e/∂x`, `∂²S_i(x)/∂x²`) with respect to a sequence of vectors, flattened.
+  C++ uses the autodiff library, and NumPy uses autograd.
+
+`rust/tools/paper_check.py <supplement>` runs the Rust compiler's C++ and
+NumPy output for these four on small meshes and compares every value with the
+paper's `heartlib.h` (normals up to the sign SVD leaves free). The Python
+compiler's output agrees too.

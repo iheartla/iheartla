@@ -18,6 +18,8 @@ pub struct Program {
     /// the largest constant subscript into each dimension (`x₁₀` of `x ∈ ℝ^n`:
     /// n ≥ 10), for drawing random data that fits
     pub min_dims: Vec<(String, i64)>,
+    /// whether the program has derivatives (`∂f/∂x`)
+    pub derivatives: bool,
     /// statements in evaluation (def-use) order
     pub stmts: Vec<Stmt>,
     /// the symbol holding the result: the last statement's symbol
@@ -261,11 +263,17 @@ pub enum ExprKind {
     /// `vertexset(S)`, `tuple(a, b)`, `CellularSet(V, E, F)`: a conversion
     /// that changes only the type
     Convert(Vec<Expr>),
-    /// `∪_(i ∈ S) e`: the union of the sets `e` over the elements of `S`
-    /// (each variable is the element's value, plus 1 for `index` values in
-    /// 0-based backends: `one_based`)
-    /// `∪_(x ∈ S) e` (`range` is `SumRange::Set`), `∪_i U_i` or `∪_(i=a)^b U_i`
+    /// the union of the sets `e`: `∪_(x ∈ S) e` (`range` is `SumRange::Set`; each
+    /// variable is the element's value, plus 1 for `index` values in 0-based
+    /// backends: `one_based`), `∪_i U_i` or `∪_(i=a)^b U_i`
     Union { vars: Vec<String>, range: SumRange, body: Expr, one_based: Vec<bool> },
+    /// `∂f/∂x` (or `∂²f/∂x²`: `hessian`), with respect to the program parameter
+    /// `var`, flattened (a sequence of vectors is one long vector). `def`: `f`
+    /// is the program's definition of that name, recomputed for other `var`s
+    Partial { upper: Expr, var: String, hessian: bool, def: Option<String> },
+    /// `sequence(U, x, …)`: a copy of the sequence `U` with the items appended
+    /// (`base`), or `sequence(a, b, …)`: a new sequence of the items
+    Sequence { base: Option<Expr>, items: Vec<Expr> },
     /// `{ e for x ∈ S if cond }`
     SetComp { vars: Vec<String>, range: Expr, cond: Option<Cond>, item: Expr },
 }

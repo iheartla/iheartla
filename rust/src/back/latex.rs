@@ -331,7 +331,7 @@ impl<'p> Printer<'p> {
 
     /// The program symbols an expression uses (for MacroMathJax's equation
     /// labels), in order of first use, without subscripts. Like the Python
-    /// compiler, it leaves out what piecewise expressions, integrals, norm
+    /// compiler, it leaves out what piecewise expressions, integrals, derivatives, norm
     /// and inner product subscripts, summation conditions and optimization
     /// constraints use, and includes optimization variables and a block
     /// matrix's I.
@@ -348,7 +348,7 @@ impl<'p> Printer<'p> {
         }
         let Some(node) = n.node() else { return };
         let in_matrix = in_matrix || n.class() == "Matrix";
-        if n.class() == "Integral" {
+        if n.class() == "Integral" || n.class() == "Partial" {
             return;
         }
         if n.class() == "Summation" && n.get("u").truthy() {
@@ -861,7 +861,7 @@ impl<'p> Printer<'p> {
         }
         match (base, subs.len()) {
             (Some(Ty::Matrix { .. }), 2) => format!("{main}_{{{}, {}}}", subs[0], subs[1]),
-            (Some(Ty::Vector { .. }) | Some(Ty::Set { .. }) | Some(Ty::Tuple(_)), 1) => format!("{main}_{{ {} }}", subs[0]),
+            (Some(Ty::Vector { .. }) | Some(Ty::Set { .. }) | Some(Ty::VecSet { .. }) | Some(Ty::Tuple(_)), 1) => format!("{main}_{{ {} }}", subs[0]),
             (Some(Ty::Seq { .. }), 1) => format!("{main}_{{ {} }}", subs[0]),
             (Some(Ty::Seq { .. }), 2) => format!("{main}_{{ {}, {} }}", subs[0], subs[1]),
             (Some(Ty::Seq { .. }), 3) => format!("{main}_{{ {}, {}, {}}}", subs[0], subs[1], subs[2]),
@@ -1116,6 +1116,7 @@ impl<'p> Printer<'p> {
             "Transpose" => format!("{{{}}}^T", self.expr(op.get("f"))),
             "PseudoInverse" => format!("{{{}}}^+", self.expr(op.get("f"))),
             "Squareroot" => format!("\\sqrt{{{}}}", self.strip_factor_parens(op.get("f"))),
+            "Partial" => self.partial(op),
             "Solver" => {
                 let (l, r) = (self.expr(op.get("left")), self.expr(op.get("right")));
                 if self.ty(op.get("left")).is_some_and(|t| t.is_set()) {
@@ -1206,6 +1207,28 @@ impl<'p> Printer<'p> {
             content = format!("{content}^{{{}}}", self.int_or_expr(op.get("power")));
         }
         content
+    }
+
+    /// `∂f/∂x`, `∂²f/∂x²` (as the Python compiler prints them, including the
+    /// unbalanced brace of a first-order `∂/∂x f`)
+    fn partial(&mut self, op: &Val) -> String {
+        let upper = self.expr(op.get("upper"));
+        let mut lower = String::new();
+        for l in op.get("l").items() {
+            let parts = l.items();
+            let x = self.expr(&parts[1]);
+            match parts.get(2) {
+                Some(o) if self.int_or_expr(o) != "1" => lower += &format!("\\partial {{{x}}}^{}", self.int_or_expr(o)),
+                _ => lower += &format!("\\partial {x}"),
+            }
+        }
+        let order = if op.get("uorder").truthy() { Some(self.int_or_expr(op.get("uorder"))) } else { None };
+        match (op.get("f").truthy(), order) {
+            (true, Some(o)) => format!("\\frac{{\\partial^{o}{upper}}}{{{lower}}}"),
+            (true, None) => format!("\\frac{{\\partial {upper}}}{{{lower}}}"),
+            (false, Some(o)) => format!("\\frac{{\\partial^{o}}}{{{lower}}}{upper}"),
+            (false, None) => format!("\\frac{{\\partial}}}}{{{lower}}}{upper}"),
+        }
     }
 
     fn int_or_expr(&mut self, n: &Val) -> String {

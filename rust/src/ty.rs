@@ -63,6 +63,9 @@ pub enum Ty {
     /// a set of tuples (one element type per tuple component), or of mesh
     /// elements
     Set { elems: Vec<Elem>, length: Dim },
+    /// a set of vectors (`{x_v - p for v ∈ N}`), kept in increasing
+    /// lexicographic order; its size is the dimension `@size:<name>`
+    VecSet { rows: Dim, elem: Elem },
     Tuple(Vec<Ty>),
     Func { params: Vec<Ty>, rets: Vec<Ty> },
     Mesh(MeshKind),
@@ -115,6 +118,7 @@ impl Ty {
             Scalar(e) | Vector { elem: e, .. } | Matrix { elem: e, .. } => *e,
             Seq { elem, .. } => elem.elem(),
             Set { elems, .. } if elems.len() == 1 => elems[0],
+            VecSet { elem, .. } => *elem,
             _ => Elem::Real,
         }
     }
@@ -158,6 +162,7 @@ impl Ty {
             }
             (Seq { size: a, elem: x }, Seq { size: b, elem: y }) => is_same_expr(a, b) && x.same(y),
             (Set { elems: a, .. }, Set { elems: b, .. }) => a.len() == b.len(),
+            (VecSet { rows: a, .. }, VecSet { rows: b, .. }) => is_same_expr(a, b),
             (Tuple(a), Tuple(b)) => a.len() == b.len() && a.iter().zip(b).all(|(x, y)| x.same(y)),
             (Func { params: p1, rets: r1 }, Func { params: p2, rets: r2 }) => {
                 p1.len() == p2.len() && r1.len() == r2.len()
@@ -175,6 +180,7 @@ impl Ty {
             Matrix { rows, cols, .. } => format!("matrix({rows}, {cols})"),
             Seq { .. } => "sequence".into(),
             Set { .. } => "set".into(),
+            VecSet { .. } => "set of vectors".into(),
             Tuple(_) => "tuple".into(),
             Func { .. } => "function".into(),
             Mesh(_) => "mesh".into(),
@@ -191,6 +197,7 @@ impl fmt::Display for Ty {
             Matrix { rows, cols, elem, .. } => write!(f, "{}^({}×{})", e(elem), rows, cols),
             Seq { size, elem } => write!(f, "sequence({size}) of {elem}"),
             Set { elems, .. } => write!(f, "{{{}}}", elems.iter().map(e).collect::<Vec<_>>().join("×")),
+            VecSet { rows, elem } => write!(f, "{{{}^{}}}", e(elem), rows),
             Tuple(v) => write!(f, "({})", v.iter().map(|t| t.to_string()).collect::<Vec<_>>().join(", ")),
             Func { params, rets } => write!(
                 f,

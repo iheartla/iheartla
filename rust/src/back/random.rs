@@ -297,6 +297,8 @@ fn np_value(t: &Ty, d: &dyn Fn(&Dim) -> String, smallest: &str, _defs: &mut Vec<
             let v = if r.len() == 1 { r[0].clone() } else { format!("({})", r.join(", ")) };
             format!("lambda *args: {v}")
         }
+        // (only random functions return sets of vectors: parameters can't be declared so)
+        VecSet { rows, .. } => format!("frozenset(tuple(np.random.randn({})) for _ in range(5))", d(rows)),
         Tuple(v) => format!("({},)", v.iter().map(|x| np_value(x, d, smallest, _defs, _name)).collect::<Vec<_>>().join(", ")),
         Mesh(_) => "np.random.MESH".into(),
     }
@@ -437,6 +439,10 @@ fn cpp_fill(n: &str, t: &Ty, d: &dyn Fn(&Dim) -> String, smallest: &str, depth: 
                 ps = ps.join(", ")
             )
         }
+        VecSet { rows, elem } => {
+            let v = cpp_type(&Vector { rows: rows.clone(), elem: *elem });
+            format!("{pad}{n}.clear();\n{pad}for(int k = 0; k < 5; k++){{ {n}.push_back({v}::Random({})); }}\n{pad}{n} = sorted_set({n});\n", d(rows))
+        }
         Tuple(v) => {
             let mut s = String::new();
             for (k, x) in v.iter().enumerate() {
@@ -541,6 +547,7 @@ fn m_value(t: &Ty, d: &dyn Fn(&Dim) -> String, smallest: &str) -> String {
         // (a function parameter is drawn by `matlab`; inside other values, a constant function)
         Func { .. } => "@(varargin) 0".into(),
         Tuple(v) => format!("{{{}}}", v.iter().map(|x| m_value(x, d, smallest)).collect::<Vec<_>>().join(", ")),
+        VecSet { .. } => "zeros(0, 1)".into(),
         Mesh(_) => "[]".into(),
     }
 }

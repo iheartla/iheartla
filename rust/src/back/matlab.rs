@@ -127,6 +127,7 @@ impl<'p> Gen<'p> {
 
     fn dim(&self, d: &Dim) -> String {
         match d {
+            Dim::Str(s) if s.starts_with("@size:") => format!("size({}, 1)", m_ident(&s["@size:".len()..])),
             Dim::Str(s) if s.starts_with("@len:") => {
                 let parts: Vec<&str> = s.splitn(4, ':').collect();
                 let axis: usize = parts[3].parse().unwrap_or(0);
@@ -479,7 +480,8 @@ impl<'p> Gen<'p> {
                 self.line("end");
                 acc
             }
-            MeshCall { .. } | SetOp(..) | Convert(_) | SetComp { .. } => "error('not supported by the MATLAB backend')".into(),
+            Partial { .. } => "error('derivatives are not supported by the MATLAB backend')".into(),
+            MeshCall { .. } | SetOp(..) | Convert(_) | SetComp { .. } | Sequence { .. } => "error('not supported by the MATLAB backend')".into(),
         }
     }
 
@@ -498,6 +500,7 @@ impl<'p> Gen<'p> {
                 "det" => format!("det({a0})"),
                 "rank" => format!("rank(full({a0}))"),
                 "inv" => format!("inv({a0})"),
+                "svd" => "error('svd is not supported by the MATLAB backend')".into(),
                 "min" | "max" => {
                     if a.len() > 1 {
                         format!("{f}([{}])", a.join(", "))

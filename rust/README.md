@@ -19,14 +19,14 @@ target/release/iheartla parse [--init|--full] < program.la     # parse tree as J
 |---|---|
 | Parser (both grammars) | Matches TatSu's parse trees and error positions on the whole corpus (687 parses) |
 | Declarations pass (second-parse configuration) | 310/310 corpus programs |
-| Type checker → typed AST | Covers every program in the Python test suite, all 23 H❤️rtDown gallery programs, and 6 of the 10 I❤️MESH paper examples (see the I❤️MESH row) |
-| NumPy backend | All Python tests on `mesh` (as of the 2026-11-02 merge) except the 4 of features Rust lacks (I❤️MESH row): 228/232. On the 23 gallery programs, `tools/value_check.py` finds every attribute and local function value equal to the Python compiler's |
-| Eigen (C++) backend | The same 228/232 Python tests, via cppyy and, for optimization, the system C++ compiler |
-| LaTeX and MathJax backends | 294/294 corpus programs that both compilers accept (including modules and the gallery) give output identical to Python's |
-| MacroMathJax backend (H❤️rtDown click handlers) | Of 294 corpus programs, 291 are byte-identical to Python's output and 2 equal once equation symbol lists are sorted. In I❤️MESH `winding_number`, Python marks a local function's `where` definitions (`𝐚 = x_i - 𝐩`) as not local, where it marks them local elsewhere; Rust always marks them local |
-| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 226 of 232 tests pass: the 4 above, and 2 test issues (below). Names are converted as Python converts them (`μ` is `mu`, `λ` is `lambda_`). Meshes and modules aren't supported |
+| Type checker → typed AST | Covers every program in the Python test suite, all 23 H❤️rtDown gallery programs and all 10 I❤️MESH paper examples |
+| NumPy backend | All 232 Python tests on `mesh` (as of the 2026-11-02 merge). On the 23 gallery programs, `tools/value_check.py` finds every attribute and local function value equal to the Python compiler's. Derivatives (`∂f/∂x`, `∂²f/∂x²`) use autograd |
+| Eigen (C++) backend | All 232 Python tests, via cppyy and, for optimization, the system C++ compiler. In a program with derivatives, the struct is a template over its real type (`heartlib` is `heartlib_t<double>`); a derivative recomputes the program as `heartlib_t<autodiff::var>` ([autodiff](https://github.com/autodiff/autodiff), reverse mode) |
+| LaTeX and MathJax backends | 302/302 corpus programs (including modules, the gallery and the I❤️MESH examples) give output identical to Python's |
+| MacroMathJax backend (H❤️rtDown click handlers) | Of 302 corpus programs, 298 are byte-identical to Python's output and 2 equal once equation symbol lists are sorted. The other 2 differ in Python quirks: in I❤️MESH `winding_number`, Python marks a local function's `where` definitions (`𝐚 = x_i - 𝐩`) as not local, where it marks them local elsewhere; in `mesh_deformation`, it lists `x_(bx_j)` among an equation's symbols, where Rust lists `x` |
+| MATLAB backend | The test suite's MATLAB checks run in GNU Octave. With NumPy, Eigen and MATLAB all from Rust, 230 of 232 tests pass; the 2 failures are test issues (below). Names are converted as Python converts them (`μ` is `mu`, `λ` is `lambda_`). Meshes, modules, derivatives, `svd` and sets of vectors aren't supported |
 | I❤️MESH modules (`.hlang` imports, `MeshConnectivity`) | Supported in the NumPy, LaTeX and MathJax backends; all 8 bundled modules compile. `tools/mesh_check.py` (below) finds no differences for the three mesh examples, `FundamentalMeshAccessors` and `Neighborhoods`. In Eigen, modules are nested structs. `tools/mesh_check_cpp.py` compiles the C++ output with the I❤️MESH C++ runtime and finds all 615 values equal to the NumPy output |
-| I❤️MESH paper examples (`corpus/iheartmesh/`) | 6 of 10 compile. On an octahedron, `mesh_check.py` finds `vertex_normal`, `bilateral_denoising`, `discrete_curvature` and `winding_number` equal to Python's NumPy (35,525 values), and `mesh_check_cpp.py` finds Rust's C++ equal to Rust's NumPy for those and `polygon_mesh` (1,066 values). `mass_spring` needs a tetrahedral mesh, which the checks don't build. Not supported: derivatives `∂e/∂x` (`mesh_deformation`, `mesh_parameterization`), `sequence(U, next)` (`geodesic_distance`), and rows taken from a set of vectors, `m_i,* = d_i` (`point_cloud`). Python's C++ and NumPy for these four give the same values as the paper's own C++ (see `corpus/iheartmesh/README.md`) |
+| I❤️MESH paper examples (`corpus/iheartmesh/`) | All 10 compile. On an octahedron, `mesh_check.py` finds `vertex_normal`, `bilateral_denoising`, `discrete_curvature` and `winding_number` equal to Python's NumPy (35,525 values), and `mesh_check_cpp.py` finds Rust's C++ equal to Rust's NumPy for those and `polygon_mesh` (1,066 values). `tools/paper_check.py` checks the four that use derivatives, `sequence()`, sets of vectors and `svd` against the paper's own C++: all 549 values agree, in C++ and NumPy. `mass_spring` needs a tetrahedral mesh, which the checks don't build |
 | Continuous optimization in C++ (`argmin` over ℝⁿ) | LBFGSpp v0.4.0. Bounds by expressions without the variables, and equalities, become box constraints; other constraints throw, naming the constraint. When the line search fails (near a non-smooth or exactly-zero minimum), the best point evaluated is used. `tools/opt_check_cpp.py` finds all 11 corpus optimization programs agree with NumPy, on random inputs and on the test suite's own |
 
 To run the Python test suite with code from the Rust compiler:
@@ -68,15 +68,15 @@ The random arguments are drawn so that they fit together:
 
 A mesh parameter is an octahedron (NumPy and Eigen).
 
-`tools/main_check.py` runs every corpus program's `main`: NumPy 284/285, Eigen 278/282,
-MATLAB 256/271. The failures fall into these groups:
+`tools/main_check.py` runs every corpus program's `main`: NumPy 286/290, Eigen 284/289,
+MATLAB 252/273. The failures fall into these groups:
 - programs that can't run on arbitrary random values (`f(2)` where 2 must be in a random
   set; subscripts like `a_(b+1)` or `a_(b-c)` with random `b` and `c`; a random set's
   integers used as subscripts, `v_j` for `j ∈ S`), so whether they fail depends on the draw;
-- `mass_spring`, whose mesh must be tetrahedral (the random mesh is an octahedron);
+- `mass_spring`, `mesh_deformation` (tetrahedral meshes) and `point_cloud` (an edge mesh):
+  the random mesh is always a triangle mesh, an octahedron;
 - optimization constraints that Eigen and MATLAB don't support (`t_others_11`, `t_others_12`);
-- the 10 mesh programs, and 1 gallery program with modules, in MATLAB, which supports
-  neither meshes nor modules.
+- in MATLAB, the programs with meshes, modules, derivatives, `sequence()` or `svd`.
 
 ## On the web
 
@@ -167,6 +167,10 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
   `extract_heartdown.py`) and the I❤️MESH paper's examples (`corpus/iheartmesh/`); see
   the README in each. A program in a file is compiled in its directory, where its
   imports are found (`path` in its golden file).
+- `paper_check.py SUPPLEMENT_DIR`: build `paper_check/driver.cpp` with the I❤️MESH paper's own
+  `heartlib.h` and with the Rust compiler's C++ for the four examples with derivatives,
+  `sequence()`, sets of vectors and `svd`, and compare every value, and the Rust NumPy
+  output's too. C++ derivatives need autodiff (Homebrew: `autodiff`) and Eigen 3.4.
 - `value_check.py [id-prefix ...]`: run both compilers' NumPy output on the same random
   arguments (from `--main`) and compare every attribute and local function value
   (default: the gallery programs).

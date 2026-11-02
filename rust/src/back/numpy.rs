@@ -9,18 +9,30 @@ use super::names::{convert_unicode, has_special_symbol, Kind};
 use crate::ast::*;
 use crate::dims::Dim;
 use crate::ty::*;
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 
 pub fn generate(prog: &Program, class_name: &str) -> String {
     let mut out = String::new();
     out.push_str(&format!("\"\"\"\n{}\n\"\"\"\n", prog.source));
-    out.push_str("import numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\n");
+    // (derivatives with autograd, which differentiates through Python control flow)
+    let np = if prog.derivatives { "import autograd.numpy as np\nimport autograd\n" } else { "import numpy as np\n" };
+    out.push_str(np);
+    out.push_str("import scipy\nimport scipy.linalg\nfrom scipy import sparse\n");
     out.push_str("from scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n");
     if uses_mesh(prog) {
         out.push_str("from triangle_mesh import *\n");
+        if prog.derivatives {
+            // (again: the star import brings NumPy's np)
+            out.push_str("import autograd.numpy as np\n");
+        }
     }
     out.push_str("\n\n");
-    out.push_str(&class(prog, class_name));
+    let mut code = class(prog, class_name);
+    if prog.derivatives {
+        // autograd differentiates np.array, not np.asarray
+        code = code.replace("np.asarray(", "np.array(");
+    }
+    out.push_str(&code);
     out
 }
 
@@ -31,9 +43,12 @@ fn uses_mesh(prog: &Program) -> bool {
 
 /// A program as a class; imported modules are nested classes.
 fn class(prog: &Program, class_name: &str) -> String {
-    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, method: false, locals: Vec::new() };
+    let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, method: false, locals: Vec::new(), subst: HashMap::new(), saw_partial: false };
     let mut out = String::new();
     out.push_str(&format!("class {class_name}:\n"));
+    if prog.derivatives {
+        out.push_str("    _differentiating = 0  # (> 0 while the program is recomputed for a derivative)\n\n");
+    }
     let params: Vec<String> = prog.params.iter().map(|p| py_ident(&p.name)).collect();
     out.push_str(&format!("    def __init__(self{}):\n", params.iter().map(|p| format!(", {p}")).collect::<String>()));
     g.init_params();
@@ -41,7 +56,18 @@ fn class(prog: &Program, class_name: &str) -> String {
     for s in &prog.stmts {
         match s {
             Stmt::Func(f) => funcs.push(f),
-            s => g.stmt(s),
+            s => {
+                let start = g.lines.len();
+                g.saw_partial = false;
+                g.stmt(s);
+                if g.saw_partial {
+                    // (not when the program is recomputed to differentiate it)
+                    for l in &mut g.lines[start..] {
+                        l.insert_str(0, "    ");
+                    }
+                    g.lines.insert(start, "        if not type(self)._differentiating:".into());
+                }
+            }
         }
     }
     if g.lines.is_empty() {
@@ -52,6 +78,21 @@ fn class(prog: &Program, class_name: &str) -> String {
     for f in funcs {
         out.push('\n');
         out.push_str(&g.local_func(f));
+    }
+    if prog.derivatives {
+        for l in [
+            "",
+            "    def _without_derivatives(self, make):",
+            "        \"\"\"make(), skipping the derivatives of every instance it constructs\"\"\"",
+            "        type(self)._differentiating += 1",
+            "        try:",
+            "            return make()",
+            "        finally:",
+            "            type(self)._differentiating -= 1",
+        ] {
+            out.push_str(l);
+            out.push('\n');
+        }
     }
     // each imported module once (a module imported twice is instantiated twice)
     let mut done = HashSet::new();
@@ -88,6 +129,10 @@ struct Gen<'p> {
     method: bool,
     /// local names (function parameters, loop variables, temporaries)
     locals: Vec<HashSet<String>>,
+    /// names printed as other code (the variable a derivative is taken with respect to)
+    subst: HashMap<String, String>,
+    /// whether the statement being generated has a derivative
+    saw_partial: bool,
 }
 
 impl<'p> Gen<'p> {
@@ -114,6 +159,9 @@ impl<'p> Gen<'p> {
 
     /// How to refer to a name here.
     fn name(&self, n: &str) -> String {
+        if let Some(s) = self.subst.get(n) {
+            return s.clone();
+        }
         let id = py_ident(n);
         if self.is_local(n) {
             return id;
@@ -126,6 +174,7 @@ impl<'p> Gen<'p> {
 
     fn dim(&self, d: &Dim) -> String {
         match d {
+            Dim::Str(s) if s.starts_with("@size:") => format!("len({})", self.name(&s["@size:".len()..])),
             Dim::Str(s) if s.starts_with("@len:") => {
                 // the extent of axis `a` of item `i` of a ragged sequence
                 let parts: Vec<&str> = s.splitn(4, ':').collect();
@@ -312,12 +361,20 @@ impl<'p> Gen<'p> {
         self.locals.push(scope);
         let diag = a.subs.len() == 2 && a.subs[0] == a.subs[1];
         let loops = if diag { 1 } else { a.subs.len() };
+        // (a row or column at a time: m_i,* = v_i)
+        let mut opened = 0;
         for k in 0..loops {
+            if a.subs[k] == "*" {
+                continue;
+            }
             self.line(format!("for {} in range(1, {}+1):", subs[k], ext[k]));
             self.indent += 1;
+            opened += 1;
         }
+        let loops = opened;
         let v = self.expr(&a.rhs);
-        let index: Vec<String> = subs.iter().map(|s| format!("{s}-1")).collect();
+        let v = if a.subs.iter().any(|s| s == "*") { format!("np.ravel({v})") } else { v };
+        let index: Vec<String> = a.subs.iter().zip(&subs).map(|(raw, s)| if raw == "*" { ":".to_string() } else { format!("{s}-1") }).collect();
         let op = if a.accumulate { "+=" } else { "=" };
         self.line(format!("{write_to}[{}] {op} {v}", index.join(", ")));
         self.indent -= loops;
@@ -421,6 +478,7 @@ impl<'p> Gen<'p> {
                     Tuple(_) => format!("{b}[{}]", parts[0]),
                     // the i-th element of a set, in increasing order
                     Set { .. } => format!("sorted({b})[{}]", parts[0]),
+                    VecSet { .. } => format!("np.asarray(sorted({b})[{}])", parts[0]),
                     _ => parts.iter().fold(b, |acc, p| format!("{acc}[{p}]")),
                 }
             }
@@ -444,6 +502,54 @@ impl<'p> Gen<'p> {
                     SetOpKind::Union => format!("frozenset.union({l}, {r})"),
                     SetOpKind::Intersection => format!("frozenset.intersection({l}, {r})"),
                     SetOpKind::Difference => format!("({l}) - ({r})"),
+                }
+            }
+            Partial { upper, var, hessian, def } => {
+                self.saw_partial = true;
+                let x = self.name(var);
+                let flat = !matches!(self.prog.params.iter().find(|p| p.name == *var).map(|p| &p.ty), Some(Scalar(_)));
+                // the function of the (flattened) variable, as a nested def: its body may need statements
+                let f = self.fresh("f");
+                let dx = self.fresh("dx");
+                let value = if flat { format!("np.reshape({dx}, np.shape({x}))") } else { dx.clone() };
+                self.line(format!("def {f}({dx}):"));
+                self.indent += 1;
+                self.locals.push(HashSet::from([dx.clone()]));
+                let body = match def {
+                    // a definition of the program: the program recomputed with the variable replaced
+                    Some(d) => {
+                        let args: Vec<String> = self.prog.params.iter().map(|p| if p.name == *var { value.clone() } else { self.name(&p.name) }).collect();
+                        format!("self._without_derivatives(lambda: type(self)({})).{}", args.join(", "), py_ident(d))
+                    }
+                    None => {
+                        let saved = self.subst.insert(var.clone(), value.clone());
+                        let b = self.expr(upper);
+                        match saved {
+                            Some(s) => self.subst.insert(var.clone(), s),
+                            None => self.subst.remove(var),
+                        };
+                        b
+                    }
+                };
+                self.line(format!("return {body}"));
+                self.locals.pop();
+                self.indent -= 1;
+                let at = if flat { format!("np.ravel({x})") } else { x };
+                let d = if *hessian {
+                    "autograd.hessian"
+                } else if upper.ty.is_vector() {
+                    "autograd.jacobian"
+                } else {
+                    "autograd.grad"
+                };
+                format!("{d}({f})({at})")
+            }
+            Sequence { base, items } => {
+                let a: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
+                match base {
+                    // (a copy: the sequence itself is unchanged)
+                    Some(b) => format!("list({}) + [{}]", self.expr(b), a.join(", ")),
+                    None => format!("[{}]", a.join(", ")),
                 }
             }
             Convert(args) => {
@@ -499,6 +605,8 @@ impl<'p> Gen<'p> {
                 let c = cond.as_ref().map(|c| format!(" if {}", self.cond(c))).unwrap_or_default();
                 self.locals.pop();
                 let target = if v.len() == 1 { v[0].clone() } else { format!("({})", v.join(", ")) };
+                // (a vector is stored as a tuple: arrays aren't hashable)
+                let it = if item.ty.is_vector() { format!("tuple(np.ravel({it}))") } else { it };
                 format!("frozenset({{{it} for {target} in {r}{c}}})")
             }
             Neg(x) => format!("-{}", self.expr(x)),
@@ -658,6 +766,8 @@ impl<'p> Gen<'p> {
                 "det" => format!("np.linalg.det({a0})"),
                 "rank" => format!("np.linalg.matrix_rank({a0})"),
                 "inv" => format!("np.linalg.inv({a0})"),
+                // (U, the singular values, V: NumPy gives Vᵀ)
+                "svd" => format!("(lambda s: (s[0], s[1], s[2].T))(np.linalg.svd({a0}))"),
                 "min" | "max" => {
                     if a.len() > 1 {
                         format!("{f}({})", a.join(", "))
@@ -675,6 +785,26 @@ impl<'p> Gen<'p> {
 
     fn block(&mut self, rows: &[Vec<Expr>], ty: &Ty) -> String {
         let all_scalar = rows.iter().flatten().all(|e| e.ty.is_scalar());
+        if self.prog.derivatives && !all_scalar && !ty.is_sparse() && !ty.is_int() {
+            // autograd differentiates np.concatenate, not np.block (each item 2-D)
+            let mut parts = Vec::new();
+            for row in rows {
+                let items: Vec<String> = row
+                    .iter()
+                    .map(|e| {
+                        let s = self.expr(e);
+                        match &e.ty {
+                            Scalar(_) => format!("np.reshape({s}, (1, 1))"),
+                            Vector { .. } => format!("np.reshape({s}, (-1, 1))"),
+                            Matrix { sparse: true, .. } => format!("({s}).toarray()"),
+                            _ => s,
+                        }
+                    })
+                    .collect();
+                parts.push(format!("np.concatenate([{}], axis=1)", items.join(", ")));
+            }
+            return format!("np.concatenate([{}], axis=0)", parts.join(", "));
+        }
         let mut parts = Vec::new();
         for row in rows {
             let items: Vec<String> = row
