@@ -41,7 +41,8 @@ class TestOthers(BasePythonTest):
         # MATLAB test
         if TEST_MATLAB:
             mat_func = getattr(mat_engine, func_info.mat_func_name, None)
-            self.assertEqual(np.array(mat_func(matlab.double([2]))['c']), 9)
+            # (numerical quadrature: 9 up to rounding)
+            self.assertAlmostEqual(float(np.array(mat_func(matlab.double([2]))['c'])), 9)
 
     def test_optimization_argmin(self):
         # no return symbol

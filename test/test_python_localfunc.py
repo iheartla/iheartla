@@ -235,3 +235,21 @@ class TestLocalFunction(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_local_func_where_retried(self):
+        # a where definition typed after one it needs (a = p + i before i, j = v_f) is the
+        # function's own: MacroMathJax marks it local
+        la_str = """g(f, p) = a where f ∈ ℤ, p ∈ ℝ,
+                    a = p + i,
+                    i, j = v_f
+                    z = g(1, 2)
+                    where
+                    v_i ∈ ℝ^2"""
+        content = compile_la_content(la_str, parser_type=ParserTypeEnum.MACROMATHJAX)[ParserTypeEnum.MACROMATHJAX]
+        self.assertIn("onClickSymbol(this, 'a', 'heartlib', 'use', true, 'g')", content)
+        # and the equation's symbols drop an expression subscript (x_(v_1) lists x)
+        content = compile_la_content("""z = x_(v_1)
+                                       where
+                                       x ∈ ℝ^3
+                                       v ∈ ℤ^2""", parser_type=ParserTypeEnum.MACROMATHJAX)[ParserTypeEnum.MACROMATHJAX]
+        self.assertIn("onClickEq(this, 'heartlib', ['x', 'z']", content)
