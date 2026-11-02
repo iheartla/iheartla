@@ -372,6 +372,29 @@ class TestFunction(BasePythonTest):
     #     cppyy.cppdef('\n'.join(func_list))
     #     self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_subscripted_func_param(self):
+        # a subscripted function parameter takes its subscript as the first argument, as local functions do
+        la_str = """c = sum_i p_i(A_i)
+                    where
+                    p_i ∈ ℝ -> ℝ
+                    A_i ∈ ℝ"""
+        func_info = self.gen_func_info(la_str)
+        A = np.array([1, 2])
+        self.assertEqual(func_info.numpy_func(lambda i, a: i * a, A).c, 5)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    std::vector<double> A(2);",
+                     "    A[0] = 1;",
+                     "    A[1] = 2;",
+                     "    std::function<double(int, double)> p = [](int i, double a)->double{",
+                     "        return i * a;",
+                     "    };",
+                     "    return {}(p, A).c == 5;".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_function_real_param_int_arg(self):
         # an integer vector passed to a function parameter that takes a real vector
         la_str = """a = g(x)

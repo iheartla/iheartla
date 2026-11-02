@@ -724,10 +724,20 @@ class grammardefaultParser(Parser):
                 self._IN_()
             with self._option():
                 self._DERIVATIVE_()
+            with self._option():
+                self._PI_()
+            with self._option():
+                self._pattern('ℝ')
+            with self._option():
+                self._pattern('ℤ')
+            with self._option():
+                self._pattern('∑')
+            with self._option():
+                self._SUBSET_()
             self._error(
                 'expecting one of: '
                 '# <DELTA> <DERIVATIVE> <IN> <NABLA>'
-                '<POUND> [Δ] ∇ ∈ 𝕕'
+                '<PI> <POUND> <SUBSET> [Δ] π ℝ ℤ ∑ ⊂ ∇ ∈ 𝕕'
             )
 
     @tatsumasu()
