@@ -41,11 +41,11 @@ def IHLA(content, ret=None, mapping={}):
     else:
         return loc['instance']
 
-if __name__ == '__main__':
+def main():
     LaLogger.getInstance().set_level(logging.DEBUG if DEBUG_MODE else logging.ERROR)
     la_debug("tatsu version: {}".format(tatsu.__version__))
     arg_parser = argparse.ArgumentParser(description='The HeartLang Compiler')
-    arg_parser.add_argument('-o', '--output', help='The output language', choices = ['numpy', 'eigen', 'latex','matlab'])
+    arg_parser.add_argument('-o', '--output', help='The output language(s), comma-separated: numpy, eigen, latex, mathjax, matlab (e.g. -o numpy,eigen)')
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Launch the GUI editor')
     arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
@@ -69,7 +69,8 @@ if __name__ == '__main__':
                 parser_type = ParserTypeEnum.INVALID
                 out_list = args.output.split(",")
                 for out in out_list:
-                    assert out in out_dict, "Parameters after -o or --output can only be numpy, eigen, latex, or matlab"
+                    if out not in out_dict:
+                        arg_parser.error("Parameters after -o or --output can only be numpy, eigen, latex, mathjax, or matlab")
                     parser_type = parser_type | out_dict[out]
             try:
                 for input in args.input: compile_la_file(input, parser_type)
@@ -77,3 +78,7 @@ if __name__ == '__main__':
                 exit(1)
         else:
             show_gui()
+
+
+if __name__ == '__main__':
+    main()

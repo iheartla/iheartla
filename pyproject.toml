@@ -15,6 +15,9 @@ dependencies = [
     "appdirs",
 ]
 
+[project.scripts]
+iheartla = "iheartla.__main__:main"
+
 [project.optional-dependencies]
 gui = ["wxpython", "PyMuPDF"]
 viz = ["graphviz"]
