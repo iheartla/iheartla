@@ -2094,7 +2094,7 @@ impl<'a> Checker<'a> {
     /// and get_hessian_type).
     fn partial(&mut self, op: &Val) -> R<Expr> {
         let lowers = op.get("lower").items().to_vec();
-        self.ensure(lowers.len() == 1, op, || "Only derivatives with respect to one variable are supported".into())?;
+        self.ensure(lowers.len() == 1, op, || "Mixed second derivatives (∂²f/∂x∂y) aren't supported".into())?;
         let var = ident_name(&lowers[0]);
         let vty = match self.globals.get(&var) {
             Some(Sym::Param(t)) => t.clone(),
@@ -2122,8 +2122,10 @@ impl<'a> Checker<'a> {
             (1, Scalar(_)) => Ty::vector(n),
             (1, Vector { rows, .. }) if vty.is_scalar() => Ty::vector(rows.clone()),
             (1, Vector { rows, .. }) => Ty::matrix(rows.clone(), n),
-            (2, Scalar(_)) if !vty.is_scalar() => Ty::matrix(n.clone(), n),
-            _ => return self.err(op, "Second derivatives are supported for a scalar with respect to a vector or sequence"),
+            (2, Scalar(_)) if vty.is_scalar() => Ty::real(),
+            (2, Scalar(_)) if !vty.is_matrix() => Ty::matrix(n.clone(), n),
+            (2, Scalar(_)) => return self.err(op, "Second derivatives are supported with respect to a scalar, vector or sequence"),
+            _ => return self.err(op, "Second derivatives are supported for scalars only"),
         };
         // ∂e/∂x of the program's definition e: recomputed, not differentiated as an expression
         let def = match (&*upper.kind, self.globals.get(&ident_name(upper_node.get("id0")))) {

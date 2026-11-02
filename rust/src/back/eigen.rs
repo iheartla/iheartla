@@ -900,13 +900,16 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                 };
                 let structure = format!("{}_t", self.struct_name);
                 let yt = if upper.ty.is_vector() { "Eigen::Matrix<V, Eigen::Dynamic, 1>" } else { "V" };
+                let scalar_var = matches!(self.prog.params.iter().find(|p| p.name == *var).map(|p| &p.ty), Some(Scalar(_)));
                 let d = match (*hessian, upper.ty.is_vector()) {
+                    // (with respect to a scalar: differentiate twice; derivativesx keeps the first a var)
+                    (true, _) if scalar_var => "double(autodiff::derivatives(autodiff::reverse::detail::derivativesx(y, autodiff::wrt(dx(0)))[0], autodiff::wrt(dx(0)))[0])".to_string(),
                     (true, _) => "Eigen::MatrixXd(autodiff::hessian(y, dx))".to_string(),
                     // (a Jacobian: one gradient per item of the vector)
                     (false, true) => "[&](){ Eigen::MatrixXd J(y.size(), dx.size()); for (long r = 0; r < y.size(); r++) J.row(r) = autodiff::gradient(y(r), dx).transpose(); return J; }()".to_string(),
                     (false, false) => "Eigen::VectorXd(autodiff::gradient(y, dx))".to_string(),
                 };
-                let d = if e.ty.is_scalar() { format!("({d})(0)") } else { d };
+                let d = if e.ty.is_scalar() && !(*hessian && scalar_var) { format!("({d})(0)") } else { d };
                 format!(
                     "[&](){{ using V = autodiff::var; Eigen::Matrix<V, Eigen::Dynamic, 1> dx = iheartla_diff::flatten<V>({x}); \
 {structure}<V> {s}({}); {yt} y = {y}; return {d}; }}()",

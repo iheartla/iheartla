@@ -542,7 +542,8 @@ impl<'p> Gen<'p> {
                 } else {
                     "autograd.grad"
                 };
-                format!("{d}({f})({at})")
+                // (the Hessian with respect to a scalar is a 0-d array)
+                if *hessian && !flat { format!("float({d}({f})({at}))") } else { format!("{d}({f})({at})") }
             }
             Sequence { base, items } => {
                 let a: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
