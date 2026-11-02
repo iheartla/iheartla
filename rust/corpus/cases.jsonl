@@ -58,6 +58,8 @@
 {"id": "t_constant_01", "src": "sin,asin,arcsin,cos,acos,arccos,tan,atan,arctan,atan2,sinh,asinh,arsinh,cosh,acosh,arcosh,tanh,atanh,artanh,cot,sec,csc from trigonometry\ntrace,tr,trace,tr,diag,vec,det,rank,null,orth,inv from linearalgebra\nA = sin(π/a)\n        where\n        a: scalar"}
 {"id": "t_defuse_01", "src": "a = b\n                    b = 1"}
 {"id": "t_defuse_02", "src": "D = B + f(A) \n        B = A+C \n        f(x) = x  where x ∈ ℝ \n        where \n        A ∈ ℝ\n        C ∈ ℝ"}
+{"id": "t_derivative_01", "src": "S(x) = { ∞ if x_1 ⋅ x_2 ≤ 0\n                             (x_1 ⋅ x_2)² otherwise where x_i ∈ ℝ^2\n                    E = S(x)\n                    G = ∂E/∂x\n                    where\n                    x_i ∈ ℝ^2"}
+{"id": "t_derivative_02", "src": "sin from trigonometry\n                    A = x ⋅ x + sin(x_1)\n                    G = ∂A/∂x\n                    H = ∂²A/∂x²\n                    f(y) = y ⋅ y where y ∈ ℝ^3\n                    K = ∂²f(x)/∂x²\n                    where\n                    x ∈ ℝ^3"}
 {"id": "t_dims_01", "src": "M+N\n                    where\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m ) "}
 {"id": "t_dims_02", "src": "M+N\n                    where\n                    m: ℤ\n                    M: ℝ^( m×m )\n                    N: ℝ^( m×m ) \n                    "}
 {"id": "t_dims_03", "src": "f( M ) \n                    where \n                    M: ℝ^( m×m )\n                    f: ℝ^( k×k ) -> ℝ "}
@@ -131,11 +133,13 @@
 {"id": "t_localfunc_03", "src": "f(s) = s / 2 where s: ℝ\n                    g(v) = 2 v where v: ℝ ^ 3\n                    a = f(k)\n                    b = g(x)\n                    where\n                    k: ℤ\n                    x: ℤ ^ 3"}
 {"id": "t_localfunc_04", "src": "f(x) = x where x: ℝ ^ (2 × 2)\n                    where\n                    x: ℝ : a scalar"}
 {"id": "t_localfunc_05", "src": "f(x) = x_1 where x_i: ℝ"}
-{"id": "t_localfunc_06", "src": "z = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar"}
-{"id": "t_localfunc_07", "src": "f(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar"}
-{"id": "t_localfunc_08", "src": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar"}
-{"id": "t_localfunc_09", "src": "f(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)"}
-{"id": "t_localfunc_10", "src": "f(x) = x \n                    where x: ℝ ^ (2 × 2)"}
+{"id": "t_localfunc_06", "src": "g(c) = (∑_(j ∈ S) (a + b c) where a, b = v_j) where c ∈ ℝ\n                    z = g(2)\n                    where\n                    S ∈ {ℤ}\n                    v_i ∈ ℝ^2"}
+{"id": "t_localfunc_07", "src": "z = y\n                    f(x) = x + z where x: ℝ\n                    where\n                    y: ℝ : a scalar"}
+{"id": "t_localfunc_08", "src": "f(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar"}
+{"id": "t_localfunc_09", "src": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar"}
+{"id": "t_localfunc_10", "src": "f(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)"}
+{"id": "t_localfunc_11", "src": "f(x) = { y if x > 0\n                             -y otherwise where x ∈ ℝ,\n                    y = 2x\n                    c = f(3) + f(-1)\n                    where\n                    z ∈ ℝ"}
+{"id": "t_localfunc_12", "src": "f(x) = x \n                    where x: ℝ ^ (2 × 2)"}
 {"id": "t_matrix_01", "src": "C = [A ; B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
 {"id": "t_matrix_02", "src": "C = [A B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
 {"id": "t_matrix_03", "src": "C = [A+B A-B]\n        where\n        A: ℝ ^ (2 × 2): a matrix\n        B: ℝ ^ (2 × 2): a matrix"}
@@ -212,10 +216,13 @@
 {"id": "t_product_09", "src": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (a×b): a sequence\n                    P: ℝ ^ (c×d): a sequence"}
 {"id": "t_product_10", "src": "A = T ⊗ P\n                    where \n                    T: ℝ ^ (2×3) sparse\n                    P: ℝ ^ (2×3): a sequence"}
 {"id": "t_product_11", "src": "a = 2.5 x\n                    b = x s\n                    c = x ⋅ y\n                    d = x ∘ y\n                    e = x × y\n                    where\n                    x: ℤ ^ 3\n                    y: ℝ ^ 3\n                    s: ℝ"}
-{"id": "t_set_01", "src": "a =  {1, 2, 3}"}
-{"id": "t_set_02", "src": "L_i,j = { α_ij if j ∉ N(i)\n        M_i,j = { α_ij if j ∉ S\n        where\n        L: ℝ^(n×n)\n        M: ℝ^(n×n)\n        α: ℝ^(n×n)\n        N: ℤ -> {ℤ}\n        S: {ℤ}\n        "}
-{"id": "t_set_03", "src": "A = ∪_(i ∈ T) N(i)\n        where\n        N: ℤ -> {ℤ}\n        T: {ℤ} index\n        "}
-{"id": "t_set_04", "src": "A = ∪_(i ∈ T) N(i)\n        where\n        N: ℤ -> {ℤ}\n        T: {ℤ}\n        "}
+{"id": "t_set_01", "src": "f(S) = min({x_i for i ∈ S}) where S ⊂ V\n                    g(S) = max({x_i for i ∈ S}) where S ⊂ V\n                    z = 1\n                    where\n                    V ∈ {ℤ}\n                    x_i ∈ ℝ"}
+{"id": "t_set_02", "src": "f(U) = sequence(U, {5}) where U_i ⊂ V\n                    g(U) = ∪_i U_i where U_i ⊂ V\n                    z = 1\n                    where\n                    V ∈ {ℤ}"}
+{"id": "t_set_03", "src": "a =  {1, 2, 3}"}
+{"id": "t_set_04", "src": "L_i,j = { α_ij if j ∉ N(i)\n        M_i,j = { α_ij if j ∉ S\n        where\n        L: ℝ^(n×n)\n        M: ℝ^(n×n)\n        α: ℝ^(n×n)\n        N: ℤ -> {ℤ}\n        S: {ℤ}\n        "}
+{"id": "t_set_05", "src": "svd from linearalgebra\n                    f(S) = s where S ⊂ V,\n                    d = {x_i for i ∈ S},\n                    m_i,* = d_i,\n                    u, s, vv = svd(m)\n                    z = 1\n                    where\n                    V ∈ {ℤ}\n                    x_i ∈ ℝ^3"}
+{"id": "t_set_06", "src": "A = ∪_(i ∈ T) N(i)\n        where\n        N: ℤ -> {ℤ}\n        T: {ℤ} index\n        "}
+{"id": "t_set_07", "src": "A = ∪_(i ∈ T) N(i)\n        where\n        N: ℤ -> {ℤ}\n        T: {ℤ}\n        "}
 {"id": "t_stat_01", "src": "A: ℝ^(n×n)\n        a = A_1,1\n        n: ℤ"}
 {"id": "t_stat_02", "src": "A = 2 + 3"}
 {"id": "t_stat_03", "src": "a b\n        where\n        a: scalar\n        b: scalar"}

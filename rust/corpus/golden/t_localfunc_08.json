@@ -1,16 +1,16 @@
 {
  "id": "t_localfunc_08",
- "src": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar",
+ "src": "f(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar",
+   "text": "f(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     85
+     111
     ],
     "vblock": [
      {
@@ -115,7 +115,7 @@
              12
             ],
             "id": null,
-            "value": "y"
+            "value": "z"
            }
           }
          }
@@ -137,24 +137,76 @@
       }
      },
      {
-      "_": "ParamsBlock",
+      "_": "Statements",
       "@": [
        44,
-       85
+       49
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        44,
+        49
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          44,
+          45
+         ],
+         "id": null,
+         "value": "z"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          48,
+          49
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           48,
+           49
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            48,
+            49
+           ],
+           "id": null,
+           "value": "y"
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       70,
+       111
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        70,
-        85
+        96,
+        111
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          70,
-          85
+          96,
+          111
          ],
          "attrib": null,
          "belong": ":",
@@ -167,8 +219,8 @@
           {
            "_": "IdentifierAlone",
            "@": [
-            70,
-            71
+            96,
+            97
            ],
            "id": null,
            "value": "y"
@@ -193,12 +245,12 @@
     "rename": {},
     "const_e": false
    },
-   "text": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar",
+   "text": "f(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     85
+     111
     ],
     "vblock": [
      {
@@ -303,7 +355,7 @@
              12
             ],
             "id": null,
-            "value": "y"
+            "value": "z"
            }
           }
          }
@@ -326,24 +378,76 @@
       }
      },
      {
-      "_": "ParamsBlock",
+      "_": "Statements",
       "@": [
        44,
-       85
+       49
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        44,
+        49
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          44,
+          45
+         ],
+         "id": null,
+         "value": "z"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          48,
+          49
+         ],
+         "sign": null,
+         "value": {
+          "_": "Factor",
+          "@": [
+           48,
+           49
+          ],
+          "id0": {
+           "_": "IdentifierAlone",
+           "@": [
+            48,
+            49
+           ],
+           "id": null,
+           "value": "y"
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       70,
+       111
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        70,
-        85
+        96,
+        111
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          70,
-          85
+          96,
+          111
          ],
          "attrib": null,
          "belong": ":",
@@ -356,8 +460,8 @@
           {
            "_": "IdentifierAlone",
            "@": [
-            70,
-            71
+            96,
+            97
            ],
            "id": null,
            "value": "y"
@@ -372,11 +476,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nf(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, y):\n        assert np.ndim(y) == 0\n\n        self.y = y\n        pass\n\n    def f(self, x):\n        assert np.ndim(x) == 0\n\n        return x + self.y\n\n\n\n\n\n",
-  "eigen": "/*\nf(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n\n    double y;\n    template<typename REAL>\n    REAL f(\n        const REAL & x)\n    {\n        return x + this->y;    \n    }\n    heartlib(const double & y)\n    {\n    \n        this->y = y;\n    \n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf\\left( x \\right) & = x + y \\text{{ where }}  x : \\mathbb{R} \\\\\n\\intertext{where} \ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & f\\left( x \\right) & = x + y \\text{{ where }}  x : \\mathbb{R} \\\\\nwhere \\\\\ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(y)\n% output = heartlib(y)\n%\n%    f(x) = x + y where x: ℝ\n%                        where\n%                        y: ℝ : a scalar\n    assert(numel(y) == 1);\n\n    function [ret] = f(x)\n        assert(numel(x) == 1);\n\n        ret = x + y;\n    end\n\n    output.f = @f;\n    output.y = y;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } : \\mathbb{R} \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nf(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, y):\n        assert np.ndim(y) == 0\n        # z = y\n        self.z = y\n\n    def f(self, x):\n        assert np.ndim(x) == 0\n\n        return x + self.z\n\n\n\n\n\n",
+  "eigen": "/*\nf(x) = x + z where x: ℝ\n                    z = y\n                    where\n                    y: ℝ : a scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT z;\n\n    template<typename REAL>\n    REAL f(\n        const REAL & x)\n    {\n        return x + this->z;    \n    }\n    heartlib(const double & y)\n    {\n    \n        // z = y\n        z = y;\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf\\left( x \\right) & = x + z \\text{{ where }}  x : \\mathbb{R} \\\\\nz & = y \\\\\n\\intertext{where} \ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & f\\left( x \\right) & = x + z \\text{{ where }}  x : \\mathbb{R} \\\\\nz & = y \\\\\nwhere \\\\\ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(y)\n% output = heartlib(y)\n%\n%    f(x) = x + z where x: ℝ\n%                        z = y\n%                        where\n%                        y: ℝ : a scalar\n    assert(numel(y) == 1);\n\n    % z = y\n\n    z = y;\n    function [ret] = f(x)\n        assert(numel(x) == 1);\n\n        ret = x + z;\n    end\n\n    output.z = z;\n    output.f = @f;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'z', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-z\", \"sym\":\"z\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {z} } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } : \\mathbb{R} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'z', 'heartlib', 'def', false, 'f')\", \"id\":\"heartlib-z\", \"sym\":\"z\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"def\", \"case\":\"equation\"} }{ {z} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} }\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['y', 'z'], false, [], [], 'eiA9IHk=');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n"
  }
 }

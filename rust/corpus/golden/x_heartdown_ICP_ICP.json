@@ -4463,9 +4463,9 @@
    "config": {
     "ids": [
      "trans",
+     "rot",
      "cos",
-     "tan",
-     "rot"
+     "tan"
     ],
     "funcs": [
      "`trans`",

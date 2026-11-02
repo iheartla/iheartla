@@ -190,8 +190,8 @@
    "config": {
     "ids": [
      "abc",
-     "bc",
-     "ab"
+     "ab",
+     "bc"
     ],
     "funcs": [],
     "builtins": [],

@@ -127,6 +127,14 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
         for x in f.get("params").items().iter().chain(f.get("subs").items()) {
             local_params.insert(ident_name(x));
         }
+        // (and a name's subscripts: aₘ(f))
+        if f.get("name").class() == "IdentifierSubscript" {
+            for x in f.get("name").get("right").items() {
+                if x.class() == "IdentifierAlone" {
+                    local_params.insert(ident_name(x));
+                }
+            }
+        }
         // (and the dimensions of their types, x ∈ ℝ^n)
         for d in f.get("defs").items() {
             type_dim_names(d.get("type"), &mut local_params);
@@ -767,10 +775,22 @@ impl<'p> Printer<'p> {
     fn macro_local_func(&mut self, s: &Val) -> String {
         self.local_func = true;
         self.defining = true;
-        let name = self.id_node(s.get("name"));
+        // the name's main part, then its subscripts (Ω_f(𝐩), aₘ(f)), each with a label
+        let name_node = s.get("name");
+        let (mut name, subs, main) = if name_node.class() == "IdentifierSubscript" {
+            let main = ident_name(name_node.get("left"));
+            (self.label(&main, &main, convert_name(&main)), self.subscripts(name_node), main)
+        } else {
+            (self.id_node(name_node), s.get("subs").items().to_vec(), ident_name(name_node))
+        };
         self.defining = false;
-        self.local_func_name = js_content(&ident_name(s.get("name")));
-        let params: Vec<Val> = s.get("subs").items().iter().chain(s.get("params").items()).cloned().collect();
+        // (the subscripts' labels name the function without them)
+        self.local_func_name = js_content(&main);
+        if !subs.is_empty() {
+            let sl: Vec<String> = subs.iter().map(|x| self.id_node(x)).collect();
+            name = format!("{name}_{{{}}}", sl.join(","));
+        }
+        let params = s.get("params").items().to_vec();
         let params_str = self.joined(&params, s.get("separators"), |p, x| p.id_node(x));
         let def_params = if s.get("def_p").truthy() { format!("\\left( {params_str} \\right)") } else { format!("\\left[ {params_str} \\right]") };
         let exprs: Vec<String> = self.sides(s.get("expr")).iter().map(|e| self.expr(e)).collect();

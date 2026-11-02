@@ -689,19 +689,9 @@ impl<'a> Checker<'a> {
         let accumulate = s.get("op").as_str() == Some("+=");
         let text = self.text(s);
         if lefts.len() > 1 {
-            // a, b = f(x)
+            // a, b = f(x), or a, b = v (as in a sum's where)
             let rhs = self.expr(&rights[0])?;
-            let tys = match &rhs.ty {
-                Tuple(v) if v.len() == lefts.len() => v.clone(),
-                _ => return self.err(s, format!("Invalid assignment: {} lhs and 1 rhs", lefts.len())),
-            };
-            let mut lhs = Vec::new();
-            for (l, t) in lefts.iter().zip(tys) {
-                let name = ident_name(l);
-                self.define_global(l, &name, t.clone())?;
-                lhs.push((name, t));
-            }
-            return Ok(Stmt::Multi { lhs, rhs, text });
+            return self.unpack(s, &lefts, rhs, text);
         }
         let left = &lefts[0];
         let right = &rights[0];
@@ -827,6 +817,11 @@ impl<'a> Checker<'a> {
     fn destructure(&mut self, s: &Val) -> R<Stmt> {
         let rhs = self.expr(&s.get("right").items()[0])?;
         let lefts = s.get("left").items().to_vec();
+        self.unpack(s, &lefts, rhs, self.text(s))
+    }
+
+    /// `a, b = rhs`: one name per item of a tuple, sequence, set or vector.
+    fn unpack(&mut self, s: &Val, lefts: &[Val], rhs: Expr, text: String) -> R<Stmt> {
         let tys: Vec<Ty> = match &rhs.ty {
             Tuple(v) => v.clone(),
             Seq { elem, .. } => vec![(**elem).clone(); lefts.len()],
@@ -841,7 +836,7 @@ impl<'a> Checker<'a> {
             self.define_global(l, &name, t.clone())?;
             lhs.push((name, t));
         }
-        Ok(Stmt::Multi { lhs, rhs, text: self.text(s) })
+        Ok(Stmt::Multi { lhs, rhs, text })
     }
 
     fn local_func(&mut self, s: &Val) -> R<LocalFunc> {

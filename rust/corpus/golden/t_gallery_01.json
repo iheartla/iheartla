@@ -567,8 +567,8 @@
    "kind": "default",
    "config": {
     "ids": [
-     "sin",
-     "cos"
+     "cos",
+     "sin"
     ],
     "funcs": [],
     "builtins": [

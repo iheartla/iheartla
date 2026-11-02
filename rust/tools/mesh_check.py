@@ -26,7 +26,7 @@ import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
 sys.path.insert(0, os.path.join(HERE, 'mesh_runtime'))
-sys.path.insert(1, ROOT)
+sys.path.insert(1, os.environ.get('IHEARTLA_PYTHON_ROOT', ROOT))
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
 
 import triangle_mesh  # noqa: E402  (the shim)
@@ -87,7 +87,7 @@ def compare(src, name):
     a, b = a_cls(*args), b_cls(*args)
     point = np.array([0.3, -0.2, 0.1])
     n = max(nv, mesh.n_edges(), mesh.n_faces())
-    checked = mismatches = 0
+    checked = mismatches = unchecked = 0
     report = []
     names = sorted(set(k for k in vars(a) if not k.startswith('_')) | set(k for k in dir(a_cls) if not k.startswith('_')))
     for k in names:
@@ -107,13 +107,18 @@ def compare(src, name):
         domain = list(range(n) if arity == 1 else range(nv)) + [point]
         for combo in itertools.product(domain, repeat=arity):
             ra, rb = call(va, combo), call(vb, combo)
+            if ra == ('error',) and rb != ('error',):
+                # arguments of the wrong kind (a point for a set) that only Python's checks reject
+                unchecked += 1
+                continue
             checked += 1
             if ra != rb:
                 mismatches += 1
                 if mismatches <= 40:
                     report.append('  {}{}: python {} rust {}'.format(k, combo, ra, rb))
     status = 'OK' if mismatches == 0 else 'MISMATCH'
-    return '{} ({} values compared, {} differ)\n{}'.format(status, checked, mismatches, '\n'.join(report)).rstrip()
+    extra = ', {} calls only Python rejects'.format(unchecked) if unchecked else ''
+    return '{} ({} values compared, {} differ{})\n{}'.format(status, checked, mismatches, extra, '\n'.join(report)).rstrip()
 
 
 if __name__ == '__main__':

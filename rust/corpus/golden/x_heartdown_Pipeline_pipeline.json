@@ -4698,11 +4698,11 @@
    "kind": "default",
    "config": {
     "ids": [
-     "arcsin",
      "arctan",
+     "arcsin",
      "atan",
-     "cos",
-     "sin"
+     "sin",
+     "cos"
     ],
     "funcs": [
      "`\\$\\\\textbf\\{x\\}\\$`",

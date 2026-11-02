@@ -1,29 +1,29 @@
 {
  "id": "t_localfunc_09",
- "src": "f(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)",
+ "src": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar",
  "parses": [
   {
    "kind": "init",
    "config": null,
-   "text": "f(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)",
+   "text": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     212
+     85
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       27
+       23
       ],
       "stat": {
        "_": "LocalFunc",
        "@": [
         0,
-        27
+        23
        ],
        "def_p": "(",
        "def_s": null,
@@ -42,45 +42,14 @@
          "_": "WhereCondition",
          "@": [
           19,
-          27
+          23
          ],
          "attrib": null,
          "belong": ":",
          "desc": null,
          "subset": null,
          "type": {
-          "_": "VectorType",
-          "@": [
-           22,
-           27
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            26,
-            27
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             26,
-             27
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              26,
-              27
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
+          "_": "ScalarType"
          },
          "id": [
           {
@@ -146,7 +115,7 @@
              12
             ],
             "id": null,
-            "value": "x"
+            "value": "y"
            }
           }
          }
@@ -168,501 +137,41 @@
       }
      },
      {
-      "_": "Statements",
-      "@": [
-       48,
-       60
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        48,
-        60
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          48,
-          49
-         ],
-         "id": null,
-         "value": "a"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          52,
-          60
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           52,
-           60
-          ],
-          "op": {
-           "_": "Function",
-           "@": [
-            52,
-            60
-           ],
-           "name": [
-            {
-             "_": "IdentifierAlone",
-             "@": [
-              52,
-              53
-             ],
-             "id": null,
-             "value": "f"
-            },
-            []
-           ],
-           "p": "(",
-           "params": [
-            {
-             "_": "Expression",
-             "@": [
-              54,
-              59
-             ],
-             "value": {
-              "_": "Add",
-              "@": [
-               54,
-               59
-              ],
-              "left": {
-               "_": "Expression",
-               "@": [
-                54,
-                55
-               ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 54,
-                 55
-                ],
-                "id0": {
-                 "_": "IdentifierAlone",
-                 "@": [
-                  54,
-                  55
-                 ],
-                 "id": null,
-                 "value": "y"
-                }
-               }
-              },
-              "op": "+",
-              "right": {
-               "_": "Factor",
-               "@": [
-                58,
-                59
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 58,
-                 59
-                ],
-                "id": null,
-                "value": "y"
-               }
-              }
-             }
-            }
-           ],
-           "separators": []
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
-      "_": "Statements",
-      "@": [
-       81,
-       91
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        81,
-        91
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          81,
-          82
-         ],
-         "id": null,
-         "value": "b"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          85,
-          91
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           85,
-           91
-          ],
-          "op": {
-           "_": "Function",
-           "@": [
-            85,
-            91
-           ],
-           "name": [
-            {
-             "_": "IdentifierAlone",
-             "@": [
-              85,
-              86
-             ],
-             "id": null,
-             "value": "f"
-            },
-            []
-           ],
-           "p": "(",
-           "params": [
-            {
-             "_": "Expression",
-             "@": [
-              87,
-              90
-             ],
-             "sign": null,
-             "value": {
-              "_": "Multiply",
-              "@": [
-               87,
-               90
-              ],
-              "left": {
-               "_": "Factor",
-               "@": [
-                87,
-                88
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 87,
-                 88
-                ],
-                "value": [
-                 "2"
-                ]
-               }
-              },
-              "right": {
-               "_": "Factor",
-               "@": [
-                89,
-                90
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 89,
-                 90
-                ],
-                "id": null,
-                "value": "y"
-               }
-              }
-             }
-            }
-           ],
-           "separators": []
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
-      "_": "Statements",
-      "@": [
-       112,
-       122
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        112,
-        122
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          112,
-          113
-         ],
-         "id": null,
-         "value": "c"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          116,
-          122
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           116,
-           122
-          ],
-          "op": {
-           "_": "Function",
-           "@": [
-            116,
-            122
-           ],
-           "name": [
-            {
-             "_": "IdentifierAlone",
-             "@": [
-              116,
-              117
-             ],
-             "id": null,
-             "value": "f"
-            },
-            []
-           ],
-           "p": "(",
-           "params": [
-            {
-             "_": "Expression",
-             "@": [
-              118,
-              121
-             ],
-             "sign": null,
-             "value": {
-              "_": "Multiply",
-              "@": [
-               118,
-               121
-              ],
-              "left": {
-               "_": "Factor",
-               "@": [
-                118,
-                119
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 118,
-                 119
-                ],
-                "id": null,
-                "value": "A"
-               }
-              },
-              "right": {
-               "_": "Factor",
-               "@": [
-                120,
-                121
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 120,
-                 121
-                ],
-                "id": null,
-                "value": "y"
-               }
-              }
-             }
-            }
-           ],
-           "separators": []
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
       "_": "ParamsBlock",
       "@": [
-       143,
-       212
+       44,
+       85
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        169,
-        212
+        70,
+        85
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          169,
-          177
+          70,
+          85
          ],
          "attrib": null,
          "belong": ":",
-         "desc": null,
+         "desc": "a scalar",
          "subset": null,
          "type": {
-          "_": "VectorType",
-          "@": [
-           172,
-           177
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            176,
-            177
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             176,
-             177
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              176,
-              177
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
+          "_": "ScalarType"
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            169,
-            170
+            70,
+            71
            ],
            "id": null,
            "value": "y"
-          }
-         ]
-        },
-        {
-         "_": "WhereCondition",
-         "@": [
-          198,
-          212
-         ],
-         "attrib": null,
-         "belong": ":",
-         "desc": null,
-         "subset": null,
-         "type": {
-          "_": "MatrixType",
-          "@": [
-           201,
-           212
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            206,
-            207
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             206,
-             207
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              206,
-              207
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "id2": {
-           "_": "ArithExpression",
-           "@": [
-            210,
-            211
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             210,
-             211
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              210,
-              211
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
-         },
-         "id": [
-          {
-           "_": "IdentifierAlone",
-           "@": [
-            198,
-            199
-           ],
-           "id": null,
-           "value": "A"
           }
          ]
         }
@@ -684,25 +193,25 @@
     "rename": {},
     "const_e": false
    },
-   "text": "f(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)",
+   "text": "f(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar",
    "ast": {
     "_": "Start",
     "@": [
      0,
-     212
+     85
     ],
     "vblock": [
      {
       "_": "Statements",
       "@": [
        0,
-       27
+       23
       ],
       "stat": {
        "_": "LocalFunc",
        "@": [
         0,
-        27
+        23
        ],
        "def_p": "(",
        "def_s": null,
@@ -721,45 +230,14 @@
          "_": "WhereCondition",
          "@": [
           19,
-          27
+          23
          ],
          "attrib": null,
          "belong": ":",
          "desc": null,
          "subset": null,
          "type": {
-          "_": "VectorType",
-          "@": [
-           22,
-           27
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            26,
-            27
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             26,
-             27
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              26,
-              27
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
+          "_": "ScalarType"
          },
          "id": [
           {
@@ -825,7 +303,7 @@
              12
             ],
             "id": null,
-            "value": "x"
+            "value": "y"
            }
           }
          }
@@ -848,468 +326,41 @@
       }
      },
      {
-      "_": "Statements",
-      "@": [
-       48,
-       60
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        48,
-        60
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          48,
-          49
-         ],
-         "id": null,
-         "value": "a"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          52,
-          60
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           52,
-           60
-          ],
-          "op": {
-           "_": "Function",
-           "@": [
-            52,
-            60
-           ],
-           "name": "f",
-           "p": "(",
-           "params": [
-            {
-             "_": "Expression",
-             "@": [
-              54,
-              59
-             ],
-             "value": {
-              "_": "Add",
-              "@": [
-               54,
-               59
-              ],
-              "left": {
-               "_": "Expression",
-               "@": [
-                54,
-                55
-               ],
-               "sign": null,
-               "value": {
-                "_": "Factor",
-                "@": [
-                 54,
-                 55
-                ],
-                "id0": {
-                 "_": "IdentifierAlone",
-                 "@": [
-                  54,
-                  55
-                 ],
-                 "id": null,
-                 "value": "y"
-                }
-               }
-              },
-              "op": "+",
-              "right": {
-               "_": "Factor",
-               "@": [
-                58,
-                59
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 58,
-                 59
-                ],
-                "id": null,
-                "value": "y"
-               }
-              }
-             }
-            }
-           ],
-           "separators": []
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
-      "_": "Statements",
-      "@": [
-       81,
-       91
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        81,
-        91
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          81,
-          82
-         ],
-         "id": null,
-         "value": "b"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          85,
-          91
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           85,
-           91
-          ],
-          "op": {
-           "_": "Function",
-           "@": [
-            85,
-            91
-           ],
-           "name": "f",
-           "p": "(",
-           "params": [
-            {
-             "_": "Expression",
-             "@": [
-              87,
-              90
-             ],
-             "sign": null,
-             "value": {
-              "_": "Multiply",
-              "@": [
-               87,
-               90
-              ],
-              "left": {
-               "_": "Factor",
-               "@": [
-                87,
-                88
-               ],
-               "num": {
-                "_": "Integer",
-                "@": [
-                 87,
-                 88
-                ],
-                "value": [
-                 "2"
-                ]
-               }
-              },
-              "right": {
-               "_": "Factor",
-               "@": [
-                89,
-                90
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 89,
-                 90
-                ],
-                "id": null,
-                "value": "y"
-               }
-              }
-             }
-            }
-           ],
-           "separators": []
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
-      "_": "Statements",
-      "@": [
-       112,
-       122
-      ],
-      "stat": {
-       "_": "Assignment",
-       "@": [
-        112,
-        122
-       ],
-       "op": "=",
-       "left": [
-        {
-         "_": "IdentifierAlone",
-         "@": [
-          112,
-          113
-         ],
-         "id": null,
-         "value": "c"
-        }
-       ],
-       "right": [
-        {
-         "_": "Expression",
-         "@": [
-          116,
-          122
-         ],
-         "sign": null,
-         "value": {
-          "_": "Factor",
-          "@": [
-           116,
-           122
-          ],
-          "op": {
-           "_": "Function",
-           "@": [
-            116,
-            122
-           ],
-           "name": "f",
-           "p": "(",
-           "params": [
-            {
-             "_": "Expression",
-             "@": [
-              118,
-              121
-             ],
-             "sign": null,
-             "value": {
-              "_": "Multiply",
-              "@": [
-               118,
-               121
-              ],
-              "left": {
-               "_": "Factor",
-               "@": [
-                118,
-                119
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 118,
-                 119
-                ],
-                "id": null,
-                "value": "A"
-               }
-              },
-              "right": {
-               "_": "Factor",
-               "@": [
-                120,
-                121
-               ],
-               "id0": {
-                "_": "IdentifierAlone",
-                "@": [
-                 120,
-                 121
-                ],
-                "id": null,
-                "value": "y"
-               }
-              }
-             }
-            }
-           ],
-           "separators": []
-          }
-         }
-        }
-       ]
-      }
-     },
-     {
       "_": "ParamsBlock",
       "@": [
-       143,
-       212
+       44,
+       85
       ],
       "annotation": "where",
       "conds": {
        "_": "WhereConditions",
        "@": [
-        169,
-        212
+        70,
+        85
        ],
        "value": [
         {
          "_": "WhereCondition",
          "@": [
-          169,
-          177
+          70,
+          85
          ],
          "attrib": null,
          "belong": ":",
-         "desc": null,
+         "desc": "a scalar",
          "subset": null,
          "type": {
-          "_": "VectorType",
-          "@": [
-           172,
-           177
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            176,
-            177
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             176,
-             177
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              176,
-              177
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
+          "_": "ScalarType"
          },
          "id": [
           {
            "_": "IdentifierAlone",
            "@": [
-            169,
-            170
+            70,
+            71
            ],
            "id": null,
            "value": "y"
-          }
-         ]
-        },
-        {
-         "_": "WhereCondition",
-         "@": [
-          198,
-          212
-         ],
-         "attrib": null,
-         "belong": ":",
-         "desc": null,
-         "subset": null,
-         "type": {
-          "_": "MatrixType",
-          "@": [
-           201,
-           212
-          ],
-          "id1": {
-           "_": "ArithExpression",
-           "@": [
-            206,
-            207
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             206,
-             207
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              206,
-              207
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "id2": {
-           "_": "ArithExpression",
-           "@": [
-            210,
-            211
-           ],
-           "sign": null,
-           "value": {
-            "_": "ArithFactor",
-            "@": [
-             210,
-             211
-            ],
-            "num": {
-             "_": "Integer",
-             "@": [
-              210,
-              211
-             ],
-             "value": [
-              "3"
-             ]
-            }
-           }
-          },
-          "type": "ℝ",
-          "attr": []
-         },
-         "id": [
-          {
-           "_": "IdentifierAlone",
-           "@": [
-            198,
-            199
-           ],
-           "id": null,
-           "value": "A"
           }
          ]
         }
@@ -1321,11 +372,11 @@
   }
  ],
  "outputs": {
-  "numpy": "\"\"\"\nf(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, y, A):\n        y = np.asarray(y, dtype=np.float64)\n        A = np.asarray(A, dtype=np.float64)\n        assert y.shape == (3,)\n        assert A.shape == (3, 3)\n        # a = f(y + y)\n        self.a = self.f(y + y)\n        # b = f(2 y)\n        self.b = self.f(2 * y)\n        # c = f(A y)\n        self.c = self.f(A @ y)\n\n    def f(self, x):\n        x = np.asarray(x, dtype=np.float64)\n        assert x.shape == (3,)\n\n        return x + x\n\n\n\n\n\n",
-  "eigen": "/*\nf(x) = x + x where x: ℝ ^ 3\n                    a = f(y + y)\n                    b = f(2 y)\n                    c = f(A y)\n                    where\n                    y: ℝ ^ 3\n                    A: ℝ ^ (3 × 3)\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    Eigen::Matrix<DT, 3, 1> a;\n    Eigen::Matrix<DT, 3, 1> b;\n    Eigen::Matrix<DT, 3, 1> c;\n\n    template<typename REAL>\n    Eigen::Matrix<REAL, 3, 1> f(\n        const Eigen::Matrix<REAL, 3, 1> & x)\n    {\n        return x + x;    \n    }\n    heartlib(\n        const Eigen::Matrix<double, 3, 1> & y,\n        const Eigen::Matrix<double, 3, 3> & A)\n    {\n    \n        // a = f(y + y)\n        a = f((y + y).eval());\n        // b = f(2 y)\n        b = f((DT(2) * y).eval());\n        // c = f(A y)\n        c = f((A * y).eval());\n    }\n};\n\n\n\n\n\n",
-  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf\\left( x \\right) & = x + x \\text{{ where }}  x : \\mathbb{R}^{ 3} \\\\\na & = f\\left( y + y \\right) \\\\\nb & = f\\left( 2 y \\right) \\\\\nc & = f\\left( A y \\right) \\\\\n\\intertext{where} \ny & : \\mathbb{R}^{ 3} \\\\\nA & : \\mathbb{R}^{ 3 \\times 3 } \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
-  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & f\\left( x \\right) & = x + x \\text{{ where }}  x : \\mathbb{R}^{ 3} \\\\\na & = f\\left( y + y \\right) \\\\\nb & = f\\left( 2 y \\right) \\\\\nc & = f\\left( A y \\right) \\\\\nwhere \\\\\ny & : \\mathbb{R}^{ 3} \\\\\nA & : \\mathbb{R}^{ 3 \\times 3 } \\\\\n\\\\\n\\end{align*}\n",
-  "matlab": "function output = heartlib(y, A)\n% output = heartlib(y, A)\n%\n%    f(x) = x + x where x: ℝ ^ 3\n%                        a = f(y + y)\n%                        b = f(2 y)\n%                        c = f(A y)\n%                        where\n%                        y: ℝ ^ 3\n%                        A: ℝ ^ (3 × 3)\n    y = reshape(y,[],1);\n\n    assert( numel(y) == 3 );\n    assert( isequal(size(A), [3, 3]) );\n\n    % a = f(y + y)\n\n    a = f(y + y);\n    % b = f(2 y)\n\n    b = f(2 * y);\n    % c = f(A y)\n\n    c = f(A * y);\n    function [ret] = f(x)\n        x = reshape(x,[],1);\n        assert( numel(x) == 3 );\n\n        ret = x + x;\n    end\n\n    output.a = a;\n    output.b = b;\n    output.c = c;\n    output.f = @f;\nend\n",
-  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } : \\mathbb{R}^{ 3} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'a', 'heartlib', 'def', false, 'f')\", \"id\":\"heartlib-a\", \"sym\":\"a\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"def\", \"case\":\"equation\"} }{ {a} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['f', 'y', 'a'], false, [], [], 'YSA9IGYoeSArIHkp');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'b', 'heartlib', 'def', false, 'f')\", \"id\":\"heartlib-b\", \"sym\":\"b\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"def\", \"case\":\"equation\"} }{ {b} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }\\left( 2 \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['f', 'y', 'b'], false, [], [], 'YiA9IGYoMiB5KQ==');\"} }{}\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'c', 'heartlib', 'def', false, 'f')\", \"id\":\"heartlib-c\", \"sym\":\"c\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"def\", \"case\":\"equation\"} }{ {c} } & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['A', 'f', 'y', 'c'], false, [], [], 'YyA9IGYoQSB5KQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } : \\mathbb{R}^{ 3} \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'A', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-A\", \"sym\":\"A\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {A} } : \\mathbb{R}^{ 3 \\times 3 } \\\\\n\\\\\n\\end{align*}\n"
+  "numpy": "\"\"\"\nf(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, y):\n        assert np.ndim(y) == 0\n\n        self.y = y\n        pass\n\n    def f(self, x):\n        assert np.ndim(x) == 0\n\n        return x + self.y\n\n\n\n\n\n",
+  "eigen": "/*\nf(x) = x + y where x: ℝ\n                    where\n                    y: ℝ : a scalar\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n\n    double y;\n    template<typename REAL>\n    REAL f(\n        const REAL & x)\n    {\n        return x + this->y;    \n    }\n    heartlib(const double & y)\n    {\n    \n        this->y = y;\n    \n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\nf\\left( x \\right) & = x + y \\text{{ where }}  x : \\mathbb{R} \\\\\n\\intertext{where} \ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & f\\left( x \\right) & = x + y \\text{{ where }}  x : \\mathbb{R} \\\\\nwhere \\\\\ny & : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(y)\n% output = heartlib(y)\n%\n%    f(x) = x + y where x: ℝ\n%                        where\n%                        y: ℝ : a scalar\n    assert(numel(y) == 1);\n\n    function [ret] = f(x)\n        assert(numel(x) == 1);\n\n        ret = x + y;\n    end\n\n    output.f = @f;\n    output.y = y;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'f', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-f\", \"sym\":\"f\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {f} }\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right) & = \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } + \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } \\text{{ where }}  \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', true, 'f')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } : \\mathbb{R} \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'y', 'heartlib', 'use', false, 'f')\", \"id\":\"heartlib-y\", \"sym\":\"y\", \"func\":\"heartlib\",  \"localFunc\":\"f\", \"type\":\"use\", \"case\":\"equation\"} }{ {y} } : \\mathbb{R} \\text{ a scalar} \\\\\n\\\\\n\\end{align*}\n"
  }
 }
