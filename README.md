@@ -115,7 +115,7 @@ The web page is the static site in `docs/`, served as is (by GitHub Pages, or `c
 
       sh docs/update_wheel.sh
 
-  It builds the wheel from the files git tracks (a stale `build/` or untracked files would otherwise end up in it), without the Rust compiler.
+  It runs `uv build`, which builds the wheel from an sdist (`uv build --wheel` would build in the source tree, where a stale `build/` can leak into it), and drops the Rust compiler from the wheel; the page loads it from `docs/rust/`.
 
 * **The Rust compiler**, built as WebAssembly, is `docs/rust/iheartla.wasm` for the page and `iheartla/rust/iheartla.wasm` for the `iheartla-rust` command, which is how `uvx` installs from git get it. After changing `rust/` or the bundled modules in `iheartla/mesh/*.hlang`, run (once: `rustup target add wasm32-unknown-unknown`):
 
