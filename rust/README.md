@@ -81,9 +81,14 @@ choice is kept in the URL as `?compiler=rust`, so "Copy as URL" keeps it.
 
 How the Rust option works:
 - **Build:** the Rust compiler is built for `wasm32-unknown-unknown` with a size-optimised
-  profile. `docs/update_rust_wasm.sh` writes `docs/rust/iheartla.wasm` (2.7 MB, no imports).
+  profile. `docs/update_rust_wasm.sh` writes `docs/rust/iheartla.wasm` (2.7 MB). It imports
+  one function, which asks the host for a module that isn't builtin.
 - **Worker:** it runs in `docs/js/compile-worker-rust.js`, with the same messages as the
-  Pyodide worker. Its interface is in `src/wasm.rs`.
+  Pyodide worker. Its interface is in `src/wasm.rs`. (The page has no files, so it only
+  finds the builtin modules.)
+- **Command line:** `iheartla-rust` (`iheartla/rust_wasm.py`) runs the same module with
+  wasmtime, finding other modules next to the input file as the Python compiler does. The
+  Python package carries it through the link `iheartla/rust/iheartla.wasm`.
 - **Check:** `tools/web_check.py` tests the page in headless Chromium:
   `uv run --with playwright python rust/tools/web_check.py`.
 

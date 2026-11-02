@@ -182,10 +182,13 @@ Compared with the Python compiler:
   - random functions return values sized as their arguments imply.
 
 **WebAssembly.** The library builds for `wasm32-unknown-unknown`, with the `wasm` Cargo
-profile and no imports. `wasm.rs` exports `ih_alloc`, `ih_free` and `ih_compile`; the last
-returns JSON with the five outputs the web page shows. `docs/js/compile-worker-rust.js`
-runs it with the same messages as the Pyodide worker. The page's Compiler choice
-(`?compiler=rust`) picks the worker. Rebuild with `docs/update_rust_wasm.sh`.
+profile. `wasm.rs` exports `ih_alloc`, `ih_free` and `ih_compile_json`, which takes a JSON
+request (source, backends, name, main) and returns JSON with the outputs. It imports one
+function, `iheartla.read_module`, through which the loader asks the host for a module that
+isn't builtin. `docs/js/compile-worker-rust.js` runs it with the same messages as the
+Pyodide worker (and finds no modules); the page's Compiler choice (`?compiler=rust`) picks
+the worker. `iheartla-rust` (`iheartla/rust_wasm.py`) runs it with wasmtime and reads
+modules from the input file's directory. Rebuild with `docs/update_rust_wasm.sh`.
 
 ## Keeping the two equivalent
 

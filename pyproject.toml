@@ -13,10 +13,14 @@ dependencies = [
     "regex",
     "sympy",
     "appdirs",
+    # iheartla-rust runs the Rust compiler's WebAssembly module with it
+    # (not in Pyodide, the web page's Python compiler, which has no wasmtime)
+    "wasmtime; sys_platform != 'emscripten'",
 ]
 
 [project.scripts]
 iheartla = "iheartla.__main__:main"
+iheartla-rust = "iheartla.rust_wasm:main"
 
 [project.optional-dependencies]
 gui = ["wxpython", "PyMuPDF"]
@@ -36,5 +40,6 @@ include = ["iheartla*"]
 
 [tool.setuptools.package-data]
 # built-in I❤️MESH modules (.hlang) are read at compile time; the C++/MATLAB/Python
-# support files are what generated code includes
-iheartla = ["mesh/**/*", "pygments/*"]
+# support files are what generated code includes; rust/iheartla.wasm (a link to
+# docs/rust/iheartla.wasm) is the Rust compiler iheartla-rust runs
+iheartla = ["mesh/**/*", "pygments/*", "rust/*.wasm"]

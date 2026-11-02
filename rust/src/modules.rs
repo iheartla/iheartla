@@ -3,8 +3,10 @@
 //! A module is found, as in the Python compiler, first among the modules
 //! that come with I❤️LA (`iheartla/mesh/*.hlang`, embedded in the binary),
 //! then in the search directories (the importing file's directory): `.hlang`
-//! files, then `.ihla` files (which H❤️rtDown writes for each context). Each
-//! module is compiled once per compilation and shared by all its importers.
+//! files, then `.ihla` files (which H❤️rtDown writes for each context), then
+//! from the host (the WebAssembly module, which can't read files, asks its
+//! host; see `wasm.rs`). Each module is compiled once per compilation and
+//! shared by all its importers.
 
 use crate::ast::Program;
 use std::cell::RefCell;
@@ -28,6 +30,8 @@ const BUILTIN: &[(&str, &str)] = &[
 pub struct Loader {
     /// directories searched after the builtin modules
     pub dirs: Vec<PathBuf>,
+    /// the source of a module the host provides, searched last
+    pub host: Option<fn(&str) -> Option<String>>,
     cache: RefCell<HashMap<String, Rc<Program>>>,
     /// modules being compiled (to report import cycles)
     loading: RefCell<Vec<String>>,
@@ -36,6 +40,11 @@ pub struct Loader {
 impl Loader {
     pub fn new(dirs: Vec<PathBuf>) -> Rc<Loader> {
         Rc::new(Loader { dirs, ..Default::default() })
+    }
+
+    /// A loader that finds modules other than the builtin ones with `host`.
+    pub fn with_host(host: fn(&str) -> Option<String>) -> Rc<Loader> {
+        Rc::new(Loader { host: Some(host), ..Default::default() })
     }
 
     /// The source of a module, if it exists.
@@ -48,6 +57,7 @@ impl Loader {
             .flat_map(|ext| self.dirs.iter().map(move |d| d.join(format!("{name}.{ext}"))))
             .find(|p| p.is_file())
             .and_then(|p| std::fs::read_to_string(p).ok())
+            .or_else(|| self.host.and_then(|host| host(name)))
     }
 
     pub fn exists(&self, name: &str) -> bool {

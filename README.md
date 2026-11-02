@@ -50,6 +50,14 @@ You can also run as a command-line compiler:
 
     python3 -m iheartla --help
 
+Or, without cloning, with [uv](https://docs.astral.sh/uv/):
+
+    uvx --from 'git+https://github.com/iheartla/iheartla/' iheartla foo.ihla -o numpy,latex
+
+On the `rust` branch, `iheartla-rust` runs the Rust compiler (built as WebAssembly, so no Rust toolchain is needed) with the same command line, plus `--name` and `--main`:
+
+    uvx --from 'git+https://github.com/iheartla/iheartla/@rust' iheartla-rust foo.ihla -o numpy,latex
+
 ## Installing
 
 You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.

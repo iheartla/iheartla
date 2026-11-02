@@ -5,15 +5,20 @@
 // The module's interface is documented in rust/src/wasm.rs.
 
 const wasmURL = new URL("../rust/iheartla.wasm", import.meta.url);
+// The outputs the page shows, in its order.
+const BACKENDS = ["numpy", "eigen", "latex", "mathjax", "matlab"];
+
+// The page has no files: a module that isn't builtin is never found.
+const imports = { iheartla: { read_module: () => 0 } };
 
 async function instantiate() {
     try {
-        const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmURL), {});
+        const { instance } = await WebAssembly.instantiateStreaming(fetch(wasmURL), imports);
         return instance;
     } catch (e) {
         // (a server that doesn't send application/wasm)
         const bytes = await (await fetch(wasmURL)).arrayBuffer();
-        const { instance } = await WebAssembly.instantiate(bytes, {});
+        const { instance } = await WebAssembly.instantiate(bytes, imports);
         return instance;
     }
 }
@@ -23,16 +28,18 @@ instance.then(() => self.postMessage({ ready: true }),
               e => self.postMessage({ ready: false, error: "Failed to load the compiler: " + e.message }));
 
 function compile(exports, source) {
-    const input = new TextEncoder().encode(source);
+    // main: also generateRandomData() and main(), as the Python compiler's page shows
+    const request = JSON.stringify({ source, backends: BACKENDS, main: true });
+    const input = new TextEncoder().encode(request);
     const ptr = exports.ih_alloc(input.length);
     new Uint8Array(exports.memory.buffer, ptr, input.length).set(input);
-    // 1: also generateRandomData() and main(), as the Python compiler's page shows
-    const result = exports.ih_compile(ptr, input.length, 1);
+    const result = exports.ih_compile_json(ptr, input.length);
     exports.ih_free(ptr, input.length);
     const length = new DataView(exports.memory.buffer).getUint32(result, true);
     const json = new TextDecoder().decode(new Uint8Array(exports.memory.buffer, result + 4, length));
     exports.ih_free(result, length + 4);
-    return JSON.parse(json);
+    const out = JSON.parse(json);
+    return out.error !== undefined ? out : { code: BACKENDS.map(b => out.outputs[b]) };
 }
 
 self.onmessage = async (event) => {
