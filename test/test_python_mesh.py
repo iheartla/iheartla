@@ -42,6 +42,26 @@ class TestMesh(unittest.TestCase):
         self.assertEqual([h.e(i, j) for (i, j) in [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3)]], [0, 1, 2, 3, 4])
         self.assertEqual([h.r(v) for v in (0, 1, 2, 3)], [2, 3, 3, 2])
 
+    def test_import_as(self):
+        # symbols imported from a module can be renamed with `as`, including overloaded functions
+        la_str = """ElementSets from MeshConnectivity
+        Vertices as Vs, Edges from FundamentalMeshAccessors(M)
+        EdgeIndex as EI, VertexOneRing as ring from Neighborhoods(M)
+        M ∈ FaceMesh
+        V, E, F = ElementSets(M)
+        d(f) = |Vs(Edges(f))| where f ∈ F
+        e(i, j) = EI(i, j) where i, j ∈ V
+        r(v) = |ring(v)| where v ∈ V"""
+        with contextlib.redirect_stdout(io.StringIO()):
+            result = compile_la_content(la_str, ParserTypeEnum.NUMPY)
+        namespace = {}
+        exec(result[ParserTypeEnum.NUMPY], namespace)
+        mesh = TriangleMesh(np.array([[0, 1, 2], [1, 3, 2]]))
+        h = namespace['heartlib'](mesh)
+        self.assertEqual([h.d(f) for f in (0, 1)], [3, 3])
+        self.assertEqual([h.e(i, j) for (i, j) in [(0, 1), (0, 2), (1, 2), (1, 3), (2, 3)]], [0, 1, 2, 3, 4])
+        self.assertEqual([h.r(v) for v in (0, 1, 2, 3)], [2, 3, 3, 2])
+
     def test_runtime_element_sets(self):
         tri = TriangleMesh(np.array([[0, 1, 2], [1, 3, 2]]))
         V, E, F = tri.ElementSets()
