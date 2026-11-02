@@ -2763,7 +2763,11 @@ class CodeGenEigen(CodeGen):
             else:
                 upper_info = self.visit(node.upper, **kwargs)
                 lower_info = self.visit(node.lower_list[0], **kwargs)
-                if node.lower_list[0].get_main_id() in self.der_vars_mapping:
+                if node.lower_list[0].la_type.is_scalar():
+                    # with respect to a scalar: differentiate twice (derivativesx keeps the first derivative a var)
+                    content = "[&](){{ auto d = derivativesx({0}, wrt({1})); return double(derivatives(d[0], wrt({1}))[0]); }}()".format(
+                        upper_info.content, lower_info.content)
+                elif node.lower_list[0].get_main_id() in self.der_vars_mapping:
                     content = "hessian({}, this->{})".format(upper_info.content, self.der_vars_mapping[node.lower_list[0].get_main_id()])
                 else:
                     content = "hessian({}, {})".format(upper_info.content, lower_info.content)

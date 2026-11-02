@@ -981,6 +981,12 @@ class TypeWalker(NodeWalker):
 
     def pop_scope_environment(self):
         self.func_data_dict = self.saved_scope_func_data_dict
+        # local_func_dict shares each local function's symbol table with func_data_dict:
+        # share the restored copy's, or later where definitions miss it (a statement that
+        # failed and was retried, a = p + i before i, j = ...)
+        for name in self.local_func_dict:
+            if name in self.func_data_dict:
+                self.local_func_dict[name] = self.func_data_dict[name].params_data.symtable
 
     def get_ordered_stat(self, stat_list):
         """
@@ -2938,13 +2944,20 @@ class TypeWalker(NodeWalker):
             ret_type = get_derivative_type(upper_info.la_type, lower_type_list[0])
             ir_node.order_type = PartialOrderType.PartialNormal
         elif is_same_expr(uorder_value, '2'):
-            # second order
-            if len(lorder_list) == 1:
-                # hessian
-                ret_type = get_hessian_type(upper_info.la_type, lower_type_list[0])
-                ir_node.order_type = PartialOrderType.PartialHessian
-                self.hessian_list.append(HessianInfo(node.upper.text, lower_name_list[0], ir_node))
-            pass
+            # second order: the Hessian of a scalar (code generation has nothing else)
+            self.assert_expr(len(lorder_list) == 1, get_err_msg_info(node.parseinfo,
+                             "Mixed second derivatives (∂²f/∂x∂y) aren't supported"))
+            self.assert_expr(upper_info.la_type.is_scalar(), get_err_msg_info(node.parseinfo,
+                             "Second derivatives are supported for scalars only"))
+            lower_type = lower_type_list[0]
+            self.assert_expr(lower_type.is_scalar() or lower_type.is_vector() or
+                             (lower_type.is_sequence() and (lower_type.element_type.is_scalar() or lower_type.element_type.is_vector())),
+                             get_err_msg_info(node.parseinfo, "Second derivatives are supported with respect to a scalar, vector or sequence"))
+            ret_type = ScalarType() if lower_type.is_scalar() else get_hessian_type(upper_info.la_type, lower_type)
+            ir_node.order_type = PartialOrderType.PartialHessian
+            self.hessian_list.append(HessianInfo(node.upper.text, lower_name_list[0], ir_node))
+        else:
+            self.assert_expr(False, get_err_msg_info(node.parseinfo, "Only first and second derivatives are supported"))
         self.assert_expr(is_same_expr("+".join(lorder_value_list), uorder_value), get_err_msg_info(node.parseinfo,"Order doesn't match"))
         if node.f:
             ir_node.d_type = DerivativeType.DerivativeFraction

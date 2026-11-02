@@ -15,7 +15,8 @@ class TestSet(BasePythonTest):
         # MATLAB testv
         if TEST_MATLAB:
             mat_func = getattr(mat_engine, func_info.mat_func_name, None)
-            self.assertEqual(np.array(mat_func()['a']), [1, 2, 3])
+            # (an array: compare its items, assertEqual can't compare an array with a list)
+            self.assertEqual(np.ravel(np.array(mat_func()['a'])).tolist(), [1, 2, 3])
         # eigen test
         cppyy.include(func_info.eig_file_name)
         func_list = ["bool {}(){{".format(func_info.eig_test_name),

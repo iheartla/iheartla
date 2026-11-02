@@ -244,6 +244,10 @@ def filter_subscript(symbol):
         m = UNICODE_RE.fullmatch(symbol)
         if m:
             return m.group('main')
+        # an expression subscript, x_(bx_j): the name before it
+        m = re.fullmatch(r'(?P<main>(`[^`]*`)|[^_`()]+)_\(.*\)', symbol, re.DOTALL)
+        if m:
+            return m.group('main')
     return symbol
 
 
