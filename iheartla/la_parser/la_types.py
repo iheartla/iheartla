@@ -240,6 +240,10 @@ class LaVarType(object):
     def get_json_content(self):
         return ''
 
+    def json_text(self):
+        # the type as H❤️rtDown's equation data names a type it has no fields for (as the Rust compiler writes it)
+        return self.get_raw_text()
+
     def get_raw_text(self):
         return ''
 
@@ -262,6 +266,9 @@ class ScalarType(LaVarType):
 
     def get_json_content(self):
         return """{{"type": "scalar", "is_int":"{}"}}""".format(self.is_integer_element())
+
+    def json_text(self):
+        return 'ℤ' if self.is_int else 'ℝ'
 
     def get_raw_text(self):
         return 'ℤ' if self.is_int else 'ℝ'
@@ -343,6 +350,14 @@ class MeshType(LaVarType):
 
     def get_raw_text(self):
         return 'mesh({},{},{},{})'.format(self.vi_size, self.ei_size, self.fi_size, self.ti_size)
+
+    def json_text(self):
+        kind = {MeshTypeEnum.EdgeMesh: 'EdgeMesh', MeshTypeEnum.POINTCLOUD: 'EdgeMesh',
+                MeshTypeEnum.CellMesh: 'CellMesh', MeshTypeEnum.TETRAHEDRON: 'CellMesh', MeshTypeEnum.POLYHEDRON: 'CellMesh'}
+        return kind.get(self.cur_mesh, 'FaceMesh')
+
+    def get_json_content(self):
+        return """{{"type": "{}", "is_int":"False"}}""".format(self.json_text())
 
     def get_relaxed_signature(self):
         return 'mesh()'
@@ -528,6 +543,9 @@ class SetType(LaVarType):
     def get_json_content(self):
         return """{{"type": "set", "is_int":"{}", "element":[{}], "size":"{}"}}""".format(self.is_integer_element(), ','.join(['"{}"'.format(1 if i else 0) for i in self.int_list]), self.size)
 
+    def json_text(self):
+        return '{{{}}}'.format('×'.join('ℤ' if i else 'ℝ' for i in self.int_list))
+
     def get_raw_text(self):
         all_true = True
         all_false = True
@@ -584,6 +602,12 @@ class TupleType(LaVarType):
 
     def get_signature(self):
         return 'tuple:' + ','.join([c_type.get_signature() for c_type in self.type_list])
+
+    def json_text(self):
+        return '({})'.format(', '.join(t.json_text() for t in self.type_list))
+
+    def get_json_content(self):
+        return """{{"type": "{}", "is_int":"False"}}""".format(self.json_text())
     
     def is_integer_element(self):
         all_int = True
@@ -671,6 +695,10 @@ class OverloadingFunctionType(LaVarType):
         self.func_list = func_list
         self.fname_list = fname_list  # predefined overloading names
         self.pre_fname_list = pre_fname_list # original fname list in other module
+
+    def get_json_content(self):
+        # (as one function: the first)
+        return self.func_list[0].get_json_content()
 
     def get_correct_ftype(self, param_list, allow_omit=True):
         # when adding new types, allow_omit is supposed to be False, when checking func call, it's True
