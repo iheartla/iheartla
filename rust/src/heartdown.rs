@@ -133,7 +133,13 @@ fn equation(prog: &Program, tree: &Val) -> Value {
     }
     // local functions
     let mut local_funcs = Vec::new();
-    for f in prog.stmts.iter().filter_map(|s| if let Stmt::Func(f) = s { Some(f) } else { None }) {
+    // (in source order: the checker orders statements by their dependencies)
+    let funcs: Vec<&crate::ast::LocalFunc> = prog.stmts.iter().filter_map(|s| if let Stmt::Func(f) = s { Some(f) } else { None }).collect();
+    let source_order = stats.iter().filter(|s| s.class() == "LocalFunc").filter_map(|s| {
+        let name = main_name(s.get("name"));
+        funcs.iter().find(|f| f.base == name).copied()
+    });
+    for f in source_order {
         if local_funcs.iter().any(|x: &Value| x["name"] == f.base.as_str()) {
             continue; // (an overload: the glossary lists the name once)
         }

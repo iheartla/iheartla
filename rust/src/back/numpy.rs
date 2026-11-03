@@ -1055,6 +1055,14 @@ impl<'p> Gen<'p> {
         let res = self.fresh("res");
         let cons_arg = if cons.is_empty() { String::new() } else { format!(", constraints=[{}]", cons.join(", ")) };
         self.line(format!("{res} = minimize({f}, np.zeros({total}){cons_arg})"));
+        // the minimizer is an attribute too (`min_(c ∈ ℝ^m) …`: .c), as in the Python compiler's output
+        if !self.method {
+            for ((n, _), (name, v)) in vars.iter().zip(&unpack) {
+                if !self.is_param(n) && !self.prog.defs.iter().any(|(d, _)| d == n) {
+                    self.line(format!("self.{name} = {}", v.replace(&x, &format!("{res}.x"))));
+                }
+            }
+        }
         let ret = match kind {
             OptKind::Min => format!("{res}.fun"),
             OptKind::Max => format!("-{res}.fun"),
