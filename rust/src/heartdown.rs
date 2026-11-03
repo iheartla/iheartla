@@ -169,7 +169,9 @@ fn equation(prog: &Program, tree: &Val) -> Value {
     for m in &prog.modules {
         let mut names: Vec<String> = Vec::new();
         for (in_module, here) in &m.syms {
-            if !names.contains(here) {
+            // (an overload after the first: the glossary lists the name once)
+            let later_overload = m.prog.funcs.iter().any(|(_, list)| list.iter().skip(1).any(|(_, imp)| imp == in_module));
+            if !later_overload && !names.contains(here) {
                 names.push(here.clone());
                 set_type(&mut types, here, module_symbol_type(&m.prog, in_module).as_ref());
             }
