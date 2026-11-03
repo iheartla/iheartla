@@ -74,7 +74,7 @@ Install [uv](https://docs.astral.sh/uv/) and run:
     uv run --extra gui python -m iheartla
     
     ## For development, also install the test suite's dependencies
-    ## (see .github/workflows/test.yml for the C++ setup the tests need):
+    ## (see "Running the tests" below for the C++ setup the tests need):
     uv sync --extra test --extra viz
 
 ### Pip
@@ -92,6 +92,17 @@ Install [uv](https://docs.astral.sh/uv/) and run:
 (2023-05-10: There is a known bug with Python >= 3.10 and wxPython 4.2.0's PDF viewer. It will be fixed in the next release of wxPython. For now, either run on Python 3.9, live without PDF rendering, compile top-of-tree wxPython yourself, or change `/` to `//` in `wx/lib/pdfviewer/viewer.py:354` (so that `self.Ypagepixels` is an `int`). The relevant commit is [here](https://github.com/wxWidgets/Phoenix/commit/aa4394773a8696444ce5d8a90273d67796e499d0).)
 
 If you are developing I❤️LA, the test suite needs a working C++ compiler and, optionally, the Graphviz graph visualization software (e.g., `brew install graphviz`).
+
+### Running the tests
+
+The tests compile generated C++ with cppyy, against Eigen, autodiff and LBFGSpp, which `test/fetch_deps.sh` fetches into `test/third_party/`. On macOS, cppyy-cling's wheel looks for MacPorts' zstd; `test/fix_cppyy_zstd.sh` points it at Homebrew's (run it again after reinstalling cppyy):
+
+    brew install zstd
+    sh test/fetch_deps.sh
+    PYTHON=.venv/bin/python sh test/fix_cppyy_zstd.sh
+    . .venv/bin/activate && sh run_test.sh
+
+`.github/workflows/test.yml` does the same. cppyy-cling 6.32.8 (the latest, from 2024) can't parse the C++ headers of the macOS 26 SDK and later (errors such as `use of undeclared identifier '__builtin_clzg'`), so on macOS the C++ tests need the macOS 15 SDK (Xcode 16), as CI uses (`runs-on: macos-15`).
 
 ## Output Dependencies
 

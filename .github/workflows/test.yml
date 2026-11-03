@@ -29,11 +29,6 @@ jobs:
       # The cppyy-cling 6.32.8 macOS arm64 wheel links against MacPorts' /opt/local/lib/libzstd.1.dylib.
       # Point it at Homebrew's zstd instead (no-op if the wheel doesn't reference that path).
       - name: Fix cppyy-cling libzstd path
-        run: |
-          LIB=$(python -c "import cppyy_backend, os; print(os.path.join(os.path.dirname(cppyy_backend.__file__), 'lib', 'libCling.so'))")
-          if otool -L "$LIB" | grep -q /opt/local/lib/libzstd.1.dylib; then
-            install_name_tool -change /opt/local/lib/libzstd.1.dylib "$(brew --prefix zstd)/lib/libzstd.1.dylib" "$LIB"
-            codesign -f -s - "$LIB"
-          fi
+        run: PYTHON=python sh test/fix_cppyy_zstd.sh
       - run: python -c "import cppyy"
       - run: sh run_test.sh
