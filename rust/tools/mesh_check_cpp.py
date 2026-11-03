@@ -4,7 +4,7 @@ compiler's).
 
 usage: python rust/tools/mesh_check_cpp.py [program.ila|Module.hlang ...]
 
-The NumPy class runs on an octahedron (with the runtime shim); a generated
+The NumPy class runs on an octahedron (with the I❤️MESH runtime); a generated
 C++ main builds the same mesh (a FaceMesh from the NumPy mesh's boundary
 matrices, so elements are numbered alike), evaluates every attribute and
 every function on the argument combinations that succeed in NumPy, and
@@ -26,8 +26,8 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-sys.path.insert(0, os.path.join(HERE, 'mesh_runtime'))
-import triangle_mesh  # noqa: E402  (the shim)
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'iheartla', 'mesh', 'Python'))
+import triangle_mesh  # noqa: E402  (the I❤️MESH runtime)
 
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
 CPP = os.path.join(ROOT, 'iheartla', 'mesh', 'Cpp')

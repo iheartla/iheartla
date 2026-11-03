@@ -200,7 +200,6 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
   and compare every attribute and every function value over all element arguments (and a point in ℝ³).
   Calls that only Python rejects (its argument checks) aren't compared.
   `IHEARTLA_PYTHON_ROOT=<checkout>` takes the Python compiler from another checkout.
-  `mesh_runtime/triangle_mesh.py` adds `ElementSets` and `indicator` to the I❤️MESH
-  Python runtime. Generated code (from either compiler) calls them, but
-  `iheartla/mesh/Python/triangle_mesh.py` doesn't define them.
+  Generated code runs with the I❤️MESH Python runtime, `iheartla/mesh/Python/triangle_mesh.py`,
+  as it does in H❤️rtDown.
 - `gen_parser.py`: regenerate `src/grammar/` from the TatSu grammars.

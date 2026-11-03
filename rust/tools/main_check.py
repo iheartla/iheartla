@@ -3,7 +3,7 @@ in Python, C++ and Octave, and report which fail.
 
 usage: python rust/tools/main_check.py [numpy] [eigen] [matlab]   (default: all three)
 
-NumPy runs with the I❤️MESH runtime shim on the path; C++ is compiled with
+NumPy runs with the I❤️MESH runtime (iheartla/mesh/Python) on the path; C++ is compiled with
 clang++ against Eigen 3.4, LBFGSpp and the I❤️MESH C++ runtime; MATLAB runs in
 octave-cli. A program the Rust compiler rejects is skipped.
 """
@@ -33,7 +33,7 @@ def run(backend, src, k, cwd):
     if backend == 'numpy':
         path = os.path.join(TMP, 'prog{}.py'.format(k))
         open(path, 'w').write(code)
-        env = dict(os.environ, PYTHONPATH=os.path.join(HERE, 'mesh_runtime'))
+        env = dict(os.environ, PYTHONPATH=os.path.join(HERE, '..', '..', 'iheartla', 'mesh', 'Python'))
         r = subprocess.run([sys.executable, path], capture_output=True, text=True, env=env, timeout=120)
     elif backend == 'eigen':
         path = os.path.join(TMP, 'prog{}.cpp'.format(k))

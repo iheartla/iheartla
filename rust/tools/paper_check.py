@@ -34,7 +34,7 @@ EIGEN = os.environ.get('EIGEN_PATH', os.path.join(ROOT, 'test', 'third_party', '
 AUTODIFF = os.environ.get('AUTODIFF_PATH', '/opt/homebrew/include')
 EXAMPLES = ['geodesic_distance', 'point_cloud', 'mesh_parameterization', 'mesh_deformation']
 TMP = tempfile.mkdtemp()
-sys.path.insert(0, os.path.join(HERE, 'mesh_runtime'))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'iheartla', 'mesh', 'Python'))
 warnings.filterwarnings('ignore')
 
 

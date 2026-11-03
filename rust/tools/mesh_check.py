@@ -5,8 +5,8 @@ usage: python rust/tools/mesh_check.py [program.ila|Module.hlang ...]
   (default: rust/corpus/mesh/*.ila and the iheartla/mesh/*.hlang modules
    for triangle meshes)
 
-For each program: both NumPy outputs are imported (with the runtime shim in
-rust/tools/mesh_runtime), instantiated with a small closed triangle mesh
+For each program: both NumPy outputs are imported (with the I❤️MESH runtime,
+iheartla/mesh/Python), instantiated with a small closed triangle mesh
 (plus a random per-vertex ℝ³ field for sequence parameters), and compared:
 every attribute, and every method (of the program and of its nested module
 instances) called with every combination of element indices and a point in ℝ³. A call that
@@ -25,11 +25,11 @@ import numpy as np
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(os.path.dirname(HERE))
-sys.path.insert(0, os.path.join(HERE, 'mesh_runtime'))
+sys.path.insert(0, os.path.join(HERE, '..', '..', 'iheartla', 'mesh', 'Python'))
 sys.path.insert(1, os.environ.get('IHEARTLA_PYTHON_ROOT', ROOT))
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
 
-import triangle_mesh  # noqa: E402  (the shim)
+import triangle_mesh  # noqa: E402  (the I❤️MESH runtime)
 from iheartla.la_parser.parser import compile_la_content  # noqa: E402
 from iheartla.la_tools.la_helper import ParserTypeEnum  # noqa: E402
 
