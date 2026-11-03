@@ -11,7 +11,15 @@ cargo build --release                       # → target/release/iheartla
 target/release/iheartla compile --backend numpy < program.la   # or eigen, matlab, latex, mathjax, macromathjax
 target/release/iheartla compile --backend numpy --main < program.la   # also generateRandomData() and main()
 target/release/iheartla parse [--init|--full] < program.la     # parse tree as JSON
+target/release/iheartla heartdown --name context < program.la  # what H❤️rtDown needs, as JSON
 ```
+
+H❤️rtDown compiles with this compiler: `src/heartdown.rs` gives it each output in
+parts, each equation's MathJax and MacroMathJax, and the equation data (symbols,
+types, descriptions, the symbols each definition relates) that the Python
+compiler's `compile_la_content(..., get_json=True)` gave it.
+`iheartla/rust_heartdown.py` runs the WebAssembly module and returns the same
+objects as that function.
 
 ## Status
 
