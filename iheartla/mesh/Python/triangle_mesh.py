@@ -113,8 +113,8 @@ class TriangleMesh:
             value_list.append(-1)
             index_list.append((self.E[i, 1], i))
             value_list.append(1)
-        self.bm1 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(len(self.V), self.E.shape[0]), dtype=int)
-        self.pos_bm1 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(len(self.V), self.E.shape[0]), dtype=int)
+        self.bm1 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(len(self.V), self.E.shape[0]), dtype=int).tocsr()
+        self.pos_bm1 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(len(self.V), self.E.shape[0]), dtype=int).tocsr()
 
 
     def build_boundary_mat2(self):
@@ -130,8 +130,8 @@ class TriangleMesh:
             idx, sign = self.get_edge_index(self.F[i, 1], self.F[i, 2])
             index_list.append((idx, i))
             value_list.append(sign)
-        self.bm2 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(self.E.shape[0], self.F.shape[0]), dtype=int)
-        self.pos_bm2 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(self.E.shape[0], self.F.shape[0]), dtype=int)
+        self.bm2 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(self.E.shape[0], self.F.shape[0]), dtype=int).tocsr()
+        self.pos_bm2 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(self.E.shape[0], self.F.shape[0]), dtype=int).tocsr()
 
 
     def build_boundary_mat3(self):
@@ -150,8 +150,8 @@ class TriangleMesh:
             idx, sign = self.get_face_index(self.T[i, 1], self.T[i, 2], self.T[i, 3])
             index_list.append((idx, i))
             value_list.append(sign)
-        self.bm3 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(self.F.shape[0], self.T.shape[0]), dtype=int)
-        self.pos_bm3 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(self.F.shape[0], self.T.shape[0]), dtype=int)
+        self.bm3 = scipy.sparse.coo_matrix((value_list, np.asarray(index_list).T), shape=(self.F.shape[0], self.T.shape[0]), dtype=int).tocsr()
+        self.pos_bm3 = scipy.sparse.coo_matrix(([abs(v) for v in value_list], np.asarray(index_list).T), shape=(self.F.shape[0], self.T.shape[0]), dtype=int).tocsr()
 
     def n_vertices(self):
         return len(self.Vi)
