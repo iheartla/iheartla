@@ -151,8 +151,11 @@ fn equation(prog: &Program, tree: &Val) -> Value {
             dim_names(t, &mut symbols);
         }
         for st in &f.body {
-            if let Stmt::Assign(a) = st {
-                symbols.push(a.lhs.clone());
+            match st {
+                Stmt::Assign(a) => symbols.push(a.lhs.clone()),
+                // `j, k = NeighborVerticesInFace(f, i)`
+                Stmt::Multi { lhs, .. } => symbols.extend(lhs.iter().map(|(n, _)| n.clone())),
+                Stmt::Func(_) => {}
             }
         }
         symbols.retain(|s| !ftypes.contains_key(s));
