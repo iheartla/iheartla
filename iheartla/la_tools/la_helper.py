@@ -3,11 +3,9 @@ import copy
 import os
 import time
 from enum import Enum, Flag
-import tatsu
 import sys
 from textwrap import dedent
 import keyword
-from sympy import *
 import regex as re
 from pathlib import Path
 from .la_logger import *
@@ -82,6 +80,13 @@ def is_keyword(name, parser_type=ParserTypeEnumDefaults):
         return is_keyword(name, parser_type=ParserTypeEnum.NUMPY) or is_keyword(name, parser_type=ParserTypeEnum.EIGEN)
 
 
+def sympify(*args, **kwargs):
+    # SymPy and TatSu are imported where the Python compiler uses them, so that code that only needs this
+    # module's helpers (H❤️rtDown with the Rust compiler) doesn't load them
+    from sympy import sympify
+    return sympify(*args, **kwargs)
+
+
 def is_same_expr(lhs, rhs):
     return sympify('{} == {}'.format(lhs, rhs))
 
@@ -125,6 +130,7 @@ def simpify_dims(dims):
 def is_new_tatsu_version():
     # tatsu._version.__version__ is not the package version in TatSu 5.14 ('1.14.0'),
     # and versions must be compared numerically ('5.14' < '5.9' as strings)
+    import tatsu
     return int(tatsu.__version__.split('.')[0]) >= 5
 
 

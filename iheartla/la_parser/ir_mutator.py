@@ -1,5 +1,6 @@
 import copy
 import sympy
+from sympy import Wild
 from .ir_visitor import *
 from .ir_iterator import *
 from ..la_tools.la_msg import *

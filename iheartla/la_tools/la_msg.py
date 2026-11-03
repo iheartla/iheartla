@@ -1,5 +1,5 @@
 from enum import Enum
-from tatsu.util import re
+import regex as re  # (re-exported, as TatSu's was: iheartla makes TatSu use regex)
 from .la_helper import is_new_tatsu_version
 
 
