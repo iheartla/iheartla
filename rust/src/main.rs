@@ -186,6 +186,23 @@ fn main() {
                 }
             }
         }
+        Some("heartdown") => {
+            // iheartla heartdown [--name heartlib] [--backends numpy,eigen,matlab,mathjax,macromathjax] < source
+            let mut text = String::new();
+            std::io::stdin().read_to_string(&mut text).unwrap();
+            let opt = |flag: &str, default: &str| -> String {
+                args.iter().position(|a| a == flag).and_then(|i| args.get(i + 1)).cloned().unwrap_or(default.into())
+            };
+            let name = opt("--name", "heartlib");
+            let backends = opt("--backends", "numpy,eigen,matlab,mathjax,macromathjax");
+            let backends: Vec<&str> = backends.split(',').collect();
+            let dir = std::env::current_dir().map(|d| vec![d]).unwrap_or_default();
+            let v = iheartla::heartdown::compile(&text, &name, &backends, &iheartla::modules::Loader::new(dir));
+            println!("{v}");
+            if v.get("error").is_some() {
+                std::process::exit(1)
+            }
+        }
         _ => usage(),
     }
 }

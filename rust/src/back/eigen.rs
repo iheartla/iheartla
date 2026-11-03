@@ -83,8 +83,14 @@ template<typename S, typename T> auto to(const T & x) {\n\
 #endif\n";
 
 pub fn generate(prog: &Program, struct_name: &str) -> String {
+    let (include, body) = generate_parts(prog, struct_name);
+    format!("/*\n{}\n*/\n{include}{body}", prog.source.replace("*/", "* /"))
+}
+
+/// The includes (and helpers) and the struct (H❤️rtDown puts several
+/// programs' structs in one header).
+pub fn generate_parts(prog: &Program, struct_name: &str) -> (String, String) {
     let mut out = String::new();
-    out.push_str(&format!("/*\n{}\n*/\n", prog.source.replace("*/", "* /")));
     out.push_str(HEADER);
     let mut kinds = Vec::new();
     mesh_kinds(prog, &mut kinds);
@@ -106,8 +112,7 @@ pub fn generate(prog: &Program, struct_name: &str) -> String {
         // (header-only: https://github.com/yixuan/LBFGSpp)
         out.push_str("#include <LBFGS.h>\n#include <LBFGSB.h>\n\n");
     }
-    out.push_str(&body);
-    out
+    (out, body)
 }
 
 /// The mesh kinds a program and the modules it imports use.

@@ -11,6 +11,7 @@ pub mod check;
 pub mod decls;
 pub mod dims;
 pub mod grammar;
+pub mod heartdown;
 pub mod helper;
 pub mod modules;
 pub mod peg;
@@ -47,6 +48,7 @@ fn parse_error_message(src: &str, e: &peg::ParseError) -> String {
     let pos = source.char_of_byte(e.pos);
     let li = source.line_info(pos);
     let rule = e.stack.iter().find_map(|r| rule_description(r)).unwrap_or("None");
+    helper::LA_MSG.with(|m| *m.borrow_mut() = (format!("Failed to parse {rule}"), li.text.clone()));
     let mut text = li.text.clone();
     if !text.ends_with('\n') {
         text.push('\n');

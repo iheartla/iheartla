@@ -12,8 +12,14 @@ use crate::ty::*;
 use std::collections::{HashMap, HashSet};
 
 pub fn generate(prog: &Program, class_name: &str) -> String {
+    let (include, class) = generate_parts(prog, class_name);
+    format!("\"\"\"\n{}\n\"\"\"\n{include}{class}", prog.source)
+}
+
+/// The imports and the class (H❤️rtDown puts several programs' classes in one
+/// file).
+pub fn generate_parts(prog: &Program, class_name: &str) -> (String, String) {
     let mut out = String::new();
-    out.push_str(&format!("\"\"\"\n{}\n\"\"\"\n", prog.source));
     // (derivatives with autograd, which differentiates through Python control flow)
     let np = if prog.derivatives { "import autograd.numpy as np\nimport autograd\n" } else { "import numpy as np\n" };
     out.push_str(np);
@@ -32,8 +38,7 @@ pub fn generate(prog: &Program, class_name: &str) -> String {
         // autograd differentiates np.array, not np.asarray
         code = code.replace("np.asarray(", "np.array(");
     }
-    out.push_str(&code);
-    out
+    (out, code)
 }
 
 /// Whether a program or a module it imports uses meshes.

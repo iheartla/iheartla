@@ -13,6 +13,9 @@
 //!   `crate::generate` for the backends), and returns a buffer of JSON:
 //!   `{"outputs": {backend: code}}` in the request's order, or `{"error":
 //!   message}`. The caller frees the request and the result.
+//! - `ih_heartdown_json(ptr, len)` likewise compiles a H❤️rtDown context,
+//!   `{"source": str, "name": str, "backends": [str]}`, to what H❤️rtDown
+//!   needs (see `crate::heartdown::compile`).
 //!
 //! The module imports one function, `iheartla.read_module(ptr, len)`: given
 //! a module name (UTF-8, `len` bytes at `ptr`), the host returns a buffer
@@ -40,9 +43,28 @@ pub extern "C" fn ih_free(ptr: *mut u8, n: usize) {
 
 #[no_mangle]
 pub extern "C" fn ih_compile_json(ptr: *const u8, len: usize) -> *mut u8 {
+    respond(ptr, len, compile)
+}
+
+/// H❤️rtDown's compile of a context (`crate::heartdown::compile`): the
+/// request is `{"source": str, "name": str, "backends": [str]}`.
+#[no_mangle]
+pub extern "C" fn ih_heartdown_json(ptr: *const u8, len: usize) -> *mut u8 {
+    respond(ptr, len, |request| {
+        let Some(src) = request["source"].as_str() else {
+            return json!({ "error": "Invalid request: no source" });
+        };
+        let name = request["name"].as_str().unwrap_or("heartlib");
+        let backends: Vec<&str> = request["backends"].as_array().into_iter().flatten().filter_map(|b| b.as_str()).collect();
+        crate::heartdown::compile(src, name, &backends, &crate::modules::Loader::with_host(host_module))
+    })
+}
+
+/// Answer the JSON request in the `len` bytes at `ptr` with `f`, in a buffer.
+fn respond(ptr: *const u8, len: usize, f: impl FnOnce(&Value) -> Value) -> *mut u8 {
     let request = unsafe { std::slice::from_raw_parts(ptr, len) };
     let response = match serde_json::from_slice(request) {
-        Ok(request) => compile(&request),
+        Ok(request) => f(&request),
         Err(e) => json!({ "error": format!("Invalid request: {e}") }),
     };
     let bytes = response.to_string().into_bytes();

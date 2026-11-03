@@ -101,6 +101,51 @@ const UNICODE_LATEX: &[(&str, &str)] = &[
 ];
 
 pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
+    generate_named(prog, tree, flavor, "heartlib").0
+}
+
+/// The output, with MacroMathJax's click handlers naming the program `name`
+/// (H❤️rtDown's context), and each equation's output by its source text, in
+/// order (the Python compiler's `CodeFrame.expr_dict`; a later equation with
+/// the same text replaces an earlier one). H❤️rtDown shows each of its code
+/// blocks as the outputs of the equations in it.
+pub fn generate_named(prog: &Program, tree: &Val, flavor: Flavor, name: &str) -> (String, Vec<(String, String)>) {
+    let mut p = printer(prog, tree, flavor, name);
+    let body = p.start(tree);
+    let exprs = std::mem::take(&mut p.exprs);
+    let out = match flavor {
+        Flavor::Latex => {
+            let mut body = body;
+            for (k, v) in UNICODE_LATEX {
+                body = body.replace(k, v);
+            }
+            // (the Python compiler's preamble has a trailing space here; kept in
+            // code because editors strip trailing whitespace from the constant)
+            let pre = LATEX_PRE.replace("{!}\n", "{!} \n");
+            format!("{pre}{body}{LATEX_POST}")
+        }
+        Flavor::Mathjax | Flavor::MacroMathjax => format!("{MATHJAX_PRE}{body}{MATHJAX_POST}"),
+    };
+    (out, exprs)
+}
+
+/// The program symbols each parse node uses, as MacroMathJax lists them in an
+/// equation's click handler (without the defined symbol). With `true`, the
+/// node is in a local function, whose parameters count as symbols.
+pub fn node_symbols(prog: &Program, tree: &Val, nodes: &[(&Val, bool)]) -> Vec<Vec<String>> {
+    let mut p = printer(prog, tree, Flavor::MacroMathjax, "");
+    nodes
+        .iter()
+        .map(|(n, local)| {
+            p.local_symbols = *local;
+            let mut out = Vec::new();
+            p.symbols(n, &mut out);
+            out
+        })
+        .collect()
+}
+
+fn printer<'p>(prog: &'p Program, tree: &Val, flavor: Flavor, name: &str) -> Printer<'p> {
     // names declared in where blocks
     let mut declared = std::collections::HashSet::new();
     for b in tree.get("vblock").items().iter().filter(|b| b.class() == "ParamsBlock") {
@@ -146,7 +191,7 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
             }
         }
     }
-    let mut p = Printer {
+    Printer {
         prog,
         flavor,
         in_sum: false,
@@ -158,22 +203,16 @@ pub fn generate(prog: &Program, tree: &Val, flavor: Flavor) -> String {
         no_label: 0,
         defining: false,
         local_func_name: String::new(),
-    };
-    let body = p.start(tree);
-    match flavor {
-        Flavor::Latex => {
-            let mut body = body;
-            for (k, v) in UNICODE_LATEX {
-                body = body.replace(k, v);
-            }
-            // (the Python compiler's preamble has a trailing space here; kept in
-            // code because editors strip trailing whitespace from the constant)
-            let pre = LATEX_PRE.replace("{!}\n", "{!} \n");
-            format!("{pre}{body}{LATEX_POST}")
-        }
-        Flavor::Mathjax | Flavor::MacroMathjax => format!("{MATHJAX_PRE}{body}{MATHJAX_POST}"),
+        func: name.to_string(),
+        in_assign: 0,
+        local_symbols: false,
+        exprs: Vec::new(),
     }
 }
+
+/// What MathJax output goes before and after the equations (the Python
+/// compiler's `pre_str` and `post_str`).
+pub const MATHJAX_PRE_POST: (&str, &str) = (MATHJAX_PRE, MATHJAX_POST);
 
 /// A symbol for JavaScript in a click handler.
 fn js_content(s: &str) -> String {
@@ -280,6 +319,14 @@ struct Printer<'p> {
     defining: bool,
     /// the last local function printed (MacroMathJax)
     local_func_name: String,
+    /// the program's name in click handlers (MacroMathJax), for JavaScript
+    func: String,
+    /// > 0: inside an assignment (whose optimizations aren't equations of their own)
+    in_assign: usize,
+    /// listing the symbols of a local function's equation, which include its parameters
+    local_symbols: bool,
+    /// each equation's output by its source text (`generate_named`)
+    exprs: Vec<(String, String)>,
 }
 
 fn span(n: &Val) -> Option<(usize, usize)> {
@@ -313,7 +360,7 @@ impl<'p> Printer<'p> {
         if !self.macro_() || self.no_label > 0 {
             return content;
         }
-        let func = "heartlib";
+        let func = self.func.as_str();
         let use_type = if self.defining { "def" } else { "use" };
         let (local, lf) = if self.local_func {
             (self.local_params.contains(full), self.local_func_name.as_str())
@@ -380,6 +427,7 @@ impl<'p> Printer<'p> {
         };
         if let Some(name) = name {
             let known = self.defined(&name)
+                || (self.local_symbols && self.local_params.contains(&name))
                 || self.prog.funcs.iter().any(|(f, _)| *f == name)
                 || self.mesh_funcs.contains(&name)
                 || self.prog.modules.iter().any(|m| m.syms.iter().any(|(_, r)| *r == name));
@@ -409,15 +457,24 @@ impl<'p> Printer<'p> {
 
     /// MacroMathJax's click handler for an equation.
     fn eqlabel(&self, syms: &[String], tail: &str) -> String {
+        self.eqlabel_with(syms, tail, true)
+    }
+
+    /// `eqlabel`, for an equation that defines nothing (an optimization):
+    /// all its symbols sorted.
+    fn eqlabel_sorted(&self, syms: &[String], tail: &str) -> String {
+        self.eqlabel_with(syms, tail, false)
+    }
+
+    fn eqlabel_with(&self, syms: &[String], tail: &str, defines_last: bool) -> String {
         let list: Vec<String> = syms.iter().map(|x| format!("'{}'", js_content(x))).collect();
         // (the used symbols sorted, as the Python compiler lists them; the defined one last)
         let mut list = list;
-        if let Some(last) = list.pop() {
-            list.sort();
-            list.dedup();
-            list.push(last);
-        }
-        format!("\\\\\\eqlabel{{ {{\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', [{}], {tail});\"}} }}{{}}\n", list.join(", "))
+        let last = if defines_last { list.pop() } else { None };
+        list.sort();
+        list.dedup();
+        list.extend(last);
+        format!("\\\\\\eqlabel{{ {{\"onclick\":\"event.stopPropagation(); onClickEq(this, '{}', [{}], {tail});\"}} }}{{}}\n", self.func, list.join(", "))
     }
 
     // -- blocks --------------------------------------------------------------
@@ -629,7 +686,7 @@ impl<'p> Printer<'p> {
                 if self.macro_() && optimize_node(s).is_some() {
                     let mut syms = Vec::new();
                     self.symbols(s, &mut syms);
-                    return e + &self.eqlabel(&syms, &format!("false, [], [], '{}', false", b64(&self.src(s))));
+                    return e + &self.eqlabel_sorted(&syms, &format!("false, [], [], '{}', false", b64(&self.src(s))));
                 }
                 e
             }
@@ -660,6 +717,14 @@ impl<'p> Printer<'p> {
     }
 
     fn assignment(&mut self, s: &Val) -> String {
+        self.in_assign += 1;
+        let content = self.assignment_inner(s);
+        self.in_assign -= 1;
+        self.exprs.push((self.src(s), content.clone()));
+        content
+    }
+
+    fn assignment_inner(&mut self, s: &Val) -> String {
         let left = self.sides(s.get("left"));
         let right = self.sides(s.get("right"));
         self.defining = true;
@@ -748,6 +813,7 @@ impl<'p> Printer<'p> {
             name = format!("{name}_{{{}}}", sl.join(","));
         }
         let mut content = format!("{name}{def_params} & = {}", exprs.join(", "));
+        self.exprs.push((self.src(s), content.clone()));
         if !extras.is_empty() {
             content += "\\\\ & \\begin{aligned}[t]";
         }
@@ -795,6 +861,19 @@ impl<'p> Printer<'p> {
         let def_params = if s.get("def_p").truthy() { format!("\\left( {params_str} \\right)") } else { format!("\\left[ {params_str} \\right]") };
         let exprs: Vec<String> = self.sides(s.get("expr")).iter().map(|e| self.expr(e)).collect();
         let mut content = format!("{name}{def_params} & = {}", exprs.join(", "));
+        // (its equation, without the where block, with a click handler naming
+        // the function and all its parameters)
+        let param_names = local_func_params(s);
+        let mut syms = Vec::new();
+        self.local_symbols = true;
+        self.symbols(s.get("expr"), &mut syms);
+        self.local_symbols = false;
+        syms.extend(param_names.iter().cloned());
+        syms.push(main.clone());
+        let plist: Vec<String> = param_names.iter().map(|p| format!("'{}'", js_content(p))).collect();
+        let tail = format!("true, '{}', [{}], '{}'", self.local_func_name, plist.join(", "), b64(&self.src(s)));
+        let entry = content.clone() + &self.eqlabel(&syms, &tail);
+        self.exprs.push((self.src(s), entry));
         let defs = s.get("defs").items().to_vec();
         if !defs.is_empty() {
             let pars: Vec<String> = defs.iter().map(|d| self.where_condition(d)).collect();
@@ -1398,8 +1477,29 @@ impl<'p> Printer<'p> {
             content += &cs.join("\\\\\n & ");
             content += "\n";
         }
-        content + "\\end{aligned}"
+        let content = content + "\\end{aligned}";
+        if self.in_assign == 0 {
+            let mut entry = content.clone();
+            if self.macro_() {
+                let mut syms = Vec::new();
+                self.symbols(n, &mut syms);
+                entry += &self.eqlabel_sorted(&syms, &format!("false, [], [], '{}', false", b64(&self.src(n))));
+            }
+            self.exprs.push((self.src(n), entry));
+        }
+        content
     }
+}
+
+/// A local function's parameters: its name's subscripts (Ω_f(𝐩)), then the
+/// parameters in parentheses.
+pub fn local_func_params(s: &Val) -> Vec<String> {
+    let subs = if s.get("name").class() == "IdentifierSubscript" {
+        s.get("name").get("right").items().iter().filter(|x| x.class() == "IdentifierAlone").cloned().collect()
+    } else {
+        s.get("subs").items().to_vec()
+    };
+    subs.iter().chain(s.get("params").items()).map(ident_name).collect()
 }
 
 fn digits(s: &str, f: fn(char) -> Option<i64>) -> String {

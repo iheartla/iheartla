@@ -76,6 +76,7 @@ pub struct Checker<'a> {
     loader: Option<Rc<crate::modules::Loader>>,
     meshes: Vec<(String, MeshKind)>,
     modules: Vec<ModuleUse>,
+    opt_vars: IndexMap<String, Ty>,
 }
 
 impl<'a> Checker<'a> {
@@ -103,6 +104,7 @@ impl<'a> Checker<'a> {
             loader: None,
             meshes: Vec::new(),
             modules: Vec::new(),
+            opt_vars: IndexMap::new(),
         }
     }
 
@@ -274,6 +276,7 @@ impl<'a> Checker<'a> {
             meshes: self.meshes,
             modules: self.modules,
             funcs: self.overloads.into_iter().collect(),
+            opt_vars: self.opt_vars.into_iter().collect(),
         })
     }
 
@@ -1614,6 +1617,7 @@ impl<'a> Checker<'a> {
         for d in n.get("defs").items() {
             for (name, t) in self.where_condition(d, false)? {
                 scope.insert(name.clone(), Sym::Local(t.clone()));
+                self.opt_vars.entry(name.clone()).or_insert_with(|| t.clone());
                 vars.push((name, t));
             }
         }

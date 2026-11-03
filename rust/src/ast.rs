@@ -37,6 +37,8 @@ pub struct Program {
     /// every function (local, parameter or imported) by name: the type and
     /// implementation name of each overload
     pub funcs: Vec<(String, Vec<(Ty, String)>)>,
+    /// the variables of every optimization (`min_(U ∈ ℝ^(n×3))`), with types
+    pub opt_vars: Vec<(String, Ty)>,
 }
 
 /// A module imported by a program: compiled separately, instantiated with

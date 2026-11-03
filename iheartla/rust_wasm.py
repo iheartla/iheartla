@@ -23,41 +23,86 @@ class Compiler:
     """The WebAssembly module, finding modules that aren't builtin in `module_dir`."""
 
     def __init__(self):
-        import wasmtime
-        self.store = wasmtime.Store()
         self.module_dir = Path(".")
-        i32 = wasmtime.ValType.i32()
-        read_module = wasmtime.Func(self.store, wasmtime.FuncType([i32, i32], [i32]), self._read_module)
-        self.exports = wasmtime.Instance(self.store, wasmtime.Module.from_file(self.store.engine, str(WASM)), [read_module]).exports(self.store)
-        self.memory = self.exports["memory"]
+        # In Pyodide, the browser runs the module; elsewhere, wasmtime
+        self.host = PyodideHost(self._read_module) if sys.platform == "emscripten" else WasmtimeHost(self._read_module)
 
     def _put(self, data):
         """`data` in a buffer allocated in the module: its address."""
-        ptr = self.exports["ih_alloc"](self.store, len(data))
-        self.memory.write(self.store, data, ptr)
+        ptr = self.host.call("ih_alloc", len(data))
+        self.host.write(ptr, data)
         return ptr
 
     def _read_module(self, ptr, length):
         # as the Python compiler searches (la_parser/parser.py, get_compiled_module)
-        name = bytes(self.memory.read(self.store, ptr, ptr + length)).decode()
+        name = self.host.read(ptr, length).decode()
         for path in (self.module_dir / (name + ".hlang"), self.module_dir / (name + ".ihla")):
             if path.is_file():
                 src = path.read_bytes()
                 return self._put(struct.pack("<I", len(src)) + src)
         return 0
 
+    def request(self, export, request):
+        """The module's JSON response to the JSON `request` (a dict) by `export` (see rust/src/wasm.rs)."""
+        data = json.dumps(request).encode()
+        ptr = self._put(data)
+        result = self.host.call(export, ptr, len(data))
+        self.host.call("ih_free", ptr, len(data))
+        (length,) = struct.unpack("<I", self.host.read(result, 4))
+        response = json.loads(self.host.read(result + 4, length))
+        self.host.call("ih_free", result, length + 4)
+        return response
+
     def compile(self, source, backends, name, main):
         """{backend: code}, or raises ValueError with the compiler's message."""
-        request = json.dumps({"source": source, "backends": backends, "name": name, "main": main}).encode()
-        ptr = self._put(request)
-        result = self.exports["ih_compile_json"](self.store, ptr, len(request))
-        self.exports["ih_free"](self.store, ptr, len(request))
-        (length,) = struct.unpack("<I", bytes(self.memory.read(self.store, result, result + 4)))
-        response = json.loads(bytes(self.memory.read(self.store, result + 4, result + 4 + length)))
-        self.exports["ih_free"](self.store, result, length + 4)
+        response = self.request("ih_compile_json", {"source": source, "backends": backends, "name": name, "main": main})
         if "error" in response:
             raise ValueError(response["error"])
         return response["outputs"]
+
+
+class WasmtimeHost:
+    """The module, run by wasmtime. `read_module` is its import, iheartla.read_module."""
+
+    def __init__(self, read_module):
+        import wasmtime
+        self.store = wasmtime.Store()
+        i32 = wasmtime.ValType.i32()
+        read_module = wasmtime.Func(self.store, wasmtime.FuncType([i32, i32], [i32]), read_module)
+        self.exports = wasmtime.Instance(self.store, wasmtime.Module.from_file(self.store.engine, str(WASM)), [read_module]).exports(self.store)
+        self.memory = self.exports["memory"]
+
+    def call(self, export, *args):
+        return self.exports[export](self.store, *args)
+
+    def read(self, ptr, length):
+        return bytes(self.memory.read(self.store, ptr, ptr + length))
+
+    def write(self, ptr, data):
+        self.memory.write(self.store, data, ptr)
+
+
+class PyodideHost:
+    """The module, run by the browser's WebAssembly, from Pyodide (which has no wasmtime)."""
+
+    def __init__(self, read_module):
+        import js
+        from pyodide.ffi import create_proxy, to_js
+        self.js = js
+        self.read_module = create_proxy(read_module)  # (kept alive as long as the module)
+        imports = to_js({"iheartla": {"read_module": self.read_module}}, dict_converter=js.Object.fromEntries)
+        module = js.WebAssembly.Module.new(to_js(WASM.read_bytes()))
+        self.exports = js.WebAssembly.Instance.new(module, imports).exports
+
+    def call(self, export, *args):
+        return getattr(self.exports, export)(*args)
+
+    def read(self, ptr, length):
+        # (a new view each time: the memory's buffer changes when it grows)
+        return self.js.Uint8Array.new(self.exports.memory.buffer, ptr, length).to_bytes()
+
+    def write(self, ptr, data):
+        self.js.Uint8Array.new(self.exports.memory.buffer, ptr, len(data)).assign(data)
 
 
 def main():
