@@ -222,3 +222,28 @@ class TestGrouping(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_power_nan_inf(self):
+        # a NumPy power: inf on overflow, nan for a negative base and a fractional
+        # exponent (not Python's OverflowError, or a complex number)
+        la_str = """y = a^b
+        z = a²
+        where
+        a: scalar
+        b: scalar"""
+        func_info = self.gen_func_info(la_str)
+        with np.errstate(all='ignore'):
+            r = func_info.numpy_func(-8.0, 1/3)
+            self.assertTrue(np.isnan(r.y))
+            r = func_info.numpy_func(1e200, 2.0)
+            self.assertBitwise(r.y, np.inf)
+            self.assertBitwise(r.z, np.inf)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    auto r = {}(-8.0, 1.0/3);".format(func_info.eig_func_name),
+                     "    auto o = {}(1e200, 2.0);".format(func_info.eig_func_name),
+                     "    return std::isnan(r.y) && std::isinf(o.y) && std::isinf(o.z);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

@@ -63,4 +63,14 @@ mod tests {
         let h = "y = A ∘ (B ∘ C)\nwhere\nA,B,C ∈ ℝ^(2×2)\n";
         assert_eq!(line(h, "matlab"), "A.*(B.*C)");
     }
+
+    /// NumPy scalar powers use np.power (nan, not a complex number, for a negative
+    /// base and a fractional exponent; inf, not OverflowError, on overflow), as the
+    /// Python compiler does; integer powers keep `**`.
+    #[test]
+    fn numpy_scalar_power() {
+        assert_eq!(line(&scalars("a^b"), "numpy"), "np.power(a,b)");
+        assert_eq!(line(&scalars("(a + b)^(c - d)"), "numpy"), "np.power((a+b),(c-d))");
+        assert_eq!(line("y = i^2\nwhere\ni ∈ ℤ\n", "numpy"), "i**2");
+    }
 }

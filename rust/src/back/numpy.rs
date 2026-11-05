@@ -652,8 +652,14 @@ impl<'p> Gen<'p> {
                     format!("sparse.linalg.matrix_power({}, {})", self.expr(a), self.expr(b))
                 } else if a.ty.is_matrix() {
                     format!("np.linalg.matrix_power({}, {})", self.expr(a), self.expr(b))
-                } else {
+                } else if a.ty.is_int() && b.ty.is_int() {
+                    // (np.power rejects negative integer exponents; Python's ** gives a float)
                     format!("{}**{}", self.paren(a), self.paren(b))
+                } else {
+                    // np.power, as the Python compiler: Python's float ** overflows with an
+                    // exception rather than to inf, and gives a complex number for a negative
+                    // base and a fractional exponent where NumPy gives nan
+                    format!("np.power({}, {})", self.expr(a), self.expr(b))
                 }
             }
             Transpose(a) => {
