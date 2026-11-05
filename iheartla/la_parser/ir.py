@@ -1583,3 +1583,8 @@ def is_derivative_node(node):
         if factor.op and (factor.op.is_node(IRNodeType.Gradient) or factor.op.is_node(IRNodeType.Derivative) or factor.op.is_node(IRNodeType.Partial)):
             return True
     return False
+
+def assign_op_tex(node):
+    """An assignment's operator as written (`=` or `+=`), in LaTeX. A first `x += e` compiles as
+    `x = e` but still prints as written."""
+    return '\\mathrel{+}=' if getattr(node, 'source_op', node.op) == '+=' else '='

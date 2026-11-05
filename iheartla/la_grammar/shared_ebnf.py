@@ -56,7 +56,8 @@ valid_block
 
 params_block::ParamsBlock
     = 
-    {annotation:(WHERE | GIVEN ) {separator_with_space}+} conds:where_conditions
+    # `where` may end its line, or be followed by the first condition on the same line
+    {annotation:(WHERE | GIVEN ) ({separator_with_space}+ | {hspace}+)} conds:where_conditions
     ;
 
 builtin_operators
