@@ -3971,7 +3971,8 @@ class TypeWalker(NodeWalker):
                         new_symbol = self.filter_symbol(id0)
                         if not self.visiting_solver_eq:
                             self.check_sym_existence(new_symbol, get_err_msg_info(id0_info.ir.parse_info,
-                                                                                             "Symbol {} is not defined".format(id0)))
+                                                                                             "Symbol {} is not defined".format(id0) + (
+                                                                                                 " (the constant e is imported with: e from trigonometry)" if id0 == 'e' else '')))
                             # pass  # todo:delete
                     else:
                         # I
