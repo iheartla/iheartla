@@ -6321,7 +6321,16 @@ class grammarinitParser(Parser):
 
     @tatsumasu('ImportVar')
     def _import_var_(self):  # noqa
-        self._multi_str_()
+        with self._group():
+            with self._choice():
+                with self._option():
+                    self._multi_str_()
+                with self._option():
+                    self._import_constant_()
+                self._error(
+                    'expecting one of: '
+                    '<import_constant> <multi_str>'
+                )
         self.name_last_node('name')
 
         def block1():
@@ -6345,6 +6354,18 @@ class grammarinitParser(Parser):
 
         self._define(
             ['name', 'r'],
+            []
+        )
+
+    @tatsumasu('IdentifierAlone')
+    def _import_constant_(self):  # noqa
+        self._pattern('e')
+        self.name_last_node('value')
+        with self._ifnot():
+            self._pattern('[A-Za-z0-9_\\p{L}]')
+
+        self._define(
+            ['value'],
             []
         )
 
@@ -6660,9 +6681,22 @@ class grammarinitParser(Parser):
                     )
             self.name_last_node('annotation')
 
-            def block3():
-                self._separator_with_space_()
-            self._positive_closure(block3)
+            with self._group():
+                with self._choice():
+                    with self._option():
+
+                        def block3():
+                            self._separator_with_space_()
+                        self._positive_closure(block3)
+                    with self._option():
+
+                        def block4():
+                            self._hspace_()
+                        self._positive_closure(block4)
+                    self._error(
+                        'expecting one of: '
+                        '<hspace> <separator_with_space>'
+                    )
 
             self._define(
                 ['annotation'],

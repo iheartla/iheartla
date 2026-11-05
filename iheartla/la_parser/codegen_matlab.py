@@ -1176,13 +1176,10 @@ class CodeGenMatlab(CodeGen):
         elif op_type == '+=':
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
-            pre_list.append(
-                "    {} = scipy.sparse.coo_matrix(({}+{}.data.tolist(), np.hstack((np.asarray({}).T, np.asarray(({}.row, {}.col))))), shape=({}, {}))\n".format(cur_m_id, value_var, cur_m_id,
-                                                                                                    index_var, cur_m_id, cur_m_id,
-                                                                                                    self.get_sym_type(
-                                                                                                        cur_m_id).rows,
-                                                                                                    self.get_sym_type(
-                                                                                                        cur_m_id).cols))
+            # accumulate onto the matrix defined before (this was NumPy code)
+            lhs_id = node.get_ancestor(IRNodeType.Assignment).left[0].get_main_id()
+            pre_list.append("    {} = {} + sparse({}(1,:),{}(2,:),{},{},{});\n".format(cur_m_id, lhs_id, index_var, index_var, value_var,
+                                                          self.get_sym_type(cur_m_id).rows, self.get_sym_type(cur_m_id).cols))
 
         return CodeNodeInfo(cur_m_id, pre_list)
 
@@ -1695,24 +1692,32 @@ class CodeGenMatlab(CodeGen):
                         if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
                             if left_subs[0] == left_subs[1]:  # L_ii
                                 content = ""
-                                if self.get_sym_type(sequence).diagonal:
-                                    # add definition
-                                    content += "    {} = zeros(2,0);\n".format(self.get_sym_type(sequence).index_var)
-                                    content += "    {} = zeros(1,0);\n".format(self.get_sym_type(sequence).value_var)
-                                content += "    for {} = 1:{}\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                                la_type = self.get_sym_type(sequence)
+                                # on a matrix defined before, L_ii = e replaces the diagonal and L_ii += e adds to
+                                # it, so the new diagonal is collected apart (sparse() sums duplicate entries)
+                                defined_before = not la_type.diagonal
+                                if defined_before:
+                                    index_var = self.generate_var_name("{}diag".format(sequence))
+                                    value_var = self.generate_var_name("{}diagvals".format(sequence))
+                                else:
+                                    index_var, value_var = la_type.index_var, la_type.value_var
+                                content += "    {} = zeros(2,0);\n".format(index_var)
+                                content += "    {} = zeros(1,0);\n".format(value_var)
+                                content += "    for {} = 1:{}\n".format(left_subs[0], la_type.rows)
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "    ")
                                 # https://www.mathworks.com/matlabcentral/answers/392985-why-does-is-take-o-n-2-to-append-elements-in-matlab-when-it-takes-o-n-amortized-time-in-theory#comment_1520858
-                                content += "        {}(1:2,end+1) = [{};{}];\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
-                                content += "        {}(end+1) = {};\n".format(self.get_sym_type(sequence).value_var, right_info.content)
+                                content += "        {}(1:2,end+1) = [{};{}];\n".format(index_var, left_subs[0], left_subs[0])
+                                content += "        {}(end+1) = {};\n".format(value_var, right_info.content)
                                 content += "    end\n"
-                                content += "    {} = sparse({}(1,:),{}(2,:),{},{},{});\n".format(
-                                    sequence,
-                                    self.get_sym_type(sequence).index_var,
-                                    self.get_sym_type(sequence).index_var,
-                                    self.get_sym_type(sequence).value_var,
-                                    self.get_sym_type( sequence).rows,
-                                    self.get_sym_type( sequence).cols)
+                                new = "sparse({}(1,:),{}(2,:),{},{},{})".format(index_var, index_var, value_var, la_type.rows, la_type.cols)
+                                if not defined_before:
+                                    content += "    {} = {};\n".format(sequence, new)
+                                elif node.op == '+=':
+                                    content += "    {} = {} + {};\n".format(sequence, sequence, new)
+                                else:
+                                    content += "    {} = {} - spdiags(diag({}), 0, {}, {}) + {};\n".format(
+                                        sequence, sequence, sequence, la_type.rows, la_type.cols, new)
                             else:  # L_ij
                                 if right_info.pre_list:
                                     content += "".join(right_info.pre_list)
@@ -1923,6 +1928,18 @@ class CodeGenMatlab(CodeGen):
 
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
+
+    def visit_size(self, node, **kwargs):
+        # #x, as in the NumPy and Eigen backends. A sequence is an array whose first dimension
+        # indexes its elements, and a set has one element per row. iheartla#142
+        param_info = self.visit(node.param, **kwargs)
+        x = param_info.content
+        la_type = node.param.la_type
+        if la_type.is_vector() or la_type.is_set() or (la_type.is_sequence() and la_type.element_type.is_scalar()):
+            content = 'size({}, 1)'.format(x)
+        else:
+            content = 'size({})'.format(x)
+        return CodeNodeInfo(content, pre_list=param_info.pre_list)
 
     def visit_partial(self, node, **kwargs):
         return CodeNodeInfo("")

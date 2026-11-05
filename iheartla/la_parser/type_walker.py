@@ -108,6 +108,7 @@ class TypeWalker(NodeWalker):
         self.sum_conds = []
         self.la_content = ''
         self.lhs_sub_dict = {}  # dict of the same subscript symbol from rhs as the subscript of lhs
+        self.declared_accumulation_types = {}  # x ∈ type under `where`, defined by its first x += e
         self.hessian_list = []  # save hessian definitions, try to check them in the end
         self.hessian_sum_list = []  # summation for evaluating sparse hessian
         self.visiting_lhs = False
@@ -258,6 +259,7 @@ class TypeWalker(NodeWalker):
 
     def reset_state(self, la_content=''):
         self.symtable.clear()
+        self.declared_accumulation_types.clear()
         self.parameters.clear()
         self.name_cnt_dict.clear()
         self.hessian_list.clear()
@@ -1992,6 +1994,7 @@ class TypeWalker(NodeWalker):
         if hasattr(node, 'lexpr') and node.lexpr:
             return self.get_eq_node_info(node, **kwargs)
         assign_node = AssignNode([], [], op=node.op, parse_info=node.parseinfo, raw_text=node.text)
+        assign_node.source_op = node.op   # as written, for LaTeX; op may become '=' below
         if type(node.right[0]).__name__ == 'MultiCondExpr':
             self.assert_expr(len(node.right) == 1, get_err_msg_info(node.right[0].parseinfo, "Invalid multiple rhs"))
             self.assert_expr(len(node.left) == 1, get_err_msg_info(node.left[0].parseinfo, "Invalid multiple lhs"))
@@ -2010,11 +2013,14 @@ class TypeWalker(NodeWalker):
             assign_node.left.append(id0_info.ir)
             self.visiting_lhs = False
             id0 = id0_info.content
+            op = self.first_accumulation(node.op, id0, id0_info)
+            if op != node.op:
+                assign_node.op = op
             if SET_RET_SYMBOL in kwargs:
                 if self.is_main_scope():
                     self.ret_symbol = self.get_main_id(id0)
             kwargs[LHS] = id0
-            kwargs[ASSIGN_OP] = node.op
+            kwargs[ASSIGN_OP] = op
             known_subscript = True   # whether subscripts are already defined
             if id0_info.ir.contain_subscript():
                 left_ids = self.get_all_ids(id0)
@@ -2112,7 +2118,7 @@ class TypeWalker(NodeWalker):
                 if '*' in left_subs:
                     self.assert_expr(right_type.is_vector(), get_err_msg_info(node.parseinfo, "RHS must be vector type"))
                 # self.assert_expr('*' not in left_subs, get_err_msg_info(node.parseinfo, "LHS can't have * as subscript"))
-                if node.op != '=':
+                if op != '=':
                     self.assert_expr(self.is_sym_existed(sequence), get_err_msg_info(id0_info.ir.parse_info,
                                                                            "{} hasn't been defined".format(sequence)))
                 else:
@@ -2250,7 +2256,7 @@ class TypeWalker(NodeWalker):
                     self.lhs_sub_dict.clear()
             else:
                 # without subscripts
-                if node.op != '=':
+                if op != '=':
                     self.assert_expr(self.is_sym_existed(id0), get_err_msg_info(id0_info.ir.parse_info, "{} hasn't been defined".format(id0)))
                 else:
                     if self.is_sym_existed(id0):
@@ -2258,6 +2264,10 @@ class TypeWalker(NodeWalker):
                         if id0 in self.parameters:
                             err_msg = "{} is a parameter, can not be assigned".format(id0)
                         self.assert_expr(False, get_err_msg_info(id0_info.ir.parse_info, err_msg))
+                    declared = self.declared_accumulation_types.pop(id0, None)
+                    if declared is not None:
+                        self.assert_expr(declared.is_same_type(right_type), get_err_msg_info(id0_info.ir.parse_info, "{} is declared with a different type".format(id0)))
+                        right_type = declared
                     self.get_cur_param_data().symtable[id0] = right_type
             assign_node.symbols = assign_node.symbols.union(right_info.symbols)
             self.expr_dict[id0_info.ir.get_main_id()] = list(right_info.symbols) + [id0_info.ir.get_main_id()]
@@ -2267,6 +2277,24 @@ class TypeWalker(NodeWalker):
         self.visiting_solver_eq = False
         self.visiting_der = False
         return NodeInfo(None, ir=assign_node, symbols=assign_node.symbols)
+
+    def first_accumulation(self, op, id0, id0_info):
+        """`x += e` where nothing defines x yet accumulates onto zero, so it defines x as `x = e` does
+        (iheartla#131, #144). If x is declared under `where`, it is then not a parameter, as a sparse
+        matrix defined by statements isn't; the declared type is kept for a subscripted x (it gives the
+        dimensions) and checked against the right-hand side for an x without subscripts."""
+        if op != '+=':
+            return op
+        main_id = self.get_main_id(id0)
+        if self.is_sym_existed(main_id) and main_id not in self.parameters:
+            return op   # accumulate onto the earlier definition
+        if main_id in self.parameters:
+            self.parameters.remove(main_id)
+            self.get_cur_param_data().remove_target_from_dim_dict(main_id)
+            if not id0_info.ir.contain_subscript():
+                self.declared_accumulation_types[main_id] = self.get_cur_param_data().symtable[main_id]
+                del self.get_cur_param_data().symtable[main_id]
+        return '='
 
     def walk_GeneralAssignment(self, node, **kwargs):
         if len(node.right) > 1:
@@ -2741,7 +2769,8 @@ class TypeWalker(NodeWalker):
                 ret_type = TupleType(type_list=[ScalarType(is_int=True), ScalarType(is_int=True), ScalarType(is_int=True)])
         ir_node = SizeNode(param=i_info.ir)
         ir_node.la_type = ret_type
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        # (#a depends on a: H❤️rtDown and the dependency graph see it)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=i_info.symbols)
     
     def walk_Derivative(self, node, **kwargs):
         self.visiting_der = True
@@ -3795,7 +3824,8 @@ class TypeWalker(NodeWalker):
                         new_symbol = self.filter_symbol(id0)
                         if not self.visiting_solver_eq:
                             self.check_sym_existence(new_symbol, get_err_msg_info(id0_info.ir.parse_info,
-                                                                                             "Symbol {} is not defined".format(id0)))
+                                                                                             "Symbol {} is not defined".format(id0) + (
+                                                                                                 " (the constant e is imported with: e from trigonometry)" if id0 == 'e' else '')))
                             # pass  # todo:delete
                     else:
                         # I
@@ -4943,10 +4973,38 @@ class TypeWalker(NodeWalker):
         elif node.sub:
             node_info = self.walk(node.sub, **kwargs)
             ir_node.sub = node_info.ir
+        elif node.size:
+            node_info = self.size_dim_info(node.size)
+            ir_node.id = node_info.ir
         #
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info
+
+    def size_dim_info(self, node):
+        """#a in a dimension (x ∈ ℝ^(#a)) is the name of a's size, as if it were written: n for
+        a ∈ ℝ^n, the length a sequence a_i or a set gets. iheartla#142"""
+        name = node.i.text
+        err = get_err_msg_info(node.parseinfo, "#{} in a dimension needs a vector, sequence or set declared before it".format(name))
+        dim = None
+        if self.is_sym_existed(name):
+            la_type = self.get_sym_type(name)
+            if la_type.is_vector():
+                dim = la_type.rows
+            elif la_type.is_sequence():
+                dim = la_type.size
+            elif la_type.is_set() and la_type.length:
+                dim = la_type.length
+        self.assert_expr(dim is not None, err)
+        if dim is None:
+            dim = 1   # (the first walk doesn't stop at errors)
+        # the code uses the size's name (dim), and LaTeX shows #a as written
+        ir = SizeNode(param=self.walk(node.i).ir, la_type=ScalarType(is_int=True), parse_info=node.parseinfo, raw_text=node.text)
+        if isinstance(dim, int):
+            return NodeInfo(ir.la_type, dim, set(), ir)
+        if dim not in self.dependency_dim_dict:
+            self.dependency_dim_dict[dim] = node.parseinfo
+        return NodeInfo(ir.la_type, dim, {dim}, ir)
 
     ###################################################################
     def get_sum_value(self, dim_list):

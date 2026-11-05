@@ -380,11 +380,12 @@ class CodeGenLatex(CodeGen):
             #     content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
             # else:
             #     content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+            op = assign_op_tex(node)
             if self.visiting_sum:
                 # assignment in sum
-                content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+                content = ','.join(lhs_list) + " {} ".format(op) + ','.join(rhs_list)
             else:
-                content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
+                content = ','.join(lhs_list) + " & {} ".format(op) + ','.join(rhs_list)
         self.code_frame.expr += content +'\n'
         self.code_frame.expr_dict[node.raw_text] = content
         return content

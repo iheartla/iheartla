@@ -1763,23 +1763,39 @@ class CodeGenNumpy(CodeGen):
                         if self.get_sym_type(sequence).is_matrix() and self.get_sym_type(sequence).sparse:
                             if left_subs[0] == left_subs[1]:  # L_ii
                                 content = ""
-                                if self.get_sym_type(sequence).diagonal:
-                                    # add definition
-                                    if sequence not in self.declared_symbols:
-                                        content += "    {} = []\n".format(self.get_sym_type(sequence).index_var)
-                                        content += "    {} = []\n".format(self.get_sym_type(sequence).value_var)
-                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.int_dim(self.get_sym_type(sequence).rows))
+                                la_type = self.get_sym_type(sequence)
+                                # a matrix defined by L_ii alone collects its entries in its own lists; on a matrix
+                                # defined before, L_ii = e replaces the diagonal and L_ii += e adds to it, so the
+                                # new diagonal is collected apart and merged in (COO sums duplicate entries)
+                                defined_before = sequence in self.declared_symbols and not la_type.diagonal
+                                if defined_before:
+                                    index_var = self.generate_var_name("{}diag".format(sequence))
+                                    value_var = self.generate_var_name("{}diagvals".format(sequence))
+                                else:
+                                    index_var, value_var = la_type.index_var, la_type.value_var
+                                if defined_before or sequence not in self.declared_symbols:
+                                    content += "    {} = []\n".format(index_var)
+                                    content += "    {} = []\n".format(value_var)
+                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.int_dim(la_type.rows))
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "    ")
-                                content += "        {}.append(({} - 1, {} - 1))\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
-                                content += "        {}.append({})\n".format(self.get_sym_type(sequence).value_var, right_info.content)
-                                content += "    self.{} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(sequence,
-                                                                                                                    self.get_sym_type(sequence).value_var,
-                                                                                                                    self.get_sym_type(sequence).index_var,
-                                                                                                                    self.get_sym_type(
-                                                                                                                        sequence).rows,
-                                                                                                                    self.get_sym_type(
-                                                                                                                        sequence).cols)
+                                content += "        {}.append(({} - 1, {} - 1))\n".format(index_var, left_subs[0], left_subs[0])
+                                content += "        {}.append({})\n".format(value_var, right_info.content)
+                                if defined_before:
+                                    old = self.generate_var_name("old")
+                                    keep = self.generate_var_name("keep")
+                                    content += "    {} = self.{}.tocoo()\n".format(old, sequence)
+                                    if node.op == '+=':
+                                        content += "    {} = np.ones({}.nnz, dtype=bool)\n".format(keep, old)
+                                    else:
+                                        content += "    {} = {}.row != {}.col\n".format(keep, old, old)
+                                    content += "    {} = np.asarray({}, dtype=int).reshape(-1, 2)\n".format(index_var, index_var)
+                                    content += ("    self.{} = scipy.sparse.coo_matrix((np.concatenate(({}.data[{}], {})), "
+                                                "(np.concatenate(({}.row[{}], {}[:, 0])), np.concatenate(({}.col[{}], {}[:, 1])))), shape=({}, {}))\n").format(
+                                        sequence, old, keep, value_var, old, keep, index_var, old, keep, index_var, la_type.rows, la_type.cols)
+                                else:
+                                    content += "    self.{} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(
+                                        sequence, value_var, index_var, la_type.rows, la_type.cols)
                             else:  # L_ij
                                 if right_info.pre_list:
                                     content += "".join(right_info.pre_list)
@@ -2009,6 +2025,26 @@ class CodeGenNumpy(CodeGen):
 
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
+
+    def visit_size(self, node, **kwargs):
+        # #x: a vector's length, a set's size, a matrix's (rows, cols), a sequence's length (and its
+        # elements' dimensions), as the Eigen backend gives them. iheartla#142
+        param_info = self.visit(node.param, **kwargs)
+        x = param_info.content
+        la_type = node.param.la_type
+        if la_type.is_vector():
+            content = '{}.shape[0]'.format(x)
+        elif la_type.is_set():
+            content = 'len({})'.format(x)
+        elif la_type.is_matrix():
+            content = '{}.shape'.format(x)
+        elif la_type.element_type.is_scalar():
+            content = 'len({})'.format(x)
+        elif la_type.element_type.is_vector():
+            content = '(len({0}), {0}[0].shape[0])'.format(x)
+        else:
+            content = '(len({0}), {0}[0].shape[0], {0}[0].shape[1])'.format(x)
+        return CodeNodeInfo(content, pre_list=param_info.pre_list)
 
     def det_func(self):
         return 'np.linalg.det' if self.has_derivative else 'scipy.linalg.det'
