@@ -36,6 +36,13 @@ class CodeGenNumpy(CodeGen):
             check_list = ['    assert {} == int({})'.format(dims, dims) for dims in self.get_cur_param_data().arith_dim_list]
         return check_list
 
+    def int_dim(self, dim):
+        # A dimension with a division (x ∈ ℝ^(n/2)) is exact division: the parameter checks assert
+        # that n/2 == int(n/2). Python's n/2 is a float, which NumPy refuses as a size: use int(n/2).
+        if isinstance(dim, str) and '/' in dim:
+            return 'int({})'.format(dim)
+        return dim
+
     def get_set_checking_str(self):
         check_list = []
         if len(self.get_cur_param_data().set_checking) > 0:
@@ -778,13 +785,13 @@ class CodeGenNumpy(CodeGen):
         exp_str = exp_info.content
         assign_id_type = self.get_sym_type(assign_id)
         if assign_id_type.is_matrix():
-            content.append("{} = np.zeros(({}, {}))\n".format(assign_id, assign_id_type.rows, assign_id_type.cols))
+            content.append("{} = np.zeros(({}, {}))\n".format(assign_id, self.int_dim(assign_id_type.rows), self.int_dim(assign_id_type.cols)))
         elif assign_id_type.is_vector():
-            content.append("{} = np.zeros(({}, ))\n".format(assign_id, assign_id_type.rows))
+            content.append("{} = np.zeros(({}, ))\n".format(assign_id, self.int_dim(assign_id_type.rows)))
             # content.append("{} = np.zeros(({}, 1))\n".format(assign_id, self.get_sym_type(assign_id).rows))
         elif assign_id_type.is_sequence():
             ele_type = assign_id_type.element_type
-            content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, assign_id_type.size, ele_type.rows, ele_type.cols))
+            content.append("{} = np.zeros(({}, {}, {}))\n".format(assign_id, assign_id_type.size, self.int_dim(ele_type.rows), self.int_dim(ele_type.cols)))
         else:
             content.append("{} = 0\n".format(assign_id))
         if node.enum_list:
@@ -1118,7 +1125,7 @@ class CodeGenNumpy(CodeGen):
     def visit_transpose(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)
         if node.f.la_type.is_vector():
-            f_info.content = "{}.T.reshape(1, {})".format(f_info.content, node.f.la_type.rows)
+            f_info.content = "{}.T.reshape(1, {})".format(f_info.content, self.int_dim(node.f.la_type.rows))
         else:
             f_info.content = "{}.T".format(f_info.content)
         return f_info
@@ -1126,7 +1133,7 @@ class CodeGenNumpy(CodeGen):
     def visit_pseudoinverse(self, node, **kwargs):
         f_info = self.visit(node.f, **kwargs)
         if node.f.la_type.is_vector():
-            f_info.content = "{}.T.reshape(1, {}) / ({}.dot({})) ".format(f_info.content, node.f.la_type.rows)
+            f_info.content = "{}.T.reshape(1, {}) / ({}.dot({})) ".format(f_info.content, self.int_dim(node.f.la_type.rows))
         else:
             f_info.content = "np.linalg.pinv({})".format(f_info.content)
         return f_info
@@ -1170,7 +1177,7 @@ class CodeGenNumpy(CodeGen):
         base_info = self.visit(node.base, **kwargs)
         if node.t:
             if node.base.la_type.is_vector():
-                base_info.content = "{}.T.reshape(1, {})".format(base_info.content, node.base.la_type.rows)
+                base_info.content = "{}.T.reshape(1, {})".format(base_info.content, self.int_dim(node.base.la_type.rows))
             else:
                 base_info.content = "{}.T".format(base_info.content)
         elif node.r:
@@ -1247,8 +1254,8 @@ class CodeGenNumpy(CodeGen):
         pre_list += if_info.content
         # assignment
         if op_type == '=':
-            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.get_sym_type(cur_m_id).rows,
-                                                          self.get_sym_type(cur_m_id).cols))
+            pre_list.append("    {} = scipy.sparse.coo_matrix(({}, np.asarray({}).T), shape=({}, {}))\n".format(cur_m_id, value_var, index_var, self.int_dim(self.get_sym_type(cur_m_id).rows),
+                                                          self.int_dim(self.get_sym_type(cur_m_id).cols)))
         elif op_type == '+=':
             # left_ids = self.get_all_ids(lhs)
             # left_subs = left_ids[1]
@@ -1272,8 +1279,8 @@ class CodeGenNumpy(CodeGen):
             assign_node = node.get_ancestor(IRNodeType.Assignment)
             sparse_node = node.get_ancestor(IRNodeType.SparseMatrix)
             subs = assign_node.left[0].subs
-            ret = ["    for {} in range(1, {}+1):\n".format(subs[0], sparse_node.la_type.rows),
-                   "        for {} in range(1, {}+1):\n".format(subs[1], sparse_node.la_type.cols)]
+            ret = ["    for {} in range(1, {}+1):\n".format(subs[0], self.int_dim(sparse_node.la_type.rows)),
+                   "        for {} in range(1, {}+1):\n".format(subs[1], self.int_dim(sparse_node.la_type.cols))]
             pre_list = []
             if node.in_cond_only:
                 ret = []
@@ -1414,7 +1421,7 @@ class CodeGenNumpy(CodeGen):
 
     def visit_to_matrix(self, node, **kwargs):
         node_info = self.visit(node.item, **kwargs)
-        node_info.content = "({}).reshape({}, 1)".format(node_info.content, node.item.la_type.rows)
+        node_info.content = "({}).reshape({}, 1)".format(node_info.content, self.int_dim(node.item.la_type.rows))
         return node_info
 
     def visit_matrix(self, node, **kwargs):
@@ -1449,19 +1456,19 @@ class CodeGenNumpy(CodeGen):
                             elif 'I' in ret[i][j] and 'I' not in self.symtable:
                                 # todo: assert in type checker
                                 assert dims[0] == dims[1], "I must be square matrix"
-                                ret[i][j] = ret[i][j].replace('I', 'np.identity({})'.format(dims[0]))
+                                ret[i][j] = ret[i][j].replace('I', 'np.identity({})'.format(self.int_dim(dims[0])))
                                 continue
                             else:
                                 func_name = ret[i][j] + ' * np.ones'
                             if dims[1] == 1:
                                 # vector
-                                ret[i][j] = '{}(({}, 1))'.format(func_name, dims[0])
+                                ret[i][j] = '{}(({}, 1))'.format(func_name, self.int_dim(dims[0]))
                             else:
-                                ret[i][j] = '{}(({}, {}))'.format(func_name, dims[0], dims[1])
+                                ret[i][j] = '{}(({}, {}))'.format(func_name, self.int_dim(dims[0]), self.int_dim(dims[1]))
                 for j in range(len(ret[i])):
                     # vector type needs to be reshaped as matrix inside block matrix
                     if node.la_type.item_types and node.la_type.item_types[i][j].la_type.is_vector():
-                        ret[i][j] = '({}).reshape({}, 1)'.format(ret[i][j], node.la_type.item_types[i][j].la_type.rows)
+                        ret[i][j] = '({}).reshape({}, 1)'.format(ret[i][j], self.int_dim(node.la_type.item_types[i][j].la_type.rows))
                     # scipy sparse stacking no longer accepts bare scalars as blocks
                     elif self.get_sym_type(cur_m_id).sparse and node.la_type.item_types and node.la_type.item_types[i][j].la_type.is_scalar():
                         ret[i][j] = '[[{}]]'.format(ret[i][j])
@@ -1494,8 +1501,8 @@ class CodeGenNumpy(CodeGen):
                     content += '{} = np.vstack(({}))\n'.format(cur_m_id, ', '.join(ret))
         else:
             # dense
-            content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.get_sym_type(cur_m_id).rows,
-                                                          self.get_sym_type(cur_m_id).cols)
+            content += '{} = np.zeros(({}, {}))\n'.format(cur_m_id, self.int_dim(self.get_sym_type(cur_m_id).rows),
+                                                          self.int_dim(self.get_sym_type(cur_m_id).cols))
             for i in range(len(ret)):
                 content += "    {}[{}] = [{}]\n".format(cur_m_id, i, ', '.join(ret[i]))
         #####################
@@ -1761,7 +1768,7 @@ class CodeGenNumpy(CodeGen):
                                     if sequence not in self.declared_symbols:
                                         content += "    {} = []\n".format(self.get_sym_type(sequence).index_var)
                                         content += "    {} = []\n".format(self.get_sym_type(sequence).value_var)
-                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                                content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.int_dim(self.get_sym_type(sequence).rows))
                                 if right_info.pre_list:
                                     content += self.update_prelist_str(right_info.pre_list, "    ")
                                 content += "        {}.append(({} - 1, {} - 1))\n".format(self.get_sym_type(sequence).index_var, left_subs[0], left_subs[0])
@@ -1782,7 +1789,7 @@ class CodeGenNumpy(CodeGen):
                         elif left_subs[0] == left_subs[1]:
                             # L_ii
                             content = ""
-                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.int_dim(self.get_sym_type(sequence).rows))
                             if right_info.pre_list:
                                 content += self.update_prelist_str(right_info.pre_list, "    ")
                             content += "        self.{}[{}-1][{}-1] = {}".format(sequence, left_subs[0], left_subs[0], right_info.content)
@@ -1800,10 +1807,10 @@ class CodeGenNumpy(CodeGen):
                             else:
                                 right_exp += "    {}[{}-1][{}-1] = {}".format(target, left_subs[0], left_subs[1], right_info.content)
                             # sizes: from what the subscript ranges over when the type has none (m_i,* = d_i)
-                            row_size = self.get_sym_type(sequence).rows
+                            row_size = self.int_dim(self.get_sym_type(sequence).rows)
                             if self.get_sym_type(sequence).is_dynamic_row() and left_subs[0] != '*':
                                 row_size = self.get_assign_dim_str(node, left_subs[0]) or row_size
-                            col_size = self.get_sym_type(sequence).cols
+                            col_size = self.int_dim(self.get_sym_type(sequence).cols)
                             if self.get_sym_type(sequence).is_dynamic_col() and left_subs[1] != '*':
                                 col_size = self.get_assign_dim_str(node, left_subs[1]) or col_size
                             if self.get_sym_type(sequence).is_matrix():
@@ -1841,9 +1848,9 @@ class CodeGenNumpy(CodeGen):
                         ele_type = self.get_sym_type(sequence).element_type
                         if self.get_sym_type(sequence).is_sequence():
                             if ele_type.is_matrix():
-                                content += "    self.{} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows, ele_type.cols)
+                                content += "    self.{} = np.zeros(({}, {}, {}))\n".format(sequence, self.get_sym_type(sequence).size, self.int_dim(ele_type.rows), self.int_dim(ele_type.cols))
                             elif ele_type.is_vector():
-                                content += "    self.{} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
+                                content += "    self.{} = np.zeros(({}, {}, ))\n".format(sequence, self.get_sym_type(sequence).size, self.int_dim(ele_type.rows))
                                 # content += "    {} = np.zeros(({}, {}, 1))\n".format(sequence, self.get_sym_type(sequence).size, ele_type.rows)
                             elif ele_type.is_function():
                                 content += "    self.{} = np.zeros({}, dtype=object)\n".format(sequence, self.get_sym_type(sequence).size)
@@ -1852,8 +1859,8 @@ class CodeGenNumpy(CodeGen):
                             content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).size)
                         else:
                             # vector
-                            content += "    self.{} = np.zeros({})\n".format(sequence, self.get_sym_type(sequence).rows)
-                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.get_sym_type(sequence).rows)
+                            content += "    self.{} = np.zeros({})\n".format(sequence, self.int_dim(self.get_sym_type(sequence).rows))
+                            content += "    for {} in range(1, {}+1):\n".format(left_subs[0], self.int_dim(self.get_sym_type(sequence).rows))
                         if right_info.pre_list:
                             content += self.update_prelist_str(right_info.pre_list, "    ")
                         content += "    " + right_exp
@@ -2080,15 +2087,15 @@ class CodeGenNumpy(CodeGen):
                 cur_len = add_syms(cur_len, 1)
             elif cur_la_type.is_vector():
                 pack_str = id_info.content
-                unpack_str = "{}[{}:{}]".format(param_name, cur_len, add_syms(cur_len, cur_la_type.rows))
-                cur_len = add_syms(cur_len, cur_la_type.rows)
-                init_str = 'np.zeros({})'.format(cur_la_type.rows)
+                unpack_str = "{}[{}:{}]".format(param_name, cur_len, add_syms(cur_len, self.int_dim(cur_la_type.rows)))
+                cur_len = add_syms(cur_len, self.int_dim(cur_la_type.rows))
+                init_str = 'np.zeros({})'.format(self.int_dim(cur_la_type.rows))
             elif cur_la_type.is_matrix():
                 pack_str = "np.reshape({}, -1)".format(id_info.content)
-                unpack_str = "{}[{}:{}].reshape({}, {})".format(param_name, cur_len, add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols)),
-                                                                cur_la_type.rows, cur_la_type.cols)
-                cur_len = add_syms(cur_len, mul_syms(cur_la_type.rows, cur_la_type.cols))
-                init_str = 'np.zeros(({}, {}))'.format(cur_la_type.rows, cur_la_type.cols)
+                unpack_str = "{}[{}:{}].reshape({}, {})".format(param_name, cur_len, add_syms(cur_len, mul_syms(self.int_dim(cur_la_type.rows), self.int_dim(cur_la_type.cols))),
+                                                                self.int_dim(cur_la_type.rows), self.int_dim(cur_la_type.cols))
+                cur_len = add_syms(cur_len, mul_syms(self.int_dim(cur_la_type.rows), self.int_dim(cur_la_type.cols)))
+                init_str = 'np.zeros(({}, {}))'.format(self.int_dim(cur_la_type.rows), self.int_dim(cur_la_type.cols))
             if id_info.content in node.init_syms:
                 init_str = id_info.content
             pack_list.append(pack_str)

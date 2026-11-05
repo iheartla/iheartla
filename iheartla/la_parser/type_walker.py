@@ -3567,6 +3567,7 @@ class TypeWalker(NodeWalker):
         left_info = self.walk(node.left, **kwargs)
         self.assert_expr(not self.is_param_block, get_err_msg_info(node.parseinfo, "Can only show up on the rhs"))
         content_symbol = {}
+        node_info = None
         if self.is_sym_existed(left_info.content):
             if self.get_sym_type(left_info.content).is_sequence():
                 la_type = self.get_sym_type(left_info.content).element_type
@@ -3664,6 +3665,14 @@ class TypeWalker(NodeWalker):
                 ir_node.la_type = self.get_sym_type(left_info.content).element_type
                 node_info = NodeInfo(self.get_sym_type(left_info.content).element_type, content_symbol, {node.text},
                                      ir_node)
+        if node_info is not None:
+            # A subscript expression must be an integer. Division is real division (also of
+            # integers), so v_(i/2) is an error rather than a silently truncated (C++) or failing
+            # (NumPy) index.
+            for index in [getattr(node_info.ir, attr, None) for attr in ['main_index', 'row_index', 'col_index']]:
+                if index is not None and index.la_type is not None and index.la_type.is_scalar():
+                    self.assert_expr(index.la_type.is_integer_element(), get_err_msg_info(index.parse_info,
+                        "Subscript {} must be an integer, but it is real (division gives a real number, also of integers)".format(index.raw_text)))
         return node_info
 
     def walk_IdentifierSubscript(self, node, **kwargs):
@@ -5477,11 +5486,21 @@ class TypeWalker(NodeWalker):
             self.assert_expr(left_type.is_scalar() or left_type.is_vector() or left_type.is_matrix(), get_err_msg())
             self.assert_expr(right_type.is_scalar(), get_err_msg())
             self.assert_expr(not left_type.index_type and not right_type.index_type, get_err_msg())
+            # Division is real division: 7/2 is 3.5, and its type is real even when both operands
+            # are integers (every backend divides as reals; C++ casts the divisor to double).
             ret_type = copy.deepcopy(left_type)
             if left_type.is_scalar():
-                ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+                ret_type.is_int = False
             else:
-                ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+                ret_type.element_type.is_int = False
+                if left_type.is_integer_element():
+                    # an integer vector or matrix divided by a scalar: convert it to real first
+                    # (Eigen can't divide an int matrix by a double)
+                    new_node = ToDoubleValueNode(parse_info=left_info.ir.parse_info, item=left_info.ir)
+                    new_node.la_type = copy.deepcopy(left_type)
+                    new_node.la_type.element_type.is_int = False
+                    left_info.ir = new_node
+                    return ret_type, need_cast
         elif op == TypeInferenceEnum.INF_MATRIX_ROW:
             # assert left_type.var_type == right_type.var_type
             ret_type = copy.deepcopy(left_type)
