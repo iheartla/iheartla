@@ -11,6 +11,7 @@
 //! values in MATLAB (the Python compiler's MATLAB convention and its tests).
 
 use super::names::{convert_unicode, Kind};
+use super::arith_dims;
 use crate::ast::*;
 use crate::dims::Dim;
 use crate::ty::*;
@@ -173,6 +174,10 @@ impl<'p> Gen<'p> {
                 Scalar(_) => self.line(format!("assert( numel({n}) == 1 );")),
                 _ => {}
             }
+        }
+        // a division in a dimension must be exact (as in the Python compiler)
+        for c in arith_dims(prog, |d| self.dim(d)) {
+            self.line(format!("assert( mod({c}, 1) == 0.0 );"));
         }
         if !prog.params.is_empty() {
             self.line("");

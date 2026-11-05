@@ -9,6 +9,7 @@
 //! `std::vector`s, functions `std::function`s.
 
 use super::names::{convert_unicode, has_special_symbol, Kind};
+use super::arith_dims;
 use crate::ast::*;
 use crate::dims::Dim;
 use crate::ty::*;
@@ -457,6 +458,11 @@ impl<'p> Gen<'p> {
                 }
                 _ => {}
             }
+        }
+        // a division in a dimension must be exact (as in the Python compiler); checked with
+        // real division, since C++'s n/2 of an int n truncates
+        for c in arith_dims(prog, |d| self.dim(d)) {
+            self.line(format!("assert( fmod({}, 1) == 0.0 );", c.replace('/', "/(double)")));
         }
     }
 

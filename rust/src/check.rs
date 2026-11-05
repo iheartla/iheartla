@@ -1187,6 +1187,14 @@ impl<'a> Checker<'a> {
                 continue;
             }
             let e = self.index_expr(node)?;
+            if id.get("exp").truthy() && e.ty.is_scalar() && !e.ty.is_int() {
+                // a subscript expression must be an integer; division is real division (as in
+                // the Python compiler: v_(i/2) is an error, not a truncated index)
+                return self.err(node, format!(
+                    "Subscript {} must be an integer, but it is real (division gives a real number, also of integers)",
+                    self.text(node)
+                ));
+            }
             // infer the extent of a subscript variable from this axis
             if let ExprKind::Var(v) = &*e.kind {
                 let mut extent = axis_extent(&bty, axis);

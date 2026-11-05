@@ -6,6 +6,7 @@
 //! This is the interface of the Python compiler's NumPy output.
 
 use super::names::{convert_unicode, has_special_symbol, Kind};
+use super::arith_dims;
 use crate::ast::*;
 use crate::dims::Dim;
 use crate::ty::*;
@@ -177,7 +178,19 @@ impl<'p> Gen<'p> {
         format!("self.{id}")
     }
 
+    /// A dimension as an int. A division in a dimension (x ∈ ℝ^(n/2)) is exact: the
+    /// parameter checks assert that n/2 == int(n/2) (see `dim_exact`), and Python's n/2 is a
+    /// float, which NumPy refuses as a size, so the size is int(n/2).
     fn dim(&self, d: &Dim) -> String {
+        let t = self.dim_exact(d);
+        if matches!(d, Dim::Sym(_) | Dim::Str(_)) && t.contains('/') {
+            format!("int({t})")
+        } else {
+            t
+        }
+    }
+
+    fn dim_exact(&self, d: &Dim) -> String {
         match d {
             Dim::Str(s) if s.starts_with("@size:") => format!("len({})", self.name(&s["@size:".len()..])),
             Dim::Str(s) if s.starts_with("@len:") => {
@@ -264,6 +277,10 @@ impl<'p> Gen<'p> {
         }
         for c in checks {
             self.line(c);
+        }
+        // a division in a dimension must be exact (as in the Python compiler)
+        for c in arith_dims(prog, |d| self.dim_exact(d)) {
+            self.line(format!("assert {c} == int({c})"));
         }
         // parameters and dimensions are also attributes (methods use them)
         for p in &prog.params {
