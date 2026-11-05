@@ -5082,10 +5082,38 @@ class TypeWalker(NodeWalker):
         elif node.sub:
             node_info = self.walk(node.sub, **kwargs)
             ir_node.sub = node_info.ir
+        elif node.size:
+            node_info = self.size_dim_info(node.size)
+            ir_node.id = node_info.ir
         #
         ir_node.la_type = node_info.la_type
         node_info.ir = ir_node
         return node_info
+
+    def size_dim_info(self, node):
+        """#a in a dimension (x ∈ ℝ^(#a)) is the name of a's size, as if it were written: n for
+        a ∈ ℝ^n, the length a sequence a_i or a set gets. iheartla#142"""
+        name = node.i.text
+        err = get_err_msg_info(node.parseinfo, "#{} in a dimension needs a vector, sequence or set declared before it".format(name))
+        dim = None
+        if self.is_sym_existed(name):
+            la_type = self.get_sym_type(name)
+            if la_type.is_vector():
+                dim = la_type.rows
+            elif la_type.is_sequence():
+                dim = la_type.size
+            elif la_type.is_set() and la_type.length:
+                dim = la_type.length
+        self.assert_expr(dim is not None, err)
+        if dim is None:
+            dim = 1   # (the first walk doesn't stop at errors)
+        # the code uses the size's name (dim), and LaTeX shows #a as written
+        ir = SizeNode(param=self.walk(node.i).ir, la_type=ScalarType(is_int=True), parse_info=node.parseinfo, raw_text=node.text)
+        if isinstance(dim, int):
+            return NodeInfo(ir.la_type, dim, set(), ir)
+        if dim not in self.dependency_dim_dict:
+            self.dependency_dim_dict[dim] = node.parseinfo
+        return NodeInfo(ir.la_type, dim, {dim}, ir)
 
     ###################################################################
     def get_sum_value(self, dim_list):
