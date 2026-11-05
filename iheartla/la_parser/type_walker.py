@@ -2917,7 +2917,8 @@ class TypeWalker(NodeWalker):
                 ret_type = TupleType(type_list=[ScalarType(is_int=True), ScalarType(is_int=True), ScalarType(is_int=True)])
         ir_node = SizeNode(param=i_info.ir)
         ir_node.la_type = ret_type
-        return NodeInfo(ir_node.la_type, ir=ir_node)
+        # (#a depends on a: H❤️rtDown and the dependency graph see it)
+        return NodeInfo(ir_node.la_type, ir=ir_node, symbols=i_info.symbols)
     
     def walk_Derivative(self, node, **kwargs):
         self.visiting_der = True
