@@ -52,7 +52,8 @@ class CodeGenEigen(CodeGen):
     def get_arith_dim_check_str(self):
         check_list = []
         if len(self.get_cur_param_data().arith_dim_list) > 0:
-            check_list = ['    assert( fmod({}, 1) == 0.0 );'.format(dims) for dims in
+            # (with real division: C++'s n/2 of an int n truncates, so fmod(n/2, 1) was always 0)
+            check_list = ['    assert( fmod({}, 1) == 0.0 );'.format(dims.replace('/', '/(double)')) for dims in
                           self.get_cur_param_data().arith_dim_list]
         return check_list
 
@@ -1511,7 +1512,8 @@ class CodeGenEigen(CodeGen):
             base_info.content = "{}.transpose()".format(base_info.content)
         elif node.r:
             if node.la_type.is_scalar():
-                base_info.content = "1 / ({})".format(base_info.content)
+                # real division: i^(-1) of an integer i is real (C++'s 1 / (2) is 0)
+                base_info.content = "1.0 / ({})".format(base_info.content)
             else:
                 if node.base.la_type.is_matrix() and node.base.la_type.sparse:
                     solver_name = self.generate_var_name("solver")

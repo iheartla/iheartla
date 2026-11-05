@@ -968,11 +968,12 @@ def get_derived_type(op, left_type, right_type):
                 ret_type = copy.deepcopy(left_type)
                 ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
     elif op == TypeInferenceEnum.INF_DIV:
+        # division is real division, also of integers (7/2 is 3.5)
         ret_type = copy.deepcopy(left_type)
         if left_type.is_scalar():
-            ret_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            ret_type.is_int = False
         else:
-            ret_type.element_type.is_int = left_type.is_integer_element() and right_type.is_integer_element()
+            ret_type.element_type.is_int = False
     elif op == TypeInferenceEnum.INF_MATRIX_ROW:
         # assert left_type.var_type == right_type.var_type
         ret_type = copy.deepcopy(left_type)
