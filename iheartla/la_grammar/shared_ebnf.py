@@ -19,7 +19,7 @@ import_var::ImportVar
 # a keyword, which multi_str excludes, so the import itself needs it by name
 import_constant::IdentifierAlone
     =
-    value:/e(?![A-Za-z0-9_\p{L}])/
+    value:/e/ !/[A-Za-z0-9_\p{L}]/
     ;
 
 where_conditions::WhereConditions

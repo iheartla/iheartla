@@ -6359,8 +6359,10 @@ class grammarinitParser(Parser):
 
     @tatsumasu('IdentifierAlone')
     def _import_constant_(self):  # noqa
-        self._pattern('e(?![A-Za-z0-9_\\p{L}])')
+        self._pattern('e')
         self.name_last_node('value')
+        with self._ifnot():
+            self._pattern('[A-Za-z0-9_\\p{L}]')
 
         self._define(
             ['value'],
