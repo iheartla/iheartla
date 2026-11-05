@@ -981,7 +981,11 @@ impl<'a> Checker<'a> {
                 }
                 Ok(v)
             }
-            "Subexpression" => self.expr(n.get("value")),
+            "Subexpression" => {
+                let mut e = self.expr(n.get("value"))?;
+                e.paren = true;
+                Ok(e)
+            }
             "Factor" => self.factor(n),
             "Add" | "Subtract" => self.add_sub(n),
             "Multiply" => self.multiply(n),
@@ -1106,7 +1110,11 @@ impl<'a> Checker<'a> {
         match kind {
             "id0" => self.identifier(&v),
             "num" => self.number(&v),
-            "sub" => self.expr(v.get("value")),
+            "sub" => {
+                let mut e = self.expr(v.get("value"))?;
+                e.paren = true;
+                Ok(e)
+            }
             "m" => self.block_matrix(&v),
             "v" => self.vector_literal(&v),
             "s" => self.set_literal(&v),
@@ -1945,7 +1953,11 @@ impl<'a> Checker<'a> {
     fn sub_factor(&mut self, n: &Val) -> R<Expr> {
         match n.class() {
             "IdentifierAlone" => self.identifier(n),
-            "Subexpression" => self.expr(n.get("value")),
+            "Subexpression" => {
+                let mut e = self.expr(n.get("value"))?;
+                e.paren = true;
+                Ok(e)
+            }
             "Pi" | "Infinity" | "E" => self.constant(n),
             _ => self.number(n),
         }

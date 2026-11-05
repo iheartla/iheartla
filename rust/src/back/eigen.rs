@@ -648,6 +648,9 @@ impl<'p> Gen<'p> {
     /// An operand that needs parentheses.
     fn paren(&mut self, e: &Expr) -> String {
         let s = self.expr(e);
+        if e.grouped() {
+            return s;
+        }
         match &*e.kind {
             ExprKind::Add(..) | ExprKind::Sub(..) | ExprKind::Neg(..) | ExprKind::Mul(..) | ExprKind::Div(..) => format!("({s})"),
             ExprKind::Int(v) if *v < 0 => format!("({s})"),
@@ -665,7 +668,19 @@ impl<'p> Gen<'p> {
         }
     }
 
+    /// An expression, in parentheses if the source wrote it in parentheses
+    /// (`Expr::grouped`): floating-point arithmetic isn't associative, so
+    /// `a + (b - c)` must not become `a + b - c`.
     fn expr(&mut self, e: &Expr) -> String {
+        let s = self.expr_ungrouped(e);
+        if e.grouped() {
+            format!("({s})")
+        } else {
+            s
+        }
+    }
+
+    fn expr_ungrouped(&mut self, e: &Expr) -> String {
         use ExprKind::*;
         match &*e.kind {
             Int(v) => v.to_string(),
@@ -719,7 +734,7 @@ impl<'p> Gen<'p> {
             }
             Sub(a, b) => {
                 let r = self.conv(b, &e.ty);
-                let r = if matches!(&*b.kind, Add(..) | Sub(..) | Neg(..)) && !r.ends_with(&format!(".cast<{}>()", real())) { format!("({r})") } else { r };
+                let r = if matches!(&*b.kind, Add(..) | Sub(..) | Neg(..)) && !b.grouped() && !r.ends_with(&format!(".cast<{}>()", real())) { format!("({r})") } else { r };
                 format!("{} - {r}", self.conv(a, &e.ty))
             }
             Mul(a, b) => {

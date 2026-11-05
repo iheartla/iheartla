@@ -119,11 +119,28 @@ pub struct LocalFunc {
 pub struct Expr {
     pub kind: Box<ExprKind>,
     pub ty: Ty,
+    /// the source wrote this expression in parentheses: `(b - c)` in `a + (b - c)`.
+    /// Code backends keep such grouping (floating-point `+` and `*` aren't
+    /// associative), as the Python compiler does.
+    pub paren: bool,
 }
 
 impl Expr {
     pub fn new(kind: ExprKind, ty: Ty) -> Expr {
-        Expr { kind: Box::new(kind), ty }
+        Expr { kind: Box::new(kind), ty, paren: false }
+    }
+
+    /// Whether a code backend must print this expression in parentheses because the
+    /// source did: an operator expression the source parenthesized. (Atoms and
+    /// function-call-like forms print the same either way.)
+    pub fn grouped(&self) -> bool {
+        use ExprKind::*;
+        self.paren
+            && matches!(
+                &*self.kind,
+                Neg(_) | Add(..) | Sub(..) | Mul(..) | Div(..) | Pow(..) | Hadamard(..) | Kronecker(..) | Cross(..)
+                    | Dot(..) | Frobenius(..) | Transpose(_) | Inverse(_) | PseudoInverse(_) | Solve(..) | SetOp(..)
+            )
     }
 }
 
