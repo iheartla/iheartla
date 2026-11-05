@@ -150,6 +150,32 @@ class TestIntDivision(BasePythonTest):
         content = compile_la_content(la_str, ParserTypeEnum.EIGEN)[ParserTypeEnum.EIGEN]
         self.assertNotIn('fmod(n/2, 1)', content)
 
+    def test_division_in_dimension_loop(self):
+        # a vector defined element by element over a dimension n/2: its size and loop bound are int
+        la_str = """y_i = x_i + 1
+        where
+        x ∈ ℝ^(n/2)
+        n ∈ ℤ"""
+        func_info = self.gen_func_info(la_str)
+        x = np.array([1.0, 2.0, 3.0])
+        self.assertDMatrixEqual(func_info.numpy_func(x, 6).y, np.array([2.0, 3.0, 4.0]))
+        with self.assertRaises(AssertionError):
+            func_info.numpy_func(x, 7)
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertDMatrixEqual(np.array(mat_func(matlab.double(x.tolist()), matlab.double([6]))['y']).reshape(-1),
+                                    np.array([2.0, 3.0, 4.0]))
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    Eigen::VectorXd x(3);",
+                     "    x << 1, 2, 3;",
+                     "    Eigen::VectorXd B(3);",
+                     "    B << 2, 3, 4;",
+                     "    return {}(x, 6).y == B;".format(func_info.eig_func_name),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_division_in_subscript(self):
         # A subscript must be an integer, and i/2 is real: a compile error (C++ used to truncate
         # 3.5 to 3 silently, NumPy raised an IndexError at run time)
