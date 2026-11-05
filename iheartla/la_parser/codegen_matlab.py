@@ -1929,6 +1929,18 @@ class CodeGenMatlab(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_size(self, node, **kwargs):
+        # #x, as in the NumPy and Eigen backends. A sequence is an array whose first dimension
+        # indexes its elements, and a set has one element per row. iheartla#142
+        param_info = self.visit(node.param, **kwargs)
+        x = param_info.content
+        la_type = node.param.la_type
+        if la_type.is_vector() or la_type.is_set() or (la_type.is_sequence() and la_type.element_type.is_scalar()):
+            content = 'size({}, 1)'.format(x)
+        else:
+            content = 'size({})'.format(x)
+        return CodeNodeInfo(content, pre_list=param_info.pre_list)
+
     def visit_partial(self, node, **kwargs):
         return CodeNodeInfo("")
 

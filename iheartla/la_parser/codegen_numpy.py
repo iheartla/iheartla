@@ -2026,6 +2026,26 @@ class CodeGenNumpy(CodeGen):
     def visit_laplace(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def visit_size(self, node, **kwargs):
+        # #x: a vector's length, a set's size, a matrix's (rows, cols), a sequence's length (and its
+        # elements' dimensions), as the Eigen backend gives them. iheartla#142
+        param_info = self.visit(node.param, **kwargs)
+        x = param_info.content
+        la_type = node.param.la_type
+        if la_type.is_vector():
+            content = '{}.shape[0]'.format(x)
+        elif la_type.is_set():
+            content = 'len({})'.format(x)
+        elif la_type.is_matrix():
+            content = '{}.shape'.format(x)
+        elif la_type.element_type.is_scalar():
+            content = 'len({})'.format(x)
+        elif la_type.element_type.is_vector():
+            content = '(len({0}), {0}[0].shape[0])'.format(x)
+        else:
+            content = '(len({0}), {0}[0].shape[0], {0}[0].shape[1])'.format(x)
+        return CodeNodeInfo(content, pre_list=param_info.pre_list)
+
     def det_func(self):
         return 'np.linalg.det' if self.has_derivative else 'scipy.linalg.det'
 
