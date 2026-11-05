@@ -6374,10 +6374,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
         self.add_last_node_to_name('value')
 
         def block2():
+            with self._group():
+                with self._choice():
+                    with self._option():
 
-            def block3():
-                self._separator_with_space_()
-            self._positive_closure(block3)
+                        def block4():
+                            self._separator_with_space_()
+                        self._positive_closure(block4)
+                    with self._option():
+
+                        def block5():
+                            self._hspace_()
+                        self._closure(block5)
+                        self._token(',')
+
+                        def block6():
+                            self._hspace_()
+                        self._closure(block6)
+                    self._error(
+                        'expecting one of: '
+                        "',' <hspace> <separator_with_space>"
+                    )
             self._where_condition_()
             self.add_last_node_to_name('value')
 
@@ -9308,55 +9325,47 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._option():
                     self._identifier_alone_()
                     self.name_last_node('name')
+                    self._token('_')
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('subs')
 
-                    def block26():
-                        self._token('_')
-                        self._identifier_alone_()
-                        self.add_last_node_to_name('subs')
+                    def block27():
 
                         def block28():
-
-                            def block29():
-                                self._token(',')
-                            self._closure(block29)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('subs')
-
-                            self._define(
-                                [],
-                                ['subs']
-                            )
+                            self._token(',')
                         self._closure(block28)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('subs')
 
                         self._define(
                             [],
                             ['subs']
                         )
-                    self._closure(block26)
+                    self._closure(block27)
 
-                    def block31():
+                    def block30():
                         self._pattern('\\(')
                         self.name_last_node('def_p')
 
-                        def block33():
+                        def block32():
 
-                            def block34():
+                            def block33():
                                 self._hspace_()
-                            self._closure(block34)
+                            self._closure(block33)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block36():
+                            def block35():
 
-                                def block37():
+                                def block36():
                                     self._hspace_()
-                                self._closure(block37)
+                                self._closure(block36)
                                 self._params_separator_()
                                 self.add_last_node_to_name('separators')
 
-                                def block39():
+                                def block38():
                                     self._hspace_()
-                                self._closure(block39)
+                                self._closure(block38)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
 
@@ -9364,24 +9373,24 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                     [],
                                     ['params', 'separators']
                                 )
-                            self._closure(block36)
+                            self._closure(block35)
 
                             self._define(
                                 [],
                                 ['params', 'separators']
                             )
-                        self._closure(block33)
+                        self._closure(block32)
 
-                        def block41():
+                        def block40():
                             self._hspace_()
-                        self._closure(block41)
+                        self._closure(block40)
                         self._token(')')
 
                         self._define(
                             ['def_p'],
                             ['params', 'separators']
                         )
-                    self._closure(block31)
+                    self._closure(block30)
 
                     self._define(
                         ['def_p', 'name'],
@@ -9390,25 +9399,17 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 with self._option():
                     self._identifier_alone_()
                     self.name_last_node('name')
+                    self._token('_')
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('subs')
 
                     def block43():
-                        self._token('_')
+
+                        def block44():
+                            self._token(',')
+                        self._closure(block44)
                         self._identifier_alone_()
                         self.add_last_node_to_name('subs')
-
-                        def block45():
-
-                            def block46():
-                                self._token(',')
-                            self._closure(block46)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('subs')
-
-                            self._define(
-                                [],
-                                ['subs']
-                            )
-                        self._closure(block45)
 
                         self._define(
                             [],
@@ -9416,29 +9417,29 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                         )
                     self._closure(block43)
 
-                    def block48():
+                    def block46():
                         self._pattern('\\[')
                         self.name_last_node('def_s')
 
-                        def block50():
+                        def block48():
 
-                            def block51():
+                            def block49():
                                 self._hspace_()
-                            self._closure(block51)
+                            self._closure(block49)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block53():
+                            def block51():
+
+                                def block52():
+                                    self._hspace_()
+                                self._closure(block52)
+                                self._params_separator_()
+                                self.add_last_node_to_name('separators')
 
                                 def block54():
                                     self._hspace_()
                                 self._closure(block54)
-                                self._params_separator_()
-                                self.add_last_node_to_name('separators')
-
-                                def block56():
-                                    self._hspace_()
-                                self._closure(block56)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
 
@@ -9446,28 +9447,110 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                                     [],
                                     ['params', 'separators']
                                 )
-                            self._closure(block53)
+                            self._closure(block51)
 
                             self._define(
                                 [],
                                 ['params', 'separators']
                             )
-                        self._closure(block50)
+                        self._closure(block48)
 
-                        def block58():
+                        def block56():
                             self._hspace_()
-                        self._closure(block58)
+                        self._closure(block56)
                         self._token(']')
 
                         self._define(
                             ['def_s'],
                             ['params', 'separators']
                         )
-                    self._closure(block48)
+                    self._closure(block46)
 
                     self._define(
                         ['def_s', 'name'],
                         ['params', 'separators', 'subs']
+                    )
+                with self._option():
+                    self._identifier_alone_()
+                    self.name_last_node('name')
+                    self._pattern('\\(')
+                    self.name_last_node('def_p')
+
+                    def block59():
+                        self._hspace_()
+                    self._closure(block59)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+
+                    def block61():
+
+                        def block62():
+                            self._hspace_()
+                        self._closure(block62)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block64():
+                            self._hspace_()
+                        self._closure(block64)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('params')
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
+                    self._closure(block61)
+
+                    def block66():
+                        self._hspace_()
+                    self._closure(block66)
+                    self._token(')')
+
+                    self._define(
+                        ['def_p', 'name'],
+                        ['params', 'separators']
+                    )
+                with self._option():
+                    self._identifier_alone_()
+                    self.name_last_node('name')
+                    self._pattern('\\[')
+                    self.name_last_node('def_s')
+
+                    def block69():
+                        self._hspace_()
+                    self._closure(block69)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+
+                    def block71():
+
+                        def block72():
+                            self._hspace_()
+                        self._closure(block72)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block74():
+                            self._hspace_()
+                        self._closure(block74)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('params')
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
+                    self._closure(block71)
+
+                    def block76():
+                        self._hspace_()
+                    self._closure(block76)
+                    self._token(']')
+
+                    self._define(
+                        ['def_s', 'name'],
+                        ['params', 'separators']
                     )
                 self._error(
                     'expecting one of: '
@@ -9475,27 +9558,27 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     '<identifier_with_unicode_subscript>'
                 )
 
-        def block59():
+        def block77():
             self._hspace_()
-        self._closure(block59)
+        self._closure(block77)
         self._token('=')
         self.name_last_node('op')
 
-        def block61():
+        def block79():
             self._hspace_()
-        self._closure(block61)
+        self._closure(block79)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
         with self._optional():
 
-            def block63():
+            def block81():
                 self._hspace_()
-            self._closure(block63)
+            self._closure(block81)
             self._line_()
 
-        def block64():
+        def block82():
             self._hspace_()
-        self._closure(block64)
+        self._closure(block82)
         with self._group():
             with self._choice():
                 with self._option():
@@ -9507,22 +9590,22 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                     '<GIVEN> <WHERE>'
                 )
 
-        def block66():
+        def block84():
             self._hspace_()
-        self._closure(block66)
+        self._closure(block84)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block68():
+        def block86():
 
-            def block69():
+            def block87():
                 self._hspace_()
-            self._closure(block69)
+            self._closure(block87)
             self._token(',')
 
-            def block70():
+            def block88():
                 self._hspace_()
-            self._closure(block70)
+            self._closure(block88)
             self._where_condition_()
             self.add_last_node_to_name('defs')
 
@@ -9530,24 +9613,24 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 [],
                 ['defs']
             )
-        self._closure(block68)
+        self._closure(block86)
 
-        def block72():
+        def block90():
 
-            def block73():
+            def block91():
                 self._hspace_()
-            self._closure(block73)
+            self._closure(block91)
             self._token(',')
 
-            def block74():
+            def block92():
                 self._hspace_()
-            self._closure(block74)
+            self._closure(block92)
             with self._optional():
                 self._line_()
 
-            def block75():
+            def block93():
                 self._hspace_()
-            self._closure(block75)
+            self._closure(block93)
             self._general_assign_()
             self.add_last_node_to_name('extra')
 
@@ -9555,7 +9638,7 @@ class grammarc21f969b5f03d33d43e04f8f136e7682Parser(Parser):
                 [],
                 ['extra']
             )
-        self._closure(block72)
+        self._closure(block90)
 
         self._define(
             ['def_p', 'def_s', 'name', 'op'],

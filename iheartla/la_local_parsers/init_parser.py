@@ -6379,10 +6379,27 @@ class grammarinitParser(Parser):
         self.add_last_node_to_name('value')
 
         def block2():
+            with self._group():
+                with self._choice():
+                    with self._option():
 
-            def block3():
-                self._separator_with_space_()
-            self._positive_closure(block3)
+                        def block4():
+                            self._separator_with_space_()
+                        self._positive_closure(block4)
+                    with self._option():
+
+                        def block5():
+                            self._hspace_()
+                        self._closure(block5)
+                        self._token(',')
+
+                        def block6():
+                            self._hspace_()
+                        self._closure(block6)
+                    self._error(
+                        'expecting one of: '
+                        "',' <hspace> <separator_with_space>"
+                    )
             self._where_condition_()
             self.add_last_node_to_name('value')
 
@@ -9410,55 +9427,39 @@ class grammarinitParser(Parser):
                 with self._option():
                     self._identifier_()
                     self.name_last_node('name')
+                    self._pattern('\\(')
+                    self.name_last_node('def_p')
 
-                    def block2():
-                        self._pattern('\\(')
-                        self.name_last_node('def_p')
+                    def block3():
+                        self._hspace_()
+                    self._closure(block3)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
 
-                        def block4():
+                    def block5():
 
-                            def block5():
-                                self._hspace_()
-                            self._closure(block5)
-                            self._identifier_alone_()
-                            self.add_last_node_to_name('params')
-
-                            def block7():
-
-                                def block8():
-                                    self._hspace_()
-                                self._closure(block8)
-                                self._params_separator_()
-                                self.add_last_node_to_name('separators')
-
-                                def block10():
-                                    self._hspace_()
-                                self._closure(block10)
-                                self._identifier_alone_()
-                                self.add_last_node_to_name('params')
-
-                                self._define(
-                                    [],
-                                    ['params', 'separators']
-                                )
-                            self._closure(block7)
-
-                            self._define(
-                                [],
-                                ['params', 'separators']
-                            )
-                        self._closure(block4)
-
-                        def block12():
+                        def block6():
                             self._hspace_()
-                        self._closure(block12)
-                        self._token(')')
+                        self._closure(block6)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
+
+                        def block8():
+                            self._hspace_()
+                        self._closure(block8)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('params')
 
                         self._define(
-                            ['def_p'],
+                            [],
                             ['params', 'separators']
                         )
-                    self._closure(block2)
+                    self._closure(block5)
+
+                    def block10():
+                        self._hspace_()
+                    self._closure(block10)
+                    self._token(')')
 
                     self._define(
                         ['def_p', 'name'],
@@ -9467,30 +9468,81 @@ class grammarinitParser(Parser):
                 with self._option():
                     self._identifier_()
                     self.name_last_node('name')
+                    self._pattern('\\[')
+                    self.name_last_node('def_s')
 
-                    def block14():
-                        self._pattern('\\[')
-                        self.name_last_node('def_s')
+                    def block13():
+                        self._hspace_()
+                    self._closure(block13)
+                    self._identifier_alone_()
+                    self.add_last_node_to_name('params')
+
+                    def block15():
 
                         def block16():
+                            self._hspace_()
+                        self._closure(block16)
+                        self._params_separator_()
+                        self.add_last_node_to_name('separators')
 
-                            def block17():
+                        def block18():
+                            self._hspace_()
+                        self._closure(block18)
+                        self._identifier_alone_()
+                        self.add_last_node_to_name('params')
+
+                        self._define(
+                            [],
+                            ['params', 'separators']
+                        )
+                    self._closure(block15)
+
+                    def block20():
+                        self._hspace_()
+                    self._closure(block20)
+                    self._token(']')
+
+                    self._define(
+                        ['def_s', 'name'],
+                        ['params', 'separators']
+                    )
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._identifier_with_multi_subscript_()
+                            with self._option():
+                                self._identifier_with_subscript_()
+                            self._error(
+                                'expecting one of: '
+                                '<identifier_with_multi_subscript>'
+                                '<identifier_with_subscript>'
+                            )
+                    self.name_last_node('name')
+
+                    def block23():
+                        self._pattern('\\(')
+                        self.name_last_node('def_p')
+
+                        def block25():
+
+                            def block26():
                                 self._hspace_()
-                            self._closure(block17)
+                            self._closure(block26)
                             self._identifier_alone_()
                             self.add_last_node_to_name('params')
 
-                            def block19():
+                            def block28():
 
-                                def block20():
+                                def block29():
                                     self._hspace_()
-                                self._closure(block20)
+                                self._closure(block29)
                                 self._params_separator_()
                                 self.add_last_node_to_name('separators')
 
-                                def block22():
+                                def block31():
                                     self._hspace_()
-                                self._closure(block22)
+                                self._closure(block31)
                                 self._identifier_alone_()
                                 self.add_last_node_to_name('params')
 
@@ -9498,24 +9550,91 @@ class grammarinitParser(Parser):
                                     [],
                                     ['params', 'separators']
                                 )
-                            self._closure(block19)
+                            self._closure(block28)
 
                             self._define(
                                 [],
                                 ['params', 'separators']
                             )
-                        self._closure(block16)
+                        self._closure(block25)
 
-                        def block24():
+                        def block33():
                             self._hspace_()
-                        self._closure(block24)
+                        self._closure(block33)
+                        self._token(')')
+
+                        self._define(
+                            ['def_p'],
+                            ['params', 'separators']
+                        )
+                    self._closure(block23)
+
+                    self._define(
+                        ['def_p', 'name'],
+                        ['params', 'separators']
+                    )
+                with self._option():
+                    with self._group():
+                        with self._choice():
+                            with self._option():
+                                self._identifier_with_multi_subscript_()
+                            with self._option():
+                                self._identifier_with_subscript_()
+                            self._error(
+                                'expecting one of: '
+                                '<identifier_with_multi_subscript>'
+                                '<identifier_with_subscript>'
+                            )
+                    self.name_last_node('name')
+
+                    def block36():
+                        self._pattern('\\[')
+                        self.name_last_node('def_s')
+
+                        def block38():
+
+                            def block39():
+                                self._hspace_()
+                            self._closure(block39)
+                            self._identifier_alone_()
+                            self.add_last_node_to_name('params')
+
+                            def block41():
+
+                                def block42():
+                                    self._hspace_()
+                                self._closure(block42)
+                                self._params_separator_()
+                                self.add_last_node_to_name('separators')
+
+                                def block44():
+                                    self._hspace_()
+                                self._closure(block44)
+                                self._identifier_alone_()
+                                self.add_last_node_to_name('params')
+
+                                self._define(
+                                    [],
+                                    ['params', 'separators']
+                                )
+                            self._closure(block41)
+
+                            self._define(
+                                [],
+                                ['params', 'separators']
+                            )
+                        self._closure(block38)
+
+                        def block46():
+                            self._hspace_()
+                        self._closure(block46)
                         self._token(']')
 
                         self._define(
                             ['def_s'],
                             ['params', 'separators']
                         )
-                    self._closure(block14)
+                    self._closure(block36)
 
                     self._define(
                         ['def_s', 'name'],
@@ -9524,29 +9643,31 @@ class grammarinitParser(Parser):
                 self._error(
                     'expecting one of: '
                     '<identifier>'
+                    '<identifier_with_multi_subscript>'
+                    '<identifier_with_subscript>'
                 )
 
-        def block25():
+        def block47():
             self._hspace_()
-        self._closure(block25)
+        self._closure(block47)
         self._token('=')
         self.name_last_node('op')
 
-        def block27():
+        def block49():
             self._hspace_()
-        self._closure(block27)
+        self._closure(block49)
         self._right_hand_side_()
         self.add_last_node_to_name('expr')
         with self._optional():
 
-            def block29():
+            def block51():
                 self._hspace_()
-            self._closure(block29)
+            self._closure(block51)
             self._line_()
 
-        def block30():
+        def block52():
             self._hspace_()
-        self._closure(block30)
+        self._closure(block52)
         with self._group():
             with self._choice():
                 with self._option():
@@ -9558,22 +9679,22 @@ class grammarinitParser(Parser):
                     '<GIVEN> <WHERE>'
                 )
 
-        def block32():
+        def block54():
             self._hspace_()
-        self._closure(block32)
+        self._closure(block54)
         self._where_condition_()
         self.add_last_node_to_name('defs')
 
-        def block34():
+        def block56():
 
-            def block35():
+            def block57():
                 self._hspace_()
-            self._closure(block35)
+            self._closure(block57)
             self._token(',')
 
-            def block36():
+            def block58():
                 self._hspace_()
-            self._closure(block36)
+            self._closure(block58)
             self._where_condition_()
             self.add_last_node_to_name('defs')
 
@@ -9581,24 +9702,24 @@ class grammarinitParser(Parser):
                 [],
                 ['defs']
             )
-        self._closure(block34)
+        self._closure(block56)
 
-        def block38():
+        def block60():
 
-            def block39():
+            def block61():
                 self._hspace_()
-            self._closure(block39)
+            self._closure(block61)
             self._token(',')
 
-            def block40():
+            def block62():
                 self._hspace_()
-            self._closure(block40)
+            self._closure(block62)
             with self._optional():
                 self._line_()
 
-            def block41():
+            def block63():
                 self._hspace_()
-            self._closure(block41)
+            self._closure(block63)
             self._general_assign_()
             self.add_last_node_to_name('extra')
 
@@ -9606,7 +9727,7 @@ class grammarinitParser(Parser):
                 [],
                 ['extra']
             )
-        self._closure(block38)
+        self._closure(block60)
 
         self._define(
             ['def_p', 'def_s', 'name', 'op'],

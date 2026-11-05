@@ -24,7 +24,8 @@ import_constant::IdentifierAlone
 
 where_conditions::WhereConditions
     = 
-    {hspace} value+:where_condition {{separator_with_space}+ value+:where_condition}
+    # (declarations are separated by line breaks or `;`, or by commas, as in a local function's where: `where b ∈ ℝ, c ∈ ℝ`)
+    {hspace} value+:where_condition {({separator_with_space}+ | {hspace} ',' {hspace}) value+:where_condition}
     ;
 
 where_condition

@@ -62,9 +62,13 @@ local_func::LocalFunc
     (
     name:identifier_with_unicode_subscript {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
     | name:identifier_with_unicode_subscript {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
-    | name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
+    | name:identifier_alone '_' subs+:identifier_alone {{','} subs+:identifier_alone} {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
     #| name:identifier_alone {subs+:unicode_subscript {{','} subs+:unicode_subscript}} {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
-    | name:identifier_alone {'_' subs+:identifier_alone {{','} subs+:identifier_alone}} {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'} 
+    | name:identifier_alone '_' subs+:identifier_alone {{','} subs+:identifier_alone} {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'} 
+    # (a function has at least one argument: a subscript, or a parameter in ( ) or [ ]; `y = e` / `where b ∈ ℝ`
+    # is a definition followed by declarations, not a function with no arguments)
+    | name:identifier_alone def_p:/\(/ {hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone} {hspace} ')'
+    | name:identifier_alone def_s:/\[/ {hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone} {hspace} ']'
     #| name:identifier_alone {subs+:unicode_subscript {{','} subs+:unicode_subscript}} {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
     ) 
     {hspace} op:'=' {hspace} expr+:right_hand_side [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition} {{hspace} ',' {hspace} [line] {hspace} extra+:general_assign}
