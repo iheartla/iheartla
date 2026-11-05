@@ -339,23 +339,19 @@ impl<'p> Gen<'p> {
         let subs: Vec<String> = a.subs.iter().map(|s| py_ident(s)).collect();
         let ext: Vec<String> = a.extents.iter().map(|d| self.dim(d)).collect();
         let fresh = !a.accumulate && !a.update;
-        // sparse matrices are built densely and converted at the end
-        let mut write_to = target.to_string();
+        let write_to = target.to_string();
         match &a.ty {
             Vector { .. } => {
                 if fresh {
                     self.line(format!("{target} = np.zeros({})", ext[0]));
                 }
             }
-            Matrix { sparse, rows, cols, .. } => {
-                if *sparse {
-                    write_to = self.fresh("dense");
-                    if fresh {
-                        self.line(format!("{write_to} = np.zeros(({}, {}))", self.dim(rows), self.dim(cols)));
-                    } else {
-                        self.line(format!("{write_to} = np.asarray(sparse.csr_matrix({target}).toarray(), dtype=np.float64)"));
-                    }
-                } else if fresh {
+            Matrix { sparse: true, rows, cols, .. } => {
+                let shape = (self.dim(rows), self.dim(cols));
+                return self.sparse_elementwise(a, target, &subs, &ext, shape);
+            }
+            Matrix { .. } => {
+                if fresh {
                     self.line(format!("{target} = np.zeros(({}, {}))", ext[0], ext[1]));
                 } else if a.update {
                     self.line(format!("{target} = np.array({target}, dtype=np.float64)"));
@@ -401,8 +397,61 @@ impl<'p> Gen<'p> {
         self.line(format!("{write_to}[{}] {op} {v}", index.join(", ")));
         self.indent -= loops;
         self.locals.pop();
-        if write_to != target {
-            self.line(format!("{target} = sparse.csr_matrix({write_to})"));
+    }
+
+    /// A sparse matrix defined elementwise, from its (row, column, value) entries: over the index
+    /// sets of `A_ij = { e if (i,j) ∈ E`, or else over every (i, j) (every i for A_ii), keeping
+    /// nonzeros. On a matrix defined before, A_ii = e replaces the diagonal, A_ij += e adds, and
+    /// A_ij = e replaces the matrix.
+    fn sparse_elementwise(&mut self, a: &Assign, target: &str, subs: &[String], ext: &[String], shape: (String, String)) {
+        let (r, c, v) = (self.fresh("rows"), self.fresh("cols"), self.fresh("vals"));
+        for l in [&r, &c, &v] {
+            self.line(format!("{l} = []"));
+        }
+        self.locals.push(a.subs.iter().cloned().collect());
+        let diag = a.subs[0] == a.subs[1];
+        if let Some(cases) = super::sparse_sets(a) {
+            for (k, (_, val, set)) in cases.iter().enumerate() {
+                let pair = self.fresh("pair");
+                let set_v = self.expr(set);
+                self.line(format!("for {pair} in {set_v}:"));
+                self.indent += 1;
+                let one = if super::zero_based_set(set) { "+1" } else { "" };
+                self.line(format!("{} = {pair}[0]{one}", subs[0]));
+                self.line(format!("{} = {pair}[1]{one}", subs[1]));
+                // (the first case that applies gives the value, as in a piecewise)
+                for (prev, _, _) in &cases[..k] {
+                    let p = self.cond(prev);
+                    self.line(format!("if {p}:"));
+                    self.line("    continue");
+                }
+                let x = self.expr(val);
+                self.line(format!("{r}.append({}-1)", subs[0]));
+                self.line(format!("{c}.append({}-1)", subs[1]));
+                self.line(format!("{v}.append({x})"));
+                self.indent -= 1;
+            }
+        } else {
+            let loops = if diag { 1 } else { 2 };
+            for k in 0..loops {
+                self.line(format!("for {} in range(1, {}+1):", subs[k], ext[k]));
+                self.indent += 1;
+            }
+            let x = self.expr(&a.rhs);
+            self.line(format!("if {x} != 0:"));
+            self.line(format!("    {r}.append({}-1)", subs[0]));
+            self.line(format!("    {c}.append({}-1)", subs[1]));
+            self.line(format!("    {v}.append({x})"));
+            self.indent -= loops;
+        }
+        self.locals.pop();
+        let new = format!("sparse.csr_matrix(({v}, ({r}, {c})), shape=({}, {}))", shape.0, shape.1);
+        if a.accumulate {
+            self.line(format!("{target} = sparse.csr_matrix({target} + {new})"));
+        } else if a.update && diag {
+            self.line(format!("{target} = sparse.csr_matrix({target} - sparse.diags({target}.diagonal(), 0, shape=({}, {})) + {new})", shape.0, shape.1));
+        } else {
+            self.line(format!("{target} = {new}"));
         }
     }
 
@@ -756,10 +805,12 @@ impl<'p> Gen<'p> {
                 format!("frozenset({{{}}})", parts.join(", "))
             }
             Size(x) => {
-                if x.ty.is_matrix() {
-                    format!("{}.shape", self.expr(x))
-                } else {
-                    format!("len({})", self.expr(x))
+                let v = self.expr(x);
+                match &x.ty {
+                    Matrix { .. } => format!("{v}.shape"),
+                    Seq { elem, .. } if elem.is_vector() => format!("(len({v}), {v}[0].shape[0])"),
+                    Seq { elem, .. } if elem.is_matrix() => format!("(len({v}), {v}[0].shape[0], {v}[0].shape[1])"),
+                    _ => format!("len({v})"),
                 }
             }
         }

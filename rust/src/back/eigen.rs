@@ -516,7 +516,7 @@ impl<'p> Gen<'p> {
         let subs: Vec<String> = a.subs.iter().map(|s| cpp_ident(s)).collect();
         let ext: Vec<String> = a.extents.iter().map(|d| self.dim(d)).collect();
         let fresh = !a.accumulate && !a.update;
-        let mut write_to = target.to_string();
+        let write_to = target.to_string();
         // (a local of a function body is declared here; a member already is)
         let decl = if fresh && self.locals.last().is_some_and(|l| l.contains(&a.lhs)) { format!("{} ", cpp_type(&a.ty)) } else { String::new() };
         let target_decl = format!("{decl}{target}");
@@ -526,15 +526,12 @@ impl<'p> Gen<'p> {
                     self.line(format!("{target_decl} = {}::Zero({});", cpp_type(&a.ty), ext[0]));
                 }
             }
-            Matrix { sparse, rows, cols, .. } => {
-                if *sparse {
-                    write_to = self.fresh("dense");
-                    if fresh {
-                        self.line(format!("Eigen::MatrixXd {write_to} = Eigen::MatrixXd::Zero({}, {});", self.dim(rows), self.dim(cols)));
-                    } else {
-                        self.line(format!("Eigen::MatrixXd {write_to} = Eigen::MatrixXd({target});"));
-                    }
-                } else if fresh {
+            Matrix { sparse: true, rows, cols, .. } => {
+                let shape = (self.dim(rows), self.dim(cols));
+                return self.sparse_elementwise(a, target, &target_decl, &subs, &ext, shape);
+            }
+            Matrix { .. } => {
+                if fresh {
                     self.line(format!("{target_decl} = {}::Zero({}, {});", cpp_type(&a.ty), ext[0], ext[1]));
                 }
             }
@@ -586,8 +583,61 @@ impl<'p> Gen<'p> {
             self.line("}");
         }
         self.locals.pop();
-        if write_to != target {
-            self.line(format!("{target} = {write_to}.sparseView();"));
+    }
+
+    /// A sparse matrix defined elementwise, from triplets, as in the NumPy backend.
+    fn sparse_elementwise(&mut self, a: &Assign, target: &str, target_decl: &str, subs: &[String], ext: &[String], shape: (String, String)) {
+        let scalar = if a.ty.elem().is_int() { "int" } else { "double" };
+        let t = self.fresh("triplets");
+        self.line(format!("std::vector<Eigen::Triplet<{scalar}> > {t};"));
+        self.locals.push(a.subs.iter().cloned().collect());
+        let diag = a.subs[0] == a.subs[1];
+        if let Some(cases) = super::sparse_sets(a) {
+            for (k, (_, val, set)) in cases.iter().enumerate() {
+                let pair = self.fresh("pair");
+                let set_v = self.expr(set);
+                self.line(format!("for(const auto & {pair} : {set_v}){{"));
+                self.indent += 1;
+                let one = if super::zero_based_set(set) { "+1" } else { "" };
+                self.line(format!("int {} = std::get<0>({pair}){one};", subs[0]));
+                self.line(format!("int {} = std::get<1>({pair}){one};", subs[1]));
+                // (the first case that applies gives the value, as in a piecewise)
+                for (prev, _, _) in &cases[..k] {
+                    let p = self.cond(prev);
+                    self.line(format!("if({p}) continue;"));
+                }
+                let x = self.expr(val);
+                self.line(format!("{t}.push_back(Eigen::Triplet<{scalar}>({}-1, {}-1, {x}));", subs[0], subs[1]));
+                self.indent -= 1;
+                self.line("}");
+            }
+        } else {
+            let loops = if diag { 1 } else { 2 };
+            for k in 0..loops {
+                self.line(format!("for(int {} = 1; {} <= {}; {}++){{", subs[k], subs[k], ext[k], subs[k]));
+                self.indent += 1;
+            }
+            let x = self.expr(&a.rhs);
+            let xv = self.fresh("value");
+            self.line(format!("{scalar} {xv} = {x};"));
+            self.line(format!("if({xv} != 0) {t}.push_back(Eigen::Triplet<{scalar}>({}-1, {}-1, {xv}));", subs[0], subs[1]));
+            for _ in 0..loops {
+                self.indent -= 1;
+                self.line("}");
+            }
+        }
+        self.locals.pop();
+        let new = self.fresh("entries");
+        self.line(format!("Eigen::SparseMatrix<{scalar}> {new}({}, {});", shape.0, shape.1));
+        self.line(format!("{new}.setFromTriplets({t}.begin(), {t}.end());"));
+        if a.accumulate {
+            self.line(format!("{target} = {target} + {new};"));
+        } else if a.update && diag {
+            // (the old diagonal is dropped, then the new one added)
+            self.line(format!("{target}.prune([](const Eigen::Index & r, const Eigen::Index & c, const {scalar} &){{ return r != c; }});"));
+            self.line(format!("{target} = {target} + {new};"));
+        } else {
+            self.line(format!("{target_decl} = {new};"));
         }
     }
 
@@ -872,7 +922,15 @@ for(int q = 0; q < 5; q++){{ const double {v} = c + 0.5 * hh * x5[q]; s += 0.5 *
                 let parts: Vec<String> = items.iter().map(|x| self.expr(x)).collect();
                 format!("sorted_set({}{{{}}})", cpp_type(&e.ty), parts.join(", "))
             }
-            Size(x) => format!("int(({}).size())", self.expr(x)),
+            Size(x) => {
+                let v = self.expr(x);
+                match &x.ty {
+                    Matrix { .. } => format!("std::make_tuple(int(({v}).rows()), int(({v}).cols()))"),
+                    Seq { elem, .. } if elem.is_vector() => format!("std::make_tuple(int(({v}).size()), int(({v})[0].rows()))"),
+                    Seq { elem, .. } if elem.is_matrix() => format!("std::make_tuple(int(({v}).size()), int(({v})[0].rows()), int(({v})[0].cols()))"),
+                    _ => format!("int(({v}).size())"),
+                }
+            }
             MeshCall { func, mesh, args } => {
                 let a: Vec<String> = args.iter().map(|x| self.expr(x)).collect();
                 match func {

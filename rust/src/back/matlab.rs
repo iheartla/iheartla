@@ -228,19 +228,15 @@ impl<'p> Gen<'p> {
         let subs: Vec<String> = a.subs.iter().map(|s| m_ident(s)).collect();
         let ext: Vec<String> = a.extents.iter().map(|d| self.dim(d)).collect();
         let fresh = !a.accumulate && !a.update;
-        let mut write = target.to_string();
+        let write = target.to_string();
         match &a.ty {
             Vector { .. } if fresh => self.line(format!("{target} = zeros({}, 1);", ext[0])),
-            Matrix { sparse, rows, cols, .. } => {
-                if *sparse {
-                    write = self.fresh("dense");
-                    if fresh {
-                        let (r, c) = (self.dim(rows), self.dim(cols));
-                        self.line(format!("{write} = zeros({r}, {c});"));
-                    } else {
-                        self.line(format!("{write} = full({target});"));
-                    }
-                } else if fresh {
+            Matrix { sparse: true, rows, cols, .. } => {
+                let shape = (self.dim(rows), self.dim(cols));
+                return self.sparse_elementwise(a, target, &subs, &ext, shape);
+            }
+            Matrix { .. } => {
+                if fresh {
                     self.line(format!("{target} = zeros({}, {});", ext[0], ext[1]));
                 }
             }
@@ -282,8 +278,64 @@ impl<'p> Gen<'p> {
             self.indent -= 1;
             self.line("end");
         }
-        if write != target {
-            self.line(format!("{target} = sparse({write});"));
+    }
+
+    /// A sparse matrix defined elementwise, from (row, column, value) entries, as in the NumPy
+    /// backend. (A set of pairs is a matrix with one pair per row, 1-based.)
+    fn sparse_elementwise(&mut self, a: &Assign, target: &str, subs: &[String], ext: &[String], shape: (String, String)) {
+        let (r, c, v) = (self.fresh("rows"), self.fresh("cols"), self.fresh("vals"));
+        for l in [&r, &c, &v] {
+            self.line(format!("{l} = zeros(0, 1);"));
+        }
+        let diag = a.subs[0] == a.subs[1];
+        if let Some(cases) = super::sparse_sets(a) {
+            for (k, (_, val, set)) in cases.iter().enumerate() {
+                let p = self.fresh("p");
+                let set_v = self.expr(set);
+                self.line(format!("for {p} = 1:size({set_v}, 1)"));
+                self.indent += 1;
+                self.line(format!("{} = {set_v}({p}, 1);", subs[0]));
+                self.line(format!("{} = {set_v}({p}, 2);", subs[1]));
+                // (the first case that applies gives the value, as in a piecewise)
+                for (prev, _, _) in &cases[..k] {
+                    let q = self.cond(prev);
+                    self.line(format!("if {q}"));
+                    self.line("    continue;");
+                    self.line("end");
+                }
+                let x = self.expr(val);
+                self.line(format!("{r}(end+1, 1) = {};", subs[0]));
+                self.line(format!("{c}(end+1, 1) = {};", subs[1]));
+                self.line(format!("{v}(end+1, 1) = {x};"));
+                self.indent -= 1;
+                self.line("end");
+            }
+        } else {
+            let loops = if diag { 1 } else { 2 };
+            for k in 0..loops {
+                self.line(format!("for {} = 1:{}", subs[k], ext[k]));
+                self.indent += 1;
+            }
+            let x = self.expr(&a.rhs);
+            let xv = self.fresh("value");
+            self.line(format!("{xv} = {x};"));
+            self.line(format!("if {xv} ~= 0"));
+            self.line(format!("    {r}(end+1, 1) = {};", subs[0]));
+            self.line(format!("    {c}(end+1, 1) = {};", subs[1]));
+            self.line(format!("    {v}(end+1, 1) = {xv};"));
+            self.line("end");
+            for _ in 0..loops {
+                self.indent -= 1;
+                self.line("end");
+            }
+        }
+        let new = format!("sparse({r}, {c}, {v}, {}, {})", shape.0, shape.1);
+        if a.accumulate {
+            self.line(format!("{target} = {target} + {new};"));
+        } else if a.update && diag {
+            self.line(format!("{target} = {target} - spdiags(diag({target}), 0, {}, {}) + {new};", shape.0, shape.1));
+        } else {
+            self.line(format!("{target} = {new};"));
         }
     }
 
@@ -466,7 +518,12 @@ impl<'p> Gen<'p> {
                     .collect();
                 format!("unique([{}], 'rows')", rows.join("; "))
             }
-            Size(x) => format!("numel({})", self.expr(x)),
+            // (a set has one element per row, and a sequence's first dimension indexes it; a tuple is a cell)
+            Size(x) => match &x.ty {
+                Vector { .. } | Set { .. } => format!("size({}, 1)", self.expr(x)),
+                Seq { elem, .. } if elem.is_scalar() => format!("size({}, 1)", self.expr(x)),
+                _ => format!("num2cell(size({}))", self.expr(x)),
+            },
             Union { vars, range: SumRange::Set(range), body, .. } => {
                 // (index values are 1-based in MATLAB: no offset)
                 let acc = self.fresh("union");

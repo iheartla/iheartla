@@ -675,6 +675,22 @@ impl<'a> Checker<'a> {
                 if n.get("sub").truthy() {
                     return self.dim(n.get("sub"));
                 }
+                if n.get("size").truthy() {
+                    // #a: the name of a's size (n for a ∈ ℝ^n, a sequence's or set's length), so
+                    // the usual size checks apply (iheartla#142)
+                    let a = n.get("size").get("i");
+                    let name = ident_name(a);
+                    let dim = match self.lookup(&name).map(|s| s.ty()) {
+                        Some(Vector { rows, .. }) => Some(rows),
+                        Some(Seq { size, .. }) => Some(size),
+                        Some(Set { length, .. }) if !matches!(length, Dim::None) => Some(length),
+                        _ => None,
+                    };
+                    return match dim {
+                        Some(d) => Ok(d),
+                        None => self.err(a, format!("#{name} in a dimension needs a vector, sequence or set declared before it")),
+                    };
+                }
                 let id = n.get("id0");
                 if id.class() == "IdentifierSubscript" {
                     // a dimension that varies per sequence item: n_i
@@ -692,7 +708,7 @@ impl<'a> Checker<'a> {
     fn assignment(&mut self, s: &Val) -> R<Stmt> {
         let lefts = s.get("left").items().to_vec();
         let rights = s.get("right").items().to_vec();
-        let accumulate = s.get("op").as_str() == Some("+=");
+        let mut accumulate = s.get("op").as_str() == Some("+=");
         let text = self.text(s);
         if lefts.len() > 1 {
             // a, b = f(x), or a, b = v (as in a sum's where)
@@ -706,7 +722,18 @@ impl<'a> Checker<'a> {
             _ => {
                 let name = ident_name(left);
                 let rhs = self.expr(right)?;
-                let ty = rhs.ty.clone();
+                let mut ty = rhs.ty.clone();
+                if accumulate && !matches!(self.lookup(&name), Some(Sym::Def(_))) {
+                    // x += e with nothing defining x accumulates onto zero: it defines x, and an x
+                    // declared under where is then not a parameter (iheartla#131, #144)
+                    accumulate = false;
+                    if let Some(Sym::Param(declared)) = self.lookup(&name) {
+                        self.ensure(declared.same(&ty), left, || format!("{name} is declared with a different type"))?;
+                        ty = declared;
+                        self.declared_only.insert(name.clone());
+                        self.globals.shift_remove(&name);
+                    }
+                }
                 if accumulate {
                     self.ensure(self.is_defined(&name), left, || format!("{name} hasn't been defined"))?;
                 } else {
@@ -738,6 +765,8 @@ impl<'a> Checker<'a> {
     /// `y_i = …` (a sequence or vector) or `A_ij = …` (a matrix), elementwise.
     fn elementwise(&mut self, left: &Val, right: &Val, accumulate: bool, text: String) -> R<Stmt> {
         let name = ident_name(left.get("left"));
+        // A_ij += e with nothing defining A yet defines A, as A_ij = e does (iheartla#131)
+        let accumulate = accumulate && matches!(self.lookup(&name), Some(Sym::Def(_)));
         let subs: Vec<String> = left.get("right").items().iter().map(|s| sub_name(s)).collect();
         // an existing matrix: either declared in a where block and defined
         // here (a sparse matrix over an index set), or updated elementwise
@@ -1711,8 +1740,17 @@ impl<'a> Checker<'a> {
             }
             "ElementConvertFunc" => self.element_convert(op),
             "SizeOp" => {
+                // #x: a vector's, sequence's or set's length; a matrix's (rows, cols); a sequence
+                // of vectors' (length, rows) and of matrices' (length, rows, cols), as in Python
                 let x = self.identifier(op.get("i"))?;
-                Ok(Expr::new(ExprKind::Size(x), Ty::int()))
+                let n = match &x.ty {
+                    Matrix { .. } => 2,
+                    Seq { elem, .. } if elem.is_vector() => 2,
+                    Seq { elem, .. } if elem.is_matrix() => 3,
+                    _ => 1,
+                };
+                let ty = if n == 1 { Ty::int() } else { Tuple(vec![Ty::int(); n]) };
+                Ok(Expr::new(ExprKind::Size(x), ty))
             }
             cls if cls.ends_with("Func") => self.builtin(op),
             "Partial" => self.partial(op),

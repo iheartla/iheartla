@@ -1,0 +1,530 @@
+{
+ "id": "t_issue_146_constant_e",
+ "src": "sin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n",
+ "parses": [
+  {
+   "kind": "init",
+   "config": null,
+   "text": "sin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     54
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       24
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        12,
+        24
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         5,
+         6
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          5,
+          6
+         ],
+         "id": null,
+         "value": "e"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       25,
+       41
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        25,
+        41
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          25,
+          26
+         ],
+         "id": null,
+         "value": "s"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          29,
+          41
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           29,
+           41
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            29,
+            32
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             29,
+             32
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              29,
+              32
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               29,
+               30
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                29,
+                30
+               ],
+               "id": null,
+               "value": "e"
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               31,
+               32
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                31,
+                32
+               ],
+               "id": null,
+               "value": "x"
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            35,
+            41
+           ],
+           "op": {
+            "_": "Function",
+            "@": [
+             35,
+             41
+            ],
+            "name": [
+             {
+              "_": "IdentifierAlone",
+              "@": [
+               35,
+               38
+              ],
+              "id": null,
+              "value": "sin"
+             },
+             []
+            ],
+            "p": "(",
+            "params": [
+             {
+              "_": "Expression",
+              "@": [
+               39,
+               40
+              ],
+              "sign": null,
+              "value": {
+               "_": "Factor",
+               "@": [
+                39,
+                40
+               ],
+               "id0": {
+                "_": "IdentifierAlone",
+                "@": [
+                 39,
+                 40
+                ],
+                "id": null,
+                "value": "x"
+               }
+              }
+             }
+            ],
+            "separators": []
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       42,
+       53
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        48,
+        53
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          48,
+          53
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            48,
+            49
+           ],
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "kind": "default",
+   "config": {
+    "ids": [
+     "sin"
+    ],
+    "funcs": [],
+    "builtins": [
+     "sin_func"
+    ],
+    "rename": {},
+    "const_e": true
+   },
+   "text": "sin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n",
+   "ast": {
+    "_": "Start",
+    "@": [
+     0,
+     54
+    ],
+    "vblock": [
+     {
+      "_": "Import",
+      "@": [
+       0,
+       24
+      ],
+      "package": {
+       "_": "IdentifierAlone",
+       "@": [
+        12,
+        24
+       ],
+       "id": null,
+       "value": "trigonometry"
+      },
+      "star": null,
+      "names": [
+       {
+        "_": "ImportVar",
+        "@": [
+         0,
+         3
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          0,
+          3
+         ],
+         "id": null,
+         "value": "sin"
+        },
+        "r": null
+       },
+       {
+        "_": "ImportVar",
+        "@": [
+         5,
+         6
+        ],
+        "name": {
+         "_": "IdentifierAlone",
+         "@": [
+          5,
+          6
+         ],
+         "value": "e"
+        },
+        "r": null
+       }
+      ],
+      "params": [],
+      "separators": []
+     },
+     {
+      "_": "Statements",
+      "@": [
+       25,
+       41
+      ],
+      "stat": {
+       "_": "Assignment",
+       "@": [
+        25,
+        41
+       ],
+       "op": "=",
+       "left": [
+        {
+         "_": "IdentifierAlone",
+         "@": [
+          25,
+          26
+         ],
+         "const": null,
+         "id": null,
+         "value": "s"
+        }
+       ],
+       "right": [
+        {
+         "_": "Expression",
+         "@": [
+          29,
+          41
+         ],
+         "value": {
+          "_": "Add",
+          "@": [
+           29,
+           41
+          ],
+          "left": {
+           "_": "Expression",
+           "@": [
+            29,
+            32
+           ],
+           "sign": null,
+           "value": {
+            "_": "Factor",
+            "@": [
+             29,
+             32
+            ],
+            "op": {
+             "_": "Power",
+             "@": [
+              29,
+              32
+             ],
+             "base": {
+              "_": "Factor",
+              "@": [
+               29,
+               30
+              ],
+              "c": {
+               "_": "E"
+              }
+             },
+             "power": {
+              "_": "Factor",
+              "@": [
+               31,
+               32
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                31,
+                32
+               ],
+               "const": null,
+               "id": null,
+               "value": "x"
+              }
+             }
+            }
+           }
+          },
+          "op": "+",
+          "right": {
+           "_": "Factor",
+           "@": [
+            35,
+            41
+           ],
+           "op": {
+            "_": "SinFunc",
+            "@": [
+             35,
+             41
+            ],
+            "param": {
+             "_": "Expression",
+             "@": [
+              39,
+              40
+             ],
+             "sign": null,
+             "value": {
+              "_": "Factor",
+              "@": [
+               39,
+               40
+              ],
+              "id0": {
+               "_": "IdentifierAlone",
+               "@": [
+                39,
+                40
+               ],
+               "const": null,
+               "id": null,
+               "value": "x"
+              }
+             }
+            },
+            "power": null
+           }
+          }
+         }
+        }
+       ]
+      }
+     },
+     {
+      "_": "ParamsBlock",
+      "@": [
+       42,
+       53
+      ],
+      "annotation": "where",
+      "conds": {
+       "_": "WhereConditions",
+       "@": [
+        48,
+        53
+       ],
+       "value": [
+        {
+         "_": "WhereCondition",
+         "@": [
+          48,
+          53
+         ],
+         "attrib": null,
+         "belong": "∈",
+         "desc": null,
+         "subset": null,
+         "type": {
+          "_": "ScalarType"
+         },
+         "id": [
+          {
+           "_": "IdentifierAlone",
+           "@": [
+            48,
+            49
+           ],
+           "const": null,
+           "id": null,
+           "value": "x"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "outputs": {
+  "numpy": "\"\"\"\nsin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n\n\"\"\"\nimport numpy as np\nimport scipy\nimport scipy.linalg\nfrom scipy import sparse\nfrom scipy.integrate import quad, solve_ivp\nfrom scipy.optimize import minimize\n\n\nclass heartlib:\n    def __init__(self, x):\n        assert np.ndim(x) == 0\n        # s = e^x + sin(x)\n        self.s = np.power(np.asarray(np.e, dtype=np.float64), x) + np.sin(x)\n\n\n\n\n\n",
+  "eigen": "/*\nsin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n\n*/\n#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n#include <iostream>\n#include <set>\n#include <algorithm>\n#include \"type_helper.h\"\n\nusing namespace iheartmesh;\nstruct heartlib {\n    using DT = double;\n    using MatrixD = Eigen::MatrixXd;\n    using VectorD = Eigen::VectorXd;\n    DT s;\n\n    heartlib(const double & x)\n    {\n    \n        // s = e^x + sin(x)\n        s = pow(M_E, x) + sin(x);\n    }\n};\n\n\n\n\n\n",
+  "latex": "\\documentclass[12pt]{article}\n\\usepackage{mathdots}\n\\usepackage[bb=boondox]{mathalfa}\n\\usepackage{mathtools}\n\\usepackage{amssymb}\n\\usepackage{unicode-math}\n\\usepackage{libertine}\n\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\usepackage[paperheight=8in,paperwidth=4in,margin=.3in,heightrounded]{geometry}\n\\let\\originalleft\\left\n\\let\\originalright\\right\n\\renewcommand{\\left}{\\mathopen{}\\mathclose\\bgroup\\originalleft}\n\\renewcommand{\\right}{\\aftergroup\\egroup\\originalright}\n\\begin{document}\n\n\\begin{center}\n\\resizebox{\\textwidth}{!} \n{\n\\begin{minipage}[c]{\\textwidth}\n\\begin{align*}\n \\omit \\span \\text{ sin, e from trigonometry }\\\\\n \\\\\ns & = {e}^{x} + sin\\left( x \\right) \\\\\n\\intertext{where} \nx & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n\\end{minipage}\n}\n\\end{center}\n\n\\end{document}\n",
+  "mathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin, e from trigonometry }\\\\\n \\\\\ns & = {e}^{x} + sin\\left( x \\right) \\\\\nwhere \\\\\nx & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n",
+  "matlab": "function output = heartlib(x)\n% output = heartlib(x)\n%\n%    sin, e from trigonometry\n%    s = e^x + sin(x)\n%    where\n%    x ∈ ℝ\n%    \n    assert(numel(x) == 1);\n\n    % s = e^x + sin(x)\n\n    s = exp(1).^x + sin(x);\n    output.s = s;\nend\n",
+  "macromathjax": "\\DeclareMathOperator*{\\argmax}{arg\\,max}\n\\DeclareMathOperator*{\\argmin}{arg\\,min}\n\\begin{align*}\n & \\text{ sin, e from trigonometry }\\\\\n \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 's', 'heartlib', 'def', false, '')\", \"id\":\"heartlib-s\", \"sym\":\"s\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"def\", \"case\":\"equation\"} }{ {s} } & = {e}^{\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} }} + sin\\left( \\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } \\right)\\\\\\eqlabel{ {\"onclick\":\"event.stopPropagation(); onClickEq(this, 'heartlib', ['x', 's'], false, [], [], 'cyA9IGVeeCArIHNpbih4KQ==');\"} }{}\n \\\\\nwhere \\\\\n\\idlabel{ {\"onclick\":\"event.stopPropagation(); onClickSymbol(this, 'x', 'heartlib', 'use', false, '')\", \"id\":\"heartlib-x\", \"sym\":\"x\", \"func\":\"heartlib\",  \"localFunc\":\"\", \"type\":\"use\", \"case\":\"equation\"} }{ {x} } & ∈ \\mathbb{R} \\\\\n\\\\\n\\end{align*}\n"
+ }
+}

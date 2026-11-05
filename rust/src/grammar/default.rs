@@ -219,77 +219,78 @@ pub const R_SVD_FUNC: RuleId = 210;
 pub const R_DIRECTIVE: RuleId = 211;
 pub const R_IMPORT: RuleId = 212;
 pub const R_IMPORT_VAR: RuleId = 213;
-pub const R_WHERE_CONDITIONS: RuleId = 214;
-pub const R_WHERE_CONDITION: RuleId = 215;
-pub const R_ATTRIBUTE: RuleId = 216;
-pub const R_LA_WHERE_CONDITION: RuleId = 217;
-pub const R_DE_WHERE_CONDITION: RuleId = 218;
-pub const R_WHERE_CONDITION_TERSE: RuleId = 219;
-pub const R_VALID_BLOCK: RuleId = 220;
-pub const R_PARAMS_BLOCK: RuleId = 221;
-pub const R_BUILTIN_OPERATORS: RuleId = 222;
-pub const R_STATEMENTS: RuleId = 223;
-pub const R_STATEMENT: RuleId = 224;
-pub const R_EXPRESSION: RuleId = 225;
-pub const R_DESTRUCTURE: RuleId = 226;
-pub const R_ASSIGNMENT: RuleId = 227;
-pub const R_GENERAL_ASSIGN: RuleId = 228;
-pub const R_GENERAL_ASSIGNMENT: RuleId = 229;
-pub const R_SIMPLIFIED_RIGHT_HAND_SIDE: RuleId = 230;
-pub const R_RIGHT_HAND_SIDE: RuleId = 231;
-pub const R_LEFT_HAND_SIDE: RuleId = 232;
-pub const R_TERM: RuleId = 233;
-pub const R_FACTOR: RuleId = 234;
-pub const R_SUB_FACTOR: RuleId = 235;
-pub const R_CONSTANT: RuleId = 236;
-pub const R_KEYWORDS_U: RuleId = 237;
-pub const R_SUBEXPRESSION: RuleId = 238;
-pub const R_IF_CONDITION: RuleId = 239;
-pub const R_AND_CONDITION: RuleId = 240;
-pub const R_ATOM_CONDITION: RuleId = 241;
-pub const R_IN: RuleId = 242;
-pub const R_NOT_IN: RuleId = 243;
-pub const R_NOT_EQUAL: RuleId = 244;
-pub const R_EQUAL: RuleId = 245;
-pub const R_GREATER: RuleId = 246;
-pub const R_GREATER_EQUAL: RuleId = 247;
-pub const R_LESS: RuleId = 248;
-pub const R_LESS_EQUAL: RuleId = 249;
-pub const R_ARITHMETIC_EXPRESSION: RuleId = 250;
-pub const R_ARITHMETIC_ADDITION: RuleId = 251;
-pub const R_ARITHMETIC_SUBTRACTION: RuleId = 252;
-pub const R_ARITHMETIC_TERM: RuleId = 253;
-pub const R_ARITHMETIC_MULTIPLICATION: RuleId = 254;
-pub const R_ARITHMETIC_DIVISION: RuleId = 255;
-pub const R_ARITHMETIC_FACTOR: RuleId = 256;
-pub const R_ARITHMETIC_SUBEXPRESSION: RuleId = 257;
-pub const R_MATRIX_TYPE: RuleId = 258;
-pub const R_MATRIX_ATTRIBUTE: RuleId = 259;
-pub const R_VECTOR_TYPE: RuleId = 260;
-pub const R_SCALAR_TYPE: RuleId = 261;
-pub const R_SET_TYPE: RuleId = 262;
-pub const R_TUPLE_TYPE: RuleId = 263;
-pub const R_DIMENSION: RuleId = 264;
-pub const R_NAMED_TYPE: RuleId = 265;
-pub const R_MESH_TYPE: RuleId = 266;
-pub const R_LA_TYPE: RuleId = 267;
-pub const R_PARAMS_TYPE: RuleId = 268;
-pub const R_FUNCTION_TYPE: RuleId = 269;
-pub const R_MAPPING_TYPE: RuleId = 270;
-pub const R_INTEGER: RuleId = 271;
-pub const R_SUP_INTEGER: RuleId = 272;
-pub const R_SUB_INTEGER: RuleId = 273;
-pub const R_DIGIT: RuleId = 274;
-pub const R_SET_OPERATORS: RuleId = 275;
-pub const R_UNION_OPERATOR: RuleId = 276;
-pub const R_INTERSECT_OPERATOR: RuleId = 277;
-pub const R_FUNC_ID: RuleId = 278;
-pub const R_IDENTIFIER_ALONE: RuleId = 279;
-pub const R_IDENTIFIER: RuleId = 280;
-pub const R_FUNCTION_OPERATOR: RuleId = 281;
-pub const R_LOCAL_FUNC: RuleId = 282;
+pub const R_IMPORT_CONSTANT: RuleId = 214;
+pub const R_WHERE_CONDITIONS: RuleId = 215;
+pub const R_WHERE_CONDITION: RuleId = 216;
+pub const R_ATTRIBUTE: RuleId = 217;
+pub const R_LA_WHERE_CONDITION: RuleId = 218;
+pub const R_DE_WHERE_CONDITION: RuleId = 219;
+pub const R_WHERE_CONDITION_TERSE: RuleId = 220;
+pub const R_VALID_BLOCK: RuleId = 221;
+pub const R_PARAMS_BLOCK: RuleId = 222;
+pub const R_BUILTIN_OPERATORS: RuleId = 223;
+pub const R_STATEMENTS: RuleId = 224;
+pub const R_STATEMENT: RuleId = 225;
+pub const R_EXPRESSION: RuleId = 226;
+pub const R_DESTRUCTURE: RuleId = 227;
+pub const R_ASSIGNMENT: RuleId = 228;
+pub const R_GENERAL_ASSIGN: RuleId = 229;
+pub const R_GENERAL_ASSIGNMENT: RuleId = 230;
+pub const R_SIMPLIFIED_RIGHT_HAND_SIDE: RuleId = 231;
+pub const R_RIGHT_HAND_SIDE: RuleId = 232;
+pub const R_LEFT_HAND_SIDE: RuleId = 233;
+pub const R_TERM: RuleId = 234;
+pub const R_FACTOR: RuleId = 235;
+pub const R_SUB_FACTOR: RuleId = 236;
+pub const R_CONSTANT: RuleId = 237;
+pub const R_KEYWORDS_U: RuleId = 238;
+pub const R_SUBEXPRESSION: RuleId = 239;
+pub const R_IF_CONDITION: RuleId = 240;
+pub const R_AND_CONDITION: RuleId = 241;
+pub const R_ATOM_CONDITION: RuleId = 242;
+pub const R_IN: RuleId = 243;
+pub const R_NOT_IN: RuleId = 244;
+pub const R_NOT_EQUAL: RuleId = 245;
+pub const R_EQUAL: RuleId = 246;
+pub const R_GREATER: RuleId = 247;
+pub const R_GREATER_EQUAL: RuleId = 248;
+pub const R_LESS: RuleId = 249;
+pub const R_LESS_EQUAL: RuleId = 250;
+pub const R_ARITHMETIC_EXPRESSION: RuleId = 251;
+pub const R_ARITHMETIC_ADDITION: RuleId = 252;
+pub const R_ARITHMETIC_SUBTRACTION: RuleId = 253;
+pub const R_ARITHMETIC_TERM: RuleId = 254;
+pub const R_ARITHMETIC_MULTIPLICATION: RuleId = 255;
+pub const R_ARITHMETIC_DIVISION: RuleId = 256;
+pub const R_ARITHMETIC_FACTOR: RuleId = 257;
+pub const R_ARITHMETIC_SUBEXPRESSION: RuleId = 258;
+pub const R_MATRIX_TYPE: RuleId = 259;
+pub const R_MATRIX_ATTRIBUTE: RuleId = 260;
+pub const R_VECTOR_TYPE: RuleId = 261;
+pub const R_SCALAR_TYPE: RuleId = 262;
+pub const R_SET_TYPE: RuleId = 263;
+pub const R_TUPLE_TYPE: RuleId = 264;
+pub const R_DIMENSION: RuleId = 265;
+pub const R_NAMED_TYPE: RuleId = 266;
+pub const R_MESH_TYPE: RuleId = 267;
+pub const R_LA_TYPE: RuleId = 268;
+pub const R_PARAMS_TYPE: RuleId = 269;
+pub const R_FUNCTION_TYPE: RuleId = 270;
+pub const R_MAPPING_TYPE: RuleId = 271;
+pub const R_INTEGER: RuleId = 272;
+pub const R_SUP_INTEGER: RuleId = 273;
+pub const R_SUB_INTEGER: RuleId = 274;
+pub const R_DIGIT: RuleId = 275;
+pub const R_SET_OPERATORS: RuleId = 276;
+pub const R_UNION_OPERATOR: RuleId = 277;
+pub const R_INTERSECT_OPERATOR: RuleId = 278;
+pub const R_FUNC_ID: RuleId = 279;
+pub const R_IDENTIFIER_ALONE: RuleId = 280;
+pub const R_IDENTIFIER: RuleId = 281;
+pub const R_FUNCTION_OPERATOR: RuleId = 282;
+pub const R_LOCAL_FUNC: RuleId = 283;
 
-pub static RULES: [RuleInfo; 283] = [
+pub static RULES: [RuleInfo; 284] = [
     RuleInfo { name: "start", class: Some("Start"), leftrec: false, memo: false, body: r_start },
     RuleInfo { name: "TRACE", class: None, leftrec: false, memo: true, body: r_TRACE },
     RuleInfo { name: "TR", class: None, leftrec: false, memo: true, body: r_TR },
@@ -504,6 +505,7 @@ pub static RULES: [RuleInfo; 283] = [
     RuleInfo { name: "Directive", class: None, leftrec: false, memo: true, body: r_Directive },
     RuleInfo { name: "import", class: Some("Import"), leftrec: false, memo: true, body: r_import },
     RuleInfo { name: "import_var", class: Some("ImportVar"), leftrec: false, memo: true, body: r_import_var },
+    RuleInfo { name: "import_constant", class: Some("IdentifierAlone"), leftrec: false, memo: true, body: r_import_constant },
     RuleInfo { name: "where_conditions", class: Some("WhereConditions"), leftrec: false, memo: true, body: r_where_conditions },
     RuleInfo { name: "where_condition", class: None, leftrec: false, memo: true, body: r_where_condition },
     RuleInfo { name: "attribute", class: None, leftrec: false, memo: true, body: r_attribute },
@@ -575,7 +577,7 @@ pub static RULES: [RuleInfo; 283] = [
     RuleInfo { name: "local_func", class: Some("LocalFunc"), leftrec: false, memo: true, body: r_local_func },
 ];
 
-pub static PATTERNS: [&str; 122] = [
+pub static PATTERNS: [&str; 123] = [
     "trace",
     "tr",
     "vec",
@@ -691,6 +693,7 @@ pub static PATTERNS: [&str; 122] = [
     "[,;x\\u00D7]",
     "∞",
     "e",
+    "[A-Za-z0-9_\\p{L}]",
     "tets",
     "[ℝℤ]",
     "[\\u2070\\u00B9\\u00B2\\u00B3\\u2074-\\u2079]",
@@ -7640,7 +7643,24 @@ fn r_import(p: &mut Parser) -> PResult {
 }
 
 fn r_import_var(p: &mut Parser) -> PResult {
-    p.call(R_MULTI_STR)?;
+    p.group(|p| {
+        p.choice(|p| {
+            if p.option(|p| {
+                p.call(R_MULTI_STR)?;
+                Ok(())
+            }) {
+                return Ok(());
+            }
+            if p.option(|p| {
+                p.call(R_IMPORT_CONSTANT)?;
+                Ok(())
+            }) {
+                return Ok(());
+            }
+            Err(p.error("expecting one of: <import_constant> <multi_str>"))
+        })?;
+        Ok(())
+    })?;
     p.name_last_node("name");
     p.closure(|p| {
         p.positive_closure(|p| {
@@ -7658,6 +7678,17 @@ fn r_import_var(p: &mut Parser) -> PResult {
         Ok(())
     })?;
     p.define(&["name", "r"], &[]);
+    Ok(())
+}
+
+fn r_import_constant(p: &mut Parser) -> PResult {
+    p.pattern(114)?;
+    p.name_last_node("value");
+    p.ifnot(|p| {
+        p.pattern(115)?;
+        Ok(())
+    })?;
+    p.define(&["value"], &[]);
     Ok(())
 }
 
@@ -7714,7 +7745,7 @@ fn r_attribute(p: &mut Parser) -> PResult {
             return Ok(());
         }
         if p.option(|p| {
-            p.pattern(115)?;
+            p.pattern(116)?;
             Ok(())
         }) {
             return Ok(());
@@ -7980,8 +8011,28 @@ fn r_params_block(p: &mut Parser) -> PResult {
             Ok(())
         })?;
         p.name_last_node("annotation");
-        p.positive_closure(|p| {
-            p.call(R_SEPARATOR_WITH_SPACE)?;
+        p.group(|p| {
+            p.choice(|p| {
+                if p.option(|p| {
+                    p.positive_closure(|p| {
+                        p.call(R_SEPARATOR_WITH_SPACE)?;
+                        Ok(())
+                    })?;
+                    Ok(())
+                }) {
+                    return Ok(());
+                }
+                if p.option(|p| {
+                    p.positive_closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    Ok(())
+                }) {
+                    return Ok(());
+                }
+                Err(p.error("expecting one of: <hspace> <separator_with_space>"))
+            })?;
             Ok(())
         })?;
         p.define(&["annotation"], &[]);
@@ -9269,7 +9320,7 @@ fn r_matrix_type(p: &mut Parser) -> PResult {
             return Ok(());
         }
         if p.option(|p| {
-            p.pattern(116)?;
+            p.pattern(117)?;
             p.name_last_node("type");
             p.closure(|p| {
                 p.call(R_HSPACE)?;
@@ -9355,7 +9406,7 @@ fn r_vector_type(p: &mut Parser) -> PResult {
                 return Ok(());
             }
             if p.option(|p| {
-                p.pattern(116)?;
+                p.pattern(117)?;
                 p.name_last_node("type");
                 p.closure(|p| {
                     p.call(R_HSPACE)?;
@@ -9384,7 +9435,7 @@ fn r_vector_type(p: &mut Parser) -> PResult {
                 return Ok(());
             }
             if p.option(|p| {
-                p.pattern(116)?;
+                p.pattern(117)?;
                 p.name_last_node("type");
                 p.closure(|p| {
                     p.call(R_HSPACE)?;
@@ -9403,7 +9454,7 @@ fn r_vector_type(p: &mut Parser) -> PResult {
                 return Ok(());
             }
             if p.option(|p| {
-                p.pattern(116)?;
+                p.pattern(117)?;
                 p.name_last_node("type");
                 p.call(R_SUP_INTEGER)?;
                 p.name_last_node("id1");
@@ -9464,7 +9515,7 @@ fn r_set_type(p: &mut Parser) -> PResult {
                 p.call(R_HSPACE)?;
                 Ok(())
             })?;
-            p.pattern(116)?;
+            p.pattern(117)?;
             p.add_last_node_to_name("type");
             p.closure(|p| {
                 p.call(R_HSPACE)?;
@@ -9476,7 +9527,7 @@ fn r_set_type(p: &mut Parser) -> PResult {
                     p.call(R_HSPACE)?;
                     Ok(())
                 })?;
-                p.pattern(116)?;
+                p.pattern(117)?;
                 p.add_last_node_to_name("type");
                 p.closure(|p| {
                     p.call(R_HSPACE)?;
@@ -9497,7 +9548,7 @@ fn r_set_type(p: &mut Parser) -> PResult {
                 p.call(R_HSPACE)?;
                 Ok(())
             })?;
-            p.pattern(116)?;
+            p.pattern(117)?;
             p.name_last_node("type1");
             p.closure(|p| {
                 p.call(R_HSPACE)?;
@@ -9529,7 +9580,7 @@ fn r_set_type(p: &mut Parser) -> PResult {
                 p.call(R_HSPACE)?;
                 Ok(())
             })?;
-            p.pattern(116)?;
+            p.pattern(117)?;
             p.name_last_node("type2");
             p.optional(|p| {
                 p.call(R_SUP_INTEGER)?;
@@ -9978,7 +10029,7 @@ fn r_integer(p: &mut Parser) -> PResult {
 
 fn r_sup_integer(p: &mut Parser) -> PResult {
     p.positive_closure(|p| {
-        p.pattern(117)?;
+        p.pattern(118)?;
         Ok(())
     })?;
     p.name_last_node("value");
@@ -9987,7 +10038,7 @@ fn r_sup_integer(p: &mut Parser) -> PResult {
 
 fn r_sub_integer(p: &mut Parser) -> PResult {
     p.positive_closure(|p| {
-        p.pattern(118)?;
+        p.pattern(119)?;
         Ok(())
     })?;
     p.name_last_node("value");
@@ -9995,7 +10046,7 @@ fn r_sub_integer(p: &mut Parser) -> PResult {
 }
 
 fn r_digit(p: &mut Parser) -> PResult {
-    p.pattern(119)?;
+    p.pattern(120)?;
     Ok(())
 }
 
@@ -10311,7 +10362,7 @@ fn r_local_func(p: &mut Parser) -> PResult {
                 p.call(R_IDENTIFIER_WITH_UNICODE_SUBSCRIPT)?;
                 p.name_last_node("name");
                 p.closure(|p| {
-                    p.pattern(120)?;
+                    p.pattern(121)?;
                     p.name_last_node("def_p");
                     p.closure(|p| {
                         p.closure(|p| {
@@ -10356,7 +10407,7 @@ fn r_local_func(p: &mut Parser) -> PResult {
                 p.call(R_IDENTIFIER_WITH_UNICODE_SUBSCRIPT)?;
                 p.name_last_node("name");
                 p.closure(|p| {
-                    p.pattern(121)?;
+                    p.pattern(122)?;
                     p.name_last_node("def_s");
                     p.closure(|p| {
                         p.closure(|p| {
@@ -10418,7 +10469,7 @@ fn r_local_func(p: &mut Parser) -> PResult {
                     Ok(())
                 })?;
                 p.closure(|p| {
-                    p.pattern(120)?;
+                    p.pattern(121)?;
                     p.name_last_node("def_p");
                     p.closure(|p| {
                         p.closure(|p| {
@@ -10480,7 +10531,7 @@ fn r_local_func(p: &mut Parser) -> PResult {
                     Ok(())
                 })?;
                 p.closure(|p| {
-                    p.pattern(121)?;
+                    p.pattern(122)?;
                     p.name_last_node("def_s");
                     p.closure(|p| {
                         p.closure(|p| {

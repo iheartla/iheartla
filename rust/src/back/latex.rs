@@ -652,6 +652,8 @@ impl<'p> Printer<'p> {
                     self.dim(n.get("id0"))
                 } else if n.get("num").truthy() {
                     self.dim(n.get("num"))
+                } else if n.get("size").truthy() {
+                    format!("\\#{}", self.dim(n.get("size").get("i")))
                 } else {
                     format!("\\left( {} \\right)", self.dim(n.get("sub").get("value")))
                 }
@@ -760,7 +762,9 @@ impl<'p> Printer<'p> {
         for l in &left {
             self.declared.insert(crate::decls::main_name(l));
         }
-        let eq = if self.in_sum { " = " } else { " & = " };
+        // the operator as written: a first x += e compiles as x = e but still prints +=
+        let op = if s.get("op").as_str() == Some("+=") { "\\mathrel{+}=" } else { "=" };
+        let eq = if self.in_sum { format!(" {op} ") } else { format!(" & {op} ") };
         format!("{}{eq}{}", lhs.join(","), rhs.join(",")) + &label(self)
     }
 
@@ -1233,7 +1237,7 @@ impl<'p> Printer<'p> {
             "CrossProduct" => format!("{} × {}", self.expr(op.get("left")), self.expr(op.get("right"))),
             "KroneckerProduct" => format!("{} \\otimes {}", self.expr(op.get("left")), self.expr(op.get("right"))),
             "DotProduct" => format!("{} \\cdot {}", self.expr(op.get("left")), self.expr(op.get("right"))),
-            "SizeOp" => format!("\\#{}", self.expr(op.get("p"))),
+            "SizeOp" => format!("\\#{}", self.expr(op.get("i"))),   // (the grammar names the operand i)
             "ElementConvertFunc" => {
                 let name = ["e", "es", "f", "fs", "s", "se", "t", "ts", "tu", "v", "vs"]
                     .iter()

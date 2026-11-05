@@ -22,7 +22,7 @@ if sys.platform == 'darwin' and 'SDKROOT' not in os.environ:
     _sdk = subprocess.run(['xcrun', '--show-sdk-path'], capture_output=True, text=True).stdout.strip()
     os.environ['SDKROOT'] = _sdk or '/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk'
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
-BACKENDS = os.environ.get('IHEARTLA_RUST_BACKENDS', 'numpy').split(',')
+BACKENDS = [b for b in os.environ.get('IHEARTLA_RUST_BACKENDS', 'numpy').split(',') if b]   # empty: the Python compiler's own output
 
 if 'matlab' in BACKENDS or os.environ.get('IHEARTLA_OCTAVE'):
     # Run the test suite's MATLAB checks in GNU Octave: a stand-in for the

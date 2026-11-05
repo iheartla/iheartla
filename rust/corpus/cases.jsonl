@@ -312,3 +312,7 @@
 {"id": "x_mesh_accessors", "src": "Vertices, Faces from FundamentalMeshAccessors(M)\nElementSets from MeshConnectivity\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\nA = ∑_(f ∈ F) ∑_(v ∈ Vertices(f)) ‖x_v‖\n", "path": "rust/corpus/mesh"}
 {"id": "x_mesh_laplacian", "src": "ElementSets, BoundaryMatrices from MeshConnectivity\nM ∈ FaceMesh\nV, E, F = ElementSets(M)\n`∂⁰`, `∂¹` = BoundaryMatrices(M)\nL = `∂⁰` `∂⁰`ᵀ\n", "path": "rust/corpus/mesh"}
 {"id": "x_mesh_one_ring", "src": "ElementSets from MeshConnectivity\nVertexOneRing from Neighborhoods(M)\nM ∈ FaceMesh\nx_i ∈ ℝ^3\nV, E, F = ElementSets(M)\ny_i = ∑_(j ∈ VertexOneRing(i)) x_j where i ∈ V\n", "path": "rust/corpus/mesh"}
+{"id": "t_issue_131_sparse_accumulate", "src": "L_i,j += { w_i,j if (i,j) ∈ E\nL_i,i = -sum_(l for l != i) L_i,l\nwhere\nL: ℝ^(n×n)\nw: ℝ^(n×n)\nE: {ℤ²} index\n"}
+{"id": "t_issue_144_accumulate_where_line", "src": "a += 2\nwhere a ∈ ℝ\n"}
+{"id": "t_issue_142_size", "src": "y = #a + #S\nm, k = #A\nwhere\na_i ∈ ℝ\nS ∈ {ℤ}\nA ∈ ℝ^(2×3)\nx ∈ ℝ^(#a)\n"}
+{"id": "t_issue_146_constant_e", "src": "sin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n"}
