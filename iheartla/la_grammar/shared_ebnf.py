@@ -12,7 +12,14 @@ import::Import
     
 import_var::ImportVar
     = 
-    name:multi_str {{hspace}+ AS {hspace}+ r:multi_str}
+    name:(multi_str | import_constant) {{hspace}+ AS {hspace}+ r:multi_str}
+    ;
+
+# a constant a package exports (e from trigonometry): once it is imported, the parser takes it as
+# a keyword, which multi_str excludes, so the import itself needs it by name
+import_constant::IdentifierAlone
+    =
+    value:/e(?![A-Za-z0-9_\p{L}])/
     ;
 
 where_conditions::WhereConditions
