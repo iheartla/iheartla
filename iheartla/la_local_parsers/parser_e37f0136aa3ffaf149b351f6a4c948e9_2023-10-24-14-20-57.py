@@ -6660,9 +6660,22 @@ class grammare37f0136aa3ffaf149b351f6a4c948e9Parser(Parser):
                     )
             self.name_last_node('annotation')
 
-            def block3():
-                self._separator_with_space_()
-            self._positive_closure(block3)
+            with self._group():
+                with self._choice():
+                    with self._option():
+
+                        def block3():
+                            self._separator_with_space_()
+                        self._positive_closure(block3)
+                    with self._option():
+
+                        def block4():
+                            self._hspace_()
+                        self._positive_closure(block4)
+                    self._error(
+                        'expecting one of: '
+                        '<hspace> <separator_with_space>'
+                    )
 
             self._define(
                 ['annotation'],

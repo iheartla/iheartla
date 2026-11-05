@@ -32,7 +32,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
                 if right.is_node(IRNodeType.Expression) and right.value.is_node(IRNodeType.Factor) and right.value.sub:
                     right = right.value.sub.value  # (no parentheses around a subexpression)
                 rhs_list.append(self.visit(right, **kwargs))
-            content = ','.join(lhs_list) + " = " + ','.join(rhs_list)
+            content = ','.join(lhs_list) + " {} ".format(assign_op_tex(node)) + ','.join(rhs_list)
             self.code_frame.expr += content + '\n'
             self.code_frame.expr_dict[node.raw_text] = content
             return content
@@ -52,7 +52,7 @@ class CodeGenMacroMathjax(CodeGenMathjax):
             rhs_list = []
             for cur_index in range(len(node.right)):
                 rhs_list.append(self.visit(node.right[cur_index], **kwargs))
-            content = ','.join(lhs_list) + " & = " + ','.join(rhs_list)
+            content = ','.join(lhs_list) + " & {} ".format(assign_op_tex(node)) + ','.join(rhs_list)
         json = r"""{{"onclick":"event.stopPropagation(); onClickEq(this, '{}', [{}], false, [], [], '{}');"}}""".format(self.func_name, ', '.join(sym_list), base64.urlsafe_b64encode(node.raw_text.encode("utf-8")).decode("utf-8"))
         content = content + "\\\\" + "\\eqlabel{{ {} }}{{}}".format(json) + "\n"
         self.code_frame.expr += content

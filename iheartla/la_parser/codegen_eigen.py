@@ -2323,6 +2323,11 @@ class CodeGenEigen(CodeGen):
                                         content += '    std::vector<Eigen::Triplet<{}> > tripletList_{};\n'.format(self.get_cur_dtype(), sequence)
                                     else:
                                         content += '    tripletList_{}.clear();\n'.format(sequence)
+                                elif node.op != '+=':
+                                    # L_ii = e on a matrix defined before replaces its diagonal; without this, the
+                                    # old diagonal's triplets stay in the list and setFromTriplets adds them in
+                                    content += '    tripletList_{0}.erase(std::remove_if(tripletList_{0}.begin(), tripletList_{0}.end(), [](const Eigen::Triplet<{1}>& t){{ return t.row() == t.col(); }}), tripletList_{0}.end());\n'.format(
+                                        sequence, self.get_cur_dtype())
                                 content += "    for( int {}=1; {}<={}; {}++){{\n".format(left_subs[0], left_subs[0],
                                                                                          self.get_sym_type(sequence).rows,
                                                                                          left_subs[0])
