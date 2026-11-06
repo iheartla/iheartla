@@ -4,7 +4,7 @@
 set -e
 PYODIDE=314.0.7
 # pure-Python wheels from PyPI; keep TATSU within the range in pyproject.toml
-TATSU=5.14.0
+TATSU=5.15.1
 APPDIRS=1.4.4
 cd "$(dirname "$0")/js"
 rm -rf pyodide && mkdir pyodide
