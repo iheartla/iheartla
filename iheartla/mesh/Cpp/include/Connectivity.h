@@ -4,7 +4,7 @@
 #include <Eigen/Sparse>
 #include <map>
 
-namespace iheartmesh {
+namespace heartlang {
 
 using Eigen::MatrixXi;
 using Eigen::VectorXi;

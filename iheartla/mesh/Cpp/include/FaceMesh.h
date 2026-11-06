@@ -5,7 +5,7 @@
 #include <map>
 #include "Connectivity.h"
 
-namespace iheartmesh {
+namespace heartlang {
 
 typedef std::tuple<const std::vector<int>&,const std::vector<int>&,const std::vector<int>&> FaceSetTuple;
 typedef std::tuple<const Eigen::SparseMatrix<int>&, const Eigen::SparseMatrix<int>&> FaceMatTuple;

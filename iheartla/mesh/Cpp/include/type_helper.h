@@ -36,7 +36,7 @@ template<typename S, int R, int C, int O, int MR, int MC> std::vector<Eigen::Mat
     return v;
 }
 
-namespace iheartmesh {
+namespace heartlang {
 
 // x with double reals: a real (double, or autodiff::var's value), an Eigen
 // matrix or vector of them, or a std::vector of those
@@ -69,7 +69,7 @@ template<typename T, typename A> auto to_double(const std::vector<T, A> & x) {
 #include <autodiff/reverse/var.hpp>
 #include <autodiff/reverse/var/eigen.hpp>
 
-namespace iheartmesh {
+namespace heartlang {
 
 using namespace autodiff;
 

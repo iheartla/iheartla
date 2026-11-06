@@ -134,7 +134,7 @@ To use the code output for the various backends, you will need:
 * LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
 * Python: NumPy and SciPy
 * MATLAB: MATLAB or Octave
-* C++: Eigen, and the support header `type_helper.h` in `iheartla/mesh/Cpp/include/`, beside the mesh classes. Code with derivatives also needs [autodiff](https://github.com/autodiff/autodiff), which needs Eigen 3.4. On macOS with Homebrew's Eigen: `c++ -std=c++17 -I$(brew --prefix eigen)/include/eigen3 -Iiheartla/mesh/Cpp/include output.cpp -o output`
+* C++: Eigen. Code with meshes or derivatives also needs `iheartla/mesh/Cpp/include/` (the mesh classes, and the support header `type_helper.h`) on the include path; with meshes, compile and link `iheartla/mesh/Cpp/src/`; with derivatives, [autodiff](https://github.com/autodiff/autodiff), which needs Eigen 3.4. On macOS with Homebrew's Eigen: `c++ -std=c++17 -I$(brew --prefix eigen)/include/eigen3 output.cpp -o output`
 * MATLAB: MATLAB or (untested) Octave
 
 ## Unicode Fonts
