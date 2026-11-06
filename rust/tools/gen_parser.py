@@ -2,16 +2,18 @@
 
 The Python compiler parses with two TatSu-generated parsers in
 iheartla/la_local_parsers/: init_parser.py (the "simplified" grammar used to
-collect declarations) and default_parser.py (the full grammar). Both were
-patched by hand after generation, so they, not the EBNF in la_grammar/, define
-the language. This script translates their rule methods into Rust functions
+collect declarations) and default_parser.py (the full grammar). Both are TatSu's
+output for the EBNF in la_grammar/ (python -m iheartla.la_grammar.update_parsers).
+This script translates their rule methods into Rust functions
 for the PEG engine in rust/src/peg.rs, which reimplements TatSu's semantics
 (ordered choice, CST/AST construction, memoization, left recursion).
 
-The hand-patched rules that consult the parser's configuration (declared
-multi-letter identifiers, function names, imported builtins, renames, the
-constant e) are not translated; they call hand-written functions in
-rust/src/grammar/special.rs instead.
+The rules that consult the parser's configuration (declared multi-letter
+identifiers, function names, imported builtins, renames, the constant e) are
+overridden in iheartla/la_tools/configured_parser.py, not in the generated
+files. Here the renamable builtin keywords are translated from what that
+override does, and the others call hand-written functions in
+rust/src/grammar/special.rs.
 
 usage: python rust/tools/gen_parser.py   (writes rust/src/grammar/{init,default}.rs)
 """
@@ -23,8 +25,27 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 SRC = os.path.join(ROOT, 'iheartla', 'la_local_parsers')
 OUT = os.path.join(ROOT, 'rust', 'src', 'grammar')
 
-# rules whose generated code was patched to read the parser configuration
-SPECIAL = {'func_id', 'identifier_alone', 'builtin_operators', 'constant', 'KEYWORDS'}
+
+def configured_rules():
+    """The rules iheartla/la_tools/configured_parser.py overrides to read the parser
+    configuration: (CONFIGURED, RENAMABLE_KEYWORDS), read from that file's source."""
+    tree = ast.parse(open(os.path.join(ROOT, 'iheartla', 'la_tools', 'configured_parser.py'), encoding='utf-8').read())
+    names = {}
+    for node in tree.body:
+        if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name):
+            names[node.targets[0].id] = node.value
+    # RENAMABLE_KEYWORDS = {name: name.lower() for name in [...]}
+    renamable = {n.value: n.value.lower() for n in names['RENAMABLE_KEYWORDS'].generators[0].iter.elts}
+    # CONFIGURED = {...} | set(RENAMABLE_KEYWORDS)
+    configured = {n.value for n in names['CONFIGURED'].left.elts} | set(renamable)
+    return configured, renamable
+
+
+# rules of the default parser that read the parser configuration: in Rust, the keywords a
+# rename may change are translated from the override's logic (below), and the others are
+# hand-written in rust/src/grammar/special.rs
+CONFIGURED, RENAMABLE = configured_rules()
+SPECIAL = CONFIGURED - set(RENAMABLE)
 
 
 def rust_str(s):
@@ -92,6 +113,12 @@ class Translator:
             self.rules.append((name, cls, leftrec, memo))
             if name in SPECIAL and self.variant == 'default':
                 self.bodies[name] = None
+            elif name in RENAMABLE and self.variant == 'default':
+                # what ConfiguredParser does: the renamed name if the import renames it
+                key = RENAMABLE[name]
+                body = ast.parse("if {0!r} in self.conversion_dict:\n    self._pattern(self.conversion_dict[{0!r}])\n"
+                                 "else:\n    self._pattern({0!r})\n".format(key)).body
+                self.bodies[name] = self.block(body, {}, 1)
             else:
                 self.bodies[name] = self.block(fn.body, {}, 1)
 
