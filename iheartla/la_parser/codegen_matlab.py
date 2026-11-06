@@ -1117,10 +1117,18 @@ class CodeGenMatlab(CodeGen):
                 base_info.content = "inv({})".format(base_info.content)
         else:
             power_info = self.visit(node.power, **kwargs)
+            # MATLAB's ^ and .^ are left-associative while iheartla's are
+            # right-associative, so a power used as the exponent needs parens.
+            exponent_node = node.power
+            if exponent_node.is_node(IRNodeType.Factor):
+                exponent_node = exponent_node.op
+            exponent = power_info.content
+            if exponent_node is not None and exponent_node.is_node(IRNodeType.Power):
+                exponent = "({})".format(exponent)
             if node.base.la_type.is_scalar():
-                base_info.content = "{}.^{}".format(base_info.content, power_info.content)
+                base_info.content = "{}.^{}".format(base_info.content, exponent)
             else:
-                base_info.content = "{}^{}".format(base_info.content, power_info.content)
+                base_info.content = "{}^{}".format(base_info.content, exponent)
         return base_info
 
     def visit_solver(self, node, **kwargs):

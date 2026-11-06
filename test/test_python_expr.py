@@ -320,6 +320,29 @@ class TestExpr(BasePythonTest):
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
 
+    def test_scalar_pow_right_associative(self):
+        # a^b^d means a^(b^d): MATLAB's ^ is left-associative, so the
+        # generated code must parenthesize the exponent.
+        la_str = """C = A^B^D
+        where
+        A: scalar
+        B: scalar
+        D: scalar"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(2, 3, 2).C, 2 ** (3 ** 2))
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(np.array(mat_func(2, 3, 2)['C']), 2 ** (3 ** 2))
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double C = {}(2, 3, 2).C;".format(func_info.eig_func_name),
+                     "    return (C == {});".format(2 ** (3 ** 2)),
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
     def test_matrix_pow(self):
         la_str = """C = A^2
         where
