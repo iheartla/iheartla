@@ -94,7 +94,27 @@ The tests compile generated C++ with cppyy, against Eigen, autodiff and LBFGSpp,
     PYTHON=.venv/bin/python sh test/fix_cppyy_zstd.sh
     . .venv/bin/activate && sh run_test.sh
 
-`.github/workflows/test.yml` does the same. cppyy-cling 6.32.8 (the latest, from 2024) can't parse the C++ headers of the macOS 26 SDK and later (errors such as `use of undeclared identifier '__builtin_clzg'`), so on macOS the C++ tests need the macOS 15 SDK (Xcode 16), as CI uses (`runs-on: macos-15`).
+Without MATLAB, the MATLAB checks can run in GNU Octave (`brew install octave`), through a stand-in for the MATLAB engine (`test/octave_engine.py`):
+
+    uv sync --extra test --extra octave
+    IHEARTLA_OCTAVE=1 sh run_test.sh
+
+Set `IHEARTLA_OCTAVE_VERBOSE=1` too to print how many MATLAB functions ran. A few checks fail in Octave only: integrals, optimization, and ragged arrays.
+
+`.github/workflows/test.yml` does the same.
+
+**cppyy on macOS 26 and later.** cppyy-cling 6.32.8 (the latest, from 2024) can't parse the C++ headers of the macOS 26 SDK and later. `import cppyy` then fails with errors such as `use of undeclared identifier '__builtin_clzg'` or `'__GCC_DESTRUCTIVE_SIZE'`. CI avoids this by running on `macos-15`. Locally, download the macOS 15 SDK (only its headers are used) and point `SDKROOT` at it with an absolute path. The [joseluisq/macosx-sdks](https://github.com/joseluisq/macosx-sdks) releases have it:
+
+    mkdir -p ~/SDKs && cd ~/SDKs
+    curl -LO https://github.com/joseluisq/macosx-sdks/releases/download/15.5/MacOSX15.5.sdk.tar.xz
+    shasum -a 256 MacOSX15.5.sdk.tar.xz   # c15cf0f3f17d714d1aa5a642da8e118db53d79429eb015771ba816aa7c6c1cbd
+    tar -xJf MacOSX15.5.sdk.tar.xz
+    export SDKROOT=~/SDKs/MacOSX15.5.sdk   # must be absolute; cling passes it to -isysroot
+    python -c "import cppyy; cppyy.cppdef('int f() { return 3; }'); print(cppyy.gbl.f())"   # 3
+
+Set `SDKROOT` the same way before `sh run_test.sh`. The SDK installed with Xcode or the Command Line Tools stays the default for everything else.
+
+The `viz` extra installs the `graphviz` Python package. When it is present, compiling renders a graph with Graphviz's `dot`, so either install Graphviz or leave out `--extra viz` (`uv sync --extra test`), or every test fails with `ExecutableNotFound: failed to execute PosixPath('dot')`.
 
 ## Output Dependencies
 

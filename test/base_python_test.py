@@ -31,6 +31,12 @@ lbfgspp_path = os.environ.get("LBFGSPP_PATH") or next(
      if os.path.isfile(os.path.join(p, "LBFGS.h"))), os.path.join(third_party, "LBFGSpp", "include"))
 if os.path.isdir(lbfgspp_path):
     cppyy.add_include_path(lbfgspp_path)
+if os.environ.get("IHEARTLA_OCTAVE"):
+    # MATLAB checks in GNU Octave, through a stand-in for the matlab engine (test/octave_engine.py)
+    from test.octave_engine import install as _install_octave
+    _install_octave()
+    import iheartla.la_tools.la_helper as _la_helper
+    TEST_MATLAB = _la_helper.TEST_MATLAB = True
 if TEST_MATLAB:
     # Install the library using the following link
     # https://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
