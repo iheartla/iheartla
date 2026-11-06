@@ -52,9 +52,13 @@ def main():
     arg_parser.add_argument('input', nargs='*', help='The HeartLang files to compile.')
     args = arg_parser.parse_args()
     if args.regenerate_grammar:
-        la_helper.DEBUG_PARSER = True
-        import iheartla.la_tools.parser_manager
-        iheartla.la_tools.parser_manager.recreate_local_parser_cache()
+        # Regenerating la_local_parsers/ whole from the EBNF would drop the rules of
+        # default_parser.py that were rewritten by hand to read the parser configuration
+        # (declared names, imports, the constant e). Regenerate rules one at a time instead.
+        sys.exit("--regenerate-grammar is disabled: it would overwrite the hand-written rules of "
+                 "iheartla/la_local_parsers/default_parser.py. After changing the EBNF, regenerate the "
+                 "rules you changed with: python -m iheartla.la_grammar.update_parsers RULE ... "
+                 "(see that file).")
     else:
         from iheartla.compiler import show_gui
         from iheartla.la_parser.parser import compile_la_file, ParserTypeEnum
