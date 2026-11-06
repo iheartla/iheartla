@@ -64,8 +64,11 @@ function_operator::Function
 local_func::LocalFunc
     = 
     (
-    name:identifier {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'} 
-    | name:identifier {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
+    # (at least one argument: a parameter in ( ) or [ ], or a subscript, as in the full grammar)
+    name:identifier def_p:/\(/ {hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone} {hspace} ')'
+    | name:identifier def_s:/\[/ {hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone} {hspace} ']'
+    | name:(identifier_with_multi_subscript | identifier_with_subscript) {def_p:/\(/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ')'}
+    | name:(identifier_with_multi_subscript | identifier_with_subscript) {def_s:/\[/ {{hspace} params+:identifier_alone {{hspace} separators+:params_separator {hspace} params+:identifier_alone}} {hspace} ']'}
     ) 
     {hspace} op:'=' {hspace} expr+:right_hand_side [{hspace} line] {hspace} (WHERE | GIVEN ) {hspace} defs+:where_condition {{hspace} ',' {hspace} defs+:where_condition} {{hspace} ',' {hspace} [line]  {hspace} extra+:general_assign}
      ;
