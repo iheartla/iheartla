@@ -124,6 +124,15 @@ Set `SDKROOT` the same way before `sh run_test.sh`. The SDK installed with Xcode
 
 The `viz` extra installs the `graphviz` Python package. When it is present, compiling renders a graph with Graphviz's `dot`, so either install Graphviz or leave out `--extra viz` (`uv sync --extra test`), or every test fails with `ExecutableNotFound: failed to execute PosixPath('dot')`.
 
+### Changing the grammar
+
+The grammar is EBNF in `iheartla/la_grammar/`, and the compiler parses with TatSu-generated parsers in `iheartla/la_local_parsers/`. Some rules of `default_parser.py` were rewritten by hand to read the parser's configuration (declared multi-letter names, imported functions and their renames, the constant `e`), so the parsers can't be regenerated whole, and `--regenerate-grammar` refuses. After changing the EBNF, regenerate the rules you changed, with TatSu 5.8.3 (the version that generated the files):
+
+    uv run --with tatsu==5.8.3 python -m iheartla.la_grammar.update_parsers local_func where_conditions
+    uv run --with tatsu==5.8.3 python -m iheartla.la_grammar.update_parsers --check
+
+`--check` lists the rules whose code differs from TatSu's output for the EBNF. Only the hand-written ones should. On the `rust` branch, then run `python rust/tools/gen_parser.py` to translate the parsers to Rust.
+
 ## Output Dependencies
 
 To use the code output for the various backends, you will need:
@@ -158,4 +167,4 @@ The page's third-party files are vendored by `docs/update_vendor.sh` and `docs/u
 
 ## Packaging a desktop release
 
-**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. Whoever is packaging should run `python3 -m iheartla --regenerate-grammar` at least once.
+**macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. The parsers ship in `iheartla/la_local_parsers/`, so packaging doesn't regenerate them.
