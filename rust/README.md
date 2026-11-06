@@ -169,6 +169,9 @@ source ─ grammar::parse_init ─▶ parse tree ─ decls ─▶ ParserConfig
     Integer vectors and matrices keep `int` elements (tests rely on this) and get
     `.cast<double>()` where they meet reals. Sums, piecewise expressions and block
     matrices become immediately invoked lambdas, so every expression stays an expression.
+    Its support code is the Python compiler's: `#include "type_helper.h"`
+    (`iheartla/mesh/Cpp/include/`), after `#define IHEARTLA_DERIVATIVES` in a program
+    with derivatives.
 
 ## Tools (`tools/`)
 

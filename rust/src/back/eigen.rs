@@ -17,71 +17,12 @@ use std::collections::{HashMap, HashSet};
 
 const HEADER: &str = "#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eigen/Dense>\n#include <Eigen/Sparse>\n\
 #include <Eigen/SVD>\n#include <iostream>\n#include <set>\n#include <vector>\n#include <tuple>\n#include <functional>\n\
-#include <algorithm>\n#include <cmath>\n#include <stdexcept>\n\
-#ifndef IHEARTLA_SORTED_SET\n#define IHEARTLA_SORTED_SET\n\
-// sets are sorted vectors without duplicates (defined before the last #include:\n\
-// code that wraps the generated code in a namespace starts it after that)\n\
-template<typename T> std::vector<T> sorted_set(std::vector<T> v) { std::sort(v.begin(), v.end()); v.erase(std::unique(v.begin(), v.end()), v.end()); return v; }\n\
-// (vectors in lexicographic order)\n\
-template<typename S, int R, int C, int O, int MR, int MC> std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> sorted_set(std::vector<Eigen::Matrix<S, R, C, O, MR, MC>> v) {\n\
-    using M = Eigen::Matrix<S, R, C, O, MR, MC>;\n\
-    std::sort(v.begin(), v.end(), [](const M & a, const M & b){ return std::lexicographical_compare(a.data(), a.data() + a.size(), b.data(), b.data() + b.size()); });\n\
-    v.erase(std::unique(v.begin(), v.end(), [](const M & a, const M & b){ return a.size() == b.size() && (a.array() == b.array()).all(); }), v.end());\n\
-    return v;\n\
-}\n\
-#endif\n\
-#include <unsupported/Eigen/MatrixFunctions>\n";
+#include <algorithm>\n#include <cmath>\n#include <stdexcept>\n#include <unsupported/Eigen/MatrixFunctions>\n";
 
-/// For derivatives (reverse mode, https://github.com/autodiff/autodiff): a
-/// value as one flat vector, the value from such a vector, and a value's
-/// reals converted to autodiff::var (anything else is kept).
-const DERIVATIVE_HELPERS: &str = "#include <autodiff/reverse/var.hpp>\n#include <autodiff/reverse/var/eigen.hpp>\n\
-#ifndef IHEARTLA_DERIVATIVES\n#define IHEARTLA_DERIVATIVES\n\
-namespace iheartla_diff {\n\
-template<typename T> struct is_vector : std::false_type {};\n\
-template<typename T, typename A> struct is_vector<std::vector<T, A>> : std::true_type {};\n\
-template<typename T> struct is_eigen : std::is_base_of<Eigen::EigenBase<T>, T> {};\n\
-// the length of the flat vector\n\
-template<typename T> long flat_size(const T & x) {\n\
-    if constexpr (is_vector<T>::value) { long n = 0; for (const auto & e : x) n += flat_size(e); return n; }\n\
-    else if constexpr (is_eigen<T>::value) return x.size();\n\
-    else return 1;\n\
-}\n\
-// x into v from offset k, row by row (as NumPy's ravel)\n\
-template<typename V, typename T> void flatten_into(const T & x, V & v, long & k) {\n\
-    if constexpr (is_vector<T>::value) { for (const auto & e : x) flatten_into(e, v, k); }\n\
-    else if constexpr (is_eigen<T>::value) { for (long i = 0; i < x.rows(); i++) for (long j = 0; j < x.cols(); j++) v(k++) = x(i, j); }\n\
-    else v(k++) = x;\n\
-}\n\
-template<typename S, typename T> Eigen::Matrix<S, Eigen::Dynamic, 1> flatten(const T & x) {\n\
-    Eigen::Matrix<S, Eigen::Dynamic, 1> v(flat_size(x)); long k = 0; flatten_into(x, v, k); return v;\n\
-}\n\
-// a value shaped as x, with S reals, from v (from offset k)\n\
-template<typename S, typename T, typename V> auto unflatten(const V & v, const T & x, long & k) {\n\
-    if constexpr (is_vector<T>::value) {\n\
-        std::vector<decltype(unflatten<S>(v, x[0], k))> r;\n\
-        for (const auto & e : x) r.push_back(unflatten<S>(v, e, k));\n\
-        return r;\n\
-    } else if constexpr (is_eigen<T>::value) {\n\
-        Eigen::Matrix<S, T::RowsAtCompileTime, T::ColsAtCompileTime> r(x.rows(), x.cols());\n\
-        for (long i = 0; i < x.rows(); i++) for (long j = 0; j < x.cols(); j++) r(i, j) = v(k++);\n\
-        return r;\n\
-    } else return S(v(k++));\n\
-}\n\
-template<typename S, typename T, typename V> auto unflatten(const V & v, const T & x) { long k = 0; return unflatten<S>(v, x, k); }\n\
-// x with its reals as S (integers, sets, meshes, functions, sparse matrices kept)\n\
-template<typename S, typename T> auto to(const T & x) {\n\
-    if constexpr (std::is_same<T, double>::value) return S(x);\n\
-    else if constexpr (is_vector<T>::value) {\n\
-        if constexpr (std::is_same<decltype(to<S>(x[0])), typename T::value_type>::value) return x;\n\
-        else { std::vector<decltype(to<S>(x[0]))> r; for (const auto & e : x) r.push_back(to<S>(e)); return r; }\n\
-    } else if constexpr (is_eigen<T>::value && !std::is_base_of<Eigen::SparseMatrixBase<T>, T>::value) {\n\
-        if constexpr (std::is_same<typename T::Scalar, double>::value) return Eigen::Matrix<S, T::RowsAtCompileTime, T::ColsAtCompileTime>(x.template cast<S>());\n\
-        else return x;\n\
-    } else return x;\n\
-}\n\
-}\n\
-#endif\n";
+/// The support code (sorted_set; with IHEARTLA_DERIVATIVES defined, autodiff
+/// and the iheartla_diff helpers), shared with the Python compiler's output:
+/// iheartla/mesh/Cpp/include/type_helper.h.
+const SUPPORT: &str = "#include \"type_helper.h\"\n";
 
 pub fn generate(prog: &Program, struct_name: &str) -> String {
     let (include, body) = generate_parts(prog, struct_name);
@@ -93,6 +34,10 @@ pub fn generate(prog: &Program, struct_name: &str) -> String {
 pub fn generate_parts(prog: &Program, struct_name: &str) -> (String, String) {
     let mut out = String::new();
     out.push_str(HEADER);
+    if prog.derivatives {
+        out.push_str("#define IHEARTLA_DERIVATIVES\n");
+    }
+    out.push_str(SUPPORT);
     let mut kinds = Vec::new();
     mesh_kinds(prog, &mut kinds);
     if !kinds.is_empty() {
@@ -102,9 +47,6 @@ pub fn generate_parts(prog: &Program, struct_name: &str) -> (String, String) {
         out.push_str("#include \"MeshHelper.h\"\nusing namespace iheartmesh;\n");
     }
     out.push('\n');
-    if prog.derivatives {
-        out.push_str(DERIVATIVE_HELPERS);
-    }
     // (with derivatives, the struct is a template over its real type: double, or autodiff::var)
     DT_MODE.with(|m| m.set(prog.derivatives));
     let body = structure(prog, struct_name);
