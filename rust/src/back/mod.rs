@@ -209,4 +209,22 @@ mod tests {
         assert_eq!(line("e from trigonometry\ny = e^x\nwhere\nx ∈ ℝ\n", "numpy"), "np.power(np.e,x)");
         assert_eq!(line("sin, e from trigonometry\ny = e^x + sin(x)\nwhere\nx ∈ ℝ\n", "eigen"), "pow(M_E,x)+sin(x)");
     }
+
+    /// The C++ struct's only constructor takes the parameters and initializes the members; there
+    /// is no default constructor that would leave them uninitialized (as in the Python compiler).
+    #[test]
+    fn cpp_has_only_the_parameter_constructor() {
+        let out = crate::compile("y = b + c\nwhere\nb ∈ ℝ\nc ∈ ℝ\n", "eigen", "heartlib", false).unwrap();
+        assert!(!out.contains("heartlib() {}"), "{out}");
+        assert!(out.contains("heartlib(const double & b, const double & c)"), "{out}");
+    }
+
+    /// A local function has at least one argument: `y = b + c` / `where b ∈ ℝ, c ∈ ℝ` defines y
+    /// from the parameters b and c (it was a function y() with no arguments).
+    #[test]
+    fn definition_with_where_line() {
+        for src in ["y = b + c\nwhere b ∈ ℝ, c ∈ ℝ\n", "y = b + c where b ∈ ℝ, c ∈ ℝ\n"] {
+            assert_eq!(line(src, "numpy"), "b+c", "{src}");
+        }
+    }
 }

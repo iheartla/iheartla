@@ -47,10 +47,11 @@ RUST_TEST_VERBOSE=1 python rust/tools/run_tests_rust.py test.test_python_norm   
 The Python compiler still runs, but its output is replaced by the Rust compiler's for
 the backends listed in `IHEARTLA_RUST_BACKENDS` (`numpy`, `eigen`, `matlab`).
 
-With `matlab` in that list, the test suite's MATLAB checks run in GNU Octave:
-- the runner needs `octave-cli`, which ships with Homebrew's `octave`, and `pip install oct2py`;
-- a stand-in replaces the `matlab` engine module;
-- `IHEARTLA_OCTAVE=1` runs the same checks on the Python compiler's MATLAB output.
+With `matlab` in that list, the test suite's MATLAB checks run in GNU Octave, as the
+Python test suite runs them with `IHEARTLA_OCTAVE=1` (see the top-level README:
+`uv sync --extra octave`, and `octave-cli` from Homebrew's `octave`). With
+`IHEARTLA_RUST_BACKENDS=` (empty) and `IHEARTLA_OCTAVE=1`, the runner checks the Python
+compiler's own output.
 
 Each test module runs in its own
 process, because a C++ compile error can crash cling and end the whole run.

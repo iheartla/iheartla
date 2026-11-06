@@ -24,45 +24,12 @@ if sys.platform == 'darwin' and 'SDKROOT' not in os.environ:
 BINARY = os.path.join(ROOT, 'rust', 'target', 'release', 'iheartla')
 BACKENDS = [b for b in os.environ.get('IHEARTLA_RUST_BACKENDS', 'numpy').split(',') if b]   # empty: the Python compiler's own output
 
-if 'matlab' in BACKENDS or os.environ.get('IHEARTLA_OCTAVE'):
-    # Run the test suite's MATLAB checks in GNU Octave: a stand-in for the
-    # `matlab` engine module (matlab.double(...) is a NumPy array; functions
-    # are called through oct2py), and TEST_MATLAB switched on.
-    import types
-    import atexit
-    import numpy as _np
-    os.environ.setdefault('OCTAVE_EXECUTABLE', 'octave-cli')
-    import oct2py
-    _calls = [0]
-    if os.environ.get('RUST_TEST_VERBOSE'):
-        atexit.register(lambda: print('MATLAB functions run in Octave:', _calls[0]))
-
-    class _Engine:
-        def __init__(self):
-            self.oc = oct2py.Oct2Py(executable=os.environ.get('OCTAVE_EXECUTABLE', 'octave-cli'))
-
-        def genpath(self, d):
-            return os.path.abspath(d)
-
-        def addpath(self, d, nargout=0):
-            self.oc.addpath(d)
-
-        def __getattr__(self, name):
-            def call(*args):
-                _calls[0] += 1
-                self.oc.eval('rehash')
-                return self.oc.feval(name, *args)
-            return call
-
-    _matlab = types.ModuleType('matlab')
-    for _t in ['double', 'single', 'int8', 'int16', 'int32', 'int64', 'uint8', 'int']:
-        setattr(_matlab, _t, lambda x, _t=_t: _np.array(x, dtype=float if _t in ('double', 'single') else _np.int64))
-    _matlab.engine = types.ModuleType('matlab.engine')
-    _matlab.engine.start_matlab = _Engine
-    sys.modules['matlab'] = _matlab
-    sys.modules['matlab.engine'] = _matlab.engine
-    import iheartla.la_tools.la_helper as _helper
-    _helper.TEST_MATLAB = True
+if 'matlab' in BACKENDS:
+    # (the MATLAB checks run in GNU Octave: test/octave_engine.py, which the test suite
+    # installs when IHEARTLA_OCTAVE is set; it can also be set without Rust's MATLAB)
+    os.environ.setdefault('IHEARTLA_OCTAVE', '1')
+if os.environ.get('RUST_TEST_VERBOSE'):
+    os.environ.setdefault('IHEARTLA_OCTAVE_VERBOSE', '1')
 
 import iheartla.la_parser.parser as P
 from iheartla.la_tools.la_helper import ParserTypeEnum

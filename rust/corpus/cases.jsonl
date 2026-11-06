@@ -316,3 +316,5 @@
 {"id": "t_issue_144_accumulate_where_line", "src": "a += 2\nwhere a ∈ ℝ\n"}
 {"id": "t_issue_142_size", "src": "y = #a + #S\nm, k = #A\nwhere\na_i ∈ ℝ\nS ∈ {ℤ}\nA ∈ ℝ^(2×3)\nx ∈ ℝ^(#a)\n"}
 {"id": "t_issue_146_constant_e", "src": "sin, e from trigonometry\ns = e^x + sin(x)\nwhere\nx ∈ ℝ\n"}
+{"id": "t_definition_with_where_line", "src": "y = b + c\nwhere b ∈ ℝ, c ∈ ℝ\n"}
+{"id": "t_definition_with_where_same_line", "src": "y = b + c where b ∈ ℝ, c ∈ ℝ\n"}

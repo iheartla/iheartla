@@ -204,14 +204,18 @@ fn structure(prog: &Program, struct_name: &str) -> String {
         .iter()
         .map(|p| format!("const {} & {}", cpp_type(&p.ty), cpp_ident(&p.name)))
         .collect();
-    if !params.is_empty() {
-        out.push_str(&format!("\n    {struct_name}() {{}}"));
-    }
-    out.push_str(&format!("\n    {struct_name}({})\n    {{\n", params.join(", ")));
+    // The only constructor takes the parameters and initializes every member, as in the Python
+    // compiler's C++: imported modules are constructed in the initializer list (from the
+    // constructor's parameters), so their structs need no default constructor either.
+    let inits: Vec<String> = prog
+        .modules
+        .iter()
+        .map(|m| format!("_{}({})", m.name, m.args.iter().map(|a| cpp_ident(a)).collect::<Vec<_>>().join(", ")))
+        .collect();
+    let init_list = if inits.is_empty() { String::new() } else { format!("\n    : {}", inits.join(", ")) };
+    out.push_str(&format!("\n    {struct_name}({}){init_list}\n    {{\n", params.join(", ")));
     g.init_params();
     for m in &prog.modules {
-        let args: Vec<String> = m.args.iter().map(|a| g.name(a)).collect();
-        g.line(format!("this->_{} = {}({});", m.name, m.name, args.join(", ")));
         let funcs: Vec<&String> = m.prog.funcs.iter().flat_map(|(_, l)| l.iter().map(|(_, n)| n)).collect();
         for (inner, here) in &m.syms {
             if !funcs.contains(&inner) {

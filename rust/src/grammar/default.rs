@@ -7700,8 +7700,33 @@ fn r_where_conditions(p: &mut Parser) -> PResult {
     p.call(R_WHERE_CONDITION)?;
     p.add_last_node_to_name("value");
     p.closure(|p| {
-        p.positive_closure(|p| {
-            p.call(R_SEPARATOR_WITH_SPACE)?;
+        p.group(|p| {
+            p.choice(|p| {
+                if p.option(|p| {
+                    p.positive_closure(|p| {
+                        p.call(R_SEPARATOR_WITH_SPACE)?;
+                        Ok(())
+                    })?;
+                    Ok(())
+                }) {
+                    return Ok(());
+                }
+                if p.option(|p| {
+                    p.closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    p.token(",")?;
+                    p.closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    Ok(())
+                }) {
+                    return Ok(());
+                }
+                Err(p.error("expecting one of: ',' <hspace> <separator_with_space>"))
+            })?;
             Ok(())
         })?;
         p.call(R_WHERE_CONDITION)?;
@@ -10451,20 +10476,16 @@ fn r_local_func(p: &mut Parser) -> PResult {
             if p.option(|p| {
                 p.call(R_IDENTIFIER_ALONE)?;
                 p.name_last_node("name");
+                p.token("_")?;
+                p.call(R_IDENTIFIER_ALONE)?;
+                p.add_last_node_to_name("subs");
                 p.closure(|p| {
-                    p.token("_")?;
-                    p.call(R_IDENTIFIER_ALONE)?;
-                    p.add_last_node_to_name("subs");
                     p.closure(|p| {
-                        p.closure(|p| {
-                            p.token(",")?;
-                            Ok(())
-                        })?;
-                        p.call(R_IDENTIFIER_ALONE)?;
-                        p.add_last_node_to_name("subs");
-                        p.define(&[], &["subs"]);
+                        p.token(",")?;
                         Ok(())
                     })?;
+                    p.call(R_IDENTIFIER_ALONE)?;
+                    p.add_last_node_to_name("subs");
                     p.define(&[], &["subs"]);
                     Ok(())
                 })?;
@@ -10513,20 +10534,16 @@ fn r_local_func(p: &mut Parser) -> PResult {
             if p.option(|p| {
                 p.call(R_IDENTIFIER_ALONE)?;
                 p.name_last_node("name");
+                p.token("_")?;
+                p.call(R_IDENTIFIER_ALONE)?;
+                p.add_last_node_to_name("subs");
                 p.closure(|p| {
-                    p.token("_")?;
-                    p.call(R_IDENTIFIER_ALONE)?;
-                    p.add_last_node_to_name("subs");
                     p.closure(|p| {
-                        p.closure(|p| {
-                            p.token(",")?;
-                            Ok(())
-                        })?;
-                        p.call(R_IDENTIFIER_ALONE)?;
-                        p.add_last_node_to_name("subs");
-                        p.define(&[], &["subs"]);
+                        p.token(",")?;
                         Ok(())
                     })?;
+                    p.call(R_IDENTIFIER_ALONE)?;
+                    p.add_last_node_to_name("subs");
                     p.define(&[], &["subs"]);
                     Ok(())
                 })?;
@@ -10568,6 +10585,80 @@ fn r_local_func(p: &mut Parser) -> PResult {
                     Ok(())
                 })?;
                 p.define(&["def_s", "name"], &["params", "separators", "subs"]);
+                Ok(())
+            }) {
+                return Ok(());
+            }
+            if p.option(|p| {
+                p.call(R_IDENTIFIER_ALONE)?;
+                p.name_last_node("name");
+                p.pattern(121)?;
+                p.name_last_node("def_p");
+                p.closure(|p| {
+                    p.call(R_HSPACE)?;
+                    Ok(())
+                })?;
+                p.call(R_IDENTIFIER_ALONE)?;
+                p.add_last_node_to_name("params");
+                p.closure(|p| {
+                    p.closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    p.call(R_PARAMS_SEPARATOR)?;
+                    p.add_last_node_to_name("separators");
+                    p.closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    p.call(R_IDENTIFIER_ALONE)?;
+                    p.add_last_node_to_name("params");
+                    p.define(&[], &["params", "separators"]);
+                    Ok(())
+                })?;
+                p.closure(|p| {
+                    p.call(R_HSPACE)?;
+                    Ok(())
+                })?;
+                p.token(")")?;
+                p.define(&["def_p", "name"], &["params", "separators"]);
+                Ok(())
+            }) {
+                return Ok(());
+            }
+            if p.option(|p| {
+                p.call(R_IDENTIFIER_ALONE)?;
+                p.name_last_node("name");
+                p.pattern(122)?;
+                p.name_last_node("def_s");
+                p.closure(|p| {
+                    p.call(R_HSPACE)?;
+                    Ok(())
+                })?;
+                p.call(R_IDENTIFIER_ALONE)?;
+                p.add_last_node_to_name("params");
+                p.closure(|p| {
+                    p.closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    p.call(R_PARAMS_SEPARATOR)?;
+                    p.add_last_node_to_name("separators");
+                    p.closure(|p| {
+                        p.call(R_HSPACE)?;
+                        Ok(())
+                    })?;
+                    p.call(R_IDENTIFIER_ALONE)?;
+                    p.add_last_node_to_name("params");
+                    p.define(&[], &["params", "separators"]);
+                    Ok(())
+                })?;
+                p.closure(|p| {
+                    p.call(R_HSPACE)?;
+                    Ok(())
+                })?;
+                p.token("]")?;
+                p.define(&["def_s", "name"], &["params", "separators"]);
                 Ok(())
             }) {
                 return Ok(());

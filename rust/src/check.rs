@@ -261,6 +261,12 @@ impl<'a> Checker<'a> {
         for p in self.params.clone() {
             self.register_dims(&p.name, &p.ty);
         }
+        // a module is constructed first, from parameters (in C++, in the initializer list)
+        for m in &self.modules {
+            if let Some(a) = m.args.iter().find(|a| !self.params.iter().any(|p| &p.name == *a)) {
+                return Err(CheckError { message: format!("Module {}'s argument {a} must be a parameter", m.name) });
+            }
+        }
         Ok(Program {
             source: self.src.to_string(),
             params: self.params,
