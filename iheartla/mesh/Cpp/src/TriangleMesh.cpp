@@ -5,7 +5,7 @@
 #include "dec_util.h"
 #include "TriangleMesh.h"
 
-namespace iheartmesh {
+namespace heartlang {
 
 TriangleMesh::TriangleMesh(){
 

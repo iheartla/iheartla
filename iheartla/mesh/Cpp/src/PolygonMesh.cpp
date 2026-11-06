@@ -6,7 +6,7 @@
 #include "dec_util.h"
 #include "PolygonMesh.h"
 
-namespace iheartmesh {
+namespace heartlang {
 
 PolygonMesh::PolygonMesh(){
 

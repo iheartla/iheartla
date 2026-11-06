@@ -51,3 +51,8 @@ h1
   font-size: 1.5em;
   text-align: center;
 }
+.support-files {
+    display: inline-block;
+    margin-bottom: 4px;
+    font-size: 14px;
+}

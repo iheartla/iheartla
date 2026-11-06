@@ -142,7 +142,7 @@ To use the code output for the various backends, you will need:
 * LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
 * Python: NumPy and SciPy
 * MATLAB: MATLAB or Octave
-* C++: Eigen, and the support header `type_helper.h` in `iheartla/mesh/Cpp/include/`, beside the mesh classes. Code with derivatives also needs [autodiff](https://github.com/autodiff/autodiff), which needs Eigen 3.4. On macOS with Homebrew's Eigen: `c++ -std=c++17 -I$(brew --prefix eigen)/include/eigen3 -Iiheartla/mesh/Cpp/include output.cpp -o output`
+* C++: Eigen. Code with meshes or derivatives also needs `iheartla/mesh/Cpp/include/` (the mesh classes, and the support header `type_helper.h`) on the include path; with meshes, compile and link `iheartla/mesh/Cpp/src/` (the web page downloads both as `iheartla-cpp.zip`); with derivatives, [autodiff](https://github.com/autodiff/autodiff), which needs Eigen 3.4. On macOS with Homebrew's Eigen: `c++ -std=c++17 -I$(brew --prefix eigen)/include/eigen3 output.cpp -o output`
 * MATLAB: MATLAB or (untested) Octave
 
 ## Unicode Fonts
@@ -151,13 +151,13 @@ To use the code output for the various backends, you will need:
 
 ## Building the web page and the package
 
-The web page is the static site in `docs/`, served as is (by GitHub Pages, or `cd docs; python3 -m http.server`). Two of its files are built from the compilers and committed, so rebuild and commit them after changing a compiler:
+The web page is the static site in `docs/`, served as is (by GitHub Pages, or `cd docs; python3 -m http.server`). Some of its files are built from the compilers and committed, so rebuild and commit them after changing a compiler:
 
 * **The Python compiler**, which the page runs in Pyodide, is the wheel `docs/iheartla-0.0.1-py3-none-any.whl`. After changing `iheartla/`, run:
 
       sh docs/update_wheel.sh
 
-  It runs `uv build`, which builds the wheel from an sdist (`uv build --wheel` would build in the source tree, where a stale `build/` can leak into it), and drops the Rust compiler from the wheel; the page loads it from `docs/rust/`.
+  It runs `uv build`, which builds the wheel from an sdist (`uv build --wheel` would build in the source tree, where a stale `build/` can leak into it), and drops the Rust compiler from the wheel; the page loads it from `docs/rust/`. It also rebuilds `docs/iheartla-cpp.zip`, the page's download of the C++ support files (`iheartla/mesh/Cpp`).
 
 * **The Rust compiler**, built as WebAssembly, is `docs/rust/iheartla.wasm` for the page and `iheartla/rust/iheartla.wasm` for the `iheartla-rust` command, which is how `uvx` installs from git get it. After changing `rust/` or the bundled modules in `iheartla/mesh/*.hlang`, run (once: `rustup target add wasm32-unknown-unknown`):
 

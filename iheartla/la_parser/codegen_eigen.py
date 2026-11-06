@@ -26,10 +26,11 @@ class CodeGenEigen(CodeGen):
             self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
         if self.has_derivative:
-            # (turns on type_helper.h's autodiff part)
+            # type_helper.h's autodiff part (and its to_double)
             self.pre_str += '#define IHEARTLA_DERIVATIVES\n'
-        self.pre_str += '#include "type_helper.h"\n'
-        self.code_frame.namespace = 'using namespace iheartmesh;\n'
+            self.pre_str += '#include "type_helper.h"\n'
+        # (set for each program: CodeFrame.reset() keeps it; meshes set it too)
+        self.code_frame.namespace = 'using namespace heartlang;\n' if self.has_derivative else ''
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
         self.code_frame.include = self.pre_str
         self.double_type = ""          # double type
@@ -396,6 +397,7 @@ class CodeGenEigen(CodeGen):
                             self.code_frame.include += '#include "{}.h"\n'.format(MESH_MAPPING_DICT[cur_mesh]) 
                         # (indicator, nonzeros, ...: the header needn't rely on the includer for them)
                         self.code_frame.include += '#include "MeshHelper.h"\n'
+                        self.code_frame.namespace = 'using namespace heartlang;\n'
                         class_name = MESH_HELPER
                     # item_list.append("    {} {};\n".format(class_name, module_data.instance_name))
                     # init_var += "        {}.initialize({});\n".format(module_data.instance_name, ', '.join(module_data.params_list))
@@ -1521,9 +1523,9 @@ class CodeGenEigen(CodeGen):
                 if node.base.la_type.is_matrix() and node.base.la_type.sparse:
                     solver_name = self.generate_var_name("solver")
                     identity_name = self.generate_var_name("I")
-                    pre_list.append("    Eigen::SparseQR <to_double({}), Eigen::COLAMDOrdering<int> > {};\n".format(
-                        self.get_ctype(node.base.la_type), solver_name))
-                    pre_list.append("    {}.compute(to_double({}));\n".format(solver_name, base_info.content))
+                    pre_list.append("    Eigen::SparseQR <{}, Eigen::COLAMDOrdering<int> > {};\n".format(
+                        self.to_double(self.get_ctype(node.base.la_type)), solver_name))
+                    pre_list.append("    {}.compute({});\n".format(solver_name, self.to_double(base_info.content)))
                     pre_list.append("    {} {}({}, {});\n".format(self.get_ctype(node.base.la_type), identity_name,
                                                                   node.base.la_type.rows, node.base.la_type.cols))
                     pre_list.append("    {}.setIdentity();\n".format(identity_name))
@@ -1563,7 +1565,7 @@ class CodeGenEigen(CodeGen):
                 left_info.content = "({}).colPivHouseholderQr().solve(({}).toDense())".format(left_info.content,
                                                                                             right_info.content)
             else:
-                left_info.content = "(to_double({})).colPivHouseholderQr().solve(to_double({}))".format(left_info.content, right_info.content)
+                left_info.content = "({}).colPivHouseholderQr().solve({})".format(self.to_double(left_info.content), self.to_double(right_info.content))
         left_info.pre_list += pre_list
         return left_info    
 
@@ -3082,6 +3084,10 @@ class CodeGenEigen(CodeGen):
     def visit_integral(self, node, **kwargs):
         return CodeNodeInfo("")
 
+    def to_double(self, content):
+        """content with double reals, for Eigen's decompositions (only autodiff::var reals need converting)"""
+        return "to_double({})".format(content) if self.has_derivative else content
+
     def visit_to_double(self, node, **kwargs):
         node_info = self.visit(node.item, **kwargs)
         if node.la_type.is_scalar():
@@ -3304,7 +3310,7 @@ class CodeGenEigen(CodeGen):
                 content = "({}).inverse()".format(params_content)
             elif node.func_type == MathFuncType.MathFuncSVD:
                 svd_name = self.generate_var_name("svd")
-                pre_list.append("    Eigen::BDCSVD<{}> {}(to_double({}), Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type, True), svd_name, params_content))
+                pre_list.append("    Eigen::BDCSVD<{}> {}({}, Eigen::ComputeFullU | Eigen::ComputeFullV);".format(self.get_ctype(node.param.la_type, True), svd_name, self.to_double(params_content)))
                 cal_u = "{}.matrixU()".format(svd_name)
                 cal_sigma = "{}.singularValues()".format(svd_name)
                 cal_v = "{}.matrixV()".format(svd_name)

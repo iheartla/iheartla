@@ -5,7 +5,7 @@
 #include "dec_util.h"
 #include "Tetrahedron.h"
 
-namespace iheartmesh {
+namespace heartlang {
 
 Tetrahedron::Tetrahedron(){
 
