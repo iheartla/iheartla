@@ -35,7 +35,7 @@ const ready = (async () => {
     await pyodide.loadPackage(["micropip", "regex", "sympy"]);
     // The iheartla wheel is built from this repository with: uv build --wheel --no-create-gitignore -o docs
     pyodide.globals.set("wheels", [local + "appdirs-1.4.4-py2.py3-none-any.whl",
-                                   local + "tatsu-5.14.0-py3-none-any.whl",
+                                   local + "tatsu-5.15.1-py3-none-any.whl",
                                    new URL("../iheartla-0.0.1-py3-none-any.whl", import.meta.url).href]);
     await pyodide.runPythonAsync("import micropip\nawait micropip.install(wheels.to_py())");
     pyodide.runPython("import iheartla.la_parser.parser");  // load the compiler now, not on the first compile
