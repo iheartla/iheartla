@@ -39,7 +39,7 @@ def run(backend, src, k, cwd):
         path = os.path.join(TMP, 'prog{}.cpp'.format(k))
         open(path, 'w').write(code)
         exe = path[:-4]
-        srcs = [os.path.join(CPP, 'src', f) for f in ['MeshHelper.cpp', 'TriangleMesh.cpp', 'Connectivity.cpp', 'dec_util.cpp']] if 'iheartmesh' in code else []
+        srcs = [os.path.join(CPP, 'src', f) for f in ['MeshHelper.cpp', 'TriangleMesh.cpp', 'Connectivity.cpp', 'dec_util.cpp']] if 'MeshHelper.h' in code else []
         r = subprocess.run(['clang++', '-std=c++17', '-O0', '-w', '-I' + EIGEN, '-I' + LBFGSPP, '-I' + os.path.join(CPP, 'include'),
                             '-I' + os.path.join(ROOT, 'test', 'third_party', 'autodiff'), '-o', exe, path] + srcs, capture_output=True, text=True, timeout=300)
         if r.returncode:

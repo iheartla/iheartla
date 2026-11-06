@@ -354,7 +354,7 @@ pub fn eigen(prog: &Program, struct_name: &str) -> String {
         if let Mesh(_) = p.ty {
             let n = cpp_ident(&p.name);
             out += &format!(
-                "    Eigen::MatrixXi {n}_T(8, 3);\n    {n}_T << {};\n    iheartmesh::TriangleMesh {n}_tri({n}_T);\n    {} {n}({n}_tri.bm1, {n}_tri.bm2);\n",
+                "    Eigen::MatrixXi {n}_T(8, 3);\n    {n}_T << {};\n    heartlang::TriangleMesh {n}_tri({n}_T);\n    {} {n}({n}_tri.bm1, {n}_tri.bm2);\n",
                 OCTAHEDRON.replace(['[', ']'], ""),
                 cpp_type(&p.ty)
             );
@@ -375,6 +375,10 @@ pub fn eigen(prog: &Program, struct_name: &str) -> String {
         }
     }
     out += "    return 0;\n}\n";
+    if out.contains("sorted_set(") {
+        // (random sets; the struct may not have included type_helper.h, and including it again does nothing)
+        out = out.replacen("#include <ctime>\n", &format!("#include <ctime>\n{}", super::eigen::SUPPORT), 1);
+    }
     out
 }
 

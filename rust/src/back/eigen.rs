@@ -21,8 +21,9 @@ const HEADER: &str = "#include <Eigen/Core>\n#include <Eigen/QR>\n#include <Eige
 
 /// The support code (sorted_set; with IHEARTLA_DERIVATIVES defined, autodiff
 /// and the iheartla_diff helpers), shared with the Python compiler's output:
-/// iheartla/mesh/Cpp/include/type_helper.h.
-const SUPPORT: &str = "#include \"type_helper.h\"\n";
+/// iheartla/mesh/Cpp/include/type_helper.h. Code that uses none of it
+/// doesn't include it, and needs only Eigen.
+pub const SUPPORT: &str = "#include \"type_helper.h\"\n";
 
 pub fn generate(prog: &Program, struct_name: &str) -> String {
     let (include, body) = generate_parts(prog, struct_name);
@@ -32,25 +33,27 @@ pub fn generate(prog: &Program, struct_name: &str) -> String {
 /// The includes (and helpers) and the struct (H❤️rtDown puts several
 /// programs' structs in one header).
 pub fn generate_parts(prog: &Program, struct_name: &str) -> (String, String) {
+    // (with derivatives, the struct is a template over its real type: double, or autodiff::var)
+    DT_MODE.with(|m| m.set(prog.derivatives));
+    let body = structure(prog, struct_name);
+    DT_MODE.with(|m| m.set(false));
     let mut out = String::new();
     out.push_str(HEADER);
     if prog.derivatives {
         out.push_str("#define IHEARTLA_DERIVATIVES\n");
     }
-    out.push_str(SUPPORT);
+    if prog.derivatives || body.contains("sorted_set(") {
+        out.push_str(SUPPORT);
+    }
     let mut kinds = Vec::new();
     mesh_kinds(prog, &mut kinds);
     if !kinds.is_empty() {
         for k in &kinds {
             out.push_str(&format!("#include \"{}.h\"\n", mesh_class(*k)));
         }
-        out.push_str("#include \"MeshHelper.h\"\nusing namespace iheartmesh;\n");
+        out.push_str("#include \"MeshHelper.h\"\nusing namespace heartlang;\n");
     }
     out.push('\n');
-    // (with derivatives, the struct is a template over its real type: double, or autodiff::var)
-    DT_MODE.with(|m| m.set(prog.derivatives));
-    let body = structure(prog, struct_name);
-    DT_MODE.with(|m| m.set(false));
     if body.contains("LBFGSpp::") {
         // (header-only: https://github.com/yixuan/LBFGSpp)
         out.push_str("#include <LBFGS.h>\n#include <LBFGSB.h>\n\n");
