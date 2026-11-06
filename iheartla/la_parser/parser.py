@@ -1,10 +1,8 @@
 import copy
 from collections import OrderedDict
 
-from tatsu.exceptions import (
-    FailedCut,
-    FailedParse
-)
+# (the grammar has no cut operator, so TatSu's FailedCut, removed in 5.15, was never raised)
+from tatsu.exceptions import FailedParse
 from .codegen import *
 from .codegen_numpy import CodeGenNumpy
 from .codegen_eigen import CodeGenEigen
@@ -242,8 +240,6 @@ def generate_latex_code(type_walker, node_info, frame):
             except subprocess.SubprocessError as e:
                 tex_content = str(e)
             except FailedParse as e:
-                tex_content = str(e)
-            except FailedCut as e:
                 tex_content = str(e)
             except Exception as e:
                 tex_content = str(e)
@@ -561,9 +557,6 @@ def parse_and_translate(content, frame, parser_type=None, func_name=None):
             tex = LaMsg.getInstance().get_parse_error(e)
             log_la("FailedParse:" + str(e))
             result = (tex, 1)
-        except FailedCut as e:
-            tex = "FailedCut: {}".format(str(e))
-            result = (tex, 1)
         except AssertionError as e:
             tex = "{}".format(e.args[0])
             result = (tex, 1)
@@ -636,8 +629,6 @@ def compile_la_content(la_content,
                         json = type_walker.gen_json_content()
     # except FailedParse as e:
     #     ret = LaMsg.getInstance().get_parse_error(e)
-    # except FailedCut as e:
-    #     ret = "FailedCut: {}".format(str(e))
     # except AssertionError as e:
     #     ret = "{}".format(e.args[0])
     # except Exception as e:
@@ -707,9 +698,6 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
             write_output(cur_content, cur_file_name)
     except FailedParse as e:
         print(LaMsg.getInstance().get_parse_error(e))
-        raise
-    except FailedCut as e:
-        print("FailedCut: {}".format(str(e)))
         raise
     except AssertionError as e:
         print("{}".format(e.args[0]))
