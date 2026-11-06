@@ -54,7 +54,7 @@ You can also run as a command-line compiler:
 
 You can find releases on the GitHub [release page](https://github.com/iheartla/iheartla/releases). The following instructions are for running from source.
 
-I❤️LA depends on Python 3.x (>= Python 3.9) and several modules, listed in `pyproject.toml`. The grammar needs the third-party `regex` module, which `import iheartla` substitutes for `re` so that TatSu (5.8.3 through 5.14) uses it.
+I❤️LA depends on Python 3.10 or later and several modules, listed in `pyproject.toml`. The grammar needs the third-party `regex` module, which `import iheartla` substitutes for `re` so that TatSu uses it. TatSu is pinned to 5.15.1, the version that generates I❤️LA's parsers (see "Changing the grammar").
 
 ### uv
 
@@ -118,10 +118,12 @@ The `viz` extra installs the `graphviz` Python package. When it is present, comp
 
 ### Changing the grammar
 
-The grammar is EBNF in `iheartla/la_grammar/`, and the parsers in `iheartla/la_local_parsers/` are TatSu's output for it, unedited. After changing the EBNF, regenerate them with TatSu 5.8.3 (other versions generate different code):
+The grammar is EBNF in `iheartla/la_grammar/`, and the parsers in `iheartla/la_local_parsers/` are TatSu's output for it, unedited. After changing the EBNF, regenerate them with the pinned TatSu, 5.15.1 (other versions generate different code):
 
-    uv run --with tatsu==5.8.3 python -m iheartla --regenerate-grammar
-    uv run --with tatsu==5.8.3 python -m iheartla.la_grammar.update_parsers --check   # (the test suite runs this too)
+    python -m iheartla --regenerate-grammar
+    python -m iheartla.la_grammar.update_parsers --check   # (the test suite runs this too)
+
+The script also fixes up TatSu's object model in two ways: every node class gets all the fields its rules define, and the classes are sorted so regenerating is stable (see `complete_model` in `iheartla/la_grammar/update_parsers.py`).
 
 What a program declares changes what parses: declared multi-letter names, function names, imported builtins and their renames, and the constant `e`. The rules that depend on them are overridden in `iheartla/la_tools/configured_parser.py`, which configures the parser before each parse. On the `rust` branch, run `python rust/tools/gen_parser.py` afterwards to translate the parsers to Rust.
 
