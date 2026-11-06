@@ -94,6 +94,13 @@ The tests compile generated C++ with cppyy, against Eigen, autodiff and LBFGSpp,
     PYTHON=.venv/bin/python sh test/fix_cppyy_zstd.sh
     . .venv/bin/activate && sh run_test.sh
 
+Without MATLAB, the MATLAB checks can run in GNU Octave (`brew install octave`), through a stand-in for the MATLAB engine (`test/octave_engine.py`):
+
+    uv sync --extra test --extra octave
+    IHEARTLA_OCTAVE=1 sh run_test.sh
+
+Set `IHEARTLA_OCTAVE_VERBOSE=1` too to print how many MATLAB functions ran. A few checks fail in Octave only: integrals, optimization, and ragged arrays.
+
 `.github/workflows/test.yml` does the same. cppyy-cling 6.32.8 (the latest, from 2024) can't parse the C++ headers of the macOS 26 SDK and later (errors such as `use of undeclared identifier '__builtin_clzg'`), so on macOS the C++ tests need the macOS 15 SDK (Xcode 16), as CI uses (`runs-on: macos-15`).
 
 ## Output Dependencies

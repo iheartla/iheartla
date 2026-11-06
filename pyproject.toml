@@ -23,6 +23,8 @@ gui = ["wxpython", "PyMuPDF"]
 viz = ["graphviz"]
 # (autograd: generated NumPy code with derivatives, ∂f/∂x, uses it)
 test = ["numpy", "scipy", "cppyy", "autograd"]
+# the MATLAB checks in GNU Octave (IHEARTLA_OCTAVE=1; test/octave_engine.py)
+octave = ["oct2py"]
 
 [project.urls]
 Homepage = "https://github.com/iheartla/iheartla"
