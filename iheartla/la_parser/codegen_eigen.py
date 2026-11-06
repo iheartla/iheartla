@@ -25,6 +25,9 @@ class CodeGenEigen(CodeGen):
         if self.need_mutator:
             self.pre_str += '#include <boost/numeric/odeint.hpp>\n'
             self.pre_str += 'using namespace boost::numeric::odeint;\n'
+        if self.has_derivative:
+            # (turns on type_helper.h's autodiff part)
+            self.pre_str += '#define IHEARTLA_DERIVATIVES\n'
         self.pre_str += '#include "type_helper.h"\n'
         self.code_frame.namespace = 'using namespace iheartmesh;\n'
         self.code_frame.desc = '/*\n{}\n*/\n'''.format(self.la_content)
