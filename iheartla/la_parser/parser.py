@@ -314,9 +314,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
             name_list = package_name_dict[package]
             r_dict = package_rdict[package]
             if 'e' in name_list:
-                if DEBUG_PARSER:
-                    current_content = current_content.replace("pi;", "pi|e;")
-                    current_content = current_content.replace("BUILTIN_KEYWORDS;", "BUILTIN_KEYWORDS|e;")
                 name_list.remove('e')
                 parse_key += 'e;'
                 package_name_list.append('e')
@@ -338,11 +335,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
                     builtin_func_rdict[key] = value
         package_name_list += key_names
         if len(key_names) > 0:
-            # add new rules
-            if DEBUG_PARSER:
-                keyword_index = current_content.find('predefined_built_operators;')
-                current_content = current_content[:keyword_index] + '|'.join(key_names) + '|' + current_content[
-                                                                                                keyword_index:]
             parse_key += ';'.join(key_names)
         extra_dict['pkg'] = package_name_list
         extra_dict['rename'] = builtin_func_rdict
@@ -451,8 +443,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
             if _id_pattern.fullmatch(f_name):
                 continue  # valid single func name
             multi_list.append(f_name)
-        if DEBUG_PARSER:
-            current_content = current_content.replace("func_id='!!!';", "func_id={};".format(func_rule))
         parse_key += "func symbol:{}, func sig:{}".format(','.join(func_dict.keys()), ";".join(func_dict.values()))
     # not add backticks
     new_list = []
@@ -467,9 +457,6 @@ def get_new_parser(start_node, current_content, type_walker, skipped_module=Fals
         keys_rule = "/" + "/|/".join(multi_list) + "/"
         log_la("keys_rule:" + keys_rule)
         parse_key += "keys_rule:{};".format(keys_rule)
-        if DEBUG_PARSER:
-            current_content = current_content.replace("= !KEYWORDS(",
-                                                      "= const:({}) | (!(KEYWORDS | {} )".format(keys_rule, keys_rule))
     # get new parser
     record("Get new parser")
     parser = get_compiled_parser(current_content, parse_key, extra_dict)
@@ -536,7 +523,8 @@ def parse_ir_node(content, model, parser_type=ParserTypeEnum.EIGEN, start_node=N
 
 
 def clean_parsers():
-    _parser_manager.clean_parsers()
+    # (the parsers are pregenerated; what is cached is parse trees)
+    _parse_cache.clear()
 
 
 def parse_and_translate(content, frame, parser_type=None, func_name=None):
@@ -739,7 +727,6 @@ def parse_la(content, parser_type):
     """
     used for testing
     """
-    _parser_manager.set_test_mode()
     parser = get_default_parser()
     model = parse_cached(parser, content)
     type_walker, node_info = parse_ir_node(content, model)

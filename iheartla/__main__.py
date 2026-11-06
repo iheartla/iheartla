@@ -48,17 +48,13 @@ def main():
     arg_parser.add_argument('-o', '--output', help='The output language(s), comma-separated: numpy, eigen, latex, mathjax, matlab (e.g. -o numpy,eigen)')
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Launch the GUI editor')
-    arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Disabled: regenerate parser rules with python -m iheartla.la_grammar.update_parsers')
+    arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate the parsers in la_local_parsers/ from the grammar (needs TatSu 5.8.3)')
     arg_parser.add_argument('input', nargs='*', help='The HeartLang files to compile.')
     args = arg_parser.parse_args()
     if args.regenerate_grammar:
-        # Regenerating la_local_parsers/ whole from the EBNF would drop the rules of
-        # default_parser.py that were rewritten by hand to read the parser configuration
-        # (declared names, imports, the constant e). Regenerate rules one at a time instead.
-        sys.exit("--regenerate-grammar is disabled: it would overwrite the hand-written rules of "
-                 "iheartla/la_local_parsers/default_parser.py. After changing the EBNF, regenerate the "
-                 "rules you changed with: python -m iheartla.la_grammar.update_parsers RULE ... "
-                 "(see that file).")
+        # (the parsers in la_local_parsers/ are TatSu's output for the EBNF in la_grammar/)
+        from iheartla.la_grammar import update_parsers
+        sys.exit(update_parsers.main([]))
     else:
         from iheartla.compiler import show_gui
         from iheartla.la_parser.parser import compile_la_file, ParserTypeEnum
