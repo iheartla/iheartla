@@ -12,7 +12,6 @@ from .la_logger import *
 
 
 DEBUG_MODE = True
-DEBUG_PARSER = False  # used for new grammer files
 DEBUG_TIME = False    # used for time recoding (to optimize)
 TEST_MATLAB = False   # used for running tests for MATLAB
 CLASS_ONLY = True     # output class without random data and main func

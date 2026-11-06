@@ -635,8 +635,8 @@ class grammarinitParser(Parser):
                 self._SUBSET_()
             self._error(
                 'expecting one of: '
-                '# <DELTA> <DERIVATIVE> <IN> <NABLA>'
-                '<PI> <POUND> <SUBSET> [Δ] π ℝ ℤ ∑ ⊂ ∇ ∈ 𝕕'
+                '# <DELTA> <DERIVATIVE> <IN> <NABLA> <PI>'
+                '<POUND> <SUBSET> [Δ] π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -3962,7 +3962,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -4133,7 +4133,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu('FroProduct')
@@ -4313,7 +4313,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu('Summation')
@@ -4750,7 +4750,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('IdentifierSubscript')
@@ -4901,7 +4901,7 @@ class grammarinitParser(Parser):
                 'index initial int ln log matrix max min'
                 'or otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -6333,16 +6333,16 @@ class grammarinitParser(Parser):
                 )
         self.name_last_node('name')
 
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._positive_closure(block2)
-            self._AS_()
+        def block2():
 
             def block3():
                 self._hspace_()
             self._positive_closure(block3)
+            self._AS_()
+
+            def block4():
+                self._hspace_()
+            self._positive_closure(block4)
             self._multi_str_()
             self.name_last_node('r')
 
@@ -6350,7 +6350,7 @@ class grammarinitParser(Parser):
                 ['r'],
                 []
             )
-        self._closure(block1)
+        self._closure(block2)
 
         self._define(
             ['name', 'r'],
@@ -6697,19 +6697,18 @@ class grammarinitParser(Parser):
                         '<GIVEN> <WHERE>'
                     )
             self.name_last_node('annotation')
-
             with self._group():
                 with self._choice():
                     with self._option():
 
-                        def block3():
+                        def block4():
                             self._separator_with_space_()
-                        self._positive_closure(block3)
+                        self._positive_closure(block4)
                     with self._option():
 
-                        def block4():
+                        def block5():
                             self._hspace_()
-                        self._positive_closure(block4)
+                        self._positive_closure(block5)
                     self._error(
                         'expecting one of: '
                         '<hspace> <separator_with_space>'
@@ -6782,7 +6781,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('Expression')
@@ -6965,7 +6964,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7002,7 +7001,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('GeneralAssignment')
@@ -7117,7 +7116,7 @@ class grammarinitParser(Parser):
                 'index initial int ln log matrix max min'
                 'or otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7282,7 +7281,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -8031,7 +8030,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('ArithSubexpression')
@@ -8763,7 +8762,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('Integer')
@@ -8926,7 +8925,8 @@ class grammarinitParser(Parser):
                 'inversevec ln log matrix max min or'
                 'otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vec⁻¹ vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vec⁻¹ vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂'
+                '𝕕'
             )
 
     @tatsumasu('IdentifierAlone')
@@ -8992,7 +8992,7 @@ class grammarinitParser(Parser):
                 'index initial int ln log matrix max min'
                 'or otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -9031,7 +9031,7 @@ class grammarinitParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('IdentifierSubscript')
@@ -9417,7 +9417,8 @@ class grammarinitParser(Parser):
                 'inversevec ln log matrix max min or'
                 'otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vec⁻¹ vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vec⁻¹ vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂'
+                '𝕕'
             )
 
     @tatsumasu('LocalFunc')
@@ -10376,6 +10377,9 @@ class grammarinitSemantics:
         return ast
 
     def import_var(self, ast):  # noqa
+        return ast
+
+    def import_constant(self, ast):  # noqa
         return ast
 
     def where_conditions(self, ast):  # noqa

@@ -126,12 +126,12 @@ The `viz` extra installs the `graphviz` Python package. When it is present, comp
 
 ### Changing the grammar
 
-The grammar is EBNF in `iheartla/la_grammar/`, and the compiler parses with TatSu-generated parsers in `iheartla/la_local_parsers/`. Some rules of `default_parser.py` were rewritten by hand to read the parser's configuration (declared multi-letter names, imported functions and their renames, the constant `e`), so the parsers can't be regenerated whole, and `--regenerate-grammar` refuses. After changing the EBNF, regenerate the rules you changed, with TatSu 5.8.3 (the version that generated the files):
+The grammar is EBNF in `iheartla/la_grammar/`, and the parsers in `iheartla/la_local_parsers/` are TatSu's output for it, unedited. After changing the EBNF, regenerate them with TatSu 5.8.3 (other versions generate different code):
 
-    uv run --with tatsu==5.8.3 python -m iheartla.la_grammar.update_parsers local_func where_conditions
-    uv run --with tatsu==5.8.3 python -m iheartla.la_grammar.update_parsers --check
+    uv run --with tatsu==5.8.3 python -m iheartla --regenerate-grammar
+    uv run --with tatsu==5.8.3 python -m iheartla.la_grammar.update_parsers --check   # (the test suite runs this too)
 
-`--check` lists the rules whose code differs from TatSu's output for the EBNF. Only the hand-written ones should. On the `rust` branch, then run `python rust/tools/gen_parser.py` to translate the parsers to Rust.
+What a program declares changes what parses: declared multi-letter names, function names, imported builtins and their renames, and the constant `e`. The rules that depend on them are overridden in `iheartla/la_tools/configured_parser.py`, which configures the parser before each parse. On the `rust` branch, run `python rust/tools/gen_parser.py` afterwards to translate the parsers to Rust.
 
 ## Output Dependencies
 

@@ -58,11 +58,6 @@ class grammardefaultParser(Parser):
         )
         config = config.replace(**settings)
         super().__init__(config=config)
-        self.new_id_list = []
-        self.new_func_list = []
-        self.builtin_list = []
-        self.conversion_dict = {}
-        self.const_e = False
 
     @tatsumasu('Start')
     @nomemo
@@ -102,24 +97,15 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _TRACE_(self):  # noqa
-        if 'trace' in self.conversion_dict:
-            self._pattern(self.conversion_dict['trace'])
-        else:
-            self._pattern('trace')
+        self._pattern('trace')
 
     @tatsumasu()
     def _TR_(self):  # noqa
-        if 'tr' in self.conversion_dict:
-            self._pattern(self.conversion_dict['tr'])
-        else:
-            self._pattern('tr')
+        self._pattern('tr')
 
     @tatsumasu()
     def _VEC_(self):  # noqa
-        if 'vec' in self.conversion_dict:
-            self._pattern(self.conversion_dict['vec'])
-        else:
-            self._pattern('vec')
+        self._pattern('vec')
 
     @tatsumasu()
     def _INVERSEVEC_(self):  # noqa
@@ -135,45 +121,27 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _DIAG_(self):  # noqa
-        if 'diag' in self.conversion_dict:
-            self._pattern(self.conversion_dict['diag'])
-        else:
-            self._pattern('diag')
+        self._pattern('diag')
 
     @tatsumasu()
     def _INV_(self):  # noqa
-        if 'inv' in self.conversion_dict:
-            self._pattern(self.conversion_dict['inv'])
-        else:
-            self._pattern('inv')
+        self._pattern('inv')
 
     @tatsumasu()
     def _DET_(self):  # noqa
-        if 'det' in self.conversion_dict:
-            self._pattern(self.conversion_dict['det'])
-        else:
-            self._pattern('det')
+        self._pattern('det')
 
     @tatsumasu()
     def _RANK_(self):  # noqa
-        if 'rank' in self.conversion_dict:
-            self._pattern(self.conversion_dict['rank'])
-        else:
-            self._pattern('rank')
+        self._pattern('rank')
 
     @tatsumasu()
     def _NULL_(self):  # noqa
-        if 'null' in self.conversion_dict:
-            self._pattern(self.conversion_dict['null'])
-        else:
-            self._pattern('null')
+        self._pattern('null')
 
     @tatsumasu()
     def _ORTH_(self):  # noqa
-        if 'orth' in self.conversion_dict:
-            self._pattern(self.conversion_dict['orth'])
-        else:
-            self._pattern('orth')
+        self._pattern('orth')
 
     @tatsumasu()
     def _QR_(self):  # noqa
@@ -245,157 +213,91 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _SIN_(self):  # noqa
-        if 'sin' in self.conversion_dict:
-            self._pattern(self.conversion_dict['sin'])
-        else:
-            self._pattern('sin')
+        self._pattern('sin')
 
     @tatsumasu()
     def _ASIN_(self):  # noqa
-        if 'asin' in self.conversion_dict:
-            self._pattern(self.conversion_dict['asin'])
-        else:
-            self._pattern('asin')
+        self._pattern('asin')
 
     @tatsumasu()
     def _ARCSIN_(self):  # noqa
-        if 'arcsin' in self.conversion_dict:
-            self._pattern(self.conversion_dict['arcsin'])
-        else:
-            self._pattern('arcsin')
+        self._pattern('arcsin')
 
     @tatsumasu()
     def _COS_(self):  # noqa
-        if 'cos' in self.conversion_dict:
-            self._pattern(self.conversion_dict['cos'])
-        else:
-            self._pattern('cos')
+        self._pattern('cos')
 
     @tatsumasu()
     def _ACOS_(self):  # noqa
-        if 'acos' in self.conversion_dict:
-            self._pattern(self.conversion_dict['acos'])
-        else:
-            self._pattern('acos')
+        self._pattern('acos')
 
     @tatsumasu()
     def _ARCCOS_(self):  # noqa
-        if 'arccos' in self.conversion_dict:
-            self._pattern(self.conversion_dict['arccos'])
-        else:
-            self._pattern('arccos')
+        self._pattern('arccos')
 
     @tatsumasu()
     def _TAN_(self):  # noqa
-        if 'tan' in self.conversion_dict:
-            self._pattern(self.conversion_dict['tan'])
-        else:
-            self._pattern('tan')
+        self._pattern('tan')
 
     @tatsumasu()
     def _ATAN_(self):  # noqa
-        if 'atan' in self.conversion_dict:
-            self._pattern(self.conversion_dict['atan'])
-        else:
-            self._pattern('atan')
+        self._pattern('atan')
 
     @tatsumasu()
     def _ARCTAN_(self):  # noqa
-        if 'arctan' in self.conversion_dict:
-            self._pattern(self.conversion_dict['arctan'])
-        else:
-            self._pattern('arctan')
+        self._pattern('arctan')
 
     @tatsumasu()
     def _SINH_(self):  # noqa
-        if 'sinh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['sinh'])
-        else:
-            self._pattern('sinh')
+        self._pattern('sinh')
 
     @tatsumasu()
     def _ASINH_(self):  # noqa
-        if 'asinh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['asinh'])
-        else:
-            self._pattern('asinh')
+        self._pattern('asinh')
 
     @tatsumasu()
     def _ARSINH_(self):  # noqa
-        if 'arsinh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['arsinh'])
-        else:
-            self._pattern('arsinh')
+        self._pattern('arsinh')
 
     @tatsumasu()
     def _COSH_(self):  # noqa
-        if 'cosh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['cosh'])
-        else:
-            self._pattern('cosh')
+        self._pattern('cosh')
 
     @tatsumasu()
     def _ACOSH_(self):  # noqa
-        if 'acosh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['acosh'])
-        else:
-            self._pattern('acosh')
+        self._pattern('acosh')
 
     @tatsumasu()
     def _ARCOSH_(self):  # noqa
-        if 'arcosh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['arcosh'])
-        else:
-            self._pattern('arcosh')
+        self._pattern('arcosh')
 
     @tatsumasu()
     def _TANH_(self):  # noqa
-        if 'tanh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['tanh'])
-        else:
-            self._pattern('tanh')
+        self._pattern('tanh')
 
     @tatsumasu()
     def _ATANH_(self):  # noqa
-        if 'atanh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['atanh'])
-        else:
-            self._pattern('atanh')
+        self._pattern('atanh')
 
     @tatsumasu()
     def _ARTANH_(self):  # noqa
-        if 'artanh' in self.conversion_dict:
-            self._pattern(self.conversion_dict['artanh'])
-        else:
-            self._pattern('artanh')
+        self._pattern('artanh')
 
     @tatsumasu()
     def _COT_(self):  # noqa
-        if 'cot' in self.conversion_dict:
-            self._pattern(self.conversion_dict['cot'])
-        else:
-            self._pattern('cot')
+        self._pattern('cot')
 
     @tatsumasu()
     def _SEC_(self):  # noqa
-        if 'sec' in self.conversion_dict:
-            self._pattern(self.conversion_dict['sec'])
-        else:
-            self._pattern('sec')
+        self._pattern('sec')
 
     @tatsumasu()
     def _CSC_(self):  # noqa
-        if 'csc' in self.conversion_dict:
-            self._pattern(self.conversion_dict['csc'])
-        else:
-            self._pattern('csc')
+        self._pattern('csc')
 
     @tatsumasu()
     def _ATAN2_(self):  # noqa
-        if 'atan2' in self.conversion_dict:
-            self._pattern(self.conversion_dict['atan2'])
-        else:
-            self._pattern('atan2')
+        self._pattern('atan2')
 
     @tatsumasu()
     def _EXP_(self):  # noqa
@@ -573,10 +475,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _SVD_(self):  # noqa
-        if 'svd' in self.conversion_dict:
-            self._pattern(self.conversion_dict['svd'])
-        else:
-            self._pattern('svd')
+        self._pattern('svd')
 
     @tatsumasu()
     def _BUILTIN_KEYWORDS_(self):  # noqa
@@ -736,8 +635,8 @@ class grammardefaultParser(Parser):
                 self._SUBSET_()
             self._error(
                 'expecting one of: '
-                '# <DELTA> <DERIVATIVE> <IN> <NABLA>'
-                '<PI> <POUND> <SUBSET> [Δ] π ℝ ℤ ∑ ⊂ ∇ ∈ 𝕕'
+                '# <DELTA> <DERIVATIVE> <IN> <NABLA> <PI>'
+                '<POUND> <SUBSET> [Δ] π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -4061,7 +3960,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -4230,7 +4129,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu('FroProduct')
@@ -4409,7 +4308,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu('Summation')
@@ -4846,7 +4745,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('IdentifierSubscript')
@@ -4997,7 +4896,7 @@ class grammardefaultParser(Parser):
                 'index initial int ln log matrix max min'
                 'or otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -6429,16 +6328,16 @@ class grammardefaultParser(Parser):
                 )
         self.name_last_node('name')
 
-        def block1():
-
-            def block2():
-                self._hspace_()
-            self._positive_closure(block2)
-            self._AS_()
+        def block2():
 
             def block3():
                 self._hspace_()
             self._positive_closure(block3)
+            self._AS_()
+
+            def block4():
+                self._hspace_()
+            self._positive_closure(block4)
             self._multi_str_()
             self.name_last_node('r')
 
@@ -6446,7 +6345,7 @@ class grammardefaultParser(Parser):
                 ['r'],
                 []
             )
-        self._closure(block1)
+        self._closure(block2)
 
         self._define(
             ['name', 'r'],
@@ -6793,19 +6692,18 @@ class grammardefaultParser(Parser):
                         '<GIVEN> <WHERE>'
                     )
             self.name_last_node('annotation')
-
             with self._group():
                 with self._choice():
                     with self._option():
 
-                        def block3():
+                        def block4():
                             self._separator_with_space_()
-                        self._positive_closure(block3)
+                        self._positive_closure(block4)
                     with self._option():
 
-                        def block4():
+                        def block5():
                             self._hspace_()
-                        self._positive_closure(block4)
+                        self._positive_closure(block5)
                     self._error(
                         'expecting one of: '
                         '<hspace> <separator_with_space>'
@@ -6826,17 +6724,7 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _builtin_operators_(self):  # noqa
-        if len(self.builtin_list) > 0:
-            with self._choice():
-                for new_builtin in self.builtin_list:
-                    with self._option():
-                        func = getattr(self, "_{}_".format(new_builtin), None)
-                        func()
-                with self._option():
-                    self._predefined_built_operators_()
-                self._error('no available options')
-        else:
-            self._predefined_built_operators_()
+        self._predefined_built_operators_()
 
     @tatsumasu('Statements')
     @nomemo
@@ -6888,7 +6776,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('Expression')
@@ -7070,7 +6958,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7107,7 +6995,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('GeneralAssignment')
@@ -7221,7 +7109,7 @@ class grammardefaultParser(Parser):
                 'index initial int ln log matrix max min'
                 'or otherwise s.t. scalar sequence solve'
                 'sparse sqrt subject to sum tuple vector'
-                'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu()
@@ -7384,42 +7272,24 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ∞ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ∞ ⊂ 𝕕'
             )
 
     @tatsumasu()
     def _constant_(self):  # noqa
-        if self.const_e:
-            with self._choice():
-                with self._option():
-                    self._pi_()
-                with self._option():
-                    self._infinity_()
-                with self._option():
-                    self._e_()
-                self._error('no available options')
-        else:
-            with self._choice():
-                with self._option():
-                    self._pi_()
-                with self._option():
-                    self._infinity_()
-                self._error(
-                    'expecting one of: '
-                    '<infinity> <pi> π ∞'
-                )
+        with self._choice():
+            with self._option():
+                self._pi_()
+            with self._option():
+                self._infinity_()
+            self._error(
+                'expecting one of: '
+                '<infinity> <pi> π ∞'
+            )
 
     @tatsumasu()
     def _KEYWORDS_(self):  # noqa
-        if self.const_e:
-            with self._choice():
-                with self._option():
-                    self._BUILTIN_KEYWORDS_()
-                with self._option():
-                    self._e_()
-                self._error('no available options')
-        else:
-            self._BUILTIN_KEYWORDS_()
+        self._BUILTIN_KEYWORDS_()
 
     @tatsumasu('Subexpression')
     def _subexpression_(self):  # noqa
@@ -8150,7 +8020,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('ArithSubexpression')
@@ -8881,7 +8751,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('Integer')
@@ -8991,168 +8861,71 @@ class grammardefaultParser(Parser):
 
     @tatsumasu()
     def _func_id_(self):  # noqa
-        if len(self.new_func_list) > 0:
-            with self._choice():
-                for new_id in self.new_func_list:
-                    with self._option():
-                        self._pattern(new_id)
-                self._error('no available options')
-        else:
-            # default
-            self._token('!!!')
+        self._token('!!!')
 
     @tatsumasu('IdentifierAlone')
     def _identifier_alone_(self):  # noqa
-        if len(self.new_id_list) > 0:
-            with self._choice():
-                with self._option():
-                    with self._group():
-                        with self._choice():
-                            for new_id in self.new_id_list:
-                                with self._option():
-                                    self._pattern(new_id)
-                            self._error('no available options')
-                    self.name_last_node('const')
-                with self._option():
-                    with self._ifnot():
-                        with self._group():
-                            with self._choice():
-                                with self._option():
-                                    self._KEYWORDS_()
-                                for new_id in self.new_id_list:
-                                    with self._option():
-                                        self._pattern(new_id)
-                                self._error('no available options')
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                                self.name_last_node('value')
-                            with self._option():
-                                self._token('`')
-                                self._pattern('[^`]*')
-                                self.name_last_node('id')
-                                self._token('`')
+        with self._choice():
+            with self._option():
+                with self._ifnot():
+                    self._KEYWORDS_()
+                with self._group():
+                    with self._choice():
+                        with self._option():
+                            with self._group():
+                                self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                            self.name_last_node('value')
+                        with self._option():
+                            self._token('`')
+                            self._pattern('[^`]*')
+                            self.name_last_node('id')
+                            self._token('`')
 
-                                self._define(
-                                    ['id'],
-                                    []
-                                )
-                            self._error(
-                                'expecting one of: '
-                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
+                            self._define(
+                                ['id'],
+                                []
                             )
+                        self._error(
+                            'expecting one of: '
+                            "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
+                        )
 
-                    self._define(
-                        ['id', 'value'],
-                        []
-                    )
-                with self._option():
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                self._PREFIX_KEYWORD_()
-                            for new_id in self.new_id_list:
-                                with self._option():
-                                    self._pattern(new_id)
-                            self._error('no available options')
-                        with self._group():
-                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                    self.name_last_node('value')
-                self._error(
-                    'expecting one of: '
-                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                    '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
-                    '<DERIVATIVE> <EDGEMESH> <EDGES>'
-                    '<EDGESET> <EXP> <FACEMESH> <FACES>'
-                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
-                    '<LOG> <MATRIX> <MAX> <MIN> <NABLA>'
-                    '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                    '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
-                    '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
-                    '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                    '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                    '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                    '<WITH> SOLVE Solve [Cc]ell[Mm]esh'
-                    '[Cc]ell[Ss]et [Cc]ellular[Ss]et'
-                    '[Ee]dge[Mm]esh [Ee]dge[Ss]et'
-                    '[Ff]ace[Mm]esh [Ff]ace[Ss]et'
-                    '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                    'cells edges exp faces for from given if'
-                    'index initial int ln log matrix max min'
-                    'or otherwise s.t. scalar sequence solve'
-                    'sparse sqrt subject to sum tuple vector'
-                    'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                self._define(
+                    ['id', 'value'],
+                    []
                 )
-            self._define(
-                ['const', 'id', 'value'],
-                []
+            with self._option():
+                with self._group():
+                    self._PREFIX_KEYWORD_()
+                    with self._group():
+                        self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
+                self.name_last_node('value')
+            self._error(
+                'expecting one of: '
+                "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
+                '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
+                '<DERIVATIVE> <EDGEMESH> <EDGES>'
+                '<EDGESET> <EXP> <FACEMESH> <FACES>'
+                '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
+                '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
+                '<LOG> <MATRIX> <MAX> <MIN> <NABLA>'
+                '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
+                '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
+                '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
+                '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
+                '<SUBSET> <TETS> <TETSET> <TUPLE>'
+                '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
+                '<WITH> SOLVE Solve [Cc]ell[Mm]esh'
+                '[Cc]ell[Ss]et [Cc]ellular[Ss]et'
+                '[Ee]dge[Mm]esh [Ee]dge[Ss]et'
+                '[Ff]ace[Mm]esh [Ff]ace[Ss]et'
+                '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
+                'cells edges exp faces for from given if'
+                'index initial int ln log matrix max min'
+                'or otherwise s.t. scalar sequence solve'
+                'sparse sqrt subject to sum tuple vector'
+                'vertices where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
-        else:
-            # default
-            with self._choice():
-                with self._option():
-                    with self._ifnot():
-                        self._KEYWORDS_()
-                    with self._group():
-                        with self._choice():
-                            with self._option():
-                                with self._group():
-                                    self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                                self.name_last_node('value')
-                            with self._option():
-                                self._token('`')
-                                self._pattern('[^`]*')
-                                self.name_last_node('id')
-                                self._token('`')
-
-                                self._define(
-                                    ['id'],
-                                    []
-                                )
-                            self._error(
-                                'expecting one of: '
-                                "'`' [A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*"
-                            )
-
-                    self._define(
-                        ['id', 'value'],
-                        []
-                    )
-                with self._option():
-                    with self._group():
-                        self._PREFIX_KEYWORD_()
-                        with self._group():
-                            self._pattern('[A-Za-z\\p{Ll}\\p{Lu}\\p{Lo}]\\p{M}*')
-                    self.name_last_node('value')
-                self._error(
-                    'expecting one of: '
-                    "# ' <AND> <ARGMAX> <ARGMIN> <AS>"
-                    '<BUILTIN_KEYWORDS> <CELLMESH> <DELTA>'
-                    '<DERIVATIVE> <EDGEMESH> <EDGES>'
-                    '<EDGESET> <EXP> <FACEMESH> <FACES>'
-                    '<FACESET> <FOR> <FROM> <GIVEN> <IF> <IN>'
-                    '<INDEX> <INITIAL> <INT> <KEYWORDS> <LN>'
-                    '<LOG> <MATRIX> <MAX> <MIN> <NABLA>'
-                    '<NOT_PREFIX_KEYWORD> <OR> <OTHERWISE>'
-                    '<PI> <POUND> <PREFIX_KEYWORD> <PRIME>'
-                    '<SCALAR> <SEQUENCE> <SIMPLICIALSET>'
-                    '<SOLVE> <SPARSE> <SQRT> <SUBJECT_TO>'
-                    '<SUBSET> <TETS> <TETSET> <TUPLE>'
-                    '<VECTOR> <VERTEXSET> <VERTICES> <WHERE>'
-                    '<WITH> SOLVE Solve [Cc]ell[Mm]esh'
-                    '[Cc]ell[Ss]et [Cc]ellular[Ss]et'
-                    '[Ee]dge[Mm]esh [Ee]dge[Ss]et'
-                    '[Ff]ace[Mm]esh [Ff]ace[Ss]et'
-                    '[Vv]ertex[Ss]et [Δ] and argmax argmin as'
-                    'cells edges exp faces for from given if'
-                    'index initial int ln log matrix max min'
-                    'or otherwise s.t. scalar sequence solve'
-                    'sparse sqrt subject to sum tuple vector'
-                    'vertices where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
-                )
 
     @tatsumasu()
     def _identifier_(self):  # noqa
@@ -9187,7 +8960,7 @@ class grammardefaultParser(Parser):
                 'log matrix max min or otherwise s.t.'
                 'scalar sequence solve sparse sqrt'
                 'subject to sum tuple vector vertices'
-                'where with π ℝ ℤ ∇ ∈ ⊂ 𝕕'
+                'where with π ℝ ℤ ∇ ∈ ∑ ⊂ 𝕕'
             )
 
     @tatsumasu('Function')
@@ -10515,6 +10288,9 @@ class grammardefaultSemantics:
     def import_var(self, ast):  # noqa
         return ast
 
+    def import_constant(self, ast):  # noqa
+        return ast
+
     def where_conditions(self, ast):  # noqa
         return ast
 
@@ -11147,7 +10923,6 @@ class IdentifierSubscript(ModelBase):
 @dataclass(eq=False)
 class IdentifierAlone(ModelBase):
     value: Any = None
-    const: Any = None
 
 
 @dataclass(eq=False)
