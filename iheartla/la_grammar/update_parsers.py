@@ -53,7 +53,7 @@ HAND_WRITTEN = {
     'COSH', 'ACOSH', 'ARCOSH', 'TANH', 'ATANH', 'ARTANH', 'COT', 'SEC', 'CSC', 'ATAN2', 'SVD',
 }
 
-RULE = regex.compile(r"(?m)^    @tatsumasu\([^)]*\)\n    def _(\w+)_\(self\):")
+RULE = regex.compile(r"(?m)^    @tatsumasu\([^)]*\)\n(?:    @\w+\n)*    def _(\w+)_\(self\):")  # (@leftrec, @nomemo may follow)
 CLASS_END = regex.compile(r"\n(?=\S)")
 
 
