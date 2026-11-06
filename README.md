@@ -134,7 +134,7 @@ To use the code output for the various backends, you will need:
 * LaTeX: A working tex distribution with `xelatex` and `pdfcrop`
 * Python: NumPy and SciPy
 * MATLAB: MATLAB or Octave
-* C++: Eigen. Code with meshes or derivatives also needs `iheartla/mesh/Cpp/include/` (the mesh classes, and the support header `type_helper.h`) on the include path; with meshes, compile and link `iheartla/mesh/Cpp/src/`; with derivatives, [autodiff](https://github.com/autodiff/autodiff), which needs Eigen 3.4. On macOS with Homebrew's Eigen: `c++ -std=c++17 -I$(brew --prefix eigen)/include/eigen3 output.cpp -o output`
+* C++: Eigen. Code with meshes or derivatives also needs `iheartla/mesh/Cpp/include/` (the mesh classes, and the support header `type_helper.h`) on the include path; with meshes, compile and link `iheartla/mesh/Cpp/src/` (the web page downloads both as `iheartla-cpp.zip`); with derivatives, [autodiff](https://github.com/autodiff/autodiff), which needs Eigen 3.4. On macOS with Homebrew's Eigen: `c++ -std=c++17 -I$(brew --prefix eigen)/include/eigen3 output.cpp -o output`
 * MATLAB: MATLAB or (untested) Octave
 
 ## Unicode Fonts
@@ -143,10 +143,10 @@ To use the code output for the various backends, you will need:
 
 ## Packaging a release
 
-To update the browser-based compiler after changing the compiler, rebuild its wheel, `docs/iheartla-0.0.1-py3-none-any.whl`, and commit it:
+To update the browser-based compiler after changing the compiler, rebuild its wheel, `docs/iheartla-0.0.1-py3-none-any.whl`, and the page's download of the C++ support files, `docs/iheartla-cpp.zip`, and commit them:
 
-    uv build --no-create-gitignore -o docs && rm docs/iheartla-0.0.1.tar.gz
+    sh docs/update_wheel.sh
 
-`uv build` builds the wheel from an sdist (`uv build --wheel` would build in the source tree, where a stale `build/` can leak into it).
+It runs `uv build`, which builds the wheel from an sdist (`uv build --wheel` would build in the source tree, where a stale `build/` can leak into it).
 
 **macOS**: `pyinstaller iheartla.spec`. The output `iheartla.app` is placed into `dist/`. The parsers ship in `iheartla/la_local_parsers/`, so packaging doesn't regenerate them.
