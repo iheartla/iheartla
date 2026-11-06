@@ -48,7 +48,7 @@ def main():
     arg_parser.add_argument('-o', '--output', help='The output language(s), comma-separated: numpy, eigen, latex, mathjax, matlab (e.g. -o numpy,eigen)')
     # arg_parser.add_argument('-i', '--input', help='File name containing I heart LA source code')
     arg_parser.add_argument('--GUI', action='store_true', help='Launch the GUI editor')
-    arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Regenerate grammar files')
+    arg_parser.add_argument('--regenerate-grammar', action='store_true', help='Disabled: regenerate parser rules with python -m iheartla.la_grammar.update_parsers')
     arg_parser.add_argument('input', nargs='*', help='The HeartLang files to compile.')
     args = arg_parser.parse_args()
     if args.regenerate_grammar:
