@@ -736,6 +736,10 @@ class IRVisitor(IRBaseVisitor):
     def convert_unicode(self, name):
         if not self.has_special_symbol(name) and '`' not in name and self.parse_type != ParserTypeEnum.MATLAB:
             return name
+        # a minus in a subscript is m, so `b_{-1}` (b_m1) and `b_1` (b_1) stay distinct
+        sub_start = name.find('_')
+        if sub_start >= 0:
+            name = name[:sub_start] + name[sub_start:].replace('-', 'm')
         remove_list = ['`$', '$`', '`', '(', ')', '{', '}', '\\', '-']
         for rm in remove_list:
             name = name.replace(rm, '')
