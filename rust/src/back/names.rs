@@ -40,6 +40,10 @@ pub fn convert_unicode(kind: Kind, name: &str) -> String {
         return name.to_string();
     }
     let mut name = name.to_string();
+    // a minus in a subscript is m, so `b_{-1}` (b_m1) and `b_1` (b_1) stay distinct
+    if let Some(sub_start) = name.find('_') {
+        name = format!("{}{}", &name[..sub_start], name[sub_start..].replace('-', "m"));
+    }
     for rm in ["`$", "$`", "`", "(", ")", "{", "}", "\\", "-"] {
         name = name.replace(rm, "");
     }
