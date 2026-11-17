@@ -176,3 +176,13 @@ class TestSet(BasePythonTest):
         h = func_info.numpy_func({1, 2, 3}, np.array([2.5, -1., 4.]))
         self.assertEqual(h.f({1, 2, 3}), -1)
         self.assertEqual(h.g({1, 3}), 4)
+
+    def test_set_of_vectors_rows(self):
+        # rows from a set of vectors (m_i,* = d_i) at the top level (iheartla#149)
+        la_str = """x_i ∈ ℝ^3
+                    d = {x_i for i ∈ S}
+                    m_i,* = d_i
+                    S ∈ {ℤ}"""
+        func_info = self.gen_func_info(la_str)
+        h = func_info.numpy_func(np.array([[1., 2, 3], [4, 5, 6], [0, 0, 1]]), {1, 3})
+        self.assertDMatrixEqual(h.m, np.array([[0., 0, 1], [1, 2, 3]]))

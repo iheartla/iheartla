@@ -156,3 +156,26 @@ class TestBacktick(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+    def test_backtick_negative_subscript(self):
+        # a minus in a subscript is m: `b_{-1}` is b_m1, so it doesn't collide with `b_1` (iheartla#153)
+        la_str = """y = `b_{-1}` + 10`b_1` + 100`D_{-k}` + 1000`D_k`
+        where
+        `b_{-1}` ∈ ℝ
+        `b_1` ∈ ℝ
+        `D_{-k}` ∈ ℝ
+        `D_k` ∈ ℝ"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(1, 2, 3, 4).y, 4321)
+        self.assertEqual(func_info.numpy_func(b_m1=1, b_1=2, D_mk=3, D_k=4).y, 4321)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(1, 2, 3, 4)['y'], 4321)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    double B = {}(1, 2, 3, 4).y;".format(func_info.eig_func_name),
+                     "    return (B == 4321);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())

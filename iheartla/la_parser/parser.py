@@ -663,7 +663,7 @@ def compile_la_file(la_file, parser_type=ParserTypeEnum.NUMPY | ParserTypeEnum.E
         content = read_from_file(la_file)
         base_name = get_file_name(la_file)
         global _module_path
-        _module_path = os.path.dirname(Path(la_file))
+        _module_path = os.path.dirname(os.path.abspath(la_file))
     content = heartdown2lines(content)
     # print("head:", head, ", name:", name, "parser_type", parser_type, ", base_name:", base_name)
     try:
