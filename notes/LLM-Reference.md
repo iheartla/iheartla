@@ -31,7 +31,7 @@ c = ‖y‖²
 * Prefer single letters. Juxtaposition means multiplication, so `AB` is `A⋅B` and `2a` is `2⋅a`.
 * A name can be one letter with Unicode marks (`x̄`, `ṽ`, `θ`, `𝐩`). It can be several letters when declared or defined (`damping`), and it may start with a word keyword (`sumd`).
 * Symbol keywords (`π ℝ ℤ ∑ ⊂ ∈ # Δ ∇ 𝕕`) never start a name, so `πd` is `π⋅d`.
-* Backticks quote any name: `` `E_data` ``, `` `x'` ``, `` `cot(α)` ``. A backtick name of the form `` `$\LaTeX$` `` typesets verbatim.
+* Backticks quote any name: `` `E_data` ``, `` `x'` ``, `` `cot(α)` ``. A backtick name of the form `` `$\LaTeX$` `` typesets verbatim. In generated code, a minus in a subscript is `m`: `` `b_{-1}` `` is the parameter `b_m1`.
 * Subscripts index things. A comma separates them, and may be left out between single letters:
   * `x_i`, `A_ij` = `A_i,j`, `A_i,*` (a row), `A_*,j` (a column)
   * `x₂`, `A₁,₂`, `xᵢ`, `aₙ`
@@ -71,12 +71,15 @@ c = ‖y‖²
 | conditions | `< ≤ > ≥ = ≠ ∈ ∉` (also `<= >= == !=`), `(i,j) ∈ E`, `and`, `or`, `( )` |
 | sum | `∑_i x_i` (the range comes from `x`'s length), `∑_(i ∈ S)`, `∑_(i,j ∈ E)`, `∑_(i=1)^n`, `∑_(i=a)^(b-1)`, `∑_(i for i < 10)`. A sum binds tightly: `∑_i a_i + b` adds `b` once. Write `∑_i (a_i + b)` to sum both |
 | local defs in a sum | `∑_(e ∈ E) ‖x_i - x_j‖² where i, j = Vertices(e)`. Wrap the sum in `( … )` to end the scope |
-| sets | `{1, 2}`, `{x_i for i ∈ S if c}`, `{x ∀ x ∈ S if c}`, `{i \| i ∈ S, c}`, `S ∪ T` = `S + T`, `S ∩ T`, `S - T` = `S \ T`, `∪_i U_i`, `∪_(i ∈ T) N(i)`, `S_1` (the smallest element), `min(S)`, `max(S)`, `sequence(U, s)` (appends `s`) |
+| sets | `{1, 2}`, `{x_i for i ∈ S if c}`, `{x ∀ x ∈ S if c}`, `{i \| i ∈ S, c}`, `S ∪ T` = `S + T`, `S ∩ T`, `S - T` = `S \ T`, `∪_i U_i`, `∪_(i ∈ T) N(i)`, `S_1` (the smallest element), `min(S)`, `max(S)`, `sequence(U, s)` (appends `s`). A set of vectors fills a matrix's rows in sorted order: `d = {x_i for i ∈ S}`, `m_i,* = d_i` |
 | calls | `f(x, y)`, `f_i,j(x)` = `f(i, j, x)`, `θ_v,f` (subscript-only call), `sin²(x)` = `sin(x)²`, `tuple(a, b)` |
 | optimization | `min_(x ∈ ℝ^n) expr`, `argmin_(…)`, `max`, `argmax`, `u, v = argmin_(u ∈ ℝ³, v ∈ ℝ) …`, then `s.t.` and one constraint per line |
 | integral | `∫_a^b f 𝕕t`, `∫_[a,b] f 𝕕t` (use `𝕕`, not `∂`) |
 | derivative | `∂f/∂x`, `∂/∂x f`, `∂²f/∂x²` (the Hessian of a scalar with respect to one variable), `∂²f(x)/∂x²`. The variable must be a parameter. A vector, matrix or sequence variable is flattened (`vec`). Mixed partials aren't supported. `∇ Δ` are typeset only |
-| constants | `π`, `∞` |
+| constants | `π`, `∞`, and `e` after `e from trigonometry` |
+| size | `#a` (a length), `m, n = #A` (a matrix's rows and columns); in a dimension, `x ∈ ℝ^(#a)` |
+| accumulate | `L_i,j += { w_i,j if (i,j) ∈ F` adds to `L`'s earlier definition, or defines `L` if nothing does yet |
+| division | real, also of integers: `i/j` is 3.5 for 7 and 2. A subscript can't be a quotient |
 | builtins without an import | `exp`, `log`, `ln`, `log₂` / `log_2`, `log₁₀` / `log_10`, `sqrt`, `min(a,b,…)`, `max(…)`, `tuple`, `sequence`, `vertexset` / `edgeset` / `faceset` / `cellset(…)`, `CellularSet(…)` |
 
 ## Local functions
@@ -101,7 +104,7 @@ A local function can use the program's parameters and definitions.
 ```
 sin, cos, atan2 from trigonometry     ← also asin/arcsin…, sinh…, cosh, tanh, cot, sec, csc
 * from trigonometry
-sin as s from trigonometry            ← rename (builtin packages only)
+sin as s from trigonometry            ← rename (also from files: f as g from m(q, p))
 tr, diag, vec, vec⁻¹, det, rank, inv, null, orth, svd from linearalgebra
 E, f from spring(a, b, s, r)          ← spring.ihla (or .hlang) in the same directory
 ```
@@ -140,12 +143,9 @@ j, k = NeighborVerticesInFace(f, i)
 * Juxtaposed multi-letter names are ambiguous. Use spaces or backticks.
 * Use `𝕕t` in integrals, `∂` in derivatives. Use `|S|` for set size, `‖x‖` for a norm.
 * Comment lines don't exist. Only a declaration may carry a `: description`.
+* A local function needs at least one argument (`f(x)`, `f_x`); `f() = …` is an error. `y = b + c where b ∈ ℝ, c ∈ ℝ` defines `y`, not a function.
 * Not working yet, so avoid them:
-  * `#x`
   * `with initial`
-  * `+=`
   * `f[x] = …`
-  * the constant `e` (use `exp(1)`)
-  * renaming (`as`) symbols from file modules
   * code generation for `∇` and `Δ`
 * Generated code needs NumPy/SciPy (and autograd for derivatives), or Eigen (autodiff for derivatives, LBFGSpp for optimization). MATLAB output generates no code for derivatives or `svd`, and its mesh support is less tested.
