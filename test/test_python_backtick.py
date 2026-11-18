@@ -179,3 +179,26 @@ class TestBacktick(BasePythonTest):
                      "}"]
         cppyy.cppdef('\n'.join(func_list))
         self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
+
+    def test_backtick_same_identifier(self):
+        # `b_{(1)}` and `b_1` are both b_1 in code: the longer keeps it, the other is _b_1 (MATLAB: b_1_)
+        la_str = """y = `b_{(1)}` + 10`b_1`
+        f(x) = x + `b_{(1)}` where x ∈ ℝ
+        where
+        `b_{(1)}` ∈ ℝ
+        `b_1` ∈ ℝ"""
+        func_info = self.gen_func_info(la_str)
+        self.assertEqual(func_info.numpy_func(1, 2).y, 21)
+        self.assertEqual(func_info.numpy_func(b_1=1, _b_1=2).f(3), 4)
+        # MATLAB test
+        if TEST_MATLAB:
+            mat_func = getattr(mat_engine, func_info.mat_func_name, None)
+            self.assertEqual(mat_func(1, 2)['y'], 21)
+        # eigen test
+        cppyy.include(func_info.eig_file_name)
+        func_list = ["bool {}(){{".format(func_info.eig_test_name),
+                     "    auto h = {}(1, 2);".format(func_info.eig_func_name),
+                     "    return (h.y == 21 && h.f(3) == 4);",
+                     "}"]
+        cppyy.cppdef('\n'.join(func_list))
+        self.assertTrue(getattr(cppyy.gbl, func_info.eig_test_name)())
