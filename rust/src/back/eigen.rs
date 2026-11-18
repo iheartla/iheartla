@@ -85,6 +85,15 @@ fn mesh_class(k: MeshKind) -> &'static str {
 /// A program as a struct; imported modules are nested structs, held as
 /// members and constructed with the importer's arguments.
 fn structure(prog: &Program, struct_name: &str) -> String {
+    with_program_names(prog, || structure_body(prog, struct_name))
+}
+
+/// Run `f` with `prog`'s identifiers, for `cpp_ident`.
+pub fn with_program_names<T>(prog: &Program, f: impl FnOnce() -> T) -> T {
+    super::names::with_names(prog, cpp_ident_usual, false, f)
+}
+
+fn structure_body(prog: &Program, struct_name: &str) -> String {
     let mut g = Gen {
         prog,
         lines: Vec::new(),
@@ -127,7 +136,7 @@ fn structure(prog: &Program, struct_name: &str) -> String {
                     "    template<typename... Args> auto {}(Args&&... args) {{ return _{}.{}(std::forward<Args>(args)...); }}\n",
                     cpp_ident(here),
                     m.name,
-                    cpp_ident(inner)
+                    with_program_names(&m.prog, || cpp_ident(inner))
                 ));
             } else if let Some((_, t)) = m.prog.defs.iter().find(|(n, _)| n == inner) {
                 out.push_str(&format!("    {} {};\n", cpp_type(t), cpp_ident(here)));
@@ -164,7 +173,7 @@ fn structure(prog: &Program, struct_name: &str) -> String {
         let funcs: Vec<&String> = m.prog.funcs.iter().flat_map(|(_, l)| l.iter().map(|(_, n)| n)).collect();
         for (inner, here) in &m.syms {
             if !funcs.contains(&inner) {
-                g.line(format!("this->{} = this->_{}.{};", cpp_ident(here), m.name, cpp_ident(inner)));
+                g.line(format!("this->{} = this->_{}.{};", cpp_ident(here), m.name, with_program_names(&m.prog, || cpp_ident(inner))));
             }
         }
     }
@@ -200,8 +209,13 @@ fn structure(prog: &Program, struct_name: &str) -> String {
     out
 }
 
-/// A C++ identifier for an I❤LA name.
+/// A C++ identifier for an I❤LA name, in the program being generated.
 pub fn cpp_ident(name: &str) -> String {
+    super::names::renamed(name).unwrap_or_else(|| cpp_ident_usual(name))
+}
+
+/// The C++ identifier for an I❤LA name, when no other name has it.
+fn cpp_ident_usual(name: &str) -> String {
     let n = if name.contains('`') || has_special_symbol(name) {
         convert_unicode(Kind::Eigen, name).replace('-', "_")
     } else {

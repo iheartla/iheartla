@@ -195,6 +195,10 @@ fn ret_name(prog: &Program) -> Option<&str> {
 // -- NumPy --------------------------------------------------------------------
 
 pub fn numpy(prog: &Program, class_name: &str) -> String {
+    super::numpy::with_program_names(prog, || numpy_body(prog, class_name))
+}
+
+fn numpy_body(prog: &Program, class_name: &str) -> String {
     let ident = |s: &str| py_ident(s);
     let mesh = |m: &str, k: &str| format!("{}.{}()", py_ident(m), mesh_size(k));
     let d = |x: &Dim| dim_expr(x, &ident, &mesh);
@@ -307,6 +311,10 @@ fn np_value(t: &Ty, d: &dyn Fn(&Dim) -> String, smallest: &str, _defs: &mut Vec<
 // -- Eigen --------------------------------------------------------------------
 
 pub fn eigen(prog: &Program, struct_name: &str) -> String {
+    super::eigen::with_program_names(prog, || eigen_body(prog, struct_name))
+}
+
+fn eigen_body(prog: &Program, struct_name: &str) -> String {
     let ident = |s: &str| cpp_ident(s);
     let mesh = |m: &str, k: &str| format!("{}.{}()", cpp_ident(m), mesh_size(k));
     let d = |x: &Dim| dim_expr(x, &ident, &mesh);
@@ -463,6 +471,10 @@ fn cpp_fill(n: &str, t: &Ty, d: &dyn Fn(&Dim) -> String, smallest: &str, depth: 
 /// The statements to put at the top of the MATLAB function: random input
 /// data when it is called without arguments.
 pub fn matlab(prog: &Program) -> String {
+    super::matlab::with_program_names(prog, || matlab_body(prog))
+}
+
+fn matlab_body(prog: &Program) -> String {
     if prog.params.is_empty() || !prog.meshes.is_empty() {
         return String::new();
     }

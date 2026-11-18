@@ -17,6 +17,15 @@ use crate::dims::Dim;
 use crate::ty::*;
 
 pub fn generate(prog: &Program, func_name: &str) -> String {
+    with_program_names(prog, || generate_body(prog, func_name))
+}
+
+/// Run `f` with `prog`'s identifiers, for `m_ident` and `m_field`.
+pub fn with_program_names<T>(prog: &Program, f: impl FnOnce() -> T) -> T {
+    super::names::with_names(prog, m_field_usual, true, f)
+}
+
+fn generate_body(prog: &Program, func_name: &str) -> String {
     let mut g = Gen { prog, lines: Vec::new(), indent: 1, tmp: 0 };
     let params: Vec<String> = prog.params.iter().map(|p| m_ident(&p.name)).collect();
     let mut out = format!("function output = {func_name}({})\n", params.join(", "));
@@ -60,6 +69,11 @@ pub fn m_ident(name: &str) -> String {
 /// A valid MATLAB name (a struct field) for an I❤LA name: ASCII letters,
 /// digits and `_`, starting with a letter, at most 63 characters.
 pub fn m_field(name: &str) -> String {
+    super::names::renamed(name).unwrap_or_else(|| m_field_usual(name))
+}
+
+/// The MATLAB name for an I❤LA name, when no other name has it.
+fn m_field_usual(name: &str) -> String {
     // (as in the Python compiler, every name: μ becomes mu)
     let n = convert_unicode(Kind::Matlab, name).replace('-', "_");
     let mut out = String::new();

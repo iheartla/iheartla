@@ -2,7 +2,11 @@
 //! valid in the target language (e.g. `θ` -> `θ` in Python but `theta` in
 //! MATLAB, `x²` -> `x2`).
 
+use crate::ast::{Program, Stmt};
 use crate::helper::{py_isalnum, py_isnumeric, py_isspace, str_isnumeric};
+use std::cell::RefCell;
+use std::collections::{HashMap, HashSet};
+
 /// Target languages (their identifier rules differ).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Kind {
@@ -105,4 +109,78 @@ pub fn convert_unicode(kind: Kind, name: &str) -> String {
         collapsed.push(c);
     }
     collapsed.trim_matches('_').to_string()
+}
+
+thread_local! {
+    /// The names given a different identifier because their usual one is taken, for each
+    /// program being generated (an imported module's innermost).
+    static RENAMES: RefCell<Vec<HashMap<String, String>>> = const { RefCell::new(Vec::new()) };
+}
+
+/// The identifier `name` was given in the program being generated, if it isn't its usual one.
+pub fn renamed(name: &str) -> Option<String> {
+    RENAMES.with(|r| r.borrow().last().and_then(|m| m.get(name).cloned()))
+}
+
+/// Run `f` with the identifiers of `prog`'s names: `ident` gives a name's usual identifier.
+/// When two names have the same one, as `` `a_{(1)}` `` and `` `a_1` `` (both a_1), all but the
+/// first, longest first, get a `_` in front (`suffix`: behind) until it is free, as the Python
+/// compiler's `IRVisitor.trim_content` does. A name whose identifier is itself keeps it.
+pub fn with_names<T>(prog: &Program, ident: fn(&str) -> String, suffix: bool, f: impl FnOnce() -> T) -> T {
+    let mut names = program_names(prog);
+    names.sort_by(|a, b| b.chars().count().cmp(&a.chars().count()).then_with(|| a.cmp(b)));
+    let mut taken: HashSet<String> = names.iter().filter(|n| ident(n) == **n).cloned().collect();
+    let mut map = HashMap::new();
+    for n in names.iter().filter(|n| ident(n) != **n) {
+        let mut id = ident(n);
+        if taken.contains(&id) {
+            while taken.contains(&id) {
+                id = if suffix { format!("{id}_") } else { format!("_{id}") };
+            }
+            map.insert(n.clone(), id.clone());
+        }
+        taken.insert(id);
+    }
+    RENAMES.with(|r| r.borrow_mut().push(map));
+    let out = f();
+    RENAMES.with(|r| r.borrow_mut().pop());
+    out
+}
+
+/// Every name a program declares or defines, once.
+fn program_names(prog: &Program) -> Vec<String> {
+    fn stmts(ss: &[Stmt], out: &mut Vec<String>) {
+        for s in ss {
+            match s {
+                Stmt::Assign(a) => {
+                    out.push(a.lhs.clone());
+                    out.extend(a.subs.iter().cloned());
+                }
+                Stmt::Multi { lhs, .. } => out.extend(lhs.iter().map(|(n, _)| n.clone())),
+                Stmt::Func(f) => {
+                    out.push(f.name.clone());
+                    out.push(f.base.clone());
+                    out.extend(f.params.iter().map(|(n, _)| n.clone()));
+                    stmts(&f.body, out);
+                }
+            }
+        }
+    }
+    let mut out: Vec<String> = Vec::new();
+    out.extend(prog.params.iter().map(|p| p.name.clone()));
+    out.extend(prog.dims.iter().map(|d| d.name.clone()));
+    out.extend(prog.defs.iter().map(|(n, _)| n.clone()));
+    out.extend(prog.opt_vars.iter().map(|(n, _)| n.clone()));
+    out.extend(prog.meshes.iter().map(|(n, _)| n.clone()));
+    for (n, overloads) in &prog.funcs {
+        out.push(n.clone());
+        out.extend(overloads.iter().map(|(_, i)| i.clone()));
+    }
+    for m in &prog.modules {
+        out.extend(m.syms.iter().map(|(_, here)| here.clone()));
+    }
+    stmts(&prog.stmts, &mut out);
+    let mut seen = HashSet::new();
+    out.retain(|n| seen.insert(n.clone()));
+    out
 }

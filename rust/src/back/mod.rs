@@ -219,6 +219,27 @@ mod tests {
         assert!(out.contains("heartlib(const double & b, const double & c)"), "{out}");
     }
 
+    /// Two names with the same identifier get different ones, as in the Python compiler: the
+    /// longer keeps it and the other gets a `_` in front (MATLAB: behind). They were both b_1,
+    /// so the code had duplicate parameters (iheartla#153).
+    #[test]
+    fn same_identifier_renamed() {
+        let src = "y = `b_{(1)}` + 10`b_1`\nf(x) = x + `b_{(1)}` where x ∈ ℝ\nwhere\n`b_{(1)}` ∈ ℝ\n`b_1` ∈ ℝ\n";
+        assert_eq!(line(src, "numpy"), "b_1+10*_b_1");
+        assert_eq!(line(src, "eigen"), "b_1+10*_b_1");
+        assert_eq!(line(src, "matlab"), "b_1+10*b_1_");
+        let numpy = crate::compile(src, "numpy", "heartlib", true).unwrap();
+        assert!(numpy.contains("def __init__(self, b_1, _b_1):") && numpy.contains("return x + self.b_1"), "{numpy}");
+        assert!(numpy.contains("return b_1, _b_1"), "{numpy}");
+        let eigen = crate::compile(src, "eigen", "heartlib", true).unwrap();
+        assert!(eigen.contains("heartlib(const double & b_1, const double & _b_1)"), "{eigen}");
+        assert!(eigen.contains("void generateRandomData(double & b_1, double & _b_1)"), "{eigen}");
+        let matlab = crate::compile(src, "matlab", "heartlib", true).unwrap();
+        assert!(matlab.contains("function output = heartlib(b_1, b_1_)") && matlab.contains("ret = x + b_1;"), "{matlab}");
+        // (a name whose identifier is itself keeps it)
+        assert_eq!(line("y = `a_{(1)}` + c\nwhere\n`a_{(1)}` ∈ ℝ\nc ∈ ℝ\n", "numpy"), "a_1+c");
+    }
+
     /// A local function has at least one argument: `y = b + c` / `where b ∈ ℝ, c ∈ ℝ` defines y
     /// from the parameters b and c (it was a function y() with no arguments).
     #[test]

@@ -5,7 +5,7 @@
 //! every defined symbol as an attribute; local functions become methods.
 //! This is the interface of the Python compiler's NumPy output.
 
-use super::names::{convert_unicode, has_special_symbol, Kind};
+use super::names::{convert_unicode, has_special_symbol, renamed, with_names, Kind};
 use super::arith_dims;
 use crate::ast::*;
 use crate::dims::Dim;
@@ -49,6 +49,15 @@ fn uses_mesh(prog: &Program) -> bool {
 
 /// A program as a class; imported modules are nested classes.
 fn class(prog: &Program, class_name: &str) -> String {
+    with_program_names(prog, || class_body(prog, class_name))
+}
+
+/// Run `f` with `prog`'s identifiers, for `py_ident`.
+pub fn with_program_names<T>(prog: &Program, f: impl FnOnce() -> T) -> T {
+    with_names(prog, py_ident_usual, false, f)
+}
+
+fn class_body(prog: &Program, class_name: &str) -> String {
     let mut g = Gen { prog, lines: Vec::new(), indent: 2, tmp: 0, method: false, locals: Vec::new(), subst: HashMap::new(), saw_partial: false };
     let mut out = String::new();
     out.push_str(&format!("class {class_name}:\n"));
@@ -117,8 +126,13 @@ fn class(prog: &Program, class_name: &str) -> String {
     out
 }
 
-/// A valid Python identifier for an I❤LA name.
+/// A valid Python identifier for an I❤LA name, in the program being generated.
 pub fn py_ident(name: &str) -> String {
+    renamed(name).unwrap_or_else(|| py_ident_usual(name))
+}
+
+/// The Python identifier for an I❤LA name, when no other name has it.
+fn py_ident_usual(name: &str) -> String {
     let n = if name.contains('`') || has_special_symbol(name) { convert_unicode(Kind::Numpy, name).replace('-', "_") } else { name.to_string() };
     if crate::helper::is_keyword(&n, crate::helper::KeywordSet::Numpy) {
         return format!("{n}_");
@@ -297,7 +311,8 @@ impl<'p> Gen<'p> {
             let args: Vec<String> = m.args.iter().map(|a| self.name(a)).collect();
             self.line(format!("{inst} = self.{}({})", m.name, args.join(", ")));
             for (inner, here) in &m.syms {
-                self.line(format!("self.{} = {inst}.{}", py_ident(here), py_ident(inner)));
+                let inner = with_program_names(&m.prog, || py_ident(inner));
+                self.line(format!("self.{} = {inst}.{inner}", py_ident(here)));
             }
         }
     }
